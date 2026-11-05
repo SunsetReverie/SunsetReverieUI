@@ -17,6 +17,8 @@ import { srDerivePrimaryScale } from '../utils/color'
 export const SR_THEME_STORAGE_KEY = 'sr-theme'
 export const SR_STYLE_STORAGE_KEY = 'sr-style'
 export const SR_PRIMARY_STORAGE_KEY = 'sr-primary'
+/** 预设主题色代号，与自定义色二选一 */
+export const SR_PRESET_STORAGE_KEY = 'sr-primary-preset'
 
 /** 系统暗色媒体查询 */
 const DARK_QUERY = '(prefers-color-scheme: dark)'
@@ -27,6 +29,8 @@ const mode = ref<SrThemeMode>('auto')
 const style = ref<SrStyleMode>('flat')
 /** 自定义主色，空字符串表示使用主题默认 */
 const primary = ref<string>('')
+/** 预设主题色代号，空字符串表示未选 */
+const preset = ref<string>('')
 /** 系统当前是否暗色 */
 const systemDark = ref(false)
 
@@ -62,6 +66,10 @@ function applyToDom(theme: SrResolvedTheme, currentStyle: SrStyleMode): void {
   const root = document.documentElement
   root.setAttribute('data-sr-theme', theme)
   root.setAttribute('data-sr-style', currentStyle)
+
+  // 预设主题色走属性选择器（SSR 友好）；自定义色走内联变量，两者互斥
+  if (preset.value) root.setAttribute('data-sr-primary', preset.value)
+  else root.removeAttribute('data-sr-primary')
   // 让原生控件（滚动条、表单）跟随明暗
   root.style.colorScheme = theme
 }
@@ -82,17 +90,44 @@ function applyPrimaryColor(target: HTMLElement, color: string): void {
   target.style.setProperty('--sr-color-primary-alpha-08', scale.alpha8)
 }
 
+/** 内联设置的 6 个主色变量 */
+const INLINE_PRIMARY_VARS = [
+  '--sr-color-primary',
+  '--sr-color-primary-text',
+  '--sr-color-primary-hover',
+  '--sr-color-primary-active',
+  '--sr-color-primary-alpha-25',
+  '--sr-color-primary-alpha-12',
+  '--sr-color-primary-alpha-08',
+]
+
+/**
+ * 清除内联主色，把颜色交还给预设或 token 默认值
+ * @returns {void}
+ */
+function clearInlinePrimary(): void {
+  if (!isClient()) return
+  const root = document.documentElement
+  for (const name of INLINE_PRIMARY_VARS) root.style.removeProperty(name)
+}
+
 /**
  * 读取持久化偏好
  * @returns 偏好对象；SSR 或读取失败时返回 null
  */
-function readPreference(): { theme: string | null; style: string | null; primary: string | null } | null {
+function readPreference(): {
+  theme: string | null
+  style: string | null
+  primary: string | null
+  preset: string | null
+} | null {
   if (!isClient()) return null
   try {
     return {
       theme: window.localStorage.getItem(SR_THEME_STORAGE_KEY),
       style: window.localStorage.getItem(SR_STYLE_STORAGE_KEY),
       primary: window.localStorage.getItem(SR_PRIMARY_STORAGE_KEY),
+      preset: window.localStorage.getItem(SR_PRESET_STORAGE_KEY),
     }
   } catch {
     // Safari 隐私模式下 localStorage 可能直接抛异常
@@ -118,7 +153,7 @@ function writePreference(key: string, value: string): void {
 // 状态变化 → 同步 DOM 与持久化。
 // 放在模块顶层而非 init() 内：即使调用方忘记 init()，切换主题也仍然生效。
 watch(
-  [resolved, style, primary],
+  [resolved, style, primary, preset],
   ([theme, currentStyle, currentPrimary]) => {
     applyToDom(theme, currentStyle)
     if (currentPrimary && isClient()) {
@@ -127,6 +162,9 @@ watch(
     writePreference(SR_THEME_STORAGE_KEY, mode.value)
     writePreference(SR_STYLE_STORAGE_KEY, currentStyle)
     writePreference(SR_PRIMARY_STORAGE_KEY, currentPrimary)
+
+    if (currentPrimary) writePreference(SR_PRESET_STORAGE_KEY, '')
+    else writePreference(SR_PRESET_STORAGE_KEY, preset.value)
   },
   { flush: 'post' },
 )
@@ -153,7 +191,9 @@ export function useSrTheme() {
     if (preference?.style === 'glass' || preference?.style === 'flat') {
       style.value = preference.style
     }
-    if (preference?.primary) {
+    if (preference?.preset) {
+      preset.value = preference.preset
+    } else if (preference?.primary) {
       primary.value = preference.primary
     }
 
@@ -238,7 +278,20 @@ export function useSrTheme() {
   }
 
   /**
-   * 设置主题色
+   * 切换预设主题色
+   *
+   * 走 data-sr-primary 属性，颜色由生成好的 CSS 规则提供，因此 SSR 阶段就正确。
+   * @param key 预设代号，如 'dusk'
+   */
+  function setPreset(key: string): void {
+    preset.value = key
+    // 预设与自定义色互斥：选预设即清掉内联变量
+    primary.value = ''
+    clearInlinePrimary()
+  }
+
+  /**
+   * 设置自定义主题色
    * @param color 任意合法 CSS 颜色
    * @param scope 作用域元素；不传则作用于全局并持久化
    */
@@ -246,26 +299,21 @@ export function useSrTheme() {
     if (!isClient()) return
     const target = scope ?? document.documentElement
     applyPrimaryColor(target, color)
+
     // 只有全局主色才进入状态与持久化，局部作用域仅影响当次渲染
-    if (!scope) primary.value = color
+    if (!scope) {
+      // 与预设互斥：自定义色会覆盖属性选择器的结果
+      preset.value = ''
+      primary.value = color
+    }
   }
 
   /** 恢复默认主题色（交还给 tokens 定义的品牌色） */
   function resetPrimaryColor(): void {
     if (!isClient()) return
     primary.value = ''
-    const root = document.documentElement
-    for (const name of [
-      '--sr-color-primary',
-      '--sr-color-primary-text',
-      '--sr-color-primary-hover',
-      '--sr-color-primary-active',
-      '--sr-color-primary-alpha-25',
-      '--sr-color-primary-alpha-12',
-      '--sr-color-primary-alpha-08',
-    ]) {
-      root.style.removeProperty(name)
-    }
+    preset.value = ''
+    clearInlinePrimary()
   }
 
   return {
@@ -277,6 +325,8 @@ export function useSrTheme() {
     style: readonly(style),
     /** 自定义主色（空字符串表示默认） */
     primary: readonly(primary),
+    /** 当前预设主题色代号（空字符串表示未选） */
+    preset: readonly(preset),
     /** 系统是否暗色 */
     systemDark: readonly(systemDark),
     init,
@@ -286,6 +336,7 @@ export function useSrTheme() {
     setStyle,
     toggleStyle,
     setPrimaryColor,
+    setPreset,
     resetPrimaryColor,
   }
 }

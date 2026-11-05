@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import { useSrBreakpoint, useSrTheme } from '@sunset-reverie/ui'
+import { SR_THEME_PRESETS, useSrBreakpoint, useSrTheme } from '@sunset-reverie/ui'
 
 import AuditView from './views/AuditView.vue'
 import ComponentsView from './views/ComponentsView.vue'
@@ -13,7 +13,7 @@ import ThemeLab from './views/ThemeLab.vue'
 
 defineOptions({ name: 'PlaygroundApp' })
 
-const { resolved, style, toggleTheme, toggleStyle } = useSrTheme()
+const { resolved, style, preset, toggleTheme, toggleStyle, setPreset } = useSrTheme()
 const { current: breakpoint, width } = useSrBreakpoint()
 
 /** 视图定义 */
@@ -50,6 +50,20 @@ const activeView = computed(() => views.find((v) => v.key === activeKey.value)?.
       </div>
 
       <div class="pg__actions">
+        <div class="pg__swatches">
+          <button
+            v-for="item in SR_THEME_PRESETS"
+            :key="item.key"
+            class="pg__swatch"
+            :class="{ 'is-active': preset === item.key }"
+            :style="{ background: item.primary }"
+            :title="item.label"
+            :aria-label="`切换到${item.label}`"
+            type="button"
+            @click="setPreset(item.key)"
+          />
+        </div>
+
         <button class="pg__btn" type="button" @click="toggleTheme">
           {{ resolved === 'dark' ? '切到浅色' : '切到暗色' }}
         </button>

@@ -72,7 +72,72 @@ body {
 
   &__actions {
     display: flex;
+    align-items: center;
     gap: var(--sr-space-2);
+  }
+
+  // 预设主题色：直接摆在顶栏，避免入口藏在二级页面里
+  &__swatches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-inline-end: var(--sr-space-2);
+    margin-inline-end: var(--sr-space-1);
+    border-inline-end: 1px solid var(--sr-color-border);
+  }
+
+  &__swatch {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--sr-radius-full);
+    cursor: pointer;
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &.is-active {
+      // 用外圈阴影而非 outline：紧凑，且不挤占布局
+      box-shadow:
+        0 0 0 2px var(--sr-color-bg-container),
+        0 0 0 3px var(--sr-color-text-secondary);
+    }
+  }
+
+  // 预设主题色：直接摆在顶栏，避免入口藏在二级页面里
+  &__swatches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-inline-end: var(--sr-space-2);
+    margin-inline-end: var(--sr-space-1);
+    border-inline-end: 1px solid var(--sr-color-border);
+  }
+
+  &__swatch {
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--sr-radius-full);
+    cursor: pointer;
+    transition:
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      transform: scale(1.15);
+    }
+
+    &.is-active {
+      // 用外圈阴影而非 outline，紧凑且不挤占布局
+      box-shadow:
+        0 0 0 2px var(--sr-color-bg-container),
+        0 0 0 3px currentcolor;
+    }
   }
 
   &__btn {

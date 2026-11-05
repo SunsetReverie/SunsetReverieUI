@@ -37,6 +37,7 @@ import {
   structural,
   themedDarkGlass,
 } from '../src/semantic'
+import { themePresets } from '../src/themes'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const UI_SRC = resolve(HERE, '../../../packages/ui/src')
@@ -150,6 +151,10 @@ function buildTs(): string {
   blocks.push(`export const SR_PALETTE_STEPS = ${toTsLiteral(paletteSteps)} as const`)
   blocks.push('')
   blocks.push(`export const SR_PALETTE_SERIES = ${toTsLiteral(paletteSeries)} as const`)
+  blocks.push('')
+  blocks.push(`export const SR_THEME_PRESETS = ${toTsLiteral(themePresets)} as const`)
+  blocks.push('')
+  blocks.push("export type SrThemePresetKey = (typeof SR_THEME_PRESETS)[number]['key']")
 
   return `${blocks.join('\n')}\n`
 }
@@ -269,6 +274,47 @@ function buildSemanticCss(): string {
   )
   blocks.push(toDecls(themedDarkGlass()))
   blocks.push('}', '')
+
+  // ---------- 预设主题色 ----------
+  // 走属性选择器而非内联变量：SSR 时服务端就能输出正确颜色，无闪烁
+  for (const preset of themePresets) {
+    const color = preset.primary
+
+    blocks.push(
+      `/* ---------- 预设主题色 · ${preset.label}（亮色） ---------- */`,
+      `[data-sr-primary='${preset.key}'] {`,
+    )
+    blocks.push(
+      toDecls({
+        'color-primary': color.toLowerCase(),
+        'color-primary-text': `color-mix(in oklab, ${color} 82%, black)`,
+        'color-primary-hover': `color-mix(in oklab, ${color} 88%, white)`,
+        'color-primary-active': `color-mix(in oklab, ${color} 84%, black)`,
+        'color-primary-alpha-25': `color-mix(in oklab, ${color} 25%, transparent)`,
+        'color-primary-alpha-12': `color-mix(in oklab, ${color} 12%, transparent)`,
+        'color-primary-alpha-08': `color-mix(in oklab, ${color} 8%, transparent)`,
+      }),
+    )
+    blocks.push('}', '')
+
+    blocks.push(
+      `/* ---------- 预设主题色 · ${preset.label}（暗色提亮） ---------- */`,
+      `[data-sr-theme='dark'][data-sr-primary='${preset.key}'] {`,
+    )
+    blocks.push(
+      toDecls({
+        'color-primary': color.toLowerCase(),
+        // 深底上文字需要提亮，否则低饱和预设色几乎读不清
+        'color-primary-text': `color-mix(in oklab, ${color} 55%, white)`,
+        'color-primary-hover': `color-mix(in oklab, ${color} 70%, white)`,
+        'color-primary-active': `color-mix(in oklab, ${color} 85%, white)`,
+        'color-primary-alpha-25': `color-mix(in oklab, ${color} 25%, transparent)`,
+        'color-primary-alpha-12': `color-mix(in oklab, ${color} 12%, transparent)`,
+        'color-primary-alpha-08': `color-mix(in oklab, ${color} 8%, transparent)`,
+      }),
+    )
+    blocks.push('}', '')
+  }
 
   // 主题作用域：属性本身就代表「此处应用该主题」。
   // 没有这条时，局部嵌套的主题只换了 CSS 变量，color 仍继承外层的深色，

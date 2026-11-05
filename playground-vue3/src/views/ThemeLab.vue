@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import GlassTuner from '../components/GlassTuner.vue'
 import {
   SR_PRIMARY_STORAGE_KEY,
+  SR_THEME_PRESETS,
   SR_STYLE_STORAGE_KEY,
   SR_THEME_STORAGE_KEY,
   useSrTheme,
@@ -11,17 +12,21 @@ import {
 
 defineOptions({ name: 'ThemeLab' })
 
-const { mode, resolved, style, primary, systemDark, setTheme, setStyle, setPrimaryColor, resetPrimaryColor } =
-  useSrTheme()
+const {
+  mode,
+  resolved,
+  style,
+  primary,
+  preset,
+  systemDark,
+  setTheme,
+  setStyle,
+  setPrimaryColor,
+  setPreset,
+  resetPrimaryColor,
+} = useSrTheme()
 
-/** 预设主题色（与规划文档 5.4 的预设集一致） */
-const presets = [
-  { name: '落日橙', value: '#FF7A45' },
-  { name: '霞紫', value: '#7A64B5' },
-  { name: '余烬红', value: '#F5456B' },
-  { name: '暮蓝', value: '#2578F5' },
-  { name: '青苔绿', value: '#2E9B4E' },
-]
+/** 预设主题色来自库生成的常量，playground 不再自己维护一份 */
 
 /** 颜色输入框的本地值 */
 const customColor = ref('#FF7A45')
@@ -145,11 +150,16 @@ function applyCustom(): void {
 
       <div class="pg__actions" style="margin-bottom: 16px; flex-wrap: wrap">
         <button
-          v-for="preset in presets"
-          :key="preset.value"
+          v-for="item in SR_THEME_PRESETS"
+          :key="item.key"
           class="pg__btn"
+          :style="
+            preset === item.key
+              ? { borderColor: 'var(--sr-color-primary)', color: 'var(--sr-color-primary)' }
+              : undefined
+          "
           type="button"
-          @click="setPrimaryColor(preset.value)"
+          @click="setPreset(item.key)"
         >
           <span
             :style="{
@@ -157,12 +167,12 @@ function applyCustom(): void {
               width: '10px',
               height: '10px',
               borderRadius: '50%',
-              background: preset.value,
+              background: item.primary,
               marginRight: '6px',
               verticalAlign: 'middle',
             }"
           />
-          {{ preset.name }}
+          {{ item.label }}
         </button>
         <button class="pg__btn" type="button" @click="resetPrimaryColor">恢复默认</button>
       </div>

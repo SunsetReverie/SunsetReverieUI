@@ -20,5 +20,14 @@ const styleParam = params.get('style')
 if (styleParam === 'flat' || styleParam === 'glass') {
   theme.setStyle(styleParam)
 }
+// ?preset=jade 选择预设主题色（走属性选择器，与顶栏色点同一路径）
+const presetParam = params.get('preset')
+if (presetParam) theme.setPreset(presetParam)
+
+// ?primary=%23FF7A45 直接指定任意主题色，便于分享复现链接与截图对比
+const primaryParam = params.get('primary')
+if (primaryParam) {
+  theme.setPrimaryColor(primaryParam.startsWith('#') ? primaryParam : `#${primaryParam}`)
+}
 
 createApp(App).mount('#app')
