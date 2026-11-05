@@ -27,6 +27,9 @@
   border-radius: var(--sr-radius-base);
   background: var(--sr-button-bg, transparent);
   color: var(--sr-button-fg, var(--sr-color-text));
+  // 辉光基础强度：对外暴露成变量，便于运行期调节（hover / active 相对它缩放）
+  --sr-glow-base: 55%;
+
   // 彩色辉光：颜色取自按钮自身的 accent，半径取自风格（flat 为 0）
   // color-mix 会在运行期解析，因此自定义主题色后辉光会自动跟着变
   box-shadow:
@@ -133,14 +136,14 @@
 
   // ---------- 交互态 ----------
   &:not(:disabled):hover {
-    --sr-button-glow-strength: 78%;
+    --sr-button-glow-strength: calc(var(--sr-glow-base) * 1.4);
 
     background: var(--sr-button-bg-hover, var(--sr-button-bg));
     border-color: var(--sr-button-border-hover, var(--sr-button-border));
   }
 
   &:not(:disabled):active {
-    --sr-button-glow-strength: 42%;
+    --sr-button-glow-strength: calc(var(--sr-glow-base) * 0.75);
 
     background: var(--sr-button-bg-active, var(--sr-button-bg-hover, var(--sr-button-bg)));
   }

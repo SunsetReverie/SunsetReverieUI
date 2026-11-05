@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import GlassTuner from '../components/GlassTuner.vue'
 import {
   SR_PRIMARY_STORAGE_KEY,
   SR_STYLE_STORAGE_KEY,
@@ -126,8 +127,12 @@ function applyCustom(): void {
         <strong style="display: block; margin-bottom: 4px">示例表面</strong>
         <span style="font-size: 13px; color: var(--sr-color-text-secondary)">
           圆角 {{ style === 'glass' ? '12px' : '6px' }} · 阴影 {{ style === 'glass' ? '高扩散' : '紧凑' }} ·
-          模糊 {{ style === 'glass' ? 'blur(16px)' : 'none' }}
+          模糊由下方参数实时控制
         </span>
+      </div>
+
+      <div style="margin-top: 16px">
+        <GlassTuner />
       </div>
     </section>
 
