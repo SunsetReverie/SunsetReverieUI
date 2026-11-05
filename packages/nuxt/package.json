@@ -17,9 +17,16 @@
     "@nuxt/kit": "^3.14.0"
   },
   "peerDependencies": {
+    "@sunset-reverie/ui": "^0.1.0",
     "nuxt": "^4.0.0"
   },
+  "devDependencies": {
+    "@nuxt/module-builder": "^0.8.4",
+    "@sunset-reverie/ui": "workspace:*",
+    "typescript": "^5.6.3"
+  },
   "scripts": {
-    "build": "node -e \"console.log('[@sunset-reverie/nuxt] 构建在 W7 接入 @nuxt/module-builder')\""
+    "build": "nuxt-module-build build",
+    "typecheck": "tsc --noEmit"
   }
 }

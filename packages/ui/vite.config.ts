@@ -1,7 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import dts from 'vite-plugin-dts'
 import { globSync } from 'tinyglobby'
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
@@ -29,16 +28,10 @@ const componentEntries = Object.fromEntries(
  * 避免下游用 git 依赖安装时因 workspace:* 无法解析而报错。
  */
 export default defineConfig({
-  plugins: [
-    vue(),
-    dts({
-      entryRoot: 'src',
-      outDir: 'dist',
-      cleanVueFileName: true,
-      // 注意：不可排除 src/tokens/generated/**，
-      // 否则 dist/index.d.ts 里 re-export 的 './tokens/generated' 将无对应声明，下游类型断链
-    }),
-  ],
+  // 类型声明不在这里生成：vite-plugin-dts 处理 .vue 时会产出引用
+  // 未定义 __VLS_component 的不完整声明，导致下游 tsc 报语法错误。
+  // 改为 build 脚本里用 vue-tsc 单独 emit（见 tsconfig.build.json）。
+  plugins: [vue()],
 
   build: {
     target: 'es2020',

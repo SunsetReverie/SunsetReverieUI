@@ -15,7 +15,7 @@
     "build:gallery": "pnpm run build:tokens && pnpm --filter @sunset-reverie/internal-tokens build:gallery",
     "build:icons": "pnpm run build:tokens && pnpm run gen:components && pnpm --filter @sunset-reverie/icons build",
     "build:ui": "pnpm run build:icons && pnpm --filter @sunset-reverie/ui build",
-    "build": "pnpm run build:ui && pnpm --filter @sunset-reverie/resolver build",
+    "build": "pnpm run build:ui && pnpm --filter @sunset-reverie/resolver build && pnpm --filter @sunset-reverie/nuxt build",
     "typecheck": "pnpm run build:tokens && pnpm -r --filter \"./packages/*\" typecheck",
     "test": "pnpm run build:tokens && pnpm -r --filter \"./packages/*\" test",
     "lint": "eslint . --max-warnings=0 && stylelint \"packages/**/*.less\" --allow-empty-input",

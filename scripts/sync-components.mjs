@@ -13,7 +13,17 @@ import { join, resolve } from 'node:path'
 
 const ROOT = resolve(import.meta.dirname, '..')
 const COMPONENTS_DIR = join(ROOT, 'packages/ui/src/components')
-const OUT_FILE = join(ROOT, 'packages/resolver/src/components.generated.ts')
+/** 需要同步的目标文件 */
+const TARGETS = [
+  {
+    file: join(ROOT, 'packages/resolver/src/components.generated.ts'),
+    consumer: 'resolver 依赖这份列表把 <sr-button> 解析到 @sunset-reverie/ui/button',
+  },
+  {
+    file: join(ROOT, 'packages/nuxt/src/components.generated.ts'),
+    consumer: 'Nuxt module 依赖这份列表在启动时批量 addComponent',
+  },
+]
 
 /**
  * kebab-case 转 PascalCase
@@ -35,11 +45,12 @@ const dirs = readdirSync(COMPONENTS_DIR, { withFileTypes: true })
 // 每个目录必须有 index.ts 才算组件（排除临时目录）
 const names = dirs.map(toPascal)
 
-const content = `/**
+for (const target of TARGETS) {
+  const content = `/**
  * 组件清单（自动生成，请勿手改）
  *
  * 由 \`pnpm gen:components\` 扫描 packages/ui/src/components 生成。
- * resolver 依赖这份列表把 <sr-button> 解析到 @sunset-reverie/ui/button。
+ * ${target.consumer}。
  */
 
 /** 所有组件的 PascalCase 名（不含 Sr 前缀） */
@@ -49,7 +60,8 @@ export const SR_COMPONENT_NAMES = ${JSON.stringify(names, null, 2)} as const
 export type SrComponentName = (typeof SR_COMPONENT_NAMES)[number]
 `
 
-mkdirSync(resolve(OUT_FILE, '..'), { recursive: true })
-writeFileSync(OUT_FILE, content, 'utf-8')
+  mkdirSync(resolve(target.file, '..'), { recursive: true })
+  writeFileSync(target.file, content, 'utf-8')
+}
 
 console.log(`[components] 同步 ${names.length} 个组件：${names.join(', ')}`)

@@ -45,7 +45,7 @@
     "vue-tsc": "^2.1.10"
   },
   "scripts": {
-    "build": "vite build && node scripts/build-styles.mjs",
+    "build": "vite build && vue-tsc -p tsconfig.build.json && node scripts/build-styles.mjs",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   }

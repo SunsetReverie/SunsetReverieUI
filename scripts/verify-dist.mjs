@@ -95,8 +95,12 @@ if (existsSync(uiDist)) {
 }
 
 // ---------- 3. resolver 清单一致性 ----------
-const generatedFile = join(PACKAGES_DIR, 'resolver/src/components.generated.ts')
-if (existsSync(generatedFile) && existsSync(uiSrc)) {
+const generatedFiles = [
+  join(PACKAGES_DIR, 'resolver/src/components.generated.ts'),
+  join(PACKAGES_DIR, 'nuxt/src/components.generated.ts'),
+]
+
+if (generatedFiles.some((file) => existsSync(file)) && existsSync(uiSrc)) {
   const sourceComponents = readdirSync(uiSrc, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
@@ -114,19 +118,27 @@ if (existsSync(generatedFile) && existsSync(uiSrc)) {
       .join('')
 
   const expected = sourceComponents.map(toPascal)
-  const generated = JSON.parse(
-    readFileSync(generatedFile, 'utf-8').match(/SR_COMPONENT_NAMES = (\[[\s\S]*?\]) as const/)?.[1] ?? '[]',
-  )
 
-  const missingInList = expected.filter((name) => !generated.includes(name))
-  const extraInList = generated.filter((name) => !expected.includes(name))
+  for (const file of generatedFiles) {
+    if (!existsSync(file)) continue
 
-  if (missingInList.length > 0 || extraInList.length > 0) {
-    missing.push(
-      `resolver 组件清单与目录不一致（缺：${missingInList.join(', ') || '无'}；多：${extraInList.join(', ') || '无'}），请执行 pnpm gen:components`,
+    const generated = JSON.parse(
+      readFileSync(file, 'utf-8').match(/SR_COMPONENT_NAMES = (\[[\s\S]*?\]) as const/)?.[1] ?? '[]',
     )
-  } else {
-    console.log(`[产物校验] resolver 清单与 ${expected.length} 个组件目录一致`)
+
+    const missingInList = expected.filter((name) => !generated.includes(name))
+    const extraInList = generated.filter((name) => !expected.includes(name))
+
+    if (missingInList.length > 0 || extraInList.length > 0) {
+      missing.push(
+        `${relative(ROOT, file)} 与组件目录不一致（缺：${missingInList.join(', ') || '无'}；多：${extraInList.join(', ') || '无'}），请执行 pnpm gen:components`,
+      )
+    }
+  }
+
+  const allConsistent = missing.length === 0
+  if (allConsistent) {
+    console.log(`[产物校验] 组件清单与 ${expected.length} 个组件目录一致（resolver + nuxt）`)
   }
 }
 

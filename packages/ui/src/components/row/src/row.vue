@@ -7,6 +7,8 @@ import { ROW_ALIGN_MAP, ROW_JUSTIFY_MAP, rowProps, type SrGutter } from './row'
 
 defineOptions({ name: 'SrRow', inheritAttrs: false })
 
+// 刻意不写 <style> 块：组件样式统一由 src/styles/index.less 汇总、由 build-styles.mjs 编译成独立 CSS，保证「样式不进入 JS」这一按需引入的前提。
+
 const props = defineProps(rowProps)
 const attrs = useAttrs()
 
@@ -72,9 +74,3 @@ const rootClass = computed(() => ['sr-row', { 'is-nowrap': !props.wrap }, attrs.
     <slot />
   </component>
 </template>
-
-<!--
-  刻意不写 <style> 块：
-  组件样式统一由 src/styles/index.less 汇总、由 build-styles.mjs 编译成独立 CSS，
-  保证「样式不进入 JS」这一按需引入的前提（见规划文档 11.3）。
--->
