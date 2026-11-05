@@ -66,6 +66,17 @@ function showSticky(): void {
   srToast.warning('这条不会自动消失，请手动关闭', { duration: 0, closable: true })
 }
 
+/**
+ * 保存并关闭弹窗
+ *
+ * 拆成函数而不是在模板里写多语句 —— Prettier 会把内联 handler 折行并去掉分号，
+ * Vue 编译器就解析不出语句块了（Unexpected token, expected ","）。
+ */
+function saveConfig(): void {
+  footerOpen.value = false
+  srToast.success('配置已保存')
+}
+
 // 调试便利：?demo=modal / ?demo=toast 自动触发，便于截图与分享复现链接
 onMounted(() => {
   const demo = new URLSearchParams(window.location.search).get('demo')
@@ -149,15 +160,7 @@ onMounted(() => {
 
       <template #footer>
         <sr-button variant="text" @click="footerOpen = false">取消</sr-button>
-        <sr-button
-          variant="primary"
-          @click="
-            footerOpen = false
-            srToast.success('配置已保存')
-          "
-        >
-          保存
-        </sr-button>
+        <sr-button variant="primary" @click="saveConfig">保存</sr-button>
       </template>
     </sr-modal>
 
