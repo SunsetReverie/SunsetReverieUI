@@ -202,7 +202,15 @@ body {
   margin-bottom: var(--sr-space-4);
   transition:
     background-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+    border-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
     box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+
+  // 鼠标经过时浮起一层：不改位置，只加深边框与阴影 —— panel 本身不可点击，
+  // 位移会让人误以为可以点进去
+  &:hover {
+    border-color: var(--sr-color-border-strong);
+    box-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
+  }
 
   &__title {
     display: flex;
@@ -267,4 +275,36 @@ body {
 // 截图调试：强制显示提示气泡（样式表 !important 可以盖过 v-show 的内联 display: none）
 body.force-tooltip .sr-tooltip {
   display: block !important;
+}
+
+// ---------- 视图切换 ----------
+// 进场稍慢（180ms，decelerate 收尾更柔和），退场更快（120ms）——
+// 视觉上「快速让位、从容入场」，比两个方向同速更自然。
+.pg-view-enter-active {
+  transition:
+    opacity 180ms var(--sr-motion-easing-decelerate),
+    transform 180ms var(--sr-motion-easing-decelerate);
+}
+
+.pg-view-leave-active {
+  transition:
+    opacity 120ms var(--sr-motion-easing-accelerate),
+    transform 120ms var(--sr-motion-easing-accelerate);
+}
+
+.pg-view-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.pg-view-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-view-enter-from,
+  .pg-view-leave-to {
+    transform: none;
+  }
 }

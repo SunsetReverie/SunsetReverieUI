@@ -91,7 +91,13 @@ const activeView = computed(() => views.find((v) => v.key === activeKey.value)?.
     </nav>
 
     <main class="pg__body">
-      <component :is="activeView" />
+      <!--
+        视图切换过渡：:key 必须给，否则 Vue 复用同一节点、过渡不会触发。
+        out-in 让旧视图先退场，避免两屏内容同时存在造成的布局跳动。
+      -->
+      <Transition name="pg-view" mode="out-in">
+        <component :is="activeView" :key="activeKey" />
+      </Transition>
     </main>
   </div>
 </template>

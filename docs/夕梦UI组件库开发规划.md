@@ -725,6 +725,86 @@ resolver    nuxt        （nuxt 依赖 ui 的产物 + resolver 的类型，故�
 | | `--sr-motion-distance-md` | 12px |
 | | `--sr-motion-distance-lg` | 24px |
 
+### 4.8.1 动效应用规范
+
+上面只是参数，**没有规范时最容易出现两种极端**：要么全站静止（参数白定义），要么到处乱动（廉价感）。这一节定的是「什么场景用什么」。
+
+#### 场景映射表
+
+| 场景 | 动效 | 时长 | 缓动 | 实现方式 |
+| --- | --- | --- | --- | --- |
+| 按钮悬停 | 背景 / 边框 / 辉光强度变化 | `fast` 120ms | standard | transition |
+| 按钮按下 | `translateY(1px) scale(0.98)` | `fast` 120ms | standard | transition |
+| 输入框聚焦 | 边框色 + 外发光环 | `fast` 120ms | standard | transition |
+| 卡片类容器悬停 | 边框加深 + 阴影加深（**不位移**） | `base` 240ms | standard | transition |
+| 开关滑块 | `translateX` 位移 | `base` 240ms | **spring** | transition |
+| 弹窗进场 | `opacity` + `scale(0.96→1)` | `base` 240ms | decelerate | `<Transition>` |
+| 弹窗退场 | `opacity` + `scale` 反向 | `fast` 120ms | accelerate | `<Transition>` |
+| 下拉面板 / 气泡 | `opacity` + `translateY(6px)` | `fast` 120ms | decelerate | `<Transition>` |
+| 展开收起 | `grid-template-rows: 0fr→1fr` | `base` 240ms | standard | `<Transition>` |
+| 列表项增删 | `opacity` + `translateX` + `move` | `base` 240ms | standard | `<TransitionGroup>` |
+| 视图 / 路由切换 | 进：`opacity` + `translateY(6px)`；出：`opacity` | 进 180 / 出 120ms | decelerate / accelerate | `<Transition mode="out-in">` |
+| 加载指示 | 匀速旋转 | 900ms | linear | `animation` |
+
+**进场慢、退场快**是一条贯穿全表的规律：用户想看清进入的内容，但退出时希望立刻让位，两者同速会让界面显得迟钝。
+
+#### 克制的四条红线
+
+1. **不做逐项飞入**。列表进入时整块淡入即可，不要每行按索引延迟 —— 超过 3 项的 stagger 会变成等待。
+2. **位移不超过 2px（交互反馈）**。按钮按压 1px、卡片悬停 0px，只有浮层进场可以用 6px 以上，因为它需要表达「从触发器那里长出来」。
+3. **单次交互只动 `opacity` 与 `transform`**。这两个属性走合成层，不触发布局与重绘；同时改 `width`/`height`/`margin` 会掉帧。
+4. **不做无限循环动画**（加载指示器除外）。呼吸灯、闪烁提醒一律不用。
+
+#### 实现约定
+
+```less
+// 交互反馈用 transition：状态驱动，不需要 JS 参与
+.sr-button {
+  transition:
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+// 进场 / 退场用 <Transition> + 预置过渡类
+// 已内置：sr-fade / sr-fade-up / sr-zoom / sr-list / sr-collapse
+```
+
+三条硬约束：
+
+- **所有时长与缓动必须引用 `--sr-motion-*`**，不允许写死 `0.2s`。否则 `prefers-reduced-motion` 的全局降级对它就无效。
+- **折叠不要用 JS 测高**。`sr-collapse` 用 `grid-template-rows: 0fr → 1fr`，浏览器自己算，内容变化也跟得上。
+- **`<Transition>` 务必给 `:key`**（列表场景用 `TransitionGroup`），否则 Vue 复用节点、过渡根本不触发 —— 这是「写了 transition 却没效果」最常见的原因。
+
+#### 可访问性
+
+```less
+@media (prefers-reduced-motion: reduce) {
+  :root { --sr-motion-duration-*: 0.01ms; }  // 生成物里已全局处理
+}
+```
+
+时长归零会干掉 `transition` 与 `animation`，但**位移类动效还要额外取消**：
+
+```less
+@media (prefers-reduced-motion: reduce) {
+  .sr-button:not(:disabled):active { transform: none; }
+}
+```
+
+加载指示器是例外：**降速而不停止**（0.9s → 2.6s）。完全静止会被误认为卡死。
+
+#### 当前落地情况
+
+| 场景 | 状态 |
+| --- | --- |
+| 按钮按压 / 悬停 | ✅ 本轮补齐（此前只有颜色变化，没有物理反馈） |
+| 开关滑块、复选框勾选 | ✅ |
+| 弹窗、下拉、气泡、Toast | ✅ |
+| 表单错误展开 | ✅ |
+| 卡片悬停 | ⚠️ 演示站已加，库内暂无 Card 组件 |
+| 表格行进入、Tab 指示条滑动 | ⏳ 随 `SrTable` / `SrTabs` 落地 |
+| 视图切换 | ✅ 演示站已加（库不提供，属于应用层） |
+
 ### 4.9 层级与边框
 
 | Token | 值 | 用途 |

@@ -29,6 +29,11 @@
   color: var(--sr-button-fg, var(--sr-color-text));
   // 辉光基础强度：对外暴露成变量，便于运行期调节（hover / active 相对它缩放）
   --sr-glow-base: 55%;
+
+  // 按压手感：位移 1px、缩放 0.98 —— 足够让手指/鼠标感觉到「按下去了」，
+  // 又不会让按钮看起来在跳。两个值都开放给使用方覆写。
+  --sr-button-press-y: 1px;
+  --sr-button-press-scale: 0.98;
   // 辉光半径默认取全局 token；个别变体可单独收敛
   --sr-button-glow-blur: var(--sr-shadow-glow-blur, 0px);
 
@@ -59,7 +64,8 @@
     background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
     border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
     color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
   .sr-breakpoint-up(md, {
     height: var(--sr-button-height-md, var(--sr-button-height-xs, var(--sr-button-height)));
@@ -151,6 +157,16 @@
     --sr-button-glow-strength: calc(var(--sr-glow-base) * 0.75);
 
     background: var(--sr-button-bg-active, var(--sr-button-bg-hover, var(--sr-button-bg)));
+    // 物理反馈：位移 + 微缩。只改颜色的话，按下和悬停几乎没区别
+    transform: translateY(var(--sr-button-press-y)) scale(var(--sr-button-press-scale));
+  }
+
+  // 减少动效偏好下不做位移：位移是「状态」，不属于需要降级的「动画」，
+  // 但缩放会让部分用户眩晕，这里一并取消
+  @media (prefers-reduced-motion: reduce) {
+    &:not(:disabled):active {
+      transform: none;
+    }
   }
 
   &:focus-visible {
