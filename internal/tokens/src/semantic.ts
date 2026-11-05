@@ -115,6 +115,9 @@ export const semanticLight: Record<string, string> = {
     border: 'var(--sr-danger-200)',
     text: 'var(--sr-danger-700)',
   }),
+  // 危险操作按钮需要独立的交互态（主色的 hover 不适用于 danger）
+  'color-danger-hover': 'var(--sr-danger-600)',
+  'color-danger-active': 'var(--sr-danger-700)',
   ...statusTokens('info', {
     base: 'var(--sr-info-500)',
     bg: 'var(--sr-info-50)',
@@ -182,6 +185,8 @@ export const semanticDark: Record<string, string> = {
     border: 'var(--sr-danger-700)',
     text: 'var(--sr-danger-300)',
   }),
+  'color-danger-hover': 'var(--sr-danger-300)',
+  'color-danger-active': 'var(--sr-danger-200)',
   ...statusTokens('info', {
     base: 'var(--sr-info-400)',
     bg: 'var(--sr-info-900)',

@@ -1,0 +1,39 @@
+// 图标容器
+//
+// 用 span 包裹而非直接渲染 SVG：便于统一控制尺寸、旋转、与文字基线对齐，
+// 同时不干扰 Iconify 内部的 SVG 结构。
+
+.sr-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  // 与中文基线的视觉对齐：SVG 默认坐在基线上会显得偏高
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+
+  & > svg {
+    display: block;
+  }
+
+  &.is-spin {
+    animation: sr-icon-spin 1s linear infinite;
+  }
+}
+
+@keyframes sr-icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // 降速而非停止：完全静止会让用户误以为卡死
+  .sr-icon.is-spin {
+    animation-duration: 3s;
+  }
+}

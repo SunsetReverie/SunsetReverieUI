@@ -1239,6 +1239,19 @@ useHead({
 2. **`useSrBreakpoint` 的 SSR 初值必须给定**（默认 `md`，或由 Nuxt 依据 User-Agent 推断，见 6.6），否则首次渲染分支不同即 mismatch。
 3. **禁止在 `setup` 顶层直接读 `document`**。所有 DOM 访问放进 `onMounted` / `watchEffect`（后者需 `if (!isClient) return`）。
 
+> **W4 实测：两个真实的水合陷阱**
+>
+> 在 `playground-nuxt4` 首次跑通 SSR 时，控制台报 `Hydration completed but contains mismatches`。逐项定位后确认是**页面级用法错误**，组件本身没有问题：
+>
+> | 现象 | 根因 | 修法 |
+> | --- | --- | --- |
+> | 页面直接渲染 `useSrBreakpoint().width` | SSR 时固定为 `md` 下界 768，客户端首帧读到真实 1200 | 水合完成后再显示，SSR 阶段输出占位符 `—` |
+> | 页面直接渲染 `useSrTheme().resolved` | SSR 读不到 `localStorage` 回落 `light`，客户端读到 `dark` | 同上 |
+>
+> 关键认知：**Token 层做得再对，页面层仍可能踩坑**。这类问题不会抛错，UI 看起来也完全正常，只有水合告警会提示——所以第 1 层测试（见 14.1）不是可选项。
+>
+> 另一条实践结论：`SrIcon` 的离线集合注册必须放在 `setup` 阶段而非 `onMounted`，否则服务端渲染出空 SVG、客户端再补上，同样触发不匹配。实测 SSR HTML 中能数到 6 个 `<svg>`，即证明服务端已正确渲染图标。
+
 ### 5.4 多主题色切换
 
 **预设主题色**（Theme Presets）放在 `ui/src/tokens/themes.ts`：
@@ -4490,7 +4503,7 @@ jobs:
 | W1 | 立项与基建 | monorepo 骨架、pnpm workspace、TS/Less/ESLint/Prettier 配置、CI 骨架、命名校验脚本、**决策评审（Turborepo / changesets / dist 分发）** | `pnpm build` 能跑通空包；CI 绿 |
 | W2 | Token 与设计系统 | `internal/tokens` 生成链路、L1/L2/L3 Token、Less mixin（断点/surface）、`base.css`、**Token Gallery 生成版**（替换 W1 静态版） | Token 表格与文档一致；产物可被组件引用；Gallery 由 tokens.ts 自动生成 |
 | W3 | 主题与响应式内核 | `useSrTheme`、`useSrBreakpoint`、SSR 内联脚本生成器、`SrRow`/`SrCol`、`playground-vue3`、**SSR 渲染与水合一致性测试（第 0/1 层防线）** | `playground-vue3` 可切换明暗/风格且无闪烁；栅格在 xs/sm/lg 三档布局正确；SSR 环境下组件渲染不抛错、水合无告警 |
-| W4 | 基础组件（上） | `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider`、**最小 `playground-nuxt4`（手写 plugin，提前暴露水合问题）** | 四种主题组合视觉通过；单测覆盖 ≥85%；Nuxt 首屏无白闪 |
+| W4 | 基础组件（上） | `SrIcon`（含离线集合子集化）、`SrButton`、`SrTransition`、`SrConfigProvider`、最小 `playground-nuxt4`（手写 plugin） | 四种主题组合视觉通过；SSR HTML 含根属性与内联脚本；水合 0 告警；单测 77 个 |
 | W5 | 基础组件（下）+ 栅格 | `SrRow`/`SrCol`（响应式）、`SrInput` | 三断点布局正确；SSR 无水合告警 |
 | W6 | P0 收尾 + 构建发布链路 | `SrModal`、`SrToast`、`resolver` 包、vite 多入口构建、`exports` 映射、样式拆分构建 | `pnpm build` 产出完整 dist；下游可 git 安装并跑通 |
 | W7 | Nuxt 集成 + 文档站起步 | `@sunset-reverie/nuxt` module、`nuxt.config` 一行接入、VitePress 骨架 + 3 个组件文档 | Nuxt demo 全 P0 组件 SSR 正确 |

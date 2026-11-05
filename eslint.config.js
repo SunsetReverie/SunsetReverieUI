@@ -63,5 +63,22 @@ export default tseslint.config(
     },
   },
 
+  {
+    // TS / Vue 文件交给编译器做未定义检查，no-undef 会误伤 Nuxt 自动导入与类型导入
+    files: ['**/*.ts', '**/*.vue'],
+    rules: {
+      'no-undef': 'off',
+    },
+  },
+
+  {
+    // 测试文件里常有多个内联辅助组件，组件命名与单文件单组件规则不适用
+    files: ['**/__tests__/**/*.{ts,vue}'],
+    rules: {
+      'vue/one-component-per-file': 'off',
+      'vue/require-name-property': 'off',
+    },
+  },
+
   prettier,
 )

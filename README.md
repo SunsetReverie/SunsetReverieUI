@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W3（主题与响应式内核）已完成
+## 当前进度：W4（基础组件）已完成
 
 ### W1 · 立项与基建
 
@@ -45,7 +45,20 @@
 | SSR 渲染测试 8 个（`@vitest-environment node`，无 window 环境） | ✅ |
 | 水合一致性测试 4 个（SSR → hydrate，监听 Hydration 告警） | ✅ |
 
-W4 将实现 `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider`。
+### W4 · 基础组件
+
+| 项 | 状态 |
+| --- | --- |
+| `SrConfigProvider` + `useSrConfig`（尺寸 / 层级，支持嵌套覆盖） | ✅ |
+| `SrTransition`（5 种内置过渡，`enabled` 可整体关闭） | ✅ |
+| `SrIcon`（size/color/flip/rotate/spin/label，SSR 安全） | ✅ |
+| 离线图标子集化（16 个图标 / 2 个集合 / ≈5KB） | ✅ |
+| `SrButton`（5 变体 / 响应式 size / loading / icon / block / round） | ✅ |
+| `playground-vue3` 组件页 | ✅ |
+| `playground-nuxt4`（手写 plugin，SSR 水合验证，0 告警） | ✅ |
+| 单元测试 77 个 | ✅ |
+
+W5 将实现 `SrInput`、`SrModal`、`SrToast`。
 
 ---
 
@@ -62,6 +75,7 @@ sunsetreverie-ui/
 │   ├── tokens/              # Token 唯一手写源 + 代码生成
 │   └── examples/            # 三处共用的示例源码
 ├── playground-vue3/         # Vite + Vue 3 调试站（直连源码）
+├── playground-nuxt4/        # Nuxt 4 调试站（SSR / 水合验证）
 ├── scripts/                 # 命名 / 图标 / 产物校验
 ├── docs/                    # 规划文档与 Token 验证页
 ├── .changeset/              # 变更说明（发版用）
@@ -102,6 +116,8 @@ pnpm build
 | 命令 | 说明 |
 | --- | --- |
 | `pnpm dev` | 启动 playground-vue3（直连源码，HMR） |
+| `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
+| `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |

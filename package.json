@@ -21,6 +21,7 @@
     "lint": "eslint . --max-warnings=0 && stylelint \"packages/**/*.less\" --allow-empty-input",
     "lint:naming": "node scripts/check-naming.mjs",
     "lint:icons": "node scripts/check-icons.mjs",
+    "gen:icons": "node packages/icons/scripts/gen-offline-icons.mjs",
     "verify:dist": "node scripts/verify-dist.mjs",
     "format": "prettier --write .",
     "changeset": "changeset",

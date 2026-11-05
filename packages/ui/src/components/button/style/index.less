@@ -1,0 +1,193 @@
+// 按钮
+//
+// 尺寸全部由内联 CSS 变量驱动，响应式思路与栅格一致：
+// fallback 链 var(--a-md, var(--a-xs, var(--a))) 让未声明的断点就近继承。
+// 这里只显式处理 xs / md / xl 三档 —— sm 与 lg 会各自继承相邻档位，
+// 足够覆盖「手机 / 平板 / 桌面」的实际差异，也避免样式表膨胀。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-button {
+  // ---------- 尺寸：L3 组件级 token ----------
+  --sr-button-height: 36px;
+  --sr-button-padding-x: 16px;
+  --sr-button-font-size: 14px;
+  --sr-button-gap: 6px;
+  --sr-button-icon-size: 16px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sr-button-gap-xs, var(--sr-button-gap));
+  box-sizing: border-box;
+  height: var(--sr-button-height-xs, var(--sr-button-height));
+  padding-inline: var(--sr-button-padding-x-xs, var(--sr-button-padding-x));
+  border: 1px solid var(--sr-button-border, transparent);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-button-bg, transparent);
+  color: var(--sr-button-fg, var(--sr-color-text));
+  font-family: inherit;
+  font-size: var(--sr-button-font-size-xs, var(--sr-button-font-size));
+  font-weight: var(--sr-font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  .sr-breakpoint-up(md, {
+    height: var(--sr-button-height-md, var(--sr-button-height-xs, var(--sr-button-height)));
+    padding-inline: var(
+      --sr-button-padding-x-md,
+      var(--sr-button-padding-x-xs, var(--sr-button-padding-x))
+    );
+    font-size: var(
+      --sr-button-font-size-md,
+      var(--sr-button-font-size-xs, var(--sr-button-font-size))
+    );
+    gap: var(--sr-button-gap-md, var(--sr-button-gap-xs, var(--sr-button-gap)));
+  });
+
+  .sr-breakpoint-up(xl, {
+    height: var(
+      --sr-button-height-xl,
+      var(--sr-button-height-md, var(--sr-button-height-xs, var(--sr-button-height)))
+    );
+    padding-inline: var(
+      --sr-button-padding-x-xl,
+      var(--sr-button-padding-x-md, var(--sr-button-padding-x-xs, var(--sr-button-padding-x)))
+    );
+    font-size: var(
+      --sr-button-font-size-xl,
+      var(--sr-button-font-size-md, var(--sr-button-font-size-xs, var(--sr-button-font-size)))
+    );
+    gap: var(
+      --sr-button-gap-xl,
+      var(--sr-button-gap-md, var(--sr-button-gap-xs, var(--sr-button-gap)))
+    );
+  });
+
+  // ---------- 内容与图标 ----------
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sr-button-gap-xs, var(--sr-button-gap));
+    transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__icon {
+    font-size: var(--sr-button-icon-size-xs, var(--sr-button-icon-size));
+  }
+
+  // ---------- 加载态 ----------
+  &__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1em;
+    height: 1em;
+    margin: -0.5em 0 0 -0.5em;
+    border: 2px solid currentcolor;
+    border-top-color: transparent;
+    border-radius: var(--sr-radius-full);
+    animation: sr-button-spin 0.8s linear infinite;
+  }
+
+  &.is-loading {
+    cursor: default;
+
+    // 保留内容占位（opacity: 0 而非 display: none），避免宽度塌陷造成布局跳动
+    .sr-button__content {
+      opacity: 0;
+    }
+  }
+
+  // ---------- 交互态 ----------
+  &:not(:disabled):hover {
+    background: var(--sr-button-bg-hover, var(--sr-button-bg));
+    border-color: var(--sr-button-border-hover, var(--sr-button-border));
+  }
+
+  &:not(:disabled):active {
+    background: var(--sr-button-bg-active, var(--sr-button-bg-hover, var(--sr-button-bg)));
+  }
+
+  &:focus-visible {
+    .sr-focus-ring();
+  }
+
+  // ---------- 尺寸与形态修饰 ----------
+  &.is-block {
+    display: flex;
+    width: 100%;
+  }
+
+  &.is-round {
+    border-radius: var(--sr-radius-full);
+    padding-inline: calc(var(--sr-button-padding-x-xs, var(--sr-button-padding-x)) * 1.2);
+  }
+
+  &.is-disabled {
+    .sr-disabled();
+  }
+
+  // ---------- 变体 ----------
+  &--primary {
+    --sr-button-bg: var(--sr-color-primary);
+    --sr-button-bg-hover: var(--sr-color-primary-hover);
+    --sr-button-bg-active: var(--sr-color-primary-active);
+    --sr-button-fg: var(--sr-color-on-primary);
+  }
+
+  &--secondary {
+    --sr-button-bg: var(--sr-color-bg-container);
+    --sr-button-bg-hover: var(--sr-color-bg-hover);
+    --sr-button-border: var(--sr-color-border);
+    --sr-button-border-hover: var(--sr-color-border-strong);
+    --sr-button-fg: var(--sr-color-text);
+  }
+
+  &--outline {
+    --sr-button-bg: transparent;
+    --sr-button-bg-hover: var(--sr-color-primary-alpha-08);
+    --sr-button-border: var(--sr-color-primary);
+    --sr-button-border-hover: var(--sr-color-primary);
+    --sr-button-fg: var(--sr-color-primary);
+  }
+
+  &--text {
+    --sr-button-bg: transparent;
+    --sr-button-bg-hover: var(--sr-color-primary-alpha-08);
+    --sr-button-fg: var(--sr-color-primary);
+  }
+
+  &--danger {
+    --sr-button-bg: var(--sr-color-danger);
+    --sr-button-bg-hover: var(--sr-color-danger-hover);
+    --sr-button-bg-active: var(--sr-color-danger-active);
+    --sr-button-fg: var(--sr-color-text-inverse);
+  }
+}
+
+@keyframes sr-button-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // 降速而非停止：完全静止会让用户误以为按钮卡死
+  .sr-button__spinner {
+    animation-duration: 2.4s;
+  }
+}
