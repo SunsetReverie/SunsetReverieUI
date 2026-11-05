@@ -28,7 +28,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "prepare": "husky",
-    "test:e2e": "pnpm --filter playground-nuxt4 build && playwright test"
+    "test:e2e": "pkill -f '.output/server/index.mjs' || true; pnpm --filter playground-nuxt4 build && playwright test"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
