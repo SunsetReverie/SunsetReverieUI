@@ -27,6 +27,15 @@ import {
   radii,
   spacings,
 } from '../src/tokens'
+import {
+  qualityFlat,
+  qualityGlass,
+  semanticDark,
+  semanticLight,
+  shadowDarkFlat,
+  structural,
+  themedDarkGlass,
+} from '../src/semantic'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const UI_SRC = resolve(HERE, '../../../packages/ui/src')
@@ -193,6 +202,76 @@ function buildCss(): string {
 }
 
 /**
+ * 把键值对渲染为 CSS 声明块
+ * @param map 键不含 --sr- 前缀
+ * @param indent 缩进字符串
+ * @returns CSS 声明文本
+ */
+function toDecls(map: Record<string, string>, indent = '  '): string {
+  return Object.entries(map)
+    .map(([key, value]) => `${indent}--sr-${key}: ${value};`)
+    .join('\n')
+}
+
+/**
+ * 生成 L2 语义层 + 质感层 CSS
+ *
+ * 块顺序即优先级，不可随意调整：
+ * 1. :root          结构语义
+ * 2. 明暗主题       只换语义色
+ * 3. 质感风格       只换圆角 / 阴影 / 玻璃
+ * 4. 交叉修正       暗色 + 风格 必须放在风格层之后，否则被覆盖
+ * @returns CSS 源码
+ */
+function buildSemanticCss(): string {
+  const blocks: string[] = [`/* ${BANNER.replace(/\n/g, '\n   ')} */`, '']
+
+  blocks.push('/* ---------- 结构语义（不随主题变化） ---------- */', ':root {')
+  blocks.push(toDecls(structural))
+  blocks.push('}', '')
+
+  blocks.push('/* ---------- L2 语义层 · 亮色 ---------- */', "[data-sr-theme='light'] {")
+  blocks.push(toDecls(semanticLight))
+  blocks.push('}', '')
+
+  blocks.push('/* ---------- L2 语义层 · 暗色 ---------- */', "[data-sr-theme='dark'] {")
+  blocks.push(toDecls(semanticDark))
+  blocks.push('}', '')
+
+  blocks.push('/* ---------- 质感层 · flat ---------- */', "[data-sr-style='flat'] {")
+  blocks.push(toDecls(qualityFlat))
+  blocks.push('}', '')
+
+  blocks.push('/* ---------- 质感层 · glass ---------- */', "[data-sr-style='glass'] {")
+  blocks.push(toDecls(qualityGlass))
+  blocks.push('}', '')
+
+  blocks.push(
+    '/* ---------- 交叉修正 · 暗色 + 扁平 ----------',
+    '   必须写在风格层之后：与 [data-sr-style] 特异性相同，后写者胜出 ---------- */',
+    "[data-sr-theme='dark'][data-sr-style='flat'] {",
+  )
+  blocks.push(toDecls(shadowDarkFlat))
+  blocks.push('}', '')
+
+  blocks.push(
+    '/* ---------- 交叉修正 · 暗色 + 玻璃 ---------- */',
+    "[data-sr-theme='dark'][data-sr-style='glass'] {",
+  )
+  blocks.push(toDecls(themedDarkGlass()))
+  blocks.push('}', '')
+
+  blocks.push('/* ---------- 动效降级 ---------- */', '@media (prefers-reduced-motion: reduce) {')
+  blocks.push('  :root {')
+  for (const key of Object.keys(durations)) {
+    blocks.push(`    --sr-motion-duration-${key}: 0.01ms;`)
+  }
+  blocks.push('  }', '}', '')
+
+  return blocks.join('\n')
+}
+
+/**
  * 写入文件并确保目录存在
  * @param file 绝对路径
  * @param content 文件内容
@@ -210,6 +289,7 @@ function main(): void {
   emit(resolve(TOKENS_OUT, 'vars.less'), buildLess())
   emit(resolve(TOKENS_OUT, 'index.ts'), buildTs())
   emit(resolve(STYLES_OUT, 'primitives.generated.css'), buildCss())
+  emit(resolve(STYLES_OUT, 'semantic.generated.css'), buildSemanticCss())
 
   const colorCount = paletteSeries.length * paletteSteps.length
   console.log(

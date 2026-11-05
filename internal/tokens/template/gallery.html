@@ -14,197 +14,45 @@
 
 /* ---------- L1 原始层（不随主题变化） ---------- */
 :root {
-  /* sunset 落日橙 */
-  --sr-sunset-50: #fff4ed;  --sr-sunset-100: #ffe6d5; --sr-sunset-200: #ffc9a8;
-  --sr-sunset-300: #ffa877; --sr-sunset-400: #ff8b52; --sr-sunset-500: #ff7a45;
-  --sr-sunset-600: #f25c22; --sr-sunset-700: #cc4512; --sr-sunset-800: #a3370f;
-  --sr-sunset-900: #7a290c; --sr-sunset-950: #451606;
+/* @INJECT:L1 */
 
-  /* dusk 霞紫 */
-  --sr-dusk-50: #f5f2fa;  --sr-dusk-100: #e8e1f4; --sr-dusk-200: #d0c4e8;
-  --sr-dusk-300: #b3a0d9; --sr-dusk-400: #9580c7; --sr-dusk-500: #7a64b5;
-  --sr-dusk-600: #634e9c; --sr-dusk-700: #4e3d7d; --sr-dusk-800: #3b2e5e;
-  --sr-dusk-900: #291f42; --sr-dusk-950: #171128;
+/* @INJECT:STRUCTURAL */
 
-  /* ember 霞粉 */
-  --sr-ember-50: #fff1f3;  --sr-ember-100: #ffdde3; --sr-ember-200: #ffb8c6;
-  --sr-ember-300: #ff8da4; --sr-ember-400: #ff6685; --sr-ember-500: #f5456b;
-  --sr-ember-600: #d42b51; --sr-ember-700: #ae1f3f; --sr-ember-800: #871831;
-  --sr-ember-900: #5f1123; --sr-ember-950: #360912;
-
-  /* night 暮蓝灰（中性） */
-  --sr-night-50: #f7f8fa;  --sr-night-100: #edeff3; --sr-night-200: #dce0e8;
-  --sr-night-300: #c2c8d4; --sr-night-400: #9aa2b1; --sr-night-500: #6e7787;
-  --sr-night-600: #565e6c; --sr-night-700: #404652; --sr-night-800: #2b3038;
-  --sr-night-900: #1c2027; --sr-night-950: #0f1216;
-
-  /* success */
-  --sr-success-50: #eaf7ee;  --sr-success-100: #cdeed6; --sr-success-200: #9bdcb0;
-  --sr-success-300: #63c784; --sr-success-400: #3cb25f; --sr-success-500: #2e9b4e;
-  --sr-success-600: #227d3d; --sr-success-700: #1a612f; --sr-success-800: #134723;
-  --sr-success-900: #0c2f17; --sr-success-950: #06180c;
-
-  /* warning */
-  --sr-warning-50: #fff8e6;  --sr-warning-100: #ffedc2; --sr-warning-200: #ffdb8a;
-  --sr-warning-300: #ffc64d; --sr-warning-400: #ffb01f; --sr-warning-500: #e89500;
-  --sr-warning-600: #c07800; --sr-warning-700: #985e00; --sr-warning-800: #704500;
-  --sr-warning-900: #482c00; --sr-warning-950: #241600;
-
-  /* danger */
-  --sr-danger-50: #fff0f0;  --sr-danger-100: #ffd9d9; --sr-danger-200: #ffb0b3;
-  --sr-danger-300: #ff8085; --sr-danger-400: #f9555c; --sr-danger-500: #e03137;
-  --sr-danger-600: #bc2228; --sr-danger-700: #94191e; --sr-danger-800: #6d1216;
-  --sr-danger-900: #460b0e; --sr-danger-950: #230507;
-
-  /* info */
-  --sr-info-50: #edf5ff;  --sr-info-100: #d6e7ff; --sr-info-200: #adcfff;
-  --sr-info-300: #7db2ff; --sr-info-400: #4d94ff; --sr-info-500: #2578f5;
-  --sr-info-600: #155ed1; --sr-info-700: #0d47a8; --sr-info-800: #09337d;
-  --sr-info-900: #052154; --sr-info-950: #02102b;
-
-  /* ---------- 结构与排版（不随主题变） ---------- */
-  --sr-font-family-base: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
-  --sr-font-family-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
-
-  --sr-space-0: 0;     --sr-space-0-5: 2px;  --sr-space-1: 4px;   --sr-space-1-5: 6px;
-  --sr-space-2: 8px;   --sr-space-3: 12px;   --sr-space-4: 16px;  --sr-space-5: 20px;
-  --sr-space-6: 24px;  --sr-space-8: 32px;   --sr-space-10: 40px; --sr-space-12: 48px;
-  --sr-space-16: 64px;
-
-  --sr-font-size-xs: 12px;  --sr-line-height-xs: 20px;
-  --sr-font-size-sm: 13px;  --sr-line-height-sm: 20px;
-  --sr-font-size-base: 14px;--sr-line-height-base: 22px;
-  --sr-font-size-md: 16px;  --sr-line-height-md: 26px;
-  --sr-font-size-lg: 20px;  --sr-line-height-lg: 30px;
-  --sr-font-size-xl: 24px;  --sr-line-height-xl: 34px;
-  --sr-font-size-2xl: 30px; --sr-line-height-2xl: 40px;
-  --sr-font-size-3xl: 38px; --sr-line-height-3xl: 48px;
-
-  --sr-motion-duration-fast: 120ms;
-  --sr-motion-duration-base: 240ms;
-  --sr-motion-duration-slow: 360ms;
-  --sr-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
-  --sr-motion-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  /* ---------- 页面私有装饰（不属于 token 体系，刻意不占用 --sr- 命名空间） ---------- */
+  --gallery-hero-sun: rgba(255, 155, 90, 0.42);
+  --gallery-hero-ember: rgba(245, 69, 107, 0.22);
+  --gallery-hero-dusk: rgba(122, 100, 181, 0.2);
+  --gallery-hero-base: rgba(255, 247, 240, 0.72);
 }
 
 /* ---------- L2 语义层 · 亮色 ---------- */
 [data-sr-theme='light'] {
-  --sr-color-bg-page: var(--sr-night-50);
-  --sr-color-bg-container: #ffffff;
-  --sr-color-bg-elevated: #ffffff;
-  --sr-color-bg-sunken: var(--sr-night-100);
-
-  --sr-color-text: var(--sr-night-900);
-  --sr-color-text-secondary: var(--sr-night-600);
-  --sr-color-text-tertiary: var(--sr-night-400);
-
-  --sr-color-border: var(--sr-night-200);
-  --sr-color-border-strong: var(--sr-night-300);
-  --sr-color-border-subtle: var(--sr-night-100);
-
-  --sr-color-primary: var(--sr-sunset-500);
-  --sr-color-primary-hover: var(--sr-sunset-600);
-  --sr-color-on-primary: #ffffff;
-  --sr-color-primary-alpha-25: rgba(255, 122, 69, 0.25);
-  --sr-color-primary-alpha-12: rgba(255, 122, 69, 0.12);
-
-  --sr-color-mask: rgba(16, 20, 26, 0.45);
+/* @INJECT:L2_LIGHT */
 }
 
 /* ---------- L2 语义层 · 暗色 ---------- */
 [data-sr-theme='dark'] {
-  --sr-color-bg-page: var(--sr-night-950);
-  --sr-color-bg-container: var(--sr-night-900);
-  --sr-color-bg-elevated: var(--sr-night-800);
-  --sr-color-bg-sunken: #0b0e12;
-
-  --sr-color-text: var(--sr-night-50);
-  --sr-color-text-secondary: var(--sr-night-300);
-  --sr-color-text-tertiary: var(--sr-night-500);
-
-  --sr-color-border: var(--sr-night-700);
-  --sr-color-border-strong: var(--sr-night-600);
-  --sr-color-border-subtle: var(--sr-night-800);
-
-  /* 暗底需提亮一阶，否则对比度不足 */
-  --sr-color-primary: var(--sr-sunset-400);
-  --sr-color-primary-hover: var(--sr-sunset-300);
-  --sr-color-on-primary: #1a0e05;
-  --sr-color-primary-alpha-25: rgba(255, 139, 82, 0.25);
-  --sr-color-primary-alpha-12: rgba(255, 139, 82, 0.12);
-
-  --sr-color-mask: rgba(0, 0, 0, 0.65);
+/* @INJECT:L2_DARK */
 }
 
 /* ---------- 质感层 · flat ---------- */
 [data-sr-style='flat'] {
-  --sr-radius-none: 0;
-  --sr-radius-sm: 2px;
-  --sr-radius-base: 6px;
-  --sr-radius-md: 8px;
-  --sr-radius-lg: 12px;
-  --sr-radius-xl: 16px;
-  --sr-radius-2xl: 24px;
-  --sr-radius-full: 9999px;
-
-  --sr-shadow-sm: 0 1px 2px rgba(16, 20, 26, 0.06);
-  --sr-shadow-md: 0 2px 8px rgba(16, 20, 26, 0.08);
-  --sr-shadow-lg: 0 8px 24px rgba(16, 20, 26, 0.10);
-  --sr-shadow-xl: 0 16px 48px rgba(16, 20, 26, 0.14);
-  --sr-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
-  --sr-glass-blur: 0px;
-  --sr-glass-saturate: 100%;
-  --sr-glass-opacity: 1;
-  --sr-glass-filter: none;
-  --sr-glass-highlight: none;
+/* @INJECT:QUALITY_FLAT */
 }
 
 /* ---------- 质感层 · glass ---------- */
 [data-sr-style='glass'] {
-  --sr-radius-none: 0;
-  --sr-radius-sm: 2px;
-  --sr-radius-base: 12px;
-  --sr-radius-md: 14px;
-  --sr-radius-lg: 18px;
-  --sr-radius-xl: 22px;
-  --sr-radius-2xl: 28px;
-  --sr-radius-full: 9999px;
-
-  --sr-shadow-sm: 0 2px 8px rgba(16, 20, 26, 0.06);
-  --sr-shadow-md: 0 8px 24px -6px rgba(16, 20, 26, 0.12);
-  --sr-shadow-lg: 0 16px 48px -12px rgba(16, 20, 26, 0.18);
-  --sr-shadow-xl: 0 32px 80px -16px rgba(16, 20, 26, 0.24);
-  --sr-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.24);
-
-  --sr-glass-blur: 16px;
-  --sr-glass-saturate: 180%;
-  --sr-glass-opacity: 0.72;
-  --sr-glass-filter: blur(16px) saturate(180%);
-  --sr-glass-highlight: none;
+/* @INJECT:QUALITY_GLASS */
 }
 
-/* 交叉修正：玻璃 + 暗色单独微调 */
-[data-sr-theme='dark'][data-sr-style='glass'] {
-  --sr-glass-opacity: 0.6;
-}
-
-/* ---------- 暗色阴影补偿 ----------
-   必须用「主题 + 风格」交叉选择器，且放在风格层之后。
-   若只写在 [data-sr-theme='dark'] 里，会被后面的 [data-sr-style='flat'|'glass'] 覆盖。
-   原因：两组选择器特异性相同（0,1,0），后写者胜出。                       */
+/* ---------- 交叉修正 · 暗色 + 扁平（阴影补偿） ---------- */
 [data-sr-theme='dark'][data-sr-style='flat'] {
-  --sr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --sr-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --sr-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
-  --sr-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+/* @INJECT:DARK_FLAT */
 }
 
+/* ---------- 交叉修正 · 暗色 + 玻璃（玻璃微调 + 阴影补偿） ---------- */
 [data-sr-theme='dark'][data-sr-style='glass'] {
-  --sr-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --sr-shadow-md: 0 10px 28px -8px rgba(0, 0, 0, 0.6);
-  --sr-shadow-lg: 0 18px 52px -14px rgba(0, 0, 0, 0.7);
-  --sr-shadow-xl: 0 34px 84px -18px rgba(0, 0, 0, 0.8);
+/* @INJECT:DARK_GLASS */
 }
 
 /* ============================================================
@@ -1380,18 +1228,9 @@ td code, th code {
 
   /* ========== 色板数据（结构信息，色值全部从 CSS 变量读取） ========== */
 
-  var SERIES = [
-    { key: 'sunset', label: 'sunset', role: '主色 · 落日橙' },
-    { key: 'dusk', label: 'dusk', role: '辅色 · 霞紫' },
-    { key: 'ember', label: 'ember', role: '强调 · 霞粉' },
-    { key: 'night', label: 'night', role: '中性 · 暮蓝灰' },
-    { key: 'success', label: 'success', role: '语义 · 成功' },
-    { key: 'warning', label: 'warning', role: '语义 · 警告' },
-    { key: 'danger', label: 'danger', role: '语义 · 危险' },
-    { key: 'info', label: 'info', role: '语义 · 信息' }
-  ]
+/* @INJECT:PALETTE_SERIES */
 
-  var STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+/* @INJECT:PALETTE_STEPS */
 
   /** 渲染 L1 色板：每色系一行，每阶一格 */
   function renderPalette() {

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsx scripts/build.ts",
+    "build:gallery": "tsx scripts/build-gallery.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

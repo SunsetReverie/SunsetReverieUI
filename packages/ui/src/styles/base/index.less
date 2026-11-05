@@ -1,8 +1,16 @@
-// 基础样式入口：CSS 变量 + reset
+// 基础样式入口：CSS 变量 + reset + 动画 + 工具类
 // 编译产物：dist/base.css
 // 说明：此文件不含任何组件样式，全站只需引入一次
+//
+// 顺序不可调整：
+// 1. primitives（L1 原始层）先落地默认值
+// 2. semantic（L2 语义 + 质感层）后写，靠顺序完成覆盖
+// 3. reset 消费上面两层变量
+// 4. transitions / utilities 依赖变量与断点 mixin
 
 // 生成物必须用 (inline) 内联，否则 Less 会把它当作运行期 @import 原样输出
 @import (inline) './primitives.generated.css';
-@import (inline) './tokens.css';
+@import (inline) './semantic.generated.css';
 @import './reset.less';
+@import './transitions.less';
+@import './utilities.less';

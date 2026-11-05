@@ -10,6 +10,7 @@
   },
   "scripts": {
     "build:tokens": "pnpm --filter @sunset-reverie/internal-tokens build",
+    "build:gallery": "pnpm run build:tokens && pnpm --filter @sunset-reverie/internal-tokens build:gallery",
     "build:icons": "pnpm run build:tokens && pnpm --filter @sunset-reverie/icons build",
     "build:ui": "pnpm run build:icons && pnpm --filter @sunset-reverie/ui build",
     "build": "pnpm run build:ui && pnpm --filter @sunset-reverie/resolver build",

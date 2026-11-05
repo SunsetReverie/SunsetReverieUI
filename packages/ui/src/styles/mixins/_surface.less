@@ -1,0 +1,104 @@
+// 表面 mixin
+//
+// 目的：抹平 flat / glass 两套质感差异，让组件样式只写一次。
+// 组件不需要判断当前风格，只需调用 .sr-surface() —— 变量值由 [data-sr-style] 决定。
+
+/**
+ * 生成容器表面样式
+ * @param @level 背景层级：page | container | elevated | sunken
+ *
+ * 依赖变量（均由 tokens 生成）：
+ *   --sr-color-bg-{level} / --sr-color-border / --sr-radius-base
+ *   --sr-shadow-sm / --sr-glass-highlight / --sr-glass-filter / --sr-glass-border-width
+ */
+.sr-surface(@level: container) {
+  background: ~'var(--sr-color-bg-@{level})';
+  border: var(--sr-glass-border-width) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  // highlight 在 flat 下是零尺寸透明阴影，拼进多值阴影不会让整条失效
+  box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight);
+  backdrop-filter: var(--sr-glass-filter);
+  -webkit-backdrop-filter: var(--sr-glass-filter);
+}
+
+/**
+ * 毛玻璃弹层表面
+ * 在 surface 基础上升级阴影层级，用于 Modal / Drawer / Popover
+ * @param @level 背景层级，默认 elevated
+ */
+.sr-glass-surface(@level: elevated) {
+  .sr-surface(@level);
+  box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
+}
+
+/**
+ * 统一焦点环
+ * 用 outline 而非 box-shadow：不占布局空间，也不会被父级 overflow 裁剪
+ */
+.sr-focus-ring() {
+  outline: 2px solid var(--sr-color-primary);
+  outline-offset: 2px;
+}
+
+/**
+ * 单行文本省略
+ */
+.sr-truncate() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/**
+ * 多行文本省略
+ * @param @lines 行数，默认 2
+ */
+.sr-line-clamp(@lines: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @lines;
+  overflow: hidden;
+}
+
+/**
+ * 视觉隐藏但保留可访问性（供屏幕阅读器读取）
+ */
+.sr-visually-hidden() {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/**
+ * 禁用态统一表现
+ */
+.sr-disabled() {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/**
+ * 细滚动条（按需调用，不要全局改滚动条）
+ */
+.sr-scrollbar(@size: 8px) {
+  &::-webkit-scrollbar {
+    width: @size;
+    height: @size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--sr-color-border-strong);
+    border-radius: var(--sr-radius-full);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}

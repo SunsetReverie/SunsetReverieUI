@@ -19,9 +19,11 @@
     "property-no-vendor-prefix": [
       true,
       {
-        "ignoreProperties": ["text-size-adjust"],
-        "message": "除 text-size-adjust 外不使用厂商前缀（Safari 仍需 -webkit-text-size-adjust）"
+        "ignoreProperties": ["text-size-adjust", "backdrop-filter"],
+        "message": "仅 text-size-adjust 与 backdrop-filter 允许厂商前缀（Safari 仍需要）"
       }
-    ]
+    ],
+    "media-query-no-invalid": null,
+    "declaration-empty-line-before": null
   }
 }

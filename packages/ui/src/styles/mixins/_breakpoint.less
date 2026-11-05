@@ -1,0 +1,75 @@
+// 断点 mixin
+//
+// 设计要点：
+// 1. 移动优先，默认 min-width（向上覆盖），代码量最少
+// 2. 断点数值只来自 tokens/generated/vars.less，禁止在组件里硬编码 768
+// 3. 向下匹配减 0.02px，避免与 min-width 在临界点重叠
+//
+// 用法：
+//   .sr-breakpoint-up(md, { display: flex; });
+//   .sr-breakpoint-down(md, { display: none; });
+//   .sr-breakpoint-between(md, lg, { padding: 0; });
+//
+// ⚠️ 传「规则集」时必须写成 { ... } 且用 @rules() 调用。
+//    写成 `.sr-breakpoint-up(md); { ... }` 是语法错误，但 Less 会静默忽略，务必靠编译产物确认。
+
+@import '../../tokens/generated/vars.less';
+
+/**
+ * 向上匹配断点（≥ 该断点宽度）
+ * @param @bp 断点代号：xs | sm | md | lg | xl
+ * @param @rules 规则集
+ */
+.sr-breakpoint-up(@bp, @rules) {
+  @name: ~'sr-breakpoint-@{bp}';
+
+  @media (min-width: @@name) {
+    @rules();
+  }
+}
+
+/**
+ * 向下匹配断点（< 该断点宽度）
+ * @param @bp 断点代号
+ * @param @rules 规则集
+ */
+.sr-breakpoint-down(@bp, @rules) {
+  @name: ~'sr-breakpoint-@{bp}';
+  @max: (@@name - 0.02px);
+
+  @media (max-width: @max) {
+    @rules();
+  }
+}
+
+/**
+ * 区间匹配（含下界、不含上界）
+ * @param @from 起始断点
+ * @param @to 结束断点
+ * @param @rules 规则集
+ */
+.sr-breakpoint-between(@from, @to, @rules) {
+  @fromName: ~'sr-breakpoint-@{from}';
+  @toName: ~'sr-breakpoint-@{to}';
+  @max: (@@toName - 0.02px);
+
+  @media (min-width: @@fromName) and (max-width: @max) {
+    @rules();
+  }
+}
+
+/**
+ * 语义化：移动端（< md）
+ * @param @rules 规则集
+ */
+.sr-breakpoint-mobile(@rules) {
+  .sr-breakpoint-down(md, @rules);
+}
+
+/**
+ * 语义化：桌面端（≥ md）
+ * @param @rules 规则集
+ */
+.sr-breakpoint-desktop(@rules) {
+  .sr-breakpoint-up(md, @rules);
+}

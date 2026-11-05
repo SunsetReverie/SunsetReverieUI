@@ -792,11 +792,15 @@ writeFileSync('../../packages/ui/src/tokens/generated/index.ts', genTs())
 
 **定位（重要）**：它是**只读的视觉验收页**，不是设计稿。不做 Figma 稿件、不做组件外观设计、不做可编辑的 Token 编辑器——那三条都在 1.3 非目标里。
 
-| 项 | 约定 |
-| --- | --- |
-| 交付物 ①（已有） | `夕梦UI-设计Token验证页.html` —— 静态单文件 v0.1，供 W1 评审对齐视觉方向 |
-| 交付物 ②（W2） | `internal/tokens/scripts/build-gallery.ts` —— 生成式版本，数据来自 `tokens.ts` |
-| 使用者 | 评审会（视觉拍板）、组件开发（取值参考）、文档站（`design/token.md` 的前身） |
+| 项 | 状态 | 落地位置 |
+| --- | --- | --- |
+| 页面模板 | ✅ | `internal/tokens/template/gallery.html`（含 10 个注入占位符） |
+| 生成器 | ✅ | `internal/tokens/scripts/build-gallery.ts` |
+| 产物 | ✅ | `docs/public/token-gallery.html`（生成物，不入库） |
+| 触发命令 | ✅ | `pnpm build:gallery` |
+| 前端交互 | ✅ | 明暗切换、风格切换、点击复制变量名、滚动定位 |
+
+> 数据源：L1 来自 `tokens.ts`，L2 与质感层来自 `semantic.ts`。页面自身 UI 只消费 `var(--sr-*)`，因此它同时是 Token 可用性的活体验证。
 
 **页面结构（9 个区块）**：
 
@@ -833,7 +837,9 @@ internal/tokens/
 
 `semantic.ts` 需产出四组扁平对象（键名不含 `--sr-` 前缀），分别对应：原始层 `primitives`、语义层亮色 `semanticLight`、语义层暗色 `semanticDark`、质感层 `quality`（圆角 / 阴影 / 玻璃的 flat 与 glass 两组值）。这样 `tokens.css` 与 Gallery 生成器消费的是同一份数据。
 
-静态版当前放在 `docs/` 目录下作为 W1 评审产物（与规划文档同目录）；W2 生成版输出到 `docs/public/token-gallery.html`（VitePress 静态资源，可直接访问 `/token-gallery.html`）。
+生成版输出到 `docs/public/token-gallery.html`（VitePress 静态资源，可直接访问 `/token-gallery.html`），由 `pnpm build:gallery` 触发；产物不入库，与 `dist` 一样视为构建结果。
+
+> W1 曾有一份手写静态版（`夕梦UI-设计Token验证页.html`），在 W2 升级时已删除——两份并存必然出现「一份新一份旧」的假文档，不如直接只留生成版。
 
 模板里用 HTML 注释作为注入点，生成器做字符串替换：
 

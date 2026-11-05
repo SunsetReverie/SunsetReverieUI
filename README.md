@@ -8,19 +8,31 @@
 
 ---
 
-## 当前进度：W1（立项与基建）已完成
+## 当前进度：W2（Token 与设计系统）已完成
+
+### W1 · 立项与基建
 
 | 项 | 状态 |
 | --- | --- |
 | pnpm workspace 骨架 | ✅ |
-| Token 生成链路（tokens.ts → Less / TS / CSS） | ✅ |
 | 四个子包空骨架 + 构建脚本 | ✅ |
 | ESLint / Prettier / Stylelint / commitlint / husky | ✅ |
 | 三个校验脚本（命名、图标、产物） | ✅ |
 | CI 骨架（GitHub Actions） | ✅ |
-| `pnpm build` 打通、CI 绿 | ✅ |
 
-W2 将补齐 L1/L2/L3 完整 Token、Less mixin（断点 / surface）、Token Gallery 生成版。
+### W2 · Token 与设计系统
+
+| 项 | 状态 |
+| --- | --- |
+| L1 原始层生成（8 色系 × 11 阶、间距、字号、动效） | ✅ |
+| L2 语义层生成（亮暗两套、背景层级、状态色、遮罩） | ✅ |
+| 质感层生成（flat / glass 两套 + 暗色交叉修正） | ✅ |
+| Less mixin（断点 5 个 + 工具 8 个） | ✅ |
+| 过渡类（fade / fade-up / zoom / list / collapse） | ✅ |
+| 响应式工具类（4 断点 × 10 类，≈2KB gzip） | ✅ |
+| Token Gallery 生成版（由 tokens 注入，非手写） | ✅ |
+
+W3 将实现 `useSrTheme` / `useSrBreakpoint`、SSR 防闪烁脚本与栅格内核。
 
 ---
 
@@ -66,6 +78,8 @@ pnpm build
 | 全量样式 | `packages/ui/dist/style.css` |
 | Token Less 变量 | `packages/ui/src/tokens/generated/vars.less` |
 | Token TS 常量 | `packages/ui/src/tokens/generated/index.ts` |
+| L2 语义层 CSS | `packages/ui/src/styles/base/semantic.generated.css` |
+| Token 验证页 | `docs/public/token-gallery.html` |
 
 ---
 
@@ -73,7 +87,8 @@ pnpm build
 
 | 命令 | 说明 |
 | --- | --- |
-| `pnpm build:tokens` | 生成 Token 三份产物（改 `internal/tokens/src/tokens.ts` 后必跑） |
+| `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
+| `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
 | `pnpm lint` | ESLint + Stylelint |
 | `pnpm lint:naming` | 命名规范校验（组件目录、组件名、CSS 变量与类名前缀） |

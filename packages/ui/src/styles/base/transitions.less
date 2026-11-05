@@ -1,0 +1,98 @@
+// 内置过渡类
+//
+// 设计原则：
+// 1. 只动 opacity 与 transform —— 两者可走合成层，不触发 layout / paint
+// 2. 进出场不对称：进场 decelerate（快进慢停），出场 accelerate（慢起快出）且更短
+// 3. 时长与缓动全部来自 token，不写死毫秒数
+//
+// 用法：<Transition name="sr-fade-up"> 或 <SrTransition name="fade-up">
+
+// ---------- 淡入淡出 ----------
+.sr-fade-enter-active {
+  transition: opacity var(--sr-motion-duration-base) var(--sr-motion-easing-decelerate);
+}
+
+.sr-fade-leave-active {
+  transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate);
+}
+
+.sr-fade-enter-from,
+.sr-fade-leave-to {
+  opacity: 0;
+}
+
+// ---------- 上浮淡入（弹窗 / 卡片 / 下拉最常用） ----------
+.sr-fade-up-enter-active {
+  transition:
+    opacity var(--sr-motion-duration-base) var(--sr-motion-easing-decelerate),
+    transform var(--sr-motion-duration-base) var(--sr-motion-easing-decelerate);
+  will-change: opacity, transform;
+}
+
+.sr-fade-up-leave-active {
+  transition:
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate);
+  will-change: opacity, transform;
+}
+
+.sr-fade-up-enter-from,
+.sr-fade-up-leave-to {
+  opacity: 0;
+  transform: translateY(var(--sr-motion-distance-md));
+}
+
+// ---------- 缩放淡入（气泡 / Tooltip） ----------
+.sr-zoom-enter-active {
+  transition:
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-decelerate),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-spring);
+}
+
+.sr-zoom-leave-active {
+  transition:
+    opacity var(--sr-motion-duration-instant) linear,
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate);
+}
+
+.sr-zoom-enter-from,
+.sr-zoom-leave-to {
+  opacity: 0;
+  transform: scale(0.92);
+  transform-origin: var(--sr-zoom-origin, center);
+}
+
+// ---------- 列表过渡（配合 TransitionGroup） ----------
+// 注意：sr-list-move 会监听所有属性，是 transition: all 的唯一允许场景
+.sr-list-move,
+.sr-list-enter-active,
+.sr-list-leave-active {
+  transition: all var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+}
+
+.sr-list-enter-from,
+.sr-list-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+// 离场元素脱离文档流，避免后续元素跳动
+.sr-list-leave-active {
+  position: absolute;
+}
+
+// ---------- 折叠（高度过渡） ----------
+// 用 grid-template-rows 0fr → 1fr，无需 JS 测量高度
+.sr-collapse-enter-active,
+.sr-collapse-leave-active {
+  display: grid;
+  transition:
+    grid-template-rows var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+    opacity var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+}
+
+.sr-collapse-enter-from,
+.sr-collapse-leave-to {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}

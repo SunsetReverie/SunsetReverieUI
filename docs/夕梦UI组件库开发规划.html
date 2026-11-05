@@ -1168,11 +1168,12 @@ pnpm add git+ssh://git@github.com/your-org/sunsetreverie-ui.git#main</pre>
 
     <div class="table-wrap">
       <table>
-        <thead><tr><th>交付物</th><th>说明</th></tr></thead>
+        <thead><tr><th>项</th><th>状态</th><th>落地位置</th></tr></thead>
         <tbody>
-          <tr><td><code>夕梦UI-设计Token验证页.html</code></td><td>静态单文件 v0.1，供 W1 评审对齐视觉方向（已产出）</td></tr>
-          <tr><td><code>internal/tokens/scripts/build-gallery.ts</code></td><td>W2 生成式版本，数据来自 <code>tokens.ts</code></td></tr>
-          <tr><td><code>docs/public/token-gallery.html</code></td><td>W2 生成产物，文档站可直接访问</td></tr>
+          <tr><td>页面模板</td><td>✅</td><td><code>internal/tokens/template/gallery.html</code>（含 10 个注入占位符）</td></tr>
+          <tr><td>生成器</td><td>✅</td><td><code>internal/tokens/scripts/build-gallery.ts</code></td></tr>
+          <tr><td>产物</td><td>✅</td><td><code>docs/public/token-gallery.html</code>（生成物，不入库）</td></tr>
+          <tr><td>触发命令</td><td>✅</td><td><code>pnpm build:gallery</code></td></tr>
         </tbody>
       </table>
     </div>

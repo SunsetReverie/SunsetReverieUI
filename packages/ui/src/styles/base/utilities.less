@@ -1,0 +1,60 @@
+// 响应式工具类（自研，非 Tailwind）
+//
+// 命名：.sr-<属性>-<断点>-<值>，只在需要的断点生成，控制产物体积。
+// 全量约 40 条规则 / ≈ 2KB gzip；不做 Tailwind 式完整矩阵（会膨胀到几百 KB）。
+//
+// 工具类用 !important 是「原子级最后覆盖」语义，与「禁止用 !important 覆盖 token」不冲突。
+
+@import '../mixins/_breakpoint.less';
+
+/* stylelint-disable selector-class-pattern -- 类名由 each 插值生成，静态正则无法匹配 */
+
+@sr-utility-breakpoints: sm, md, lg, xl;
+
+each(@sr-utility-breakpoints, {
+  // ---------- display ----------
+  .sr-d-@{value}-none {
+    .sr-breakpoint-up(@value, { display: none !important; });
+  }
+
+  .sr-d-@{value}-block {
+    .sr-breakpoint-up(@value, { display: block !important; });
+  }
+
+  .sr-d-@{value}-flex {
+    .sr-breakpoint-up(@value, { display: flex !important; });
+  }
+
+  .sr-d-@{value}-inline-flex {
+    .sr-breakpoint-up(@value, { display: inline-flex !important; });
+  }
+
+  // ---------- 间距 ----------
+  .sr-mx-@{value}-auto {
+    .sr-breakpoint-up(@value, { margin-inline: auto !important; });
+  }
+
+  .sr-mt-@{value}-0 {
+    .sr-breakpoint-up(@value, { margin-block-start: 0 !important; });
+  }
+
+  // ---------- 文本对齐 ----------
+  .sr-text-@{value}-start {
+    .sr-breakpoint-up(@value, { text-align: start !important; });
+  }
+
+  .sr-text-@{value}-center {
+    .sr-breakpoint-up(@value, { text-align: center !important; });
+  }
+
+  // ---------- 栅格辅助 ----------
+  .sr-hide-@{value} {
+    .sr-breakpoint-up(@value, { display: none !important; });
+  }
+
+  .sr-show-@{value} {
+    .sr-breakpoint-up(@value, { display: initial !important; });
+  }
+});
+
+/* stylelint-enable selector-class-pattern */

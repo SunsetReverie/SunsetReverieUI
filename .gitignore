@@ -8,6 +8,10 @@ dist/
 # Token 生成物（由 pnpm build:tokens 产出，源文件是 internal/tokens/src/tokens.ts）
 packages/ui/src/tokens/generated/
 packages/ui/src/styles/base/primitives.generated.css
+packages/ui/src/styles/base/semantic.generated.css
+
+# Token 验证页（由 pnpm build:gallery 产出）
+docs/public/token-gallery.html
 
 # 测试与缓存
 coverage/
