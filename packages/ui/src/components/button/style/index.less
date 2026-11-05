@@ -191,6 +191,8 @@
 
   &--outline {
     --sr-button-accent: var(--sr-color-primary);
+    // 描边按钮是空心的，强辉光会显得「脏」，只留一点点边缘光提示存在感
+    --sr-glow-base: 22%;
     --sr-button-bg: transparent;
     --sr-button-bg-hover: var(--sr-color-primary-alpha-08);
     // 文字与边框都用 primary-text：直接拿 primary 当文字只有约 2.9:1
