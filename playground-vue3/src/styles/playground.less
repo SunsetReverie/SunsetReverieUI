@@ -1,9 +1,25 @@
 // Playground 壳层样式
 // 注意：这里刻意全部消费 --sr-* 变量，顺带验证 token 覆盖是否够用
 
+// 背景刻意做成渐变光晕：
+// 毛玻璃的本质是「模糊背后已有的内容」，纯色背景下无论怎么调都看不出效果。
+// 用 fixed 让光晕在滚动时保持不动，卡片划过时能明显看到模糊差异。
+body {
+  margin: 0;
+  background-color: var(--sr-color-bg-page);
+  background-image:
+    radial-gradient(ellipse 48% 34% at 88% 4%, var(--sr-color-primary-alpha-25), transparent 62%),
+    radial-gradient(ellipse 42% 30% at 8% 20%, var(--sr-color-primary-alpha-12), transparent 66%),
+    radial-gradient(ellipse 52% 32% at 62% 48%, var(--sr-color-primary-alpha-25), transparent 68%),
+    radial-gradient(ellipse 46% 30% at 18% 74%, var(--sr-color-primary-alpha-12), transparent 66%),
+    radial-gradient(ellipse 55% 34% at 78% 92%, var(--sr-color-primary-alpha-25), transparent 70%);
+  background-attachment: fixed;
+}
+
 .pg {
   min-height: 100vh;
-  background: var(--sr-color-bg-page);
+  // 让 body 的光晕透上来
+  background: transparent;
   color: var(--sr-color-text);
   font-family: var(--sr-font-family-base);
 
@@ -113,9 +129,15 @@
   background: var(--sr-color-bg-container);
   border: 1px solid var(--sr-color-border);
   border-radius: var(--sr-radius-base);
-  box-shadow: var(--sr-shadow-sm);
+  // 高光与模糊都跟着风格走：flat 下是零尺寸透明阴影 + none，视觉无变化
+  box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight);
+  backdrop-filter: var(--sr-glass-filter);
+  -webkit-backdrop-filter: var(--sr-glass-filter);
   padding: var(--sr-space-5);
   margin-bottom: var(--sr-space-4);
+  transition:
+    background-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+    box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
 
   &__title {
     display: flex;

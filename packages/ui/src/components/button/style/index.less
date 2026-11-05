@@ -158,6 +158,9 @@
     // 按钮会「融进背景」，只剩一条几乎看不见的边框
     --sr-button-bg: var(--sr-color-bg-elevated);
     --sr-button-bg-hover: var(--sr-color-bg-hover);
+    // 背景在玻璃风格下是半透明的，需要这一层才有磨砂感
+    .sr-glass-layer();
+
     --sr-button-border: var(--sr-color-border);
     --sr-button-border-hover: var(--sr-color-border-strong);
     --sr-button-fg: var(--sr-color-text);

@@ -224,7 +224,6 @@ export const qualityFlat: Record<string, string> = {
 
   'glass-blur': '0px',
   'glass-saturate': '100%',
-  'glass-opacity': '1',
   // flat 用 none 而非 blur(0)：后者仍会创建无意义的合成层
   'glass-filter': 'none',
   // 注意不能写 none：surface mixin 会拼成 `box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight)`，
@@ -259,7 +258,6 @@ export const qualityGlass: Record<string, string> = {
 
   'glass-blur': '16px',
   'glass-saturate': '180%',
-  'glass-opacity': '0.72',
   'glass-filter': 'blur(16px) saturate(180%)',
   'glass-highlight': 'inset 0 1px 0 rgba(255, 255, 255, 0.55)',
   'glass-border-width': '1px',
@@ -272,11 +270,29 @@ export const qualityGlass: Record<string, string> = {
 }
 
 /**
+ * 玻璃质感 · 亮色表面
+ *
+ * 关键：背景必须半透明。若仍是 #fff 实色，backdrop-filter 背后没有任何东西可模糊，
+ * 视觉上就只剩边框和圆角变化 —— 等于毛玻璃完全失效。
+ */
+export const glassSurfaceLight: Record<string, string> = {
+  'color-bg-container': 'rgba(255, 255, 255, 0.72)',
+  'color-bg-elevated': 'rgba(255, 255, 255, 0.84)',
+  'color-bg-sunken': 'rgba(237, 239, 243, 0.55)',
+}
+
+/** 玻璃质感 · 暗色表面 */
+export const glassSurfaceDark: Record<string, string> = {
+  'color-bg-container': 'rgba(28, 32, 39, 0.62)',
+  'color-bg-elevated': 'rgba(43, 48, 56, 0.74)',
+  'color-bg-sunken': 'rgba(11, 14, 18, 0.6)',
+}
+
+/**
  * 交叉修正 · 暗色 + 玻璃
  * 暗底上的玻璃要更暗更透，高光要更弱
  */
 export const glassDark: Record<string, string> = {
-  'glass-opacity': '0.6',
   'glass-border-color': 'rgba(255, 255, 255, 0.14)',
   'glass-highlight': 'inset 0 1px 0 rgba(255, 255, 255, 0.08)',
 }
@@ -309,5 +325,5 @@ export const shadowDarkGlass: Record<string, string> = {
  * @returns 合并后的键值对
  */
 export function themedDarkGlass(): Record<string, string> {
-  return { ...glassDark, ...shadowDarkGlass }
+  return { ...glassSurfaceDark, ...glassDark, ...shadowDarkGlass }
 }

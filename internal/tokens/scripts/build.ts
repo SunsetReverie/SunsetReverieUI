@@ -28,6 +28,7 @@ import {
   spacings,
 } from '../src/tokens'
 import {
+  glassSurfaceLight,
   qualityFlat,
   qualityGlass,
   semanticDark,
@@ -252,6 +253,14 @@ function buildSemanticCss(): string {
     "[data-sr-theme='dark'][data-sr-style='flat'] {",
   )
   blocks.push(toDecls(shadowDarkFlat))
+  blocks.push('}', '')
+
+  blocks.push(
+    '/* ---------- 交叉修正 · 亮色 + 玻璃 ----------',
+    '   半透明表面色：没有它 backdrop-filter 等于没效果 ---------- */',
+    "[data-sr-theme='light'][data-sr-style='glass'] {",
+  )
+  blocks.push(toDecls(glassSurfaceLight))
   blocks.push('}', '')
 
   blocks.push(
