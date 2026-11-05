@@ -13,6 +13,9 @@ export default tseslint.config(
       '**/.nuxt/**',
       '**/.output/**',
       '**/components.d.ts',
+      // Playwright 运行产物（trace 里的 js 会被当成源码检查）
+      '**/test-results/**',
+      '**/playwright-report/**',
       'docs/**',
     ],
   },

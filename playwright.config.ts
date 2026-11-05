@@ -16,7 +16,7 @@ export default defineConfig({
   reporter: [['list']],
 
   use: {
-    baseURL: 'http://127.0.0.1:3211',
+    baseURL: 'http://127.0.0.1:3327',
     trace: 'retain-on-failure',
     channel: process.env.CI ? undefined : 'msedge',
   },
@@ -28,13 +28,15 @@ export default defineConfig({
     },
   ],
 
+  // 端口刻意选冷门值：这类机器上 3000/3211 常被别的项目占用，
+  // 复用端口会表现为「webServer 启动失败」，看起来像测试挂了
   // 服务端产物需先构建：脚本里已串联 `pnpm --filter playground-nuxt4 build`
   webServer: {
     command: 'node .output/server/index.mjs',
     cwd: './playground-nuxt4',
-    url: 'http://127.0.0.1:3211',
+    url: 'http://127.0.0.1:3327',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
-    env: { PORT: '3211' },
+    env: { PORT: '3327' },
   },
 })
