@@ -23,6 +23,7 @@ export const SR_COMPONENT_NAMES = [
   'Select',
   'Spinner',
   'Switch',
+  'Table',
   'Tooltip',
   'Transition',
 ] as const

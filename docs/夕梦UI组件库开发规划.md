@@ -4621,7 +4621,7 @@ jobs:
 | W7 | Nuxt 集成 + 文档站起步 | `@sunset-reverie/nuxt` module（样式/组件/自动导入/防闪烁）、`playground-nuxt4` 两行接入、VitePress 骨架 + 3 个组件文档 | Nuxt demo 全 P0 组件 SSR 正确，水合 0 告警 |
 | W8 | P1（上） | `SrSpinner`、`SrCheckbox`/`SrCheckboxGroup`、`SrRadio`/`SrRadioGroup`、`SrSwitch`、`SrTooltip`（含浮层定位内核 `srComputeFloating`） | 交互与 A11y 断言通过；单测 185 个 |
 | W9 | P1（中）+ E2E | `SrSelect`（单选/多选/搜索/键盘）、`SrForm`/`SrFormItem`（规则校验 + 校验态下发）、Playwright 水合测试 5 条 | 表单校验闭环可用；真实浏览器下水合 0 告警 |
-| W10 | P1（下） | `SrTable`（含移动端卡片视图）、`SrTabs` | 表格 1000 行不卡顿；排序/选择可用 |
+| W10 | `SrTable` | 列配置 / 双模式排序 / 多选 / 展开行 / 吸顶表头 / 空状态 / 窄屏卡片视图；`SrTabs` 顺延到 W12 | 1000 行可渲染并可滚动；排序、选择、展开全部有单测覆盖 |
 | W11 | 文档完善 + 发布 v1.0.0 | 全部 P0/P1 组件文档、主题/响应式/图标指南、CHANGELOG、首个 tag | 文档站上线；`v1.0.0` tag 可被下游安装 |
 | W12 | P2 批次一 | `SrDrawer`、`SrPagination`、`SrCard`/`SrTag`/`SrBadge`/`SrAvatar` | 验收清单全过 |
 | W13 | P2 批次二 | `SrDatePicker`、`SrUpload`、`SrDropdown`、`SrBreadcrumb` | — |

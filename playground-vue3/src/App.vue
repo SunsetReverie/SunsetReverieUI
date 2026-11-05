@@ -10,6 +10,7 @@ import FeedbackView from './views/FeedbackView.vue'
 import FormsView from './views/FormsView.vue'
 import OverviewView from './views/OverviewView.vue'
 import ResponsiveLab from './views/ResponsiveLab.vue'
+import TableView from './views/TableView.vue'
 import ThemeLab from './views/ThemeLab.vue'
 
 defineOptions({ name: 'PlaygroundApp' })
@@ -24,6 +25,7 @@ const views = [
   { key: 'forms', label: '表单', component: FormsView },
   { key: 'controls', label: '选择控件', component: ControlsView },
   { key: 'feedback', label: '反馈', component: FeedbackView },
+  { key: 'table', label: '表格', component: TableView },
   { key: 'theme', label: '主题实验室', component: ThemeLab },
   { key: 'responsive', label: '断点实验室', component: ResponsiveLab },
   { key: 'audit', label: '视觉审计', component: AuditView },
