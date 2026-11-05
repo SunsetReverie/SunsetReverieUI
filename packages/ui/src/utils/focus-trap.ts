@@ -36,20 +36,28 @@ export function srGetFocusable(container: HTMLElement): HTMLElement[] {
 }
 
 /**
- * 把焦点移到容器内第一个可聚焦元素
+ * 打开弹层时的初始聚焦策略
+ *
+ * 规则来自 WAI-ARIA dialog 模式：
+ * 1. 内容里有输入类元素 → 直接聚焦它（用户打开表单弹窗就是想打字）
+ * 2. 否则聚焦容器本身 —— 不要落到第一个按钮上，
+ *    那通常是关闭按钮，会让界面一打开就出现一个抢眼的焦点环
  * @param container 容器元素
- * @returns 是否成功聚焦
+ * @returns 是否聚焦到了具体控件（false 表示聚焦的是容器本身）
  */
 export function srFocusFirst(container: HTMLElement): boolean {
   const list = srGetFocusable(container)
-  if (list.length === 0) {
-    // 没有任何可聚焦元素时，让容器本身接住焦点，避免焦点跑回 body
-    if (!container.hasAttribute('tabindex')) container.setAttribute('tabindex', '-1')
-    container.focus({ preventScroll: true })
-    return false
+
+  const input = list.find((element) => /^(INPUT|TEXTAREA|SELECT)$/.test(element.tagName))
+  if (input) {
+    input.focus({ preventScroll: true })
+    return true
   }
-  list[0].focus({ preventScroll: true })
-  return true
+
+  // 容器需要可聚焦才能接收焦点；outline 由调用方的样式负责（面板已设 outline: none）
+  if (!container.hasAttribute('tabindex')) container.setAttribute('tabindex', '-1')
+  container.focus({ preventScroll: true })
+  return false
 }
 
 /**
