@@ -1,0 +1,131 @@
+# SunsetReverie-UI（夕梦 UI）
+
+自用 / 团队内部的 Vue 3 + Nuxt 4 UI 组件库。**不发布到 NPM**，只托管在私有 Git 仓库，通过 tag 分发。
+
+- 品牌缩写：**SR**
+- 技术栈：Vue 3 · Nuxt 4 · TypeScript · Less · Vite（库模式）· pnpm monorepo
+- 规划文档：[`docs/夕梦UI组件库开发规划.md`](./docs/夕梦UI组件库开发规划.md)
+
+---
+
+## 当前进度：W1（立项与基建）已完成
+
+| 项 | 状态 |
+| --- | --- |
+| pnpm workspace 骨架 | ✅ |
+| Token 生成链路（tokens.ts → Less / TS / CSS） | ✅ |
+| 四个子包空骨架 + 构建脚本 | ✅ |
+| ESLint / Prettier / Stylelint / commitlint / husky | ✅ |
+| 三个校验脚本（命名、图标、产物） | ✅ |
+| CI 骨架（GitHub Actions） | ✅ |
+| `pnpm build` 打通、CI 绿 | ✅ |
+
+W2 将补齐 L1/L2/L3 完整 Token、Less mixin（断点 / surface）、Token Gallery 生成版。
+
+---
+
+## 目录结构
+
+```
+sunsetreverie-ui/
+├── packages/
+│   ├── ui/                  # @sunset-reverie/ui   核心组件库
+│   ├── icons/               # @sunset-reverie/icons Iconify 封装与离线集合
+│   ├── resolver/            # @sunset-reverie/resolver 按需引入解析器
+│   └── nuxt/                # @sunset-reverie/nuxt  Nuxt Module（W7 构建）
+├── internal/
+│   ├── tokens/              # Token 唯一手写源 + 代码生成
+│   └── examples/            # 三处共用的示例源码
+├── scripts/                 # 命名 / 图标 / 产物校验
+├── docs/                    # 规划文档与 Token 验证页
+├── .changeset/              # 变更说明（发版用）
+└── pnpm-workspace.yaml
+```
+
+---
+
+## 快速开始
+
+```bash
+# 环境要求：Node >= 20.11，pnpm >= 9
+pnpm install
+
+# 生成 Token（Less 变量 / TS 常量 / L1 CSS 变量）
+pnpm build:tokens
+
+# 全量构建：tokens → icons → ui → resolver
+pnpm build
+```
+
+产物位置：
+
+| 产物 | 路径 |
+| --- | --- |
+| 核心包 ESM + d.ts | `packages/ui/dist/` |
+| 基础样式（变量 + reset） | `packages/ui/dist/base.css` |
+| 全量样式 | `packages/ui/dist/style.css` |
+| Token Less 变量 | `packages/ui/src/tokens/generated/vars.less` |
+| Token TS 常量 | `packages/ui/src/tokens/generated/index.ts` |
+
+---
+
+## 常用命令
+
+| 命令 | 说明 |
+| --- | --- |
+| `pnpm build:tokens` | 生成 Token 三份产物（改 `internal/tokens/src/tokens.ts` 后必跑） |
+| `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
+| `pnpm lint` | ESLint + Stylelint |
+| `pnpm lint:naming` | 命名规范校验（组件目录、组件名、CSS 变量与类名前缀） |
+| `pnpm lint:icons` | 图标离线集合校验 |
+| `pnpm typecheck` | 类型检查（会先生成 Token） |
+| `pnpm test` | 单元测试（Vitest） |
+| `pnpm verify:dist` | 产物校验（exports 指向的文件是否都存在） |
+| `pnpm changeset` | 写一条变更说明 |
+| `pnpm version-packages` | 汇总 changeset，升版本 + 写 CHANGELOG |
+
+---
+
+## 已落地的决策
+
+| 编号 | 决策 | 落地位置 |
+| --- | --- | --- |
+| D-01 | 一期用纯 pnpm `--filter` 编排，不引入 Turborepo | 根 `package.json` 的 `build:*` 顺序脚本 |
+| D-02 | 采用 changesets，只用 version + changelog | `.changeset/config.json`（四包版本 `fixed`） |
+| D-03 | `dist` 由 `prepare` 构建，另推 `<tag>-dist` 兜底分支 | 待 W6 接通（当前根 `prepare` 被 husky 占用） |
+| D-04 | `@sunset-reverie/icons` 内联进 ui 产物 | `packages/ui/vite.config.ts` 的 `external` 不含 icons |
+| D-11 | 组件前缀固定 `Sr`，不做可配置 | 校验脚本与 resolver 均写死 `Sr` |
+
+---
+
+## 约定速查
+
+| 对象 | 规范 | 示例 |
+| --- | --- | --- |
+| 组件 | `Sr` + PascalCase | `SrButton` |
+| 标签 | `sr-` + kebab | `<sr-button>` |
+| CSS 变量 | `--sr-*` | `--sr-color-primary` |
+| Less 变量 | `@sr-*` | `@sr-radius-base` |
+| Less mixin | `.sr-*()` | `.sr-breakpoint-md()` |
+| 类名 | BEM + `sr-` | `.sr-button__icon` |
+| 组合式函数 | `useSr*` | `useSrTheme` |
+| 根属性 | `data-sr-*` | `data-sr-theme` |
+
+完整清单见规划文档第二章。
+
+---
+
+## 提交规范
+
+```
+<type>(<scope>): <subject>
+
+feat(button): 新增 loading 态
+fix(theme): 修复 SSR 首次渲染主题闪烁
+```
+
+- `type`：feat / fix / docs / style / refactor / perf / test / build / ci / chore / revert
+- `scope`：组件名或包名（见 `commitlint.config.js` 白名单）
+- `subject`：中文，不超过 50 字
+
+`pre-commit` 跑 lint-staged + 命名校验，`commit-msg` 跑 commitlint，`pre-push` 建议手动跑 `pnpm typecheck && pnpm test`。

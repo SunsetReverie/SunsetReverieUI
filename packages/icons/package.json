@@ -1,0 +1,32 @@
+{
+  "name": "@sunset-reverie/icons",
+  "version": "0.1.0",
+  "description": "夕梦 UI 图标封装：Iconify 运行时与离线集合",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./offline": {
+      "types": "./dist/offline/index.d.ts",
+      "import": "./dist/offline/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@iconify/vue": "^4.1.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.9",
+    "vite-plugin-dts": "^4.2.4"
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  }
+}

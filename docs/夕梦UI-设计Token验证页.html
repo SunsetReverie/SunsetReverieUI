@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-sr-theme="light" data-sr-style="flat">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>夕梦 UI · 设计 Token 验证页</title>
+<meta name="description" content="SunsetReverie-UI 设计 Token 可视化验收页：原始色板、语义色、字号、间距、圆角、阴影" />
+<style>
+/* ============================================================
+   夕梦 UI · Token Gallery
+   说明：本页自身样式全部消费 --sr-* 变量，不写死具体值，
+        因此这个页面同时也是 Token 的第一个使用方（dogfooding）。
+   ============================================================ */
+
+/* ---------- L1 原始层（不随主题变化） ---------- */
+:root {
+  /* sunset 落日橙 */
+  --sr-sunset-50: #fff4ed;  --sr-sunset-100: #ffe6d5; --sr-sunset-200: #ffc9a8;
+  --sr-sunset-300: #ffa877; --sr-sunset-400: #ff8b52; --sr-sunset-500: #ff7a45;
+  --sr-sunset-600: #f25c22; --sr-sunset-700: #cc4512; --sr-sunset-800: #a3370f;
+  --sr-sunset-900: #7a290c; --sr-sunset-950: #451606;
+
+  /* dusk 霞紫 */
+  --sr-dusk-50: #f5f2fa;  --sr-dusk-100: #e8e1f4; --sr-dusk-200: #d0c4e8;
+  --sr-dusk-300: #b3a0d9; --sr-dusk-400: #9580c7; --sr-dusk-500: #7a64b5;
+  --sr-dusk-600: #634e9c; --sr-dusk-700: #4e3d7d; --sr-dusk-800: #3b2e5e;
+  --sr-dusk-900: #291f42; --sr-dusk-950: #171128;
+
+  /* ember 霞粉 */
+  --sr-ember-50: #fff1f3;  --sr-ember-100: #ffdde3; --sr-ember-200: #ffb8c6;
+  --sr-ember-300: #ff8da4; --sr-ember-400: #ff6685; --sr-ember-500: #f5456b;
+  --sr-ember-600: #d42b51; --sr-ember-700: #ae1f3f; --sr-ember-800: #871831;
+  --sr-ember-900: #5f1123; --sr-ember-950: #360912;
+
+  /* night 暮蓝灰（中性） */
+  --sr-night-50: #f7f8fa;  --sr-night-100: #edeff3; --sr-night-200: #dce0e8;
+  --sr-night-300: #c2c8d4; --sr-night-400: #9aa2b1; --sr-night-500: #6e7787;
+  --sr-night-600: #565e6c; --sr-night-700: #404652; --sr-night-800: #2b3038;
+  --sr-night-900: #1c2027; --sr-night-950: #0f1216;
+
+  /* success */
+  --sr-success-50: #eaf7ee;  --sr-success-100: #cdeed6; --sr-success-200: #9bdcb0;
+  --sr-success-300: #63c784; --sr-success-400: #3cb25f; --sr-success-500: #2e9b4e;
+  --sr-success-600: #227d3d; --sr-success-700: #1a612f; --sr-success-800: #134723;
+  --sr-success-900: #0c2f17; --sr-success-950: #06180c;
+
+  /* warning */
+  --sr-warning-50: #fff8e6;  --sr-warning-100: #ffedc2; --sr-warning-200: #ffdb8a;
+  --sr-warning-300: #ffc64d; --sr-warning-400: #ffb01f; --sr-warning-500: #e89500;
+  --sr-warning-600: #c07800; --sr-warning-700: #985e00; --sr-warning-800: #704500;
+  --sr-warning-900: #482c00; --sr-warning-950: #241600;
+
+  /* danger */
+  --sr-danger-50: #fff0f0;  --sr-danger-100: #ffd9d9; --sr-danger-200: #ffb0b3;
+  --sr-danger-300: #ff8085; --sr-danger-400: #f9555c; --sr-danger-500: #e03137;
+  --sr-danger-600: #bc2228; --sr-danger-700: #94191e; --sr-danger-800: #6d1216;
+  --sr-danger-900: #460b0e; --sr-danger-950: #230507;
+
+  /* info */
+  --sr-info-50: #edf5ff;  --sr-info-100: #d6e7ff; --sr-info-200: #adcfff;
+  --sr-info-300: #7db2ff; --sr-info-400: #4d94ff; --sr-info-500: #2578f5;
+  --sr-info-600: #155ed1; --sr-info-700: #0d47a8; --sr-info-800: #09337d;
+  --sr-info-900: #052154; --sr-info-950: #02102b;
+
+  /* ---------- 结构与排版（不随主题变） ---------- */
+  --sr-font-family-base: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --sr-font-family-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+
+  --sr-space-0: 0;     --sr-space-0-5: 2px;  --sr-space-1: 4px;   --sr-space-1-5: 6px;
+  --sr-space-2: 8px;   --sr-space-3: 12px;   --sr-space-4: 16px;  --sr-space-5: 20px;
+  --sr-space-6: 24px;  --sr-space-8: 32px;   --sr-space-10: 40px; --sr-space-12: 48px;
+  --sr-space-16: 64px;
+
+  --sr-font-size-xs: 12px;  --sr-line-height-xs: 20px;
+  --sr-font-size-sm: 13px;  --sr-line-height-sm: 20px;
+  --sr-font-size-base: 14px;--sr-line-height-base: 22px;
+  --sr-font-size-md: 16px;  --sr-line-height-md: 26px;
+  --sr-font-size-lg: 20px;  --sr-line-height-lg: 30px;
+  --sr-font-size-xl: 24px;  --sr-line-height-xl: 34px;
+  --sr-font-size-2xl: 30px; --sr-line-height-2xl: 40px;
+  --sr-font-size-3xl: 38px; --sr-line-height-3xl: 48px;
+
+  --sr-motion-duration-fast: 120ms;
+  --sr-motion-duration-base: 240ms;
+  --sr-motion-duration-slow: 360ms;
+  --sr-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --sr-motion-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ---------- L2 语义层 · 亮色 ---------- */
+[data-sr-theme='light'] {
+  --sr-color-bg-page: var(--sr-night-50);
+  --sr-color-bg-container: #ffffff;
+  --sr-color-bg-elevated: #ffffff;
+  --sr-color-bg-sunken: var(--sr-night-100);
+
+  --sr-color-text: var(--sr-night-900);
+  --sr-color-text-secondary: var(--sr-night-600);
+  --sr-color-text-tertiary: var(--sr-night-400);
+
+  --sr-color-border: var(--sr-night-200);
+  --sr-color-border-strong: var(--sr-night-300);
+  --sr-color-border-subtle: var(--sr-night-100);
+
+  --sr-color-primary: var(--sr-sunset-500);
+  --sr-color-primary-hover: var(--sr-sunset-600);
+  --sr-color-on-primary: #ffffff;
+  --sr-color-primary-alpha-25: rgba(255, 122, 69, 0.25);
+  --sr-color-primary-alpha-12: rgba(255, 122, 69, 0.12);
+
+  --sr-color-mask: rgba(16, 20, 26, 0.45);
+}
+
+/* ---------- L2 语义层 · 暗色 ---------- */
+[data-sr-theme='dark'] {
+  --sr-color-bg-page: var(--sr-night-950);
+  --sr-color-bg-container: var(--sr-night-900);
+  --sr-color-bg-elevated: var(--sr-night-800);
+  --sr-color-bg-sunken: #0b0e12;
+
+  --sr-color-text: var(--sr-night-50);
+  --sr-color-text-secondary: var(--sr-night-300);
+  --sr-color-text-tertiary: var(--sr-night-500);
+
+  --sr-color-border: var(--sr-night-700);
+  --sr-color-border-strong: var(--sr-night-600);
+  --sr-color-border-subtle: var(--sr-night-800);
+
+  /* 暗底需提亮一阶，否则对比度不足 */
+  --sr-color-primary: var(--sr-sunset-400);
+  --sr-color-primary-hover: var(--sr-sunset-300);
+  --sr-color-on-primary: #1a0e05;
+  --sr-color-primary-alpha-25: rgba(255, 139, 82, 0.25);
+  --sr-color-primary-alpha-12: rgba(255, 139, 82, 0.12);
+
+  --sr-color-mask: rgba(0, 0, 0, 0.65);
+}
+
+/* ---------- 质感层 · flat ---------- */
+[data-sr-style='flat'] {
+  --sr-radius-none: 0;
+  --sr-radius-sm: 2px;
+  --sr-radius-base: 6px;
+  --sr-radius-md: 8px;
+  --sr-radius-lg: 12px;
+  --sr-radius-xl: 16px;
+  --sr-radius-2xl: 24px;
+  --sr-radius-full: 9999px;
+
+  --sr-shadow-sm: 0 1px 2px rgba(16, 20, 26, 0.06);
+  --sr-shadow-md: 0 2px 8px rgba(16, 20, 26, 0.08);
+  --sr-shadow-lg: 0 8px 24px rgba(16, 20, 26, 0.10);
+  --sr-shadow-xl: 0 16px 48px rgba(16, 20, 26, 0.14);
+  --sr-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  --sr-glass-blur: 0px;
+  --sr-glass-saturate: 100%;
+  --sr-glass-opacity: 1;
+  --sr-glass-filter: none;
+  --sr-glass-highlight: none;
+}
+
+/* ---------- 质感层 · glass ---------- */
+[data-sr-style='glass'] {
+  --sr-radius-none: 0;
+  --sr-radius-sm: 2px;
+  --sr-radius-base: 12px;
+  --sr-radius-md: 14px;
+  --sr-radius-lg: 18px;
+  --sr-radius-xl: 22px;
+  --sr-radius-2xl: 28px;
+  --sr-radius-full: 9999px;
+
+  --sr-shadow-sm: 0 2px 8px rgba(16, 20, 26, 0.06);
+  --sr-shadow-md: 0 8px 24px -6px rgba(16, 20, 26, 0.12);
+  --sr-shadow-lg: 0 16px 48px -12px rgba(16, 20, 26, 0.18);
+  --sr-shadow-xl: 0 32px 80px -16px rgba(16, 20, 26, 0.24);
+  --sr-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+
+  --sr-glass-blur: 16px;
+  --sr-glass-saturate: 180%;
+  --sr-glass-opacity: 0.72;
+  --sr-glass-filter: blur(16px) saturate(180%);
+  --sr-glass-highlight: none;
+}
+
+/* 交叉修正：玻璃 + 暗色单独微调 */
+[data-sr-theme='dark'][data-sr-style='glass'] {
+  --sr-glass-opacity: 0.6;
+}
+
+/* ---------- 暗色阴影补偿 ----------
+   必须用「主题 + 风格」交叉选择器，且放在风格层之后。
+   若只写在 [data-sr-theme='dark'] 里，会被后面的 [data-sr-style='flat'|'glass'] 覆盖。
+   原因：两组选择器特异性相同（0,1,0），后写者胜出。                       */
+[data-sr-theme='dark'][data-sr-style='flat'] {
+  --sr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --sr-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --sr-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
+  --sr-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+}
+
+[data-sr-theme='dark'][data-sr-style='glass'] {
+  --sr-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --sr-shadow-md: 0 10px 28px -8px rgba(0, 0, 0, 0.6);
+  --sr-shadow-lg: 0 18px 52px -14px rgba(0, 0, 0, 0.7);
+  --sr-shadow-xl: 0 34px 84px -18px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================
+   页面骨架
+   ============================================================ */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+
+body {
+  margin: 0;
+  background: var(--sr-color-bg-page);
+  color: var(--sr-color-text);
+  font-family: var(--sr-font-family-base);
+  font-size: var(--sr-font-size-base);
+  line-height: var(--sr-line-height-base);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--sr-motion-duration-slow) var(--sr-motion-easing-standard),
+              color var(--sr-motion-duration-slow) var(--sr-motion-easing-standard);
+}
+
+a { color: var(--sr-color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+code, .mono {
+  font-family: var(--sr-font-family-mono);
+  font-size: 0.92em;
+}
+
+/* ---------- 进度条 ---------- */
+.progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0;
+  background: linear-gradient(90deg, var(--sr-sunset-500), var(--sr-ember-500), var(--sr-dusk-500));
+  z-index: 100;
+  transition: width .1s linear;
+}
+
+/* ---------- 侧边栏 ---------- */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 258px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--sr-color-bg-container);
+  border-right: 1px solid var(--sr-color-border);
+  z-index: 50;
+}
+
+.sidebar__head {
+  flex: 0 0 auto;
+  padding: var(--sr-space-6) var(--sr-space-4) var(--sr-space-3);
+  border-bottom: 1px solid var(--sr-color-border);
+}
+
+.brand { display: flex; align-items: center; gap: var(--sr-space-2); margin-bottom: var(--sr-space-1); }
+
+.brand__sun {
+  width: 24px; height: 24px;
+  border-radius: var(--sr-radius-full);
+  background: linear-gradient(160deg, var(--sr-sunset-300), var(--sr-sunset-500) 45%, var(--sr-ember-500));
+  box-shadow: 0 0 16px rgba(255, 122, 69, .5);
+  flex: 0 0 auto;
+}
+
+.brand__name { font-size: var(--sr-font-size-base); font-weight: 700; letter-spacing: .02em; }
+.brand__sub {
+  font-size: 10.5px;
+  color: var(--sr-color-text-tertiary);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.sidebar__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--sr-space-3) var(--sr-space-3) var(--sr-space-4);
+}
+.sidebar__body::-webkit-scrollbar { width: 6px; }
+.sidebar__body::-webkit-scrollbar-thumb {
+  background: var(--sr-color-border-strong);
+  border-radius: var(--sr-radius-full);
+}
+
+.sidebar__foot {
+  flex: 0 0 auto;
+  padding: var(--sr-space-3);
+  border-top: 1px solid var(--sr-color-border);
+}
+
+.nav a {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sr-space-2);
+  padding: 5px var(--sr-space-2);
+  border-radius: var(--sr-radius-base);
+  font-size: var(--sr-font-size-sm);
+  color: var(--sr-color-text-secondary);
+  border-left: 2px solid transparent;
+  transition: color .18s, background-color .18s, border-color .18s;
+}
+.nav a:hover {
+  color: var(--sr-color-text);
+  background: var(--sr-color-primary-alpha-12);
+  text-decoration: none;
+}
+.nav a.is-active {
+  color: var(--sr-color-primary);
+  border-left-color: var(--sr-color-primary);
+  background: var(--sr-color-primary-alpha-12);
+  font-weight: 600;
+}
+.nav a .idx {
+  font-family: var(--sr-font-family-mono);
+  font-size: 10px;
+  color: var(--sr-color-text-tertiary);
+}
+
+/* ---------- 切换控件 ---------- */
+.switch {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-bg-sunken);
+  margin-bottom: var(--sr-space-2);
+}
+.switch:last-child { margin-bottom: 0; }
+.switch button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--sr-color-text-secondary);
+  font-size: 11.5px;
+  font-family: inherit;
+  padding: 4px 0;
+  border-radius: var(--sr-radius-base);
+  cursor: pointer;
+  transition: background-color .18s, color .18s;
+}
+.switch button.is-on {
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-primary);
+  box-shadow: var(--sr-shadow-sm);
+  font-weight: 600;
+}
+.switch__label {
+  font-size: 9.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sr-color-text-tertiary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 主区域 ---------- */
+.main {
+  margin-left: 258px;
+  position: relative;
+  isolation: isolate;
+}
+
+/* 顶部暖色光晕：铺满 main 全宽，径向自然淡出 */
+.main::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 520px;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgba(255, 155, 90, .34), transparent 72%),
+    radial-gradient(ellipse 46% 62% at 74% 14%, rgba(245, 69, 107, .16), transparent 74%),
+    radial-gradient(ellipse 56% 60% at 0% 96%, rgba(122, 100, 181, .16), transparent 76%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+}
+
+[data-sr-theme='dark'] .main::before {
+  background:
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgba(255, 122, 69, .20), transparent 72%),
+    radial-gradient(ellipse 46% 62% at 74% 14%, rgba(245, 69, 107, .12), transparent 74%),
+    radial-gradient(ellipse 56% 60% at 0% 96%, rgba(122, 100, 181, .18), transparent 76%);
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 0 var(--sr-space-8) var(--sr-space-16);
+}
+
+/* ---------- Hero ---------- */
+.hero { padding: var(--sr-space-16) 0 var(--sr-space-8); }
+
+.hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sr-space-2);
+  font-size: 10.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--sr-color-primary);
+  padding: 3px var(--sr-space-3);
+  border: 1px solid var(--sr-color-primary-alpha-25);
+  background: var(--sr-color-primary-alpha-12);
+  border-radius: var(--sr-radius-full);
+  margin-bottom: var(--sr-space-4);
+}
+.hero__eyebrow::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: var(--sr-radius-full);
+  background: var(--sr-color-primary);
+  box-shadow: 0 0 8px var(--sr-color-primary);
+}
+
+.hero h1 {
+  margin: 0 0 var(--sr-space-1);
+  font-size: var(--sr-font-size-3xl);
+  line-height: var(--sr-line-height-3xl);
+  letter-spacing: -0.02em;
+  background: linear-gradient(115deg, var(--sr-sunset-500) 0%, var(--sr-ember-500) 45%, var(--sr-dusk-500) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-sr-theme='dark'] .hero h1 {
+  background: linear-gradient(115deg, var(--sr-sunset-400) 0%, var(--sr-ember-400) 45%, var(--sr-dusk-300) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hero__desc {
+  max-width: 660px;
+  margin: 0 0 var(--sr-space-4);
+  color: var(--sr-color-text-secondary);
+  font-size: var(--sr-font-size-md);
+  line-height: var(--sr-line-height-md);
+}
+
+/* 当前状态条 */
+.state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sr-space-3);
+  flex-wrap: wrap;
+  padding: var(--sr-space-2) var(--sr-space-3);
+  border: 1px dashed var(--sr-color-border-strong);
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-bg-container);
+  font-family: var(--sr-font-family-mono);
+  font-size: 11.5px;
+  color: var(--sr-color-text-secondary);
+}
+.state b { color: var(--sr-color-primary); font-weight: 600; }
+
+/* ---------- 区块 ---------- */
+section {
+  padding-top: var(--sr-space-6);
+  margin-top: var(--sr-space-6);
+  border-top: 1px solid var(--sr-color-border);
+}
+
+h2 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-3);
+  margin: 0 0 var(--sr-space-1);
+  font-size: var(--sr-font-size-xl);
+  line-height: var(--sr-line-height-xl);
+  letter-spacing: -0.01em;
+}
+h2 .num {
+  flex: 0 0 auto;
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sr-color-primary);
+  background: var(--sr-color-primary-alpha-12);
+  border: 1px solid var(--sr-color-primary-alpha-25);
+  border-radius: var(--sr-radius-base);
+  padding: 1px 6px;
+  letter-spacing: .04em;
+}
+
+.lead {
+  margin: 0 0 var(--sr-space-5);
+  color: var(--sr-color-text-secondary);
+  font-size: var(--sr-font-size-sm);
+}
+
+h3 {
+  font-size: var(--sr-font-size-md);
+  line-height: var(--sr-line-height-md);
+  margin: var(--sr-space-6) 0 var(--sr-space-3);
+}
+
+p { margin: 0 0 var(--sr-space-3); }
+ul { margin: 0 0 var(--sr-space-4); padding-left: 20px; }
+li { margin-bottom: 4px; }
+li::marker { color: var(--sr-color-primary); }
+
+/* ---------- 通用卡片 ---------- */
+.card {
+  background: var(--sr-color-bg-container);
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  box-shadow: var(--sr-shadow-sm);
+  padding: var(--sr-space-4);
+}
+
+/* ---------- L1/L2/L3 分层图 ---------- */
+.layers { display: grid; gap: var(--sr-space-2); }
+
+.layer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sr-space-3);
+  padding: var(--sr-space-3) var(--sr-space-4);
+  border-radius: var(--sr-radius-md);
+  border: 1px solid var(--sr-color-border);
+  background: var(--sr-color-bg-container);
+}
+.layer__tag {
+  flex: 0 0 auto;
+  font-family: var(--sr-font-family-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--sr-radius-sm);
+  letter-spacing: .04em;
+}
+.layer--l1 .layer__tag { background: rgba(255, 122, 69, .14); color: var(--sr-sunset-600); }
+.layer--l2 .layer__tag { background: rgba(122, 100, 181, .14); color: var(--sr-dusk-600); }
+.layer--l3 .layer__tag { background: rgba(37, 120, 245, .12); color: var(--sr-info-600); }
+[data-sr-theme='dark'] .layer--l1 .layer__tag { color: var(--sr-sunset-300); }
+[data-sr-theme='dark'] .layer--l2 .layer__tag { color: var(--sr-dusk-300); }
+[data-sr-theme='dark'] .layer--l3 .layer__tag { color: var(--sr-info-300); }
+.layer__body { min-width: 0; }
+.layer__title { font-size: var(--sr-font-size-sm); font-weight: 600; margin-bottom: 2px; }
+.layer__vars {
+  font-family: var(--sr-font-family-mono);
+  font-size: 11.5px;
+  color: var(--sr-color-text-secondary);
+  word-break: break-all;
+}
+.layer__arrow {
+  text-align: center;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ---------- 色板 ---------- */
+.series { margin-bottom: var(--sr-space-3); }
+
+.series__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sr-space-2);
+  margin-bottom: 5px;
+}
+.series__name {
+  font-family: var(--sr-font-family-mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+.series__role {
+  font-size: 11px;
+  color: var(--sr-color-text-tertiary);
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2px;
+  border-radius: var(--sr-radius-sm);
+  overflow: hidden;
+}
+
+.swatch {
+  position: relative;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: transform .15s var(--sr-motion-easing-standard);
+}
+.swatch:hover { transform: translateY(-2px); z-index: 2; }
+.swatch:focus-visible {
+  outline: 2px solid var(--sr-color-primary);
+  outline-offset: 1px;
+  z-index: 3;
+}
+
+.swatch__chip {
+  height: 42px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 3px 4px;
+  font-family: var(--sr-font-family-mono);
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.swatch__meta {
+  padding: 3px 4px 5px;
+  background: var(--sr-color-bg-container);
+  font-family: var(--sr-font-family-mono);
+  font-size: 9px;
+  line-height: 1.35;
+  color: var(--sr-color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.swatch__meta b {
+  display: block;
+  color: var(--sr-color-text-secondary);
+  font-weight: 600;
+  font-size: 9.5px;
+}
+
+/* 语义层快照 */
+.semantic {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+  gap: var(--sr-space-2);
+  margin-top: var(--sr-space-4);
+}
+
+.semantic__item {
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-3);
+  padding: var(--sr-space-2) var(--sr-space-3);
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-bg-container);
+  cursor: pointer;
+  border-left-width: 1px;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color .18s, box-shadow .18s;
+}
+.semantic__item:hover {
+  border-color: var(--sr-color-primary);
+  box-shadow: var(--sr-shadow-sm);
+}
+
+.semantic__chip {
+  width: 30px; height: 30px;
+  flex: 0 0 auto;
+  border-radius: var(--sr-radius-base);
+  border: 1px solid var(--sr-color-border);
+}
+.semantic__text { min-width: 0; }
+.semantic__name {
+  display: block;
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+  color: var(--sr-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.semantic__chain {
+  display: block;
+  font-family: var(--sr-font-family-mono);
+  font-size: 9.5px;
+  color: var(--sr-color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- 字号 ---------- */
+.type-row {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: var(--sr-space-4);
+  align-items: baseline;
+  padding: var(--sr-space-3) 0;
+  border-bottom: 1px solid var(--sr-color-border-subtle);
+}
+.type-row:last-child { border-bottom: 0; }
+
+.type-row__meta {
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+  color: var(--sr-color-text-tertiary);
+  line-height: 1.6;
+}
+.type-row__meta b {
+  display: block;
+  color: var(--sr-color-primary);
+  font-weight: 600;
+  font-size: 11.5px;
+}
+.type-row__sample { min-width: 0; overflow: hidden; }
+.type-row__sample .latin { color: var(--sr-color-text); }
+.type-row__sample .dim { color: var(--sr-color-text-tertiary); font-size: 10.5px; margin-left: var(--sr-space-2); font-family: var(--sr-font-family-mono); }
+
+/* ---------- 间距 ---------- */
+.space-row {
+  display: grid;
+  grid-template-columns: 132px 60px 1fr;
+  gap: var(--sr-space-3);
+  align-items: center;
+  padding: 3px 0;
+}
+.space-row__name {
+  font-family: var(--sr-font-family-mono);
+  font-size: 11.5px;
+  color: var(--sr-color-text-secondary);
+}
+.space-row__val {
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+  color: var(--sr-color-text-tertiary);
+  text-align: right;
+}
+.space-row__bar-wrap {
+  background: var(--sr-color-bg-sunken);
+  border-radius: var(--sr-radius-sm);
+  height: 16px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.space-row__bar {
+  height: 100%;
+  border-radius: var(--sr-radius-sm);
+  background: linear-gradient(90deg, var(--sr-sunset-500), var(--sr-ember-500));
+  opacity: .85;
+  min-width: 1px;
+}
+
+/* ---------- 圆角 / 阴影 ---------- */
+.variant-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--sr-color-text-tertiary);
+  margin-bottom: var(--sr-space-2);
+}
+.variant-note b { color: var(--sr-color-primary); font-family: var(--sr-font-family-mono); }
+
+.grid-radius {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: var(--sr-space-3);
+}
+
+.radius-cell { text-align: center; }
+.radius-cell__box {
+  height: 66px;
+  /* 用主色淡底而非灰底：圆角轮廓在小尺寸下也能辨认 */
+  background: var(--sr-color-primary-alpha-12);
+  border: 1px solid var(--sr-color-primary-alpha-25);
+  margin-bottom: 5px;
+}
+.radius-cell__name {
+  font-family: var(--sr-font-family-mono);
+  font-size: 10px;
+  color: var(--sr-color-text-secondary);
+  display: block;
+}
+.radius-cell__val {
+  font-family: var(--sr-font-family-mono);
+  font-size: 9.5px;
+  color: var(--sr-color-text-tertiary);
+  display: block;
+}
+
+.grid-shadow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--sr-space-6);
+  /* 垫一层底色：浅阴影在白底上几乎不可见，无法验收 */
+  padding: var(--sr-space-6);
+  background: var(--sr-color-bg-sunken);
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-lg);
+}
+
+.shadow-cell { text-align: center; }
+.shadow-cell__box {
+  height: 62px;
+  background: var(--sr-color-bg-container);
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  margin-bottom: var(--sr-space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sr-font-family-mono);
+  font-size: 10px;
+  color: var(--sr-color-text-tertiary);
+}
+.shadow-cell__name {
+  font-family: var(--sr-font-family-mono);
+  font-size: 10.5px;
+  color: var(--sr-color-text-secondary);
+  display: block;
+}
+.shadow-cell__val {
+  font-family: var(--sr-font-family-mono);
+  font-size: 9px;
+  color: var(--sr-color-text-tertiary);
+  display: block;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+/* ---------- 质感对照 ---------- */
+.surface-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sr-space-4);
+}
+@media (max-width: 720px) { .surface-demo { grid-template-columns: 1fr; } }
+
+.surface-demo__box {
+  padding: var(--sr-space-4);
+  border-radius: var(--sr-radius-base);
+  border: 1px solid var(--sr-color-border);
+  background: var(--sr-color-bg-container);
+  box-shadow: var(--sr-shadow-md);
+  min-height: 96px;
+}
+.surface-demo__box--glass {
+  background: rgba(255, 255, 255, var(--sr-glass-opacity));
+  -webkit-backdrop-filter: var(--sr-glass-filter);
+  backdrop-filter: var(--sr-glass-filter);
+}
+[data-sr-theme='dark'] .surface-demo__box--glass {
+  background: rgba(28, 32, 39, var(--sr-glass-opacity));
+}
+.surface-demo__label {
+  font-family: var(--sr-font-family-mono);
+  font-size: 10px;
+  color: var(--sr-color-text-tertiary);
+  margin-bottom: 4px;
+}
+.surface-demo__title { font-size: var(--sr-font-size-md); font-weight: 600; margin-bottom: 2px; }
+.surface-demo__desc { font-size: var(--sr-font-size-xs); color: var(--sr-color-text-secondary); }
+
+/* ---------- 提示块 ---------- */
+.callout {
+  position: relative;
+  margin: 0 0 var(--sr-space-4);
+  padding: var(--sr-space-3) var(--sr-space-4) var(--sr-space-3) 42px;
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-bg-container);
+  border: 1px solid var(--sr-color-border);
+  border-left: 3px solid var(--sr-color-primary);
+  font-size: var(--sr-font-size-sm);
+  box-shadow: var(--sr-shadow-sm);
+}
+.callout::before {
+  content: '!';
+  position: absolute;
+  left: 14px; top: 13px;
+  width: 17px; height: 17px;
+  border-radius: var(--sr-radius-full);
+  background: var(--sr-color-primary-alpha-12);
+  color: var(--sr-color-primary);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.callout--tip { border-left-color: var(--sr-dusk-500); }
+.callout--tip::before { content: '✓'; background: rgba(122, 100, 181, .14); color: var(--sr-dusk-600); }
+[data-sr-theme='dark'] .callout--tip::before { color: var(--sr-dusk-300); }
+
+/* ---------- 表格 ---------- */
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: var(--sr-space-4);
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-bg-container);
+}
+table { width: 100%; border-collapse: collapse; font-size: var(--sr-font-size-sm); }
+th, td {
+  text-align: left;
+  padding: 8px var(--sr-space-3);
+  border-bottom: 1px solid var(--sr-color-border);
+  vertical-align: top;
+}
+th {
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sr-color-text-tertiary);
+  background: var(--sr-color-bg-sunken);
+  white-space: nowrap;
+  font-weight: 600;
+}
+tr:last-child td { border-bottom: 0; }
+td code, th code {
+  font-family: var(--sr-font-family-mono);
+  font-size: 11.5px;
+  background: var(--sr-color-bg-sunken);
+  padding: 1px 5px;
+  border-radius: var(--sr-radius-sm);
+  white-space: nowrap;
+}
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translate(-50%, 14px);
+  padding: 8px 16px;
+  border-radius: var(--sr-radius-full);
+  background: var(--sr-night-900);
+  color: var(--sr-night-50);
+  font-size: 12px;
+  font-family: var(--sr-font-family-mono);
+  box-shadow: var(--sr-shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 200;
+  max-width: 80vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+[data-sr-theme='dark'] .toast { background: var(--sr-night-100); color: var(--sr-night-900); }
+
+/* ---------- 回顶 ---------- */
+.top-btn {
+  position: fixed;
+  right: 22px; bottom: 22px;
+  width: 38px; height: 38px;
+  border-radius: var(--sr-radius-full);
+  border: 1px solid var(--sr-color-border);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-primary);
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: var(--sr-shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+}
+.top-btn.is-show { opacity: 1; pointer-events: auto; }
+.top-btn:hover { transform: translateY(-2px); }
+
+/* ---------- 页脚 ---------- */
+.foot {
+  margin-top: var(--sr-space-12);
+  padding-top: var(--sr-space-4);
+  border-top: 1px solid var(--sr-color-border);
+  font-size: var(--sr-font-size-xs);
+  color: var(--sr-color-text-tertiary);
+  text-align: center;
+}
+
+/* ---------- 汉堡按钮 ---------- */
+.menu-btn {
+  display: none;
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 60;
+  width: 38px; height: 38px;
+  align-items: center; justify-content: center;
+  border-radius: var(--sr-radius-md);
+  border: 1px solid var(--sr-color-border);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text);
+  cursor: pointer;
+  box-shadow: var(--sr-shadow-sm);
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1080px) {
+  .sidebar {
+    width: 272px;
+    transform: translateX(-100%);
+    transition: transform .28s var(--sr-motion-easing-standard);
+  }
+  .sidebar.is-open {
+    transform: translateX(0);
+    box-shadow: var(--sr-shadow-lg);
+  }
+  .main { margin-left: 0; }
+  .wrap { padding: 0 var(--sr-space-4) var(--sr-space-12); }
+  .menu-btn { display: flex; }
+  .hero { padding-top: var(--sr-space-12); }
+}
+
+@media (max-width: 720px) {
+  .swatches { grid-template-columns: repeat(11, 62px); overflow-x: auto; }
+  .type-row { grid-template-columns: 1fr; gap: var(--sr-space-1); }
+  .space-row { grid-template-columns: 92px 46px 1fr; }
+  .hero h1 { font-size: var(--sr-font-size-2xl); line-height: var(--sr-line-height-2xl); }
+  .grid-shadow { gap: var(--sr-space-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  html { scroll-behavior: auto; }
+}
+
+@media print {
+  .sidebar, .menu-btn, .top-btn, .progress, .state { display: none; }
+  .main { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<button class="menu-btn" id="menuBtn" aria-label="打开目录">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+</button>
+
+<!-- ============ 侧边栏 ============ -->
+<aside class="sidebar" id="sidebar">
+  <header class="sidebar__head">
+    <div class="brand">
+      <span class="brand__sun"></span>
+      <span class="brand__name">SunsetReverie</span>
+    </div>
+    <div class="brand__sub">Token Gallery · v0.1</div>
+  </header>
+
+  <nav class="nav sidebar__body" id="nav">
+    <a href="#sec-layers"><span class="idx">00</span><span>分层模型</span></a>
+    <a href="#sec-color"><span class="idx">01</span><span>原始色板</span></a>
+    <a href="#sec-semantic"><span class="idx">02</span><span>语义色映射</span></a>
+    <a href="#sec-type"><span class="idx">03</span><span>字号阶梯</span></a>
+    <a href="#sec-space"><span class="idx">04</span><span>间距节奏</span></a>
+    <a href="#sec-radius"><span class="idx">05</span><span>圆角</span></a>
+    <a href="#sec-shadow"><span class="idx">06</span><span>阴影层级</span></a>
+    <a href="#sec-surface"><span class="idx">07</span><span>质感对照</span></a>
+    <a href="#sec-next"><span class="idx">08</span><span>升级路径</span></a>
+  </nav>
+
+  <footer class="sidebar__foot">
+    <div class="switch__label">明暗 data-sr-theme</div>
+    <div class="switch" id="themeSwitch">
+      <button data-theme="light" class="is-on">浅色</button>
+      <button data-theme="dark">暗色</button>
+    </div>
+    <div class="switch__label">质感 data-sr-style</div>
+    <div class="switch" id="styleSwitch">
+      <button data-style="flat" class="is-on">扁平</button>
+      <button data-style="glass">毛玻璃</button>
+    </div>
+  </footer>
+</aside>
+
+<!-- ============ 主内容 ============ -->
+<main class="main">
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero__eyebrow">Design Token · 静态验收版</div>
+    <h1>设计 Token 验证页</h1>
+    <p class="hero__desc">
+      把《夕梦 UI 组件库开发规划》第四章的 Token 约定渲染成看得见的东西：色板阶数、字号节奏、间距体系、
+      圆角与阴影的 flat / glass 双套值。用于 W1 评审对齐视觉方向。
+    </p>
+    <div class="state">
+      <span>data-sr-theme=<b id="stateTheme">light</b></span>
+      <span>data-sr-style=<b id="stateStyle">flat</b></span>
+      <span>点击任意色块可复制变量名</span>
+    </div>
+  </header>
+
+  <!-- ================= 00 分层 ================= -->
+  <section id="sec-layers">
+    <h2><span class="num">00</span>Token 分层模型</h2>
+    <p class="lead">三层单向依赖，禁止跨层引用。组件只消费 L2 或自建 L3，不得直接引用 L1 色板。</p>
+
+    <div class="layers">
+      <div class="layer layer--l1">
+        <span class="layer__tag">L1</span>
+        <div class="layer__body">
+          <div class="layer__title">原始层 Primitive</div>
+          <div class="layer__vars">--sr-sunset-500 · --sr-night-950 · --sr-space-4</div>
+        </div>
+      </div>
+      <div class="layer__arrow">↓ 语义映射（随主题 / 风格变化）</div>
+      <div class="layer layer--l2">
+        <span class="layer__tag">L2</span>
+        <div class="layer__body">
+          <div class="layer__title">语义层 Semantic</div>
+          <div class="layer__vars">--sr-color-primary → var(--sr-sunset-500)</div>
+        </div>
+      </div>
+      <div class="layer__arrow">↓ 组件内再映射</div>
+      <div class="layer layer--l3">
+        <span class="layer__tag">L3</span>
+        <div class="layer__body">
+          <div class="layer__title">组件层 Component</div>
+          <div class="layer__vars">--sr-button-bg → var(--sr-color-primary)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout--tip">
+      本页所有 UI 元素（侧栏、卡片、分割线、表格）都只用 <code>var(--sr-*)</code> 声明，没有写死颜色与圆角。
+      因此它同时验证了一件事：<strong>这套 Token 足以独立支撑一个完整页面</strong>。
+    </div>
+  </section>
+
+  <!-- ================= 01 色板 ================= -->
+  <section id="sec-color">
+    <h2><span class="num">01</span>原始色板（L1）</h2>
+    <p class="lead">8 个色系 × 11 阶。色块内数字为该色与黑/白文字的最高 WCAG 对比度，可作可读性参考。</p>
+    <div id="palette"></div>
+
+    <div class="callout">
+      <strong>暗色下主色提亮一阶</strong>：<code>--sr-color-primary</code> 在 light 指向 <code>sunset-500</code>，
+      在 dark 指向 <code>sunset-400</code>。这是暗色主题最容易被忽略的一处，切换右上角主题即可看到差异。
+    </div>
+  </section>
+
+  <!-- ================= 02 语义色 ================= -->
+  <section id="sec-semantic">
+    <h2><span class="num">02</span>语义色映射（L2）</h2>
+    <p class="lead">显示当前主题下 CSS 变量解析后的实际色值。切换明暗后本区块实时变化，而上方色板保持不变——这正是 L1 / L2 的分工。</p>
+    <div class="semantic" id="semantic"></div>
+
+    <div class="table-wrap" style="margin-top:var(--sr-space-4)">
+      <table>
+        <thead>
+          <tr><th>语义 Token</th><th>light</th><th>dark</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>--sr-color-bg-page</code></td><td><code>night-50</code></td><td><code>night-950</code></td></tr>
+          <tr><td><code>--sr-color-bg-container</code></td><td><code>#FFFFFF</code></td><td><code>night-900</code></td></tr>
+          <tr><td><code>--sr-color-text</code></td><td><code>night-900</code></td><td><code>night-50</code></td></tr>
+          <tr><td><code>--sr-color-border</code></td><td><code>night-200</code></td><td><code>night-700</code></td></tr>
+          <tr><td><code>--sr-color-primary</code></td><td><code>sunset-500</code></td><td><code>sunset-400</code></td></tr>
+          <tr><td><code>--sr-color-on-primary</code></td><td><code>#FFFFFF</code></td><td><code>#1A0E05</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= 03 字号 ================= -->
+  <section id="sec-type">
+    <h2><span class="num">03</span>字号阶梯</h2>
+    <p class="lead">8 档字号与配套行高。右侧为真实渲染效果，用于判断层级对比是否足够。</p>
+    <div id="typeScale"></div>
+  </section>
+
+  <!-- ================= 04 间距 ================= -->
+  <section id="sec-space">
+    <h2><span class="num">04</span>间距节奏</h2>
+    <p class="lead">4px 基数。变量名直接使用数值（<code>--sr-space-4</code> = 16px），避免「space-3 到底是 8 还是 12」的记忆成本。</p>
+    <div id="spacing"></div>
+  </section>
+
+  <!-- ================= 05 圆角 ================= -->
+  <section id="sec-radius">
+    <h2><span class="num">05</span>圆角</h2>
+    <p class="lead">
+      <span class="variant-note">当前风格 <b id="radiusStyle">flat</b> —— 切换侧栏的「质感」可对比 flat 与 glass 两套值。</span>
+      <br />注意 <code>--sr-radius-base</code> 是可变 Token：flat 6px、glass 12px，因此组件必须写 <code>var(--sr-radius-base)</code> 而不是硬编码 6px。
+    </p>
+    <div class="grid-radius" id="radiusGrid"></div>
+  </section>
+
+  <!-- ================= 06 阴影 ================= -->
+  <section id="sec-shadow">
+    <h2><span class="num">06</span>阴影层级</h2>
+    <p class="lead">
+      <span class="variant-note">当前风格 <b id="shadowStyle">flat</b> —— flat 用紧凑硬边表达层次，glass 用高扩散低透明度制造悬浮。</span>
+    </p>
+    <div class="grid-shadow" id="shadowGrid"></div>
+
+    <div class="callout">
+      <strong>暗色阴影需补偿</strong>：文档 4.6 只给了亮色阴影值，暗底上 <code>rgba(16,20,26,.06)</code> 几乎不可见。
+      本页在暗色下改用黑色并提高不透明度（<code>rgba(0,0,0,.5~.8)</code>），此项需回填到 <code>tokens.css</code> 与规划文档。
+    </div>
+  </section>
+
+  <!-- ================= 07 质感对照 ================= -->
+  <section id="sec-surface">
+    <h2><span class="num">07</span>质感对照</h2>
+    <p class="lead">同一个「容器表面」在两种风格下的差异：圆角、阴影、模糊、边框高光。左侧始终是 flat，右侧始终是 glass，不随开关变化。</p>
+
+    <div class="surface-demo">
+      <div class="surface-demo__box surface-demo__box--flat">
+        <div class="surface-demo__label">data-sr-style="flat"</div>
+        <div class="surface-demo__title">扁平表面</div>
+        <div class="surface-demo__desc">不透明背景 · 6px 圆角 · 紧凑阴影 · 无模糊</div>
+      </div>
+      <div class="surface-demo__box surface-demo__box--glass">
+        <div class="surface-demo__label">data-sr-style="glass"</div>
+        <div class="surface-demo__title">毛玻璃表面</div>
+        <div class="surface-demo__desc">半透明背景 · 12px 圆角 · 高扩散阴影 · blur(16px)</div>
+      </div>
+    </div>
+
+    <div class="callout callout--tip" style="margin-top:var(--sr-space-4)">
+      右侧玻璃盒真实使用了 <code>backdrop-filter</code>，能透过它看到背后的顶部光晕。
+      这也说明毛玻璃的前提是<strong>背后必须有内容或颜色</strong>，否则模糊出来是一片灰。
+    </div>
+  </section>
+
+  <!-- ================= 08 升级路径 ================= -->
+  <section id="sec-next">
+    <h2><span class="num">08</span>升级路径</h2>
+    <p class="lead">本页是手写静态版，仅用于 W1 评审。它与 <code>tokens.ts</code> 之间还没有约束关系，因此数值可能漂移。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>阶段</th><th>形态</th><th>数据来源</th><th>风险</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">现在</td>
+            <td>静态单文件（本页）</td>
+            <td>手写，与文档第四章对齐</td>
+            <td>Token 调整后需人工同步</td>
+          </tr>
+          <tr>
+            <td class="mono">W2</td>
+            <td>生成式 Token Gallery</td>
+            <td><code>internal/tokens</code> 编译产物</td>
+            <td>需补一条生成脚本</td>
+          </tr>
+          <tr>
+            <td class="mono">W7+</td>
+            <td>文档站 <code>design/token.md</code></td>
+            <td>同上，作为 VitePress 页面</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>红线：页面里的值不能成为第二份真相。</strong>
+      W2 升级时必须改成从 <code>tokens.ts</code> 读取并注入模板，禁止继续手写十六进制值；
+      否则 token 一改，这一页就变成过期的假文档。
+    </div>
+  </section>
+
+  <div class="foot">
+    SunsetReverie-UI · Token Gallery v0.1 · 2026-11-05
+    <br />对应文档第四章《设计系统与 Token 规范》
+  </div>
+
+</div><!-- /.wrap -->
+</main>
+
+<button class="top-btn" id="topBtn" aria-label="回到顶部">↑</button>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict'
+
+  var root = document.documentElement
+  var rootStyle = getComputedStyle(root)
+
+  /* ========== 通用工具 ========== */
+
+  /**
+   * 读取当前根元素上的 CSS 变量值
+   * @param {string} name 变量名，如 '--sr-sunset-500'
+   * @returns {string} 变量值（空字符串表示未定义）
+   */
+  function cssVar(name) {
+    return rootStyle.getPropertyValue(name).trim()
+  }
+
+  /**
+   * 把 #RRGGBB 转为 RGB 分量
+   * @param {string} hex 十六进制颜色
+   * @returns {{ r: number, g: number, b: number }} RGB 分量
+   */
+  function hexToRgb(hex) {
+    var h = hex.replace('#', '').trim()
+    if (h.length === 3) h = h.split('').map(function (c) { return c + c }).join('')
+    return {
+      r: parseInt(h.slice(0, 2), 16),
+      g: parseInt(h.slice(2, 4), 16),
+      b: parseInt(h.slice(4, 6), 16)
+    }
+  }
+
+  /**
+   * sRGB 分量转线性值（WCAG 相对亮度计算用）
+   * @param {number} c 0~255 的分量
+   * @returns {number} 线性值
+   */
+  function toLinear(c) {
+    var v = c / 255
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+  }
+
+  /**
+   * 计算 WCAG 相对亮度
+   * @param {string} hex 十六进制颜色
+   * @returns {number} 相对亮度 0~1
+   */
+  function luminance(hex) {
+    var c = hexToRgb(hex)
+    return 0.2126 * toLinear(c.r) + 0.7152 * toLinear(c.g) + 0.0722 * toLinear(c.b)
+  }
+
+  /**
+   * 计算两色对比度
+   * @param {string} a 颜色一
+   * @param {string} b 颜色二
+   * @returns {number} 对比度，1~21
+   */
+  function contrast(a, b) {
+    var l1 = luminance(a), l2 = luminance(b)
+    var hi = Math.max(l1, l2), lo = Math.min(l1, l2)
+    return (hi + 0.05) / (lo + 0.05)
+  }
+
+  /**
+   * 在指定底色上选择可读的文字颜色
+   * @param {string} bg 背景色
+   * @returns {{ color: string, ratio: number }} 文字色与对比度
+   */
+  function readableOn(bg) {
+    var white = contrast(bg, '#ffffff')
+    var black = contrast(bg, '#111111')
+    return white >= black
+      ? { color: '#ffffff', ratio: white }
+      : { color: '#111111', ratio: black }
+  }
+
+  /** 简易防抖，避免快速滚动时重复计算 */
+  function raf(fn) {
+    var ticking = false
+    return function () {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(function () { fn(); ticking = false })
+    }
+  }
+
+  /* ========== 色板数据（结构信息，色值全部从 CSS 变量读取） ========== */
+
+  var SERIES = [
+    { key: 'sunset', label: 'sunset', role: '主色 · 落日橙' },
+    { key: 'dusk', label: 'dusk', role: '辅色 · 霞紫' },
+    { key: 'ember', label: 'ember', role: '强调 · 霞粉' },
+    { key: 'night', label: 'night', role: '中性 · 暮蓝灰' },
+    { key: 'success', label: 'success', role: '语义 · 成功' },
+    { key: 'warning', label: 'warning', role: '语义 · 警告' },
+    { key: 'danger', label: 'danger', role: '语义 · 危险' },
+    { key: 'info', label: 'info', role: '语义 · 信息' }
+  ]
+
+  var STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+
+  /** 渲染 L1 色板：每色系一行，每阶一格 */
+  function renderPalette() {
+    var host = document.getElementById('palette')
+    var html = ''
+
+    SERIES.forEach(function (s) {
+      html += '<div class="series">'
+      html += '<div class="series__head">'
+      html += '<span class="series__name">' + s.label + '</span>'
+      html += '<span class="series__role">' + s.role + '</span>'
+      html += '</div><div class="swatches">'
+
+      STEPS.forEach(function (step) {
+        var name = '--sr-' + s.key + '-' + step
+        var value = cssVar(name)
+        if (!value) return
+        var txt = readableOn(value)
+        html += '<button class="swatch" data-var="' + name + '" title="' + name + ' · ' + value +
+          ' · 对比度 ' + txt.ratio.toFixed(2) + '">' +
+          '<span class="swatch__chip" style="background:' + value + ';color:' + txt.color + '">' +
+          txt.ratio.toFixed(1) + '</span>' +
+          '<span class="swatch__meta"><b>' + step + '</b>' + value.toUpperCase() + '</span>' +
+          '</button>'
+      })
+
+      html += '</div></div>'
+    })
+
+    host.innerHTML = html
+  }
+
+  /* ========== 语义色 ========== */
+
+  var SEMANTIC_ITEMS = [
+    { name: '--sr-color-primary', chain: 'primary' },
+    { name: '--sr-color-primary-hover', chain: 'primary-hover' },
+    { name: '--sr-color-bg-page', chain: 'bg-page' },
+    { name: '--sr-color-bg-container', chain: 'bg-container' },
+    { name: '--sr-color-bg-sunken', chain: 'bg-sunken' },
+    { name: '--sr-color-text', chain: 'text' },
+    { name: '--sr-color-text-secondary', chain: 'text-secondary' },
+    { name: '--sr-color-border', chain: 'border' },
+    { name: '--sr-color-border-strong', chain: 'border-strong' },
+    { name: '--sr-color-on-primary', chain: 'on-primary' },
+    { name: '--sr-color-mask', chain: 'mask' }
+  ]
+
+  /** 渲染语义色快照：读取当前主题下的计算值 */
+  function renderSemantic() {
+    var host = document.getElementById('semantic')
+    var html = ''
+
+    SEMANTIC_ITEMS.forEach(function (item) {
+      var value = cssVar(item.name)
+      if (!value) return
+      // 取色块需要真实颜色：优先直接用变量，透明值用棋盘格兜底
+      html += '<button class="semantic__item" data-var="' + item.name + '" title="' + item.name + '">' +
+        '<span class="semantic__chip" style="background:' + value + '"></span>' +
+        '<span class="semantic__text">' +
+        '<span class="semantic__name">' + item.name + '</span>' +
+        '<span class="semantic__chain">当前值 ' + value.toUpperCase() + '</span>' +
+        '</span></button>'
+    })
+
+    host.innerHTML = html
+  }
+
+  /* ========== 字号 ========== */
+
+  var TYPE_SCALE = [
+    { key: 'xs', label: '辅助说明 / 徽标' },
+    { key: 'sm', label: '表格 / 表单标签' },
+    { key: 'base', label: '正文默认' },
+    { key: 'md', label: '强调正文' },
+    { key: 'lg', label: '卡片标题' },
+    { key: 'xl', label: '区块标题' },
+    { key: '2xl', label: '页面标题' },
+    { key: '3xl', label: '首屏标题' }
+  ]
+
+  /** 渲染字号阶梯，用真实文本展示渲染效果 */
+  function renderType() {
+    var host = document.getElementById('typeScale')
+    var html = ''
+
+    TYPE_SCALE.forEach(function (t) {
+      var size = cssVar('--sr-font-size-' + t.key)
+      var lh = cssVar('--sr-line-height-' + t.key)
+      html += '<div class="type-row">' +
+        '<div class="type-row__meta"><b>--sr-font-size-' + t.key + '</b>' +
+        size + ' / ' + lh + '<br />' + t.label + '</div>' +
+        '<div class="type-row__sample">' +
+        '<span style="font-size:' + size + ';line-height:' + lh + '">夕梦 SunsetReverie 0123</span>' +
+        '<span class="dim">' + size + '</span>' +
+        '</div></div>'
+    })
+
+    host.innerHTML = html
+  }
+
+  /* ========== 间距 ========== */
+
+  var SPACING = [
+    { name: '0', px: 0 }, { name: '0-5', px: 2 }, { name: '1', px: 4 }, { name: '1-5', px: 6 },
+    { name: '2', px: 8 }, { name: '3', px: 12 }, { name: '4', px: 16 }, { name: '5', px: 20 },
+    { name: '6', px: 24 }, { name: '8', px: 32 }, { name: '10', px: 40 }, { name: '12', px: 48 },
+    { name: '16', px: 64 }
+  ]
+
+  /** 渲染间距节奏，条形宽度等于实际像素值 */
+  function renderSpacing() {
+    var host = document.getElementById('spacing')
+    var html = ''
+
+    SPACING.forEach(function (s) {
+      html += '<div class="space-row">' +
+        '<span class="space-row__name">--sr-space-' + s.name + '</span>' +
+        '<span class="space-row__val">' + s.px + 'px</span>' +
+        '<span class="space-row__bar-wrap">' +
+        '<span class="space-row__bar" style="width:' + s.px + 'px"></span>' +
+        '</span></div>'
+    })
+
+    host.innerHTML = html
+  }
+
+  /* ========== 圆角 ========== */
+
+  var RADIUS_KEYS = ['none', 'sm', 'base', 'md', 'lg', 'xl', '2xl', 'full']
+
+  /** 渲染圆角方块，当前风格下实时取值 */
+  function renderRadius() {
+    var host = document.getElementById('radiusGrid')
+    var html = ''
+
+    RADIUS_KEYS.forEach(function (k) {
+      var value = cssVar('--sr-radius-' + k)
+      html += '<div class="radius-cell">' +
+        '<div class="radius-cell__box" style="border-radius:' + value + '"></div>' +
+        '<span class="radius-cell__name">--sr-radius-' + k + '</span>' +
+        '<span class="radius-cell__val">' + value + '</span>' +
+        '</div>'
+    })
+
+    host.innerHTML = html
+    document.getElementById('radiusStyle').textContent = root.getAttribute('data-sr-style')
+  }
+
+  /* ========== 阴影 ========== */
+
+  var SHADOW_KEYS = ['sm', 'md', 'lg', 'xl', 'inset']
+
+  /** 渲染阴影卡片，直接用变量作为 box-shadow */
+  function renderShadow() {
+    var host = document.getElementById('shadowGrid')
+    var html = ''
+
+    SHADOW_KEYS.forEach(function (k) {
+      html += '<div class="shadow-cell">' +
+        '<div class="shadow-cell__box" style="box-shadow:var(--sr-shadow-' + k + ')">' +
+        '--sr-shadow-' + k + '</div>' +
+        '<span class="shadow-cell__name">--sr-shadow-' + k + '</span>' +
+        '<span class="shadow-cell__val" data-shadow="' + k + '"></span>' +
+        '</div>'
+    })
+
+    host.innerHTML = html
+    document.getElementById('shadowStyle').textContent = root.getAttribute('data-sr-style')
+    fillShadowValues()
+  }
+
+  /** 回填阴影的实际字符串值（getComputedStyle 读不出 box-shadow 变量本身，需从声明读） */
+  function fillShadowValues() {
+    var probe = document.createElement('div')
+    document.body.appendChild(probe)
+    var nodes = document.querySelectorAll('[data-shadow]')
+
+    Array.prototype.forEach.call(nodes, function (node) {
+      var key = node.getAttribute('data-shadow')
+      probe.style.boxShadow = 'var(--sr-shadow-' + key + ')'
+      var computed = getComputedStyle(probe).boxShadow
+      node.textContent = computed || '—'
+    })
+
+    document.body.removeChild(probe)
+  }
+
+  /* ========== 交互：主题 / 风格 ========== */
+
+  var THEME_KEY = 'sr-token-gallery-theme'
+  var STYLE_KEY = 'sr-token-gallery-style'
+
+  /**
+   * 应用主题
+   * @param {string} mode 'light' | 'dark'
+   */
+  function setTheme(mode) {
+    root.setAttribute('data-sr-theme', mode)
+    document.getElementById('stateTheme').textContent = mode
+    syncSwitch('themeSwitch', 'theme', mode)
+    try { localStorage.setItem(THEME_KEY, mode) } catch (e) {}
+    renderSemantic()
+  }
+
+  /**
+   * 应用质感风格
+   * @param {string} style 'flat' | 'glass'
+   */
+  function setStyle(style) {
+    root.setAttribute('data-sr-style', style)
+    document.getElementById('stateStyle').textContent = style
+    syncSwitch('styleSwitch', 'style', style)
+    try { localStorage.setItem(STYLE_KEY, style) } catch (e) {}
+    // 圆角与阴影的值随风格变化，需要重算
+    renderRadius()
+    renderShadow()
+  }
+
+  /**
+   * 同步分段控件的选中态
+   * @param {string} groupId 控件容器 id
+   * @param {string} attr data 属性名
+   * @param {string} value 当前值
+   */
+  function syncSwitch(groupId, attr, value) {
+    var buttons = document.querySelectorAll('#' + groupId + ' button')
+    Array.prototype.forEach.call(buttons, function (b) {
+      b.classList.toggle('is-on', b.getAttribute('data-' + attr) === value)
+    })
+  }
+
+  document.getElementById('themeSwitch').addEventListener('click', function (e) {
+    var btn = e.target.closest('button')
+    if (btn) setTheme(btn.getAttribute('data-theme'))
+  })
+
+  document.getElementById('styleSwitch').addEventListener('click', function (e) {
+    var btn = e.target.closest('button')
+    if (btn) setStyle(btn.getAttribute('data-style'))
+  })
+
+  /* ========== 交互：点击复制变量名 ========== */
+
+  var toastEl = document.getElementById('toast')
+  var toastTimer = null
+
+  /**
+   * 显示轻提示
+   * @param {string} msg 提示文案
+   */
+  function showToast(msg) {
+    toastEl.textContent = msg
+    toastEl.classList.add('is-show')
+    if (toastTimer) clearTimeout(toastTimer)
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('is-show')
+    }, 1600)
+  }
+
+  /**
+   * 复制文本到剪贴板，失败时降级为选中提示
+   * @param {string} text 待复制文本
+   */
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('已复制 ' + text)
+      }, function () {
+        showToast('复制失败，请手动选择：' + text)
+      })
+    } else {
+      showToast('当前环境不支持剪贴板：' + text)
+    }
+  }
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-var]')
+    if (!el) return
+    copyText(el.getAttribute('data-var'))
+  })
+
+  /* 键盘可达：色块是 button，回车/空格天然触发 click，无需额外处理 */
+
+  /* ========== 滚动：进度条 / 回顶 / 导航高亮 ========== */
+
+  var progress = document.getElementById('progress')
+  var topBtn = document.getElementById('topBtn')
+
+  /** 更新进度条与回顶按钮 */
+  function onScroll() {
+    var h = document.documentElement
+    var max = h.scrollHeight - h.clientHeight
+    progress.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%'
+    topBtn.classList.toggle('is-show', h.scrollTop > 500)
+  }
+
+  window.addEventListener('scroll', raf(function () {
+    onScroll()
+    highlightNav()
+  }), { passive: true })
+
+  topBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav a'))
+  var navTargets = navLinks
+    .map(function (a) { return document.querySelector(a.getAttribute('href')) })
+    .filter(Boolean)
+
+  /** 高亮当前滚动到的区块 */
+  function highlightNav() {
+    var pos = window.scrollY + 110
+    var active = navTargets[0]
+    navTargets.forEach(function (s) { if (s.offsetTop <= pos) active = s })
+    if (!active) return
+    navLinks.forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + active.id)
+    })
+  }
+
+  /* ========== 移动端菜单 ========== */
+
+  var sidebar = document.getElementById('sidebar')
+  document.getElementById('menuBtn').addEventListener('click', function () {
+    sidebar.classList.toggle('is-open')
+  })
+  document.getElementById('nav').addEventListener('click', function (e) {
+    if (e.target.closest('a')) sidebar.classList.remove('is-open')
+  })
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') sidebar.classList.remove('is-open')
+  })
+
+  /* ========== 初始化 ========== */
+
+  /** 读取持久化偏好，否则跟随系统主题 */
+  function initPreferences() {
+    var theme = 'light'
+    var style = 'flat'
+    try {
+      var t = localStorage.getItem(THEME_KEY)
+      var s = localStorage.getItem(STYLE_KEY)
+      if (t === 'light' || t === 'dark') theme = t
+      else if (window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark'
+      if (s === 'flat' || s === 'glass') style = s
+    } catch (e) {
+      // 隐私模式下 localStorage 可能抛异常，直接用默认值
+    }
+    setTheme(theme)
+    setStyle(style)
+  }
+
+  renderPalette()
+  renderType()
+  renderSpacing()
+  initPreferences()
+  onScroll()
+  highlightNav()
+})()
+</script>
+
+</body>
+</html>

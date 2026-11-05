@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [
+    ["@sunset-reverie/ui", "@sunset-reverie/nuxt", "@sunset-reverie/resolver", "@sunset-reverie/icons"]
+  ],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": ["@sunset-reverie/internal-tokens", "@sunset-reverie/examples"]
+}

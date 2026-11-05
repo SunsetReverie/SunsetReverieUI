@@ -1,0 +1,15 @@
+# SunsetReverie-UI monorepo
+# 决策 D-01：一期使用纯 pnpm --filter 编排，不引入 Turborepo
+packages:
+  - 'packages/*'
+  - 'internal/*'
+  # 以下成员在后续阶段加入（提前声明会因目录不存在而告警）
+  # - 'playground-vue3'   # W3
+  # - 'playground-nuxt4'  # W7
+  # - 'docs'              # W7（VitePress）
+
+# pnpm 10+ 默认拦截依赖的构建脚本（防供应链攻击）。
+# pnpm 12 使用 allowBuilds 字段；由 `pnpm approve-builds` 自动写入。
+# esbuild 需要执行 postinstall 安装平台二进制。
+allowBuilds:
+  esbuild: true

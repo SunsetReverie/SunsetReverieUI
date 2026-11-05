@@ -1,0 +1,8 @@
+// 基础样式入口：CSS 变量 + reset
+// 编译产物：dist/base.css
+// 说明：此文件不含任何组件样式，全站只需引入一次
+
+// 生成物必须用 (inline) 内联，否则 Less 会把它当作运行期 @import 原样输出
+@import (inline) './primitives.generated.css';
+@import (inline) './tokens.css';
+@import './reset.less';

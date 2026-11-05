@@ -1,0 +1,25 @@
+{
+  "name": "@sunset-reverie/nuxt",
+  "version": "0.1.0",
+  "description": "夕梦 UI 的 Nuxt Module",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^3.14.0"
+  },
+  "peerDependencies": {
+    "nuxt": "^4.0.0"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('[@sunset-reverie/nuxt] 构建在 W7 接入 @nuxt/module-builder')\""
+  }
+}

@@ -1,0 +1,67 @@
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import pluginVue from 'eslint-plugin-vue'
+import prettier from 'eslint-config-prettier'
+import globals from 'globals'
+
+export default tseslint.config(
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/components.d.ts',
+      'docs/**',
+    ],
+  },
+
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...pluginVue.configs['flat/recommended'],
+
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parserOptions: {
+        // .vue 内的 <script lang="ts"> 交给 typescript-eslint 解析
+        parser: tseslint.parser,
+        extraFileExtensions: ['.vue'],
+        sourceType: 'module',
+      },
+    },
+  },
+
+  {
+    files: ['**/*.{js,mjs,ts,vue}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    rules: {
+      // 组件名必须 PascalCase（第二章命名规范）
+      'vue/component-definition-name-casing': ['error', 'PascalCase'],
+      // 组件必须有显式 name，便于 devtools 与按需注册
+      'vue/require-name-property': 'error',
+      'vue/multi-word-component-names': 'off',
+      'vue/attributes-order': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
+  },
+
+  {
+    // 构建脚本需要输出日志
+    files: ['scripts/**/*.mjs', 'internal/**/scripts/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
+
+  prettier,
+)

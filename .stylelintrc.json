@@ -1,0 +1,27 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "customSyntax": "postcss-less",
+  "rules": {
+    "selector-class-pattern": [
+      "^(sr-[a-z0-9]+(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?|is-[a-z0-9-]+)$",
+      {
+        "message": "类名必须符合 sr- 前缀 + BEM 规范，状态类用 is- 前缀"
+      }
+    ],
+    "custom-property-pattern": [
+      "^sr-[a-z0-9-]+$",
+      {
+        "message": "CSS 变量必须以 --sr- 开头"
+      }
+    ],
+    "at-rule-no-unknown": [true, { "ignoreAtRules": ["plugin"] }],
+    "import-notation": null,
+    "property-no-vendor-prefix": [
+      true,
+      {
+        "ignoreProperties": ["text-size-adjust"],
+        "message": "除 text-size-adjust 外不使用厂商前缀（Safari 仍需 -webkit-text-size-adjust）"
+      }
+    ]
+  }
+}

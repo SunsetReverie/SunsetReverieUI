@@ -1,0 +1,38 @@
+# 依赖
+node_modules/
+
+# 构建产物（发版时由 CI 推到 <tag>-dist 兜底分支，主分支不入库）
+dist/
+*.tsbuildinfo
+
+# Token 生成物（由 pnpm build:tokens 产出，源文件是 internal/tokens/src/tokens.ts）
+packages/ui/src/tokens/generated/
+packages/ui/src/styles/base/primitives.generated.css
+
+# 测试与缓存
+coverage/
+.vite/
+.eslintcache
+.stylelintcache
+
+# Nuxt
+.nuxt/
+.output/
+.nitro/
+.cache/
+
+# VitePress
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
+# 环境与日志
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 系统
+.DS_Store
+Thumbs.db

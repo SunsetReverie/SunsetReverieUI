@@ -1,0 +1,25 @@
+{
+  "name": "@sunset-reverie/resolver",
+  "version": "0.1.0",
+  "description": "夕梦 UI 按需引入解析器（unplugin-vue-components）",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "vite": "^5.4.9",
+    "vite-plugin-dts": "^4.2.4"
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  }
+}

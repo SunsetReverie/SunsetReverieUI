@@ -1,0 +1,47 @@
+// 基础 reset
+// 关键：全部用 :where() 包裹，特异性归零，业务侧任何选择器都能覆盖，
+// 避免组件库 reset 污染业务样式（无需 !important 对抗）
+
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+:where(html) {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-family: var(--sr-font-family-base, system-ui, sans-serif);
+  font-size: var(--sr-font-size-base, 14px);
+  line-height: var(--sr-line-height-base, 22px);
+  color: var(--sr-color-text, #1c2027);
+  background: var(--sr-color-bg-page, #f7f8fa);
+}
+
+:where(body) {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+:where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
+  margin: 0;
+}
+
+:where(ul, ol) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+:where(img, svg, video) {
+  display: block;
+  max-width: 100%;
+}
+
+:where(a) {
+  color: var(--sr-color-primary, #ff7a45);
+  text-decoration: none;
+}

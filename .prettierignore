@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+CHANGELOG.md
+
+# 交付文档为手工排版（表格宽度、图示对齐），不交给 Prettier 重排
+docs/**/*.md
+docs/**/*.html

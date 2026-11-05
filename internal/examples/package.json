@@ -1,0 +1,12 @@
+{
+  "name": "@sunset-reverie/examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "vue": "^3.5.12"
+  }
+}
