@@ -1,0 +1,172 @@
+// 输入框
+//
+// 结构：wrapper（边框 / 状态 / 间距） + 内层原生 input（纯文本输入）
+// 焦点态用 :focus-within 画在 wrapper 上，因此内层 input 必须 outline: none，
+// 但只能在这里取消 —— 组件外部的 input 仍保留浏览器默认焦点环。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-input {
+  // ---------- 尺寸：L3 组件级 token ----------
+  --sr-input-height: 32px;
+  --sr-input-padding-x: 12px;
+  --sr-input-font-size: 14px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--sr-input-height-xs, var(--sr-input-height));
+  padding-inline: var(--sr-input-padding-x-xs, var(--sr-input-padding-x));
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text);
+  font-size: var(--sr-input-font-size-xs, var(--sr-input-font-size));
+  transition:
+    border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  .sr-breakpoint-up(md, {
+    min-height: var(--sr-input-height-md, var(--sr-input-height-xs, var(--sr-input-height)));
+    padding-inline: var(
+      --sr-input-padding-x-md,
+      var(--sr-input-padding-x-xs, var(--sr-input-padding-x))
+    );
+    font-size: var(--sr-input-font-size-md, var(--sr-input-font-size-xs, var(--sr-input-font-size)));
+  });
+
+  // ---------- 内层输入元素 ----------
+  &__inner {
+    flex: 1 1 auto;
+    // 关键：min-width: 0 让 input 能收缩到内容宽度以下，否则长 placeholder 会撑破 wrapper
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: 1.4;
+
+    &::placeholder {
+      color: var(--sr-color-text-tertiary);
+    }
+
+    // 去掉浏览器自动填充的黄色背景，保持视觉一致
+    &:-webkit-autofill {
+      -webkit-text-fill-color: var(--sr-color-text);
+      transition: background-color 9999s ease-out;
+    }
+  }
+
+  &__inner--textarea {
+    display: block;
+    height: auto;
+    min-height: calc(var(--sr-input-height-xs, var(--sr-input-height)) * 1.6);
+    padding-block: 6px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  // ---------- 前后缀与附加内容 ----------
+  &__prefix,
+  &__suffix {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__count {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+    font-family: var(--sr-font-family-mono);
+    font-size: calc(var(--sr-input-font-size-xs, var(--sr-input-font-size)) * 0.86);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.1em;
+    height: 1.1em;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    font-size: inherit;
+    cursor: pointer;
+    transition: color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      color: var(--sr-color-text);
+    }
+  }
+
+  // ---------- 交互态 ----------
+  // 顺序与特异性：focus 在前且特异性低，因此 hover 必须显式排除 focus 状态，
+  // 否则「点击后鼠标仍悬停」时边框会被 hover 色覆盖回去
+  &:focus-within {
+    border-color: var(--sr-color-primary);
+    box-shadow: var(--sr-shadow-focus);
+  }
+
+  &:hover:not(.is-disabled, .is-readonly, :focus-within) {
+    border-color: var(--sr-color-border-strong);
+  }
+
+  // ---------- 状态 ----------
+  &--error {
+    border-color: var(--sr-color-danger);
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px var(--sr-color-danger-bg);
+    }
+  }
+
+  &--warning {
+    border-color: var(--sr-color-warning);
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px var(--sr-color-warning-bg);
+    }
+  }
+
+  &--success {
+    border-color: var(--sr-color-success);
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px var(--sr-color-success-bg);
+    }
+  }
+
+  // ---------- 禁用 / 只读 ----------
+  &.is-disabled {
+    background: var(--sr-color-bg-disabled);
+    color: var(--sr-color-text-disabled);
+    cursor: not-allowed;
+
+    .sr-input__inner {
+      cursor: not-allowed;
+    }
+  }
+
+  &.is-readonly {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  // textarea 需要上下对齐而非居中
+  &.is-textarea {
+    align-items: stretch;
+    padding-block: 2px;
+  }
+}

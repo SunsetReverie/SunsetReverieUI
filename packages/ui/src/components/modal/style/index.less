@@ -1,0 +1,129 @@
+// 弹窗
+//
+// 结构：.sr-modal（全屏定位容器）> __mask（遮罩） + __panel（面板）
+// 面板高度用 flex 三段式（header / body / footer），保证只有 body 滚动，
+// 头部与底部操作区始终可见 —— 与侧边栏导航那次修的坑是同一类问题。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sr-modal-z, 2001);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh var(--sr-space-4) var(--sr-space-4);
+  overflow: hidden;
+
+  &.is-centered {
+    align-items: center;
+    padding: var(--sr-space-4);
+  }
+
+  .sr-breakpoint-down(md, {
+    // 手机端改为全屏，padding 归零，由面板自己铺满
+    align-items: stretch;
+    padding: 0;
+  });
+
+  &__mask {
+    position: absolute;
+    inset: 0;
+    background: var(--sr-color-mask);
+    // 玻璃风格下让遮罩也带模糊，强化层次；扁平风格下 --sr-glass-filter 为 none
+    backdrop-filter: var(--sr-glass-filter);
+    -webkit-backdrop-filter: var(--sr-glass-filter);
+  }
+
+  &__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: var(--sr-modal-width, 480px);
+    max-width: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-lg);
+    background: var(--sr-color-bg-elevated);
+    color: var(--sr-color-text);
+    box-shadow: var(--sr-shadow-xl), var(--sr-glass-highlight);
+    outline: none;
+
+    .sr-breakpoint-down(md, {
+      width: 100%;
+      max-width: none;
+      min-height: 100%;
+      border-radius: 0;
+      border: 0;
+    });
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-3);
+    flex: 0 0 auto;
+    padding: var(--sr-space-4) var(--sr-space-5);
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__title {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--sr-font-size-md);
+    font-weight: var(--sr-font-weight-semibold);
+    // 标题过长时省略，不撑破头部
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-base);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      background: var(--sr-color-bg-hover);
+      color: var(--sr-color-text);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  &__body {
+    // 唯一可滚动的区域
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--sr-space-5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--sr-space-2);
+    flex: 0 0 auto;
+    padding: var(--sr-space-3) var(--sr-space-5);
+    border-top: 1px solid var(--sr-color-border-subtle);
+  }
+}

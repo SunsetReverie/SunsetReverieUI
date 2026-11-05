@@ -16,7 +16,10 @@ import { renderToString } from 'vue/server-renderer'
 import { describe, expect, it } from 'vitest'
 
 import { SrCol } from '../components/col'
+import { SrInput } from '../components/input'
+import { SrModal } from '../components/modal'
 import { SrRow } from '../components/row'
+import { srToast } from '../components/toast'
 import { useSrBreakpoint } from '../composables/use-sr-breakpoint'
 import { useSrTheme } from '../composables/use-sr-theme'
 import { SR_BREAKPOINTS } from '../tokens/generated'
@@ -60,6 +63,44 @@ describe('SSR 渲染', () => {
     const matches = html.match(/class="sr-col"/g) ?? []
 
     expect(matches.length).toBe(2)
+  })
+})
+
+describe('W5 组件的 SSR 行为', () => {
+  it('SrInput 在无 DOM 环境下渲染且属性落到原生 input', async () => {
+    const app = createSSRApp({
+      render: () => h(SrInput, { modelValue: '夕梦', placeholder: '输入', autocomplete: 'off' }),
+    })
+
+    const html = await renderToString(app)
+
+    expect(html).toContain('sr-input')
+    expect(html).toContain('<input')
+    expect(html).toContain('autocomplete="off"')
+    expect(html).toContain('夕梦')
+  })
+
+  it('SrModal 关闭状态下不渲染到主文档流', async () => {
+    const app = createSSRApp({
+      render: () => h(SrModal, { modelValue: false, title: '标题' }, () => '内容'),
+    })
+
+    // Teleport 内容会被收集到 ssrContext，不应抛错
+    const html = await renderToString(app)
+    expect(html).not.toContain('sr-modal__panel')
+  })
+
+  it('SrModal 打开时也不抛错（Teleport 目标在服务端不存在）', async () => {
+    const app = createSSRApp({
+      render: () => h(SrModal, { modelValue: true, title: '标题' }, () => '内容'),
+    })
+
+    await expect(renderToString(app)).resolves.toBeTypeOf('string')
+  })
+
+  it('srToast 在服务端静默返回 -1，不触碰 document', () => {
+    expect(() => srToast.success('服务端不应渲染')).not.toThrow()
+    expect(srToast.success('再来一条')).toBe(-1)
   })
 })
 
