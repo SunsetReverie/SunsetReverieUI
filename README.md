@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W6（构建发布链路）已完成
+## 当前进度：W7（Nuxt 集成与文档站）已完成
 
 ### W1 · 立项与基建
 
@@ -80,7 +80,17 @@
 | 产物校验三层（exports / 组件三件套 / 清单一致性） | ✅ |
 | 端到端验证：tgz 装进全新项目（Vite 8）构建并渲染通过 | ✅ |
 
-W7 将实现 `@sunset-reverie/nuxt` module 与 VitePress 文档站骨架。
+### W7 · Nuxt 集成与文档站
+
+| 项 | 状态 |
+| --- | --- |
+| `@sunset-reverie/nuxt` module（样式 / 组件 / 自动导入 / 防闪烁四合一） | ✅ |
+| `playground-nuxt4` 改为两行配置接入，删掉手写 plugin | ✅ |
+| SSR 输出验证：根属性正确、脚本先于 CSS、组件与图标服务端渲染 | ✅ |
+| 水合 0 告警 | ✅ |
+| VitePress 骨架（首页 + 指南 + 3 个组件文档） | ✅ |
+
+W8 开始 P1 组件：`SrCheckbox` / `SrRadio` / `SrSwitch` / `SrSpinner` / `SrTooltip`。
 
 ---
 
@@ -141,6 +151,7 @@ pnpm build
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
+| `pnpm --filter @sunset-reverie/docs dev` | 启动文档站（VitePress） |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |

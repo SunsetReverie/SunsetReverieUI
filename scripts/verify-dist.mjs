@@ -122,9 +122,11 @@ if (generatedFiles.some((file) => existsSync(file)) && existsSync(uiSrc)) {
   for (const file of generatedFiles) {
     if (!existsSync(file)) continue
 
-    const generated = JSON.parse(
-      readFileSync(file, 'utf-8').match(/SR_COMPONENT_NAMES = (\[[\s\S]*?\]) as const/)?.[1] ?? '[]',
-    )
+    // 不能用 JSON.parse：Prettier 会把生成文件里的双引号改成单引号。
+    // 直接从数组字面量里提取引号包裹的标识符，单双引号都兼容。
+    const block =
+      readFileSync(file, 'utf-8').match(/SR_COMPONENT_NAMES = (\[[\s\S]*?\]) as const/)?.[1] ?? '[]'
+    const generated = [...block.matchAll(/['"]([A-Za-z0-9]+)['"]/g)].map((matched) => matched[1])
 
     const missingInList = expected.filter((name) => !generated.includes(name))
     const extraInList = generated.filter((name) => !expected.includes(name))

@@ -5,8 +5,7 @@ packages:
   - 'internal/*'
   - 'playground-vue3'
   - 'playground-nuxt4'
-  # 以下成员在后续阶段加入（提前声明会因目录不存在而告警）
-  # - 'docs'              # W7（VitePress）
+  - 'docs'
 
 # pnpm 10+ 默认拦截依赖的构建脚本（防供应链攻击）。
 # pnpm 12 使用 allowBuilds 字段；由 `pnpm approve-builds` 自动写入。
