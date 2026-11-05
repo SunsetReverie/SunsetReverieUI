@@ -1,0 +1,97 @@
+// 文字提示
+//
+// 定位完全由 JS 计算（utils/floating.ts），这里只负责外观与小三角。
+// 小三角用旋转的方块而非 border 三角：边框色与背景色能保持一致，
+// 换主题时不需要改两处。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-tooltip__trigger {
+  display: inline-flex;
+  align-items: center;
+  // 触发元素本身不应改变布局，只提供测量点
+  vertical-align: middle;
+}
+
+.sr-tooltip {
+  --sr-tooltip-arrow-size: 7px;
+
+  position: fixed;
+  z-index: var(--sr-tooltip-z, 3002);
+  padding: 6px 10px;
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-inverse);
+  color: var(--sr-color-text-inverse);
+  font-size: 12px;
+  line-height: 1.5;
+  box-shadow: var(--sr-shadow-lg);
+  // 提示本身不接收鼠标事件：否则鼠标移入气泡会触发 trigger 的 mouseleave，
+  // 造成反复闪烁
+  pointer-events: none;
+  word-break: break-word;
+
+  &__content {
+    display: block;
+  }
+
+  &__arrow {
+    position: absolute;
+    width: var(--sr-tooltip-arrow-size);
+    height: var(--sr-tooltip-arrow-size);
+    background: inherit;
+    // 旋转 45° 变成菱形，露出一半形成小三角
+    transform: rotate(45deg);
+  }
+
+  // ---------- 小三角位置：贴在朝向触发元素的那一侧 ----------
+  &.sr-tooltip--top &__arrow,
+  &.sr-tooltip--top-start &__arrow,
+  &.sr-tooltip--top-end &__arrow {
+    bottom: calc(var(--sr-tooltip-arrow-size) / -2 + 0.5px);
+    left: calc(50% - var(--sr-tooltip-arrow-size) / 2);
+  }
+
+  &.sr-tooltip--bottom &__arrow,
+  &.sr-tooltip--bottom-start &__arrow,
+  &.sr-tooltip--bottom-end &__arrow {
+    top: calc(var(--sr-tooltip-arrow-size) / -2 + 0.5px);
+    left: calc(50% - var(--sr-tooltip-arrow-size) / 2);
+  }
+
+  &.sr-tooltip--left &__arrow,
+  &.sr-tooltip--left-start &__arrow,
+  &.sr-tooltip--left-end &__arrow {
+    top: calc(50% - var(--sr-tooltip-arrow-size) / 2);
+    right: calc(var(--sr-tooltip-arrow-size) / -2 + 0.5px);
+  }
+
+  &.sr-tooltip--right &__arrow,
+  &.sr-tooltip--right-start &__arrow,
+  &.sr-tooltip--right-end &__arrow {
+    top: calc(50% - var(--sr-tooltip-arrow-size) / 2);
+    left: calc(var(--sr-tooltip-arrow-size) / -2 + 0.5px);
+  }
+
+  // start / end 对齐时三角跟着对到同一侧，避免「气泡左对齐、三角居中」的错位
+  &.sr-tooltip--top-start &__arrow,
+  &.sr-tooltip--bottom-start &__arrow {
+    left: 14px;
+  }
+
+  &.sr-tooltip--top-end &__arrow,
+  &.sr-tooltip--bottom-end &__arrow {
+    left: auto;
+    right: 14px;
+  }
+
+  &.sr-tooltip--left-start &__arrow,
+  &.sr-tooltip--right-start &__arrow {
+    top: 8px;
+  }
+
+  &.sr-tooltip--left-end &__arrow,
+  &.sr-tooltip--right-end &__arrow {
+    top: auto;
+    bottom: 8px;
+  }
+}

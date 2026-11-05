@@ -1,0 +1,133 @@
+// 单选框
+//
+// 与复选框结构一致，只是形状与选中态不同：
+// 圆环 + 内点，用 transform: scale 做点出现，比改变宽高省一次 layout。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sr-space-2);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--sr-radio-font, 14px);
+  line-height: 1.5;
+  color: var(--sr-color-text);
+  vertical-align: middle;
+
+  &--xs {
+    --sr-radio-size: 14px;
+    --sr-radio-font: 12px;
+  }
+
+  &--sm {
+    --sr-radio-size: 16px;
+    --sr-radio-font: 13px;
+  }
+
+  &--lg {
+    --sr-radio-size: 20px;
+    --sr-radio-font: 16px;
+  }
+
+  &__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &__circle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--sr-radio-size, 18px);
+    height: var(--sr-radio-size, 18px);
+    box-sizing: border-box;
+    border: 1px solid var(--sr-color-border-strong);
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-bg-container);
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__dot {
+    width: 55%;
+    height: 55%;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-primary);
+    transform: scale(0);
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-spring);
+  }
+
+  &__label {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // ---------- 选中（0,3,0） ----------
+  &.is-checked &__circle {
+    border-color: var(--sr-color-primary);
+  }
+
+  &.is-checked &__dot {
+    transform: scale(1);
+  }
+
+  // ---------- 焦点（0,3,0） ----------
+  &__input:focus-visible + &__circle {
+    box-shadow: 0 0 0 3px var(--sr-color-primary-alpha-25);
+  }
+
+  // ---------- 禁用（0,3,0） ----------
+  &.is-disabled {
+    cursor: not-allowed;
+    color: var(--sr-color-text-disabled);
+
+    .sr-radio__circle {
+      background: var(--sr-color-bg-disabled);
+      border-color: var(--sr-color-border);
+    }
+
+    .sr-radio__dot {
+      background: var(--sr-color-text-disabled);
+    }
+  }
+
+  // ---------- 悬停（0,4,0） ----------
+  &:hover:not(.is-disabled) &__circle {
+    border-color: var(--sr-color-primary);
+  }
+}
+
+// 组尺寸通过变量下发，子项未指定 size 时继承
+.sr-radio-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-4);
+  flex-wrap: wrap;
+
+  &--xs {
+    --sr-radio-size: 14px;
+    --sr-radio-font: 12px;
+  }
+
+  &--sm {
+    --sr-radio-size: 16px;
+    --sr-radio-font: 13px;
+  }
+
+  &--lg {
+    --sr-radio-size: 20px;
+    --sr-radio-font: 16px;
+  }
+}

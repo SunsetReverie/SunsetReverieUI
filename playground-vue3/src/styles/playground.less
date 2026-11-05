@@ -263,3 +263,8 @@ body {
     word-break: break-all;
   }
 }
+
+// 截图调试：强制显示提示气泡（样式表 !important 可以盖过 v-show 的内联 display: none）
+body.force-tooltip .sr-tooltip {
+  display: block !important;
+}

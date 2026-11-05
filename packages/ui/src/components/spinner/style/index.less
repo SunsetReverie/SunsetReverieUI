@@ -1,0 +1,47 @@
+// 加载指示器
+//
+// 两段弧而非单段：底环提供「轨道」参照，让 1/4 圈的旋转看起来是在轨道上跑，
+// 而不是一个孤零零的弧在虚空中转。
+
+@keyframes sr-spinner-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sr-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  vertical-align: middle;
+  color: var(--sr-color-primary);
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    // 旋转的是 svg 而不是外层，避免外层尺寸参与布局计算
+    animation: sr-spinner-rotate 0.9s linear infinite;
+  }
+
+  &__track {
+    opacity: 0.18;
+  }
+
+  &__arc {
+    // 起点从 12 点方向开始，视觉更符合「顺时针从顶开始」的直觉
+    transform-origin: center;
+    transform: rotate(-90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // 降速而非停止：完全静止会被误认为卡死
+  .sr-spinner__svg {
+    animation-duration: 2.6s;
+  }
+}

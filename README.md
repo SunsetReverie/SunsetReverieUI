@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W7（Nuxt 集成与文档站）已完成
+## 当前进度：W8（P1 组件第一批）已完成
 
 ### W1 · 立项与基建
 
@@ -90,7 +90,19 @@
 | 水合 0 告警 | ✅ |
 | VitePress 骨架（首页 + 指南 + 3 个组件文档） | ✅ |
 
-W8 开始 P1 组件：`SrCheckbox` / `SrRadio` / `SrSwitch` / `SrSpinner` / `SrTooltip`。
+### W8 · P1 组件第一批
+
+| 项 | 状态 |
+| --- | --- |
+| 浮层定位内核 `srComputeFloating`（12 方位 / 自动翻转 / 边缘避让） | ✅ |
+| `SrSpinner`（档位 + 像素双形态、可访问名称） | ✅ |
+| `SrCheckbox` / `SrCheckboxGroup`（半选、组继承尺寸、组级禁用） | ✅ |
+| `SrRadio` / `SrRadioGroup`（原生 name 互斥、自动生成组名） | ✅ |
+| `SrSwitch`（`role="switch"` 原生键盘支持、加载态） | ✅ |
+| `SrTooltip`（12 方位、延迟、Esc、aria-describedby、富文本） | ✅ |
+| 单元测试 185 个（新增 59 个） | ✅ |
+
+W9 将实现 `SrSelect`、`SrForm` / `SrFormItem` 与 Playwright 水合测试。
 
 ---
 

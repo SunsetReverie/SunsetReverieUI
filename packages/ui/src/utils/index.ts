@@ -10,3 +10,13 @@ export {
 export { srEnsureOfflineIcons } from './icon-registry'
 export { srGetFocusable, srFocusFirst, srTrapTab } from './focus-trap'
 export { srLockScroll, srUnlockScroll, srResetScrollLock } from './scroll-lock'
+export {
+  srComputeFloating,
+  srFlipPlacement,
+  srGetRect,
+  type SrFloatingOptions,
+  type SrFloatingResult,
+  type SrPlacement,
+  type SrRect,
+  type SrViewport,
+} from './floating'

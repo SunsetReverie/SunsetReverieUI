@@ -8,7 +8,7 @@
  * 产物：packages/resolver/src/components.generated.ts
  */
 
-import { mkdirSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
 const ROOT = resolve(import.meta.dirname, '..')
@@ -25,25 +25,31 @@ const TARGETS = [
   },
 ]
 
-/**
- * kebab-case 转 PascalCase
- * @param name 目录名
- * @returns PascalCase 形式
- */
-function toPascal(name) {
-  return name
-    .split('-')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('')
-}
-
 const dirs = readdirSync(COMPONENTS_DIR, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
   .sort()
 
-// 每个目录必须有 index.ts 才算组件（排除临时目录）
-const names = dirs.map(toPascal)
+/**
+ * 从组件的 index.ts 里提取实际导出的组件名
+ *
+ * 不能只用目录名：一个目录可能导出多个组件
+ * （checkbox/ 同时导出 SrCheckbox 与 SrCheckboxGroup），
+ * 漏掉会导致 Nuxt 自动注册不全、resolver 解析不到。
+ * @param dir 组件目录名
+ * @returns 去掉 Sr 前缀的组件名数组
+ */
+function collectNames(dir) {
+  const entry = join(COMPONENTS_DIR, dir, 'index.ts')
+  if (!existsSync(entry)) return []
+
+  const source = readFileSync(entry, 'utf-8')
+  const matched = [...source.matchAll(/export const (Sr[A-Za-z0-9]+)\s*=/g)].map((m) => m[1])
+
+  return matched.map((name) => name.replace(/^Sr/, ''))
+}
+
+const names = [...new Set(dirs.flatMap(collectNames))].sort()
 
 for (const target of TARGETS) {
   const content = `/**

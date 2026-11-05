@@ -5,6 +5,7 @@ import { SR_THEME_PRESETS, useSrBreakpoint, useSrTheme } from '@sunset-reverie/u
 
 import AuditView from './views/AuditView.vue'
 import ComponentsView from './views/ComponentsView.vue'
+import ControlsView from './views/ControlsView.vue'
 import FeedbackView from './views/FeedbackView.vue'
 import FormsView from './views/FormsView.vue'
 import OverviewView from './views/OverviewView.vue'
@@ -21,6 +22,7 @@ const views = [
   { key: 'overview', label: '栅格概览', component: OverviewView },
   { key: 'components', label: '基础组件', component: ComponentsView },
   { key: 'forms', label: '表单', component: FormsView },
+  { key: 'controls', label: '选择控件', component: ControlsView },
   { key: 'feedback', label: '反馈', component: FeedbackView },
   { key: 'theme', label: '主题实验室', component: ThemeLab },
   { key: 'responsive', label: '断点实验室', component: ResponsiveLab },

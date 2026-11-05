@@ -78,6 +78,8 @@ export const semanticLight: Record<string, string> = {
   'color-text-tertiary': 'var(--sr-night-400)',
   'color-text-disabled': 'var(--sr-night-300)',
   'color-text-inverse': '#ffffff',
+  // 反色表面：Tooltip 气泡这类「浮在内容之上、需要与页面反衬」的场景
+  'color-bg-inverse': 'var(--sr-night-900)',
 
   // ---------- 边框 ----------
   'color-border': 'var(--sr-night-200)',
@@ -151,6 +153,7 @@ export const semanticDark: Record<string, string> = {
   'color-text-tertiary': 'var(--sr-night-500)',
   'color-text-disabled': 'var(--sr-night-600)',
   'color-text-inverse': 'var(--sr-night-950)',
+  'color-bg-inverse': 'var(--sr-night-100)',
 
   // ---------- 边框 ----------
   'color-border': 'var(--sr-night-700)',

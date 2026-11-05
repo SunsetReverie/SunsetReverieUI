@@ -1,0 +1,175 @@
+// 复选框
+//
+// 结构：label > input(视觉隐藏) + box + text
+// 焦点环用 `input:focus-visible + box` 相邻选择器，而不是 :focus-within ——
+// 后者在鼠标点击时也会亮，键盘与鼠标的反馈就没区别了。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sr-space-2);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--sr-checkbox-font, 14px);
+  line-height: 1.5;
+  color: var(--sr-color-text);
+  vertical-align: middle;
+
+  &--xs {
+    --sr-checkbox-size: 14px;
+    --sr-checkbox-font: 12px;
+  }
+
+  &--sm {
+    --sr-checkbox-size: 16px;
+    --sr-checkbox-font: 13px;
+  }
+
+  &--lg {
+    --sr-checkbox-size: 20px;
+    --sr-checkbox-font: 16px;
+  }
+
+  // 视觉隐藏但仍可聚焦、可被读屏识别
+  &__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &__box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--sr-checkbox-size, 18px);
+    height: var(--sr-checkbox-size, 18px);
+    box-sizing: border-box;
+    border: 1px solid var(--sr-color-border-strong);
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-on-primary);
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__tick {
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: scale(0.5);
+    transition:
+      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-spring);
+  }
+
+  // 半选：一条横线，用独立元素而非改动 svg，避免与勾的过渡互相干扰
+  &__dash {
+    position: absolute;
+    width: 55%;
+    height: 2px;
+    border-radius: 1px;
+    background: currentcolor;
+    opacity: 0;
+    transform: scaleX(0.4);
+    transition:
+      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__label {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // ---------- 选中 / 半选（0,3,0） ----------
+  &.is-checked &__box,
+  &.is-indeterminate &__box {
+    border-color: var(--sr-color-primary);
+    background: var(--sr-color-primary);
+  }
+
+  &.is-checked &__tick {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &.is-indeterminate &__dash {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  // ---------- 焦点（0,3,0） ----------
+  &__input:focus-visible + &__box {
+    box-shadow: 0 0 0 3px var(--sr-color-primary-alpha-25);
+  }
+
+  // ---------- 禁用基础态（0,3,0） ----------
+  &.is-disabled {
+    cursor: not-allowed;
+    color: var(--sr-color-text-disabled);
+
+    .sr-checkbox__box {
+      background: var(--sr-color-bg-disabled);
+      border-color: var(--sr-color-border);
+    }
+  }
+
+  // ---------- 悬停（0,4,0） ----------
+  &:hover:not(.is-disabled) &__box {
+    border-color: var(--sr-color-primary);
+  }
+
+  // ---------- 禁用选中态（0,4,0） ----------
+  // 底用低透明度主色，勾必须换成主色 ——
+  // 保留 on-primary（白）的话，白勾叠在 25% 橙底上几乎看不见
+  &.is-disabled.is-checked &__box,
+  &.is-disabled.is-indeterminate &__box {
+    background: var(--sr-color-primary-alpha-25);
+    border-color: transparent;
+    color: var(--sr-color-primary);
+  }
+
+  // ---------- 选中且悬停（0,5,0） ----------
+  &.is-checked:hover:not(.is-disabled) &__box {
+    background: var(--sr-color-primary-hover);
+    border-color: var(--sr-color-primary-hover);
+  }
+}
+
+// 组尺寸通过 CSS 变量下发：子项未显式指定 size 时自然继承，
+// 指定了则由自身类上的同名变量覆盖（同一元素上的声明优先于继承值）。
+.sr-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-4);
+  flex-wrap: wrap;
+
+  &--xs {
+    --sr-checkbox-size: 14px;
+    --sr-checkbox-font: 12px;
+  }
+
+  &--sm {
+    --sr-checkbox-size: 16px;
+    --sr-checkbox-font: 13px;
+  }
+
+  &--lg {
+    --sr-checkbox-size: 20px;
+    --sr-checkbox-font: 16px;
+  }
+}

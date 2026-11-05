@@ -107,17 +107,24 @@ if (generatedFiles.some((file) => existsSync(file)) && existsSync(uiSrc)) {
     .sort()
 
   /**
-   * kebab-case 转 PascalCase，与 sync 脚本保持同一规则
-   * @param {string} name 目录名
-   * @returns {string} PascalCase
+   * 读取组件导出的实际组件名（与 sync 脚本同一套规则）
+   *
+   * 必须解析 index.ts 而不能只看目录名：一个目录可能导出多个组件
+   * （checkbox/ 同时导出 SrCheckbox 与 SrCheckboxGroup）。
+   * @param {string} dir 组件目录名
+   * @returns {string[]} 组件名
    */
-  const toPascal = (name) =>
-    name
-      .split('-')
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join('')
+  const collectNames = (dir) => {
+    const entry = join(uiSrc, dir, 'index.ts')
+    if (!existsSync(entry)) return []
 
-  const expected = sourceComponents.map(toPascal)
+    const source = readFileSync(entry, 'utf-8')
+    return [...source.matchAll(/export const (Sr[A-Za-z0-9]+)\s*=/g)].map((matched) =>
+      matched[1].replace(/^Sr/, ''),
+    )
+  }
+
+  const expected = [...new Set(sourceComponents.flatMap(collectNames))].sort()
 
   for (const file of generatedFiles) {
     if (!existsSync(file)) continue

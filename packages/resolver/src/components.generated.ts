@@ -8,13 +8,19 @@
 /** 所有组件的 PascalCase 名（不含 Sr 前缀） */
 export const SR_COMPONENT_NAMES = [
   'Button',
+  'Checkbox',
+  'CheckboxGroup',
   'Col',
   'ConfigProvider',
   'Icon',
   'Input',
   'Modal',
+  'Radio',
+  'RadioGroup',
   'Row',
-  'Toast',
+  'Spinner',
+  'Switch',
+  'Tooltip',
   'Transition',
 ] as const
 

@@ -1,0 +1,136 @@
+// 开关
+//
+// 用 <button role="switch">：键盘 Enter / Space 由浏览器原生支持，
+// 无需手写 keydown，也不会出现「div 加 tabindex 但忘了处理空格」的常见疏漏。
+//
+// 滑块位移用 transform 而非 left/right：只触发合成层，不重新布局。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-switch {
+  --sr-switch-width: 40px;
+  --sr-switch-height: 22px;
+  --sr-switch-gap: 2px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sr-space-2);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--sr-color-text);
+  cursor: pointer;
+  vertical-align: middle;
+
+  &--xs {
+    --sr-switch-width: 28px;
+    --sr-switch-height: 16px;
+    font-size: 12px;
+  }
+
+  &--sm {
+    --sr-switch-width: 34px;
+    --sr-switch-height: 19px;
+    font-size: 13px;
+  }
+
+  &--lg {
+    --sr-switch-width: 48px;
+    --sr-switch-height: 26px;
+    font-size: 16px;
+  }
+
+  &__rail {
+    position: relative;
+    display: inline-block;
+    flex: 0 0 auto;
+    width: var(--sr-switch-width);
+    height: var(--sr-switch-height);
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-bg-sunken);
+    box-shadow: inset 0 0 0 1px var(--sr-color-border);
+    transition:
+      background-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+  }
+
+  &__handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // 滑块直径 = 轨道高 - 2×gap，保证上下留白一致
+    width: calc(var(--sr-switch-height) - var(--sr-switch-gap) * 2);
+    height: calc(var(--sr-switch-height) - var(--sr-switch-gap) * 2);
+    margin-left: var(--sr-switch-gap);
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-bg-container);
+    box-shadow: var(--sr-shadow-sm);
+    // 位移距离 = 轨道宽 - 滑块宽 - 2×gap
+    transform: translateY(-50%);
+    transition: transform var(--sr-motion-duration-base) var(--sr-motion-easing-spring);
+  }
+
+  &__spinner {
+    color: var(--sr-color-primary);
+  }
+
+  &__text {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-secondary);
+  }
+
+  // ---------- 开启态（0,3,0） ----------
+  &.is-checked &__rail {
+    background: var(--sr-color-primary);
+    box-shadow: none;
+  }
+
+  &.is-checked &__handle {
+    transform: translate(calc(var(--sr-switch-width) - var(--sr-switch-height)), -50%);
+  }
+
+  &.is-checked &__text {
+    color: var(--sr-color-text);
+  }
+
+  // ---------- 焦点（0,3,0） ----------
+  &:focus-visible &__rail {
+    box-shadow: 0 0 0 3px var(--sr-color-primary-alpha-25);
+  }
+
+  // ---------- 禁用（0,3,0） ----------
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--sr-color-text-disabled);
+  }
+
+  &:disabled &__rail {
+    background: var(--sr-color-bg-disabled);
+  }
+
+  &:disabled &__text {
+    color: var(--sr-color-text-disabled);
+  }
+
+  // ---------- 禁用且开启（0,4,0） ----------
+  &.is-checked:disabled &__rail {
+    background: var(--sr-color-primary-alpha-25);
+  }
+
+  // ---------- 悬停（0,4,0） ----------
+  &:hover:not(:disabled) &__rail {
+    box-shadow: inset 0 0 0 1px var(--sr-color-primary);
+  }
+
+  // ---------- 开启且悬停（0,5,0） ----------
+  &.is-checked:hover:not(:disabled) &__rail {
+    background: var(--sr-color-primary-hover);
+    box-shadow: none;
+  }
+}

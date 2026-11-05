@@ -20,6 +20,9 @@ const styleParam = params.get('style')
 if (styleParam === 'flat' || styleParam === 'glass') {
   theme.setStyle(styleParam)
 }
+// ?tip=1 强制显示所有提示气泡：无头截图无法触发 hover，用它拍视觉稿
+if (params.get('tip') === '1') document.body.classList.add('force-tooltip')
+
 // ?preset=jade 选择预设主题色（走属性选择器，与顶栏色点同一路径）
 const presetParam = params.get('preset')
 if (presetParam) theme.setPreset(presetParam)
