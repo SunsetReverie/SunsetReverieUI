@@ -42,6 +42,8 @@
 | `SrRow` / `SrCol`（24 栅格 + 响应式 span/offset/push/pull/gutter） | ✅ |
 | `playground-vue3`（栅格概览 / 主题实验室 / 断点实验室） | ✅ |
 | 单元测试 34 个（两个内核 + 两个组件 + 脚本生成） | ✅ |
+| SSR 渲染测试 8 个（`@vitest-environment node`，无 window 环境） | ✅ |
+| 水合一致性测试 4 个（SSR → hydrate，监听 Hydration 告警） | ✅ |
 
 W4 将实现 `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider`。
 

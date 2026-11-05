@@ -52,8 +52,12 @@ function installRaf(): void {
   globalThis.cancelAnimationFrame = ((id: number): void => clearTimeout(id)) as typeof cancelAnimationFrame
 }
 
-installMatchMedia()
-installRaf()
+// SSR 测试用 @vitest-environment node 运行，此时没有 window。
+// 这种情况下刻意不注入任何浏览器 API —— 让「访问了不该访问的对象」直接暴露。
+if (typeof window !== 'undefined') {
+  installMatchMedia()
+  installRaf()
+}
 
 /**
  * 重置媒体查询状态

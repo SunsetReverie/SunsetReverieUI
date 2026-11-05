@@ -4252,15 +4252,33 @@ describe('SrButton SSR', () => {
 })
 ```
 
-**水合测试（happy-dom + 手工比对）方案（⏳ 待决策）**：
+**水合测试的三层防线**（第 0 层已落地，其余按排期推进）：
 
-| 方案 | 做法 | 投入 | 结论 |
-| --- | --- | --- | --- |
-| A. 手工走查 | 每次发版前开 `playground-nuxt4` 看控制台 | 低 | 一期够用 |
-| B. Playwright + 控制台断言 | 启动 Nuxt，收集 console，出现 `Hydration` 即失败 | 中（约 2d） | ✅ 第 9 周引入 |
-| C. 冻结快照比对 | SSR HTML 与 CSR HTML 做 DOM diff | 高，噪声大 | ❌ |
+| 层级 | 做法 | 覆盖什么 | 成本 | 状态 |
+| --- | --- | --- | --- | --- |
+| 第 0 层 · SSR 渲染测试 | `// @vitest-environment node` 下用 `renderToString` 渲染组件 | 「setup 顶层访问 `window` / `document`」这类致命错误 | 极低，随单测跑 | ✅ W3 已落地 |
+| 第 1 层 · 水合一致性测试 | jsdom 内先 SSR 再 `createSSRApp().mount()`，监听 `console.warn` 中的 `Hydration` | SSR 与 CSR 首帧输出不一致 | 低，随单测跑 | ✅ W3 已落地 |
+| 第 2 层 · 浏览器端到端 | Playwright 启动 `playground-nuxt4`，收集控制台 | 真实 Nuxt 运行时下的水合、样式、主题 | 中（约 2d） | ⏳ W7 建站后接入 |
+| 第 3 层 · 手工走查 | 发版前开 `playground-nuxt4` 看控制台 | 兜底 | 低 | 长期保留 |
 
-**倾向：一期 A，第 9 周补 B**（Playwright 只跑 `ssr-check` 一个页面，成本可控，收益明确）。
+第 0 层的价值在于**环境隔离本身**：`@vitest-environment node` 让 `window` 根本不存在，任何误用都会直接抛错，而不是等浏览器里才发现。
+
+```ts
+// packages/ui/src/__tests__/ssr.spec.ts（节选）
+// @vitest-environment node
+import { createSSRApp, h } from 'vue'
+import { renderToString } from 'vue/server-renderer'
+
+it('SrCol 在无 DOM 环境下渲染并输出响应式 span', async () => {
+  const app = createSSRApp({ render: () => h(SrCol, { span: { xs: 24, md: 12 } }, () => 'col') })
+  const html = await renderToString(app)
+  expect(html).toMatch(/--sr-col-span-md:\s*12/)
+})
+```
+
+第 1 层进一步覆盖「结构不一致」——SSR 输出与客户端首帧不匹配时 Vue 会 `warn`，测试捕获到即失败，还能顺带断言「DOM 节点被复用而非重建」，证明水合真的成功了。
+
+> 注意：`vitest.setup.ts` 里安装 `matchMedia` / `requestAnimationFrame` 的前提是 `typeof window !== 'undefined'`，否则 node 环境会被注入假的浏览器 API，第 0 层就失效了。
 
 ### 14.2 代码质量工具链
 
@@ -4471,8 +4489,8 @@ jobs:
 | --- | --- | --- | --- |
 | W1 | 立项与基建 | monorepo 骨架、pnpm workspace、TS/Less/ESLint/Prettier 配置、CI 骨架、命名校验脚本、**决策评审（Turborepo / changesets / dist 分发）** | `pnpm build` 能跑通空包；CI 绿 |
 | W2 | Token 与设计系统 | `internal/tokens` 生成链路、L1/L2/L3 Token、Less mixin（断点/surface）、`base.css`、**Token Gallery 生成版**（替换 W1 静态版） | Token 表格与文档一致；产物可被组件引用；Gallery 由 tokens.ts 自动生成 |
-| W3 | 主题与响应式内核 | `useSrTheme`、`useSrBreakpoint`、SSR 内联脚本生成器、`SrRow`/`SrCol`、`playground-vue3` | `playground-vue3` 可切换明暗/风格且无闪烁；栅格在 xs/sm/lg 三档布局正确。（SSR 首屏白闪的浏览器验证需 Nuxt 环境，顺延到 W7 随 Module 一起验，脚本本身 `srThemeInitScript()` 已就绪） |
-| W4 | 基础组件（上） | `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider` | 四种主题组合视觉通过；单测覆盖 ≥85% |
+| W3 | 主题与响应式内核 | `useSrTheme`、`useSrBreakpoint`、SSR 内联脚本生成器、`SrRow`/`SrCol`、`playground-vue3`、**SSR 渲染与水合一致性测试（第 0/1 层防线）** | `playground-vue3` 可切换明暗/风格且无闪烁；栅格在 xs/sm/lg 三档布局正确；SSR 环境下组件渲染不抛错、水合无告警 |
+| W4 | 基础组件（上） | `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider`、**最小 `playground-nuxt4`（手写 plugin，提前暴露水合问题）** | 四种主题组合视觉通过；单测覆盖 ≥85%；Nuxt 首屏无白闪 |
 | W5 | 基础组件（下）+ 栅格 | `SrRow`/`SrCol`（响应式）、`SrInput` | 三断点布局正确；SSR 无水合告警 |
 | W6 | P0 收尾 + 构建发布链路 | `SrModal`、`SrToast`、`resolver` 包、vite 多入口构建、`exports` 映射、样式拆分构建 | `pnpm build` 产出完整 dist；下游可 git 安装并跑通 |
 | W7 | Nuxt 集成 + 文档站起步 | `@sunset-reverie/nuxt` module、`nuxt.config` 一行接入、VitePress 骨架 + 3 个组件文档 | Nuxt demo 全 P0 组件 SSR 正确 |
