@@ -27,6 +27,21 @@
   border-radius: var(--sr-radius-base);
   background: var(--sr-button-bg, transparent);
   color: var(--sr-button-fg, var(--sr-color-text));
+  // 彩色辉光：颜色取自按钮自身的 accent，半径取自风格（flat 为 0）
+  // color-mix 会在运行期解析，因此自定义主题色后辉光会自动跟着变
+  box-shadow:
+    0 6px var(--sr-shadow-glow-blur, 0) -6px
+      color-mix(
+        in oklab,
+        var(--sr-button-accent, transparent) var(--sr-button-glow-strength, 55%),
+        transparent
+      ),
+    0 2px calc(var(--sr-shadow-glow-blur, 0px) * 0.4) -2px
+      color-mix(
+        in oklab,
+        var(--sr-button-accent, transparent) var(--sr-button-glow-strength, 55%),
+        transparent
+      );
   font-family: inherit;
   font-size: var(--sr-button-font-size-xs, var(--sr-button-font-size));
   font-weight: var(--sr-font-weight-medium);
@@ -118,11 +133,15 @@
 
   // ---------- 交互态 ----------
   &:not(:disabled):hover {
+    --sr-button-glow-strength: 78%;
+
     background: var(--sr-button-bg-hover, var(--sr-button-bg));
     border-color: var(--sr-button-border-hover, var(--sr-button-border));
   }
 
   &:not(:disabled):active {
+    --sr-button-glow-strength: 42%;
+
     background: var(--sr-button-bg-active, var(--sr-button-bg-hover, var(--sr-button-bg)));
   }
 
@@ -147,6 +166,7 @@
 
   // ---------- 变体 ----------
   &--primary {
+    --sr-button-accent: var(--sr-color-primary);
     --sr-button-bg: var(--sr-color-primary);
     --sr-button-bg-hover: var(--sr-color-primary-hover);
     --sr-button-bg-active: var(--sr-color-primary-active);
@@ -167,6 +187,7 @@
   }
 
   &--outline {
+    --sr-button-accent: var(--sr-color-primary);
     --sr-button-bg: transparent;
     --sr-button-bg-hover: var(--sr-color-primary-alpha-08);
     // 文字与边框都用 primary-text：直接拿 primary 当文字只有约 2.9:1
@@ -182,6 +203,7 @@
   }
 
   &--danger {
+    --sr-button-accent: var(--sr-color-danger);
     --sr-button-bg: var(--sr-color-danger);
     --sr-button-bg-hover: var(--sr-color-danger-hover);
     --sr-button-bg-active: var(--sr-color-danger-active);

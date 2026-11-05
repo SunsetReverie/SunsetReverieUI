@@ -221,6 +221,8 @@ export const qualityFlat: Record<string, string> = {
   'shadow-xl': '0 16px 48px rgba(16, 20, 26, 0.14)',
   'shadow-focus': '0 0 0 3px var(--sr-color-primary-alpha-25)',
   'shadow-inset': 'inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+  // 彩色辉光半径：flat 为 0（视觉无辉光），glass 才是真的发光
+  'shadow-glow-blur': '0px',
 
   'glass-blur': '0px',
   'glass-saturate': '100%',
@@ -255,6 +257,8 @@ export const qualityGlass: Record<string, string> = {
   'shadow-xl': '0 32px 80px -16px rgba(16, 20, 26, 0.24)',
   'shadow-focus': '0 0 0 3px var(--sr-color-primary-alpha-25)',
   'shadow-inset': 'inset 0 1px 0 rgba(255, 255, 255, 0.24)',
+  // 玻璃质感的核心特征之一：实体按钮向外散发同色柔光
+  'shadow-glow-blur': '22px',
 
   'glass-blur': '16px',
   'glass-saturate': '180%',

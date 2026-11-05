@@ -617,6 +617,37 @@ resolver    nuxt        （nuxt 依赖 ui 的产物 + resolver 的类型，故�
 | `--sr-glass-border-width` | `1px` | `1px` | 边框宽度（glass 用高光边框） |
 | `--sr-glass-border-color` | `var(--sr-color-border)` | `rgba(255,255,255,.55)` | 顶部高光边 |
 | `--sr-glass-highlight` | `0 0 0 0 transparent` | `inset 0 1px 0 rgba(255,255,255,.55)` | 内高光（flat 用零尺寸透明阴影占位，不能写 `none`） |
+| `--sr-shadow-glow-blur` | `0px` | `22px` | 彩色辉光半径，flat 下为 0 自然消失 |
+
+#### 彩色辉光（glow）
+
+玻璃质感里必不可少的一层：**实心按钮向外散发与自身同色的柔光**，像玻璃在发光。缺了它，玻璃按钮和扁平按钮几乎没有区别。
+
+实现要点是把「颜色」和「强度」都做成变量，组件不判断风格：
+
+```less
+.sr-button {
+  // 发光源色：由变体决定，text / secondary 不设即为 transparent（不发光）
+  --sr-button-accent: transparent;
+
+  box-shadow:
+    0 6px var(--sr-shadow-glow-blur, 0px) -6px
+      color-mix(in oklab, var(--sr-button-accent) var(--sr-button-glow-strength, 55%), transparent),
+    0 2px calc(var(--sr-shadow-glow-blur, 0px) * 0.4) -2px
+      color-mix(in oklab, var(--sr-button-accent) var(--sr-button-glow-strength, 55%), transparent);
+
+  &:hover:not(:disabled) { --sr-button-glow-strength: 78%; }
+  &:active:not(:disabled) { --sr-button-glow-strength: 42%; }
+}
+```
+
+三个设计决策：
+
+1. **用 `color-mix` 而非硬编码 rgba**：运行期切换主题色后辉光自动跟随，不需要 JS 重新计算。
+2. **用半径为 0 而非 `box-shadow: none`**：flat 下多值 box-shadow 仍然合法，避免写风格分支。
+3. **只给 primary / danger / outline 设置 accent**：secondary 与 text 加彩色光会显得脏，保持中性。
+
+> 发光半径与强度（22px / 55%）是视觉参数，建议在浏览器里调 `--sr-shadow-glow-blur` 试手感后再定稿。
 
 暗色下 glass 需反转：`--sr-glass-border-color: rgba(255,255,255,.14)`，`--sr-glass-highlight: inset 0 1px 0 rgba(255,255,255,.08)`。
 
