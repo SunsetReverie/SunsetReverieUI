@@ -613,12 +613,40 @@ resolver    nuxt        （nuxt 依赖 ui 的产物 + resolver 的类型，故�
 | --- | --- | --- | --- |
 | `--sr-glass-blur` | `0px` | `16px` | `backdrop-filter: blur()` 强度 |
 | `--sr-glass-saturate` | `100%` | `180%` | 饱和度增强，让毛玻璃不发灰 |
-| `--sr-glass-opacity` | `1` | `0.72` | 表面背景不透明度 |
+| `--sr-glass-filter` | `none` | `blur(16px) saturate(180%)` | 前两者的合成值，组件直接用这个 |
 | `--sr-glass-border-width` | `1px` | `1px` | 边框宽度（glass 用高光边框） |
-| `--sr-glass-border-color` | `var(--sr-color-border)` | `rgba(255,255,255,.5)` | 顶部高光边 |
-| `--sr-glass-highlight` | `none` | `inset 0 1px 0 rgba(255,255,255,.55)` | 内高光 |
+| `--sr-glass-border-color` | `var(--sr-color-border)` | `rgba(255,255,255,.55)` | 顶部高光边 |
+| `--sr-glass-highlight` | `0 0 0 0 transparent` | `inset 0 1px 0 rgba(255,255,255,.55)` | 内高光（flat 用零尺寸透明阴影占位，不能写 `none`） |
 
-暗色下 glass 需反转：`--sr-glass-border-color: rgba(255,255,255,.14)`，`--sr-glass-highlight: inset 0 1px 0 rgba(255,255,255,.08)`，`--sr-glass-opacity: 0.6`（暗色下玻璃要更暗更透）。
+暗色下 glass 需反转：`--sr-glass-border-color: rgba(255,255,255,.14)`，`--sr-glass-highlight: inset 0 1px 0 rgba(255,255,255,.08)`。
+
+#### 毛玻璃生效的三个必要条件（W5 实测踩坑）
+
+早期版本切到 glass 后「只有边框和圆角变了」，模糊完全看不见。原因是四个问题叠加，属于**必要条件缺一即失效**：
+
+| 条件 | 缺失时的表现 | 落地位置 |
+| --- | --- | --- |
+| ① 表面背景必须**半透明** | `backdrop-filter` 背后透不过任何东西，模糊等于没写 | `glassSurfaceLight/Dark` 把 `--sr-color-bg-container` 改为 `rgba(...,0.72)` |
+| ② 必须声明 `backdrop-filter` | 半透明但没有模糊，只是「变透」不是「磨砂」 | `.sr-glass-layer()` mixin，组件按需调用 |
+| ③ 背后必须有**可模糊的内容** | 纯色背景下看不出任何差异（最容易被忽略） | 演示站/业务页的背景需要有渐变、图片或纹理 |
+
+> 还有一个反面教训：早期定义过 `--sr-glass-opacity` 但全项目零使用 —— 变量定义了却没人读，会让实现者误以为「调透明度就能出效果」。已在 W5 移除，改为在语义层直接给出半透明表面色。
+
+**组件内的标准写法**：
+
+```less
+.sr-glass-layer() {
+  backdrop-filter: var(--sr-glass-filter);
+  -webkit-backdrop-filter: var(--sr-glass-filter);
+}
+
+.sr-input {
+  // 背景在 glass 下是半透明的，需要这一层才有磨砂感
+  .sr-glass-layer();
+}
+```
+
+注意 `--sr-glass-highlight` 在 flat 下必须是 `0 0 0 0 transparent` 而非 `none`：它要参与 `box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight)` 的多值拼接，`none` 会让整条声明非法。
 
 ### 4.8 动效 Token
 
