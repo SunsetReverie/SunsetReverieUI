@@ -15,6 +15,27 @@ describe('SrIcon', () => {
     expect((wrapper.element as HTMLElement).style.fontSize).toBe('1.5rem')
   })
 
+  it('档位关键字映射为像素值，与 SrButton 语义一致', () => {
+    const fontSizeOf = (size: string) =>
+      (mount(SrIcon, { props: { name: 'mdi:home', size } }).element as HTMLElement).style.fontSize
+
+    expect(fontSizeOf('xs')).toBe('12px')
+    expect(fontSizeOf('sm')).toBe('14px')
+    expect(fontSizeOf('md')).toBe('16px')
+    expect(fontSizeOf('lg')).toBe('18px')
+  })
+
+  it('默认 1em，跟随父级字号', () => {
+    const wrapper = mount(SrIcon, { props: { name: 'mdi:home' } })
+    expect((wrapper.element as HTMLElement).style.fontSize).toBe('1em')
+  })
+
+  it('非档位字符串不会被误判', () => {
+    // 原型链上的键不能命中原型，否则 'constructor' 会被当成档位
+    const wrapper = mount(SrIcon, { props: { name: 'mdi:home', size: '24px' } })
+    expect((wrapper.element as HTMLElement).style.fontSize).toBe('24px')
+  })
+
   it('默认无 label 时视为装饰性图标', () => {
     const wrapper = mount(SrIcon, { props: { name: 'mdi:home' } })
     expect(wrapper.attributes('aria-hidden')).toBe('true')

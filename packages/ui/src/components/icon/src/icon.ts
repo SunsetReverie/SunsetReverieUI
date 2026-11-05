@@ -1,5 +1,18 @@
 import type { ExtractPropTypes, PropType } from 'vue'
 
+import type { SrSize } from '../../../types/config'
+
+/**
+ * 尺寸档位 → 像素值
+ * 与 SrButton 内图标的尺寸保持一致，保证同一档位在两处视觉相同
+ */
+export const ICON_SIZE_MAP: Record<SrSize, number> = {
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+}
+
 /** 翻转方向 */
 export type SrIconFlip = boolean | 'horizontal' | 'vertical' | 'both'
 
@@ -12,9 +25,15 @@ export const iconProps = {
     type: String,
     default: '',
   },
-  /** 尺寸：数字按 px 处理，字符串原样透传（'1em' / '1.5rem'） */
+  /**
+   * 尺寸，三种形态：
+   * 1. 档位关键字 `xs | sm | md | lg` —— 与 SrButton 等组件的 size 语义一致
+   * 2. 数字 —— 按 px 处理
+   * 3. 带单位字符串 —— 原样透传（'1em' / '1.5rem' / '24px'）
+   * @default '1em'
+   */
   size: {
-    type: [Number, String] as PropType<number | string>,
+    type: [Number, String] as PropType<number | string | SrSize>,
     default: '1em',
   },
   /** 颜色，默认跟随父级 currentColor */

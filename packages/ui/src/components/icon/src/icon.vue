@@ -3,7 +3,8 @@ import { Icon } from '@iconify/vue'
 import { computed, useAttrs } from 'vue'
 
 import { srEnsureOfflineIcons } from '../../../utils/icon-registry'
-import { iconProps } from './icon'
+import type { SrSize } from '../../../types/config'
+import { ICON_SIZE_MAP, iconProps } from './icon'
 
 defineOptions({ name: 'SrIcon', inheritAttrs: false })
 
@@ -13,8 +14,19 @@ const attrs = useAttrs()
 // setup 阶段注册离线集合：服务端也要执行，否则 SSR 产出空 SVG 导致水合不一致
 srEnsureOfflineIcons()
 
-/** 归一化尺寸：数字补 px */
-const cssSize = computed(() => (typeof props.size === 'number' ? `${props.size}px` : props.size))
+/**
+ * 归一化尺寸
+ *
+ * 档位关键字优先于「原样透传」：这样 <sr-icon size="md"> 与 <sr-button size="md">
+ * 是同一个概念，消除「size 在 Icon 里指具体尺寸、在别处指档位」的歧义。
+ * @returns 可写入 font-size 的值
+ */
+const cssSize = computed(() => {
+  const { size } = props
+  if (typeof size === 'number') return `${size}px`
+  if (Object.hasOwn(ICON_SIZE_MAP, size)) return `${ICON_SIZE_MAP[size as SrSize]}px`
+  return size
+})
 
 /**
  * 组合 flip 与 rotate 的 transform

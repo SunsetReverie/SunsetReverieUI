@@ -2138,8 +2138,13 @@ import type { ExtractPropTypes, PropType } from 'vue'
 export const iconProps = {
   /** 图标名，格式「集合:图标名」，如 'mdi:home'；也支持直接传 SVG 字符串（以 <svg 开头） */
   name: { type: String, required: true },
-  /** 尺寸：数字视为 px，字符串原样透传（'1em'、'1.5rem'） */
-  size: { type: [Number, String] as PropType<number | string>, default: '1em' },
+  /**
+   * 尺寸，三种形态：
+   * 1. 档位关键字 'xs' | 'sm' | 'md' | 'lg' —— 与 SrButton 等组件语义一致
+   * 2. 数字 —— 按 px 处理
+   * 3. 带单位字符串 —— 原样透传（'1em' / '1.5rem'）
+   */
+  size: { type: [Number, String] as PropType<number | string | SrSize>, default: '1em' },
   /** 颜色，默认跟随 currentColor */
   color: { type: String, default: 'currentColor' },
   /** 水平翻转 */
@@ -2159,6 +2164,26 @@ export type SrIconProps = ExtractPropTypes<typeof iconProps>
 
 | Props | 类型 | 默认 | 说明 |
 | --- | --- | --- | --- |
+| `name` | `string` | `''` | 图标名「集合:图标名」，用 `default` 插槽自定义时可省略 |
+| `size` | `SrSize \| number \| string` | `'1em'` | 档位优先，否则数字按 px、字符串原样 |
+| `color` | `string` | `'currentColor'` | 跟随父级文字色 |
+| `flip` | `boolean \| 'horizontal' \| 'vertical' \| 'both'` | `false` | 翻转，可与 `rotate` 叠加 |
+| `rotate` | `number \| string` | `0` | 旋转角度 |
+| `spin` | `boolean` | `false` | 匀速旋转，用于加载态 |
+| `label` | `string` | `''` | 无障碍名称；不传则视为装饰性图标加 `aria-hidden` |
+
+#### `size` 的两套语义（W5 统一）
+
+同一个 `size` 在两类组件上含义不同，这是刻意的，但规则必须写死：
+
+| 组件类型 | 组件 | `size` 取值 | 语义 |
+| --- | --- | --- | --- |
+| 档位型 | `SrButton`、`SrInput`、`SrSelect`、`SrForm`、`SrConfigProvider` | 仅 `xs \| sm \| md \| lg` | 组件尺寸档位，同时决定高度、字号、内边距 |
+| 尺寸型 | `SrIcon` | 档位 **或** 具体尺寸 | 优先按档位解析（`md` → 16px）；不是档位时，数字按 px、字符串原样透传 |
+
+关键决策是**档位优先**：让 `<sr-icon size="md">` 与 `<sr-button size="md">` 成为同一个概念，同时保留 `<sr-icon size="1em">` 跟随父级字号的能力 —— 后者是图标最常用的场景。
+
+档位映射表与 `SrButton` 内的图标尺寸共用一份数值（`xs/sm/md/lg` → `12/14/16/18px`），避免同一个档位在按钮内和独立使用时视觉不一致。
 | `name` | `string` | 必填 | `集合:图标名` |
 | `size` | `number \| string` | `1em` | 数字按 px 处理 |
 | `color` | `string` | `currentColor` | 建议优先用父级 `color` |

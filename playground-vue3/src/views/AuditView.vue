@@ -134,11 +134,19 @@ function show(key: string): boolean {
               <sr-icon v-for="icon in icons" :key="icon" :name="icon" :size="20" />
             </div>
 
+            <!-- size 现在也接受档位，与 SrButton 的 size 是同一个概念 -->
             <div class="matrix__row" style="align-items: baseline">
-              <sr-icon name="ph:sun" :size="12" />
-              <sr-icon name="ph:sun" :size="16" />
-              <sr-icon name="ph:sun" :size="22" />
-              <sr-icon name="ph:sun" :size="28" color="var(--sr-color-primary)" />
+              <sr-icon name="ph:sun" size="xs" />
+              <sr-icon name="ph:sun" size="sm" />
+              <sr-icon name="ph:sun" size="md" />
+              <sr-icon name="ph:sun" size="lg" color="var(--sr-color-primary)" />
+            </div>
+
+            <!-- 具体尺寸仍然可用：数字按 px，带单位字符串原样透传 -->
+            <div class="matrix__row" style="align-items: baseline">
+              <sr-icon name="ph:moon-stars" :size="14" />
+              <sr-icon name="ph:moon-stars" :size="20" />
+              <sr-icon name="ph:moon-stars" size="1.6em" />
             </div>
 
             <div class="matrix__row">
