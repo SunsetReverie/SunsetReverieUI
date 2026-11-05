@@ -40,3 +40,6 @@ pnpm-debug.log*
 # 系统
 .DS_Store
 Thumbs.db
+test-results/
+playwright-report/
+blob-report/

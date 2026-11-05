@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W8（P1 组件第一批）已完成
+## 当前进度：W9（P1 组件第二批 + E2E）已完成
 
 ### W1 · 立项与基建
 
@@ -102,7 +102,17 @@
 | `SrTooltip`（12 方位、延迟、Esc、aria-describedby、富文本） | ✅ |
 | 单元测试 185 个（新增 59 个） | ✅ |
 
-W9 将实现 `SrSelect`、`SrForm` / `SrFormItem` 与 Playwright 水合测试。
+### W9 · P1 组件第二批 + E2E
+
+| 项 | 状态 |
+| --- | --- |
+| `SrSelect`（单选/多选/搜索/清空/键盘导航/aria 完整） | ✅ |
+| `SrForm` / `SrFormItem`（规则校验、异步 validator、错误自动下发） | ✅ |
+| 表单与 `SrInput` / `SrSelect` 的校验态打通（`aria-invalid` / `aria-describedby`） | ✅ |
+| Playwright 水合测试（5 条，复用系统 Edge，无需下载浏览器） | ✅ |
+| 单元测试 215 个（新增 30 个） | ✅ |
+
+W10 将实现 `SrTable`（列配置 / 排序 / 固定表头 / 移动端卡片视图）。
 
 ---
 
@@ -164,6 +174,7 @@ pnpm build
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
 | `pnpm --filter @sunset-reverie/docs dev` | 启动文档站（VitePress） |
+| `pnpm test:e2e` | 构建 Nuxt 演示站并跑 Playwright 水合测试 |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |

@@ -1,0 +1,66 @@
+// 表单
+//
+// 标签位置用 grid 而不是 float / table：左右布局时标签列宽固定、
+// 控件列自适应，且错误文案出现时行高变化不会被挤压。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  // 让 grid 列在内容过长时能收缩，否则长文案会把布局撑破
+  min-width: 0;
+
+  &__label {
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-sm);
+    line-height: 1.5;
+  }
+
+  // 必填星号用伪元素，避免额外 DOM 影响 label 的文本内容
+  &.is-required &__label::after {
+    content: '*';
+    margin-inline-start: 2px;
+    color: var(--sr-color-danger);
+  }
+
+  &__control {
+    min-width: 0;
+  }
+
+  &__error {
+    margin-top: 4px;
+    color: var(--sr-color-danger);
+    font-size: var(--sr-font-size-sm);
+    line-height: 1.5;
+  }
+}
+
+.sr-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-4);
+
+  // 左右布局时统一走 grid，宽度由 CSS 变量控制。
+  // 这些选择器特异性高于 .sr-form-item 的基础样式，因此必须写在其后。
+  &--label-left,
+  &--label-right {
+    .sr-form-item {
+      display: grid;
+      grid-template-columns: var(--sr-form-item-label-width, 88px) minmax(0, 1fr);
+      align-items: start;
+      gap: var(--sr-space-3);
+    }
+
+    .sr-form-item__label {
+      // 与控件首行基线对齐：控件高 32px、字号 14px，行高 32px 正好居中
+      line-height: var(--sr-select-height-xs, 32px);
+      text-align: end;
+    }
+  }
+
+  &--label-right .sr-form-item__label {
+    text-align: start;
+  }
+}

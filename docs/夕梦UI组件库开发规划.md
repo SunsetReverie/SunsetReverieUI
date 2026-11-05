@@ -607,6 +607,34 @@ resolver    nuxt        （nuxt 依赖 ui 的产物 + resolver 的类型，故�
 > ```
 > 若只写在 `[data-sr-theme='dark']` 里，会被后面的 `[data-sr-style='flat'|'glass']` 覆盖——两组选择器特异性相同（均为 class 级），后写者胜出。这个坑在 Token Gallery 首版实现时实际踩到过。
 
+### 4.6.1 样式块的书写顺序约定
+
+`stylelint` 的 `no-descending-specificity` 会在**同一个文件内**要求选择器特异性从高到低排列。这条规则在组件库里被触发过三次（输入框、复选框/单选框/开关、下拉选择器），因此固化成约定：
+
+```less
+.sr-select {
+  // 1. 结构（0,1,0）：元素与元素部件
+  &__trigger { … }
+  &__placeholder { … }
+
+  // 2. 状态修饰（0,2,0）：--error / --warning
+  &--error &__trigger { … }
+
+  // 3. 布尔状态（0,3,0）：is-open / is-disabled
+  &.is-open &__trigger { … }
+  &.is-disabled &__trigger { … }
+
+  // 4. 伪类组合（0,4,0 起）：hover / focus-within，永远放最后
+  &:hover:not(.is-disabled) &__trigger { … }
+}
+```
+
+三条实践要点：
+
+1. **`&:hover:not(.is-disabled)` 是 0,4,0**，比 `&.is-disabled`（0,3,0）高，必须写在后面，否则 lint 报错；运行时也不会出问题（两者互斥），但顺序错了会让人误以为有层叠冲突。
+2. **禁用态的嵌套子规则会抬升特异性**：`.sr-checkbox.is-disabled .sr-checkbox__box` 是 0,3,0，而 `&.is-disabled.is-checked .sr-checkbox__box` 是 0,4,0 —— 需要拆成两段分别插入到对应层级。
+3. **状态类要能被"展开/聚焦"覆盖时，就把状态放在低特异性层**。例如 `SrSelect` 的 `--error` 边框会被 `is-open` 的焦点环覆盖，这是刻意取舍：聚焦中的视觉反馈比错误边框更重要，错误文案仍在下方展示。
+
 ### 4.7 毛玻璃专项 Token
 
 | Token | `flat` 值 | `glass` 值 | 说明 |
@@ -4355,7 +4383,7 @@ describe('SrButton SSR', () => {
 | --- | --- | --- | --- | --- |
 | 第 0 层 · SSR 渲染测试 | `// @vitest-environment node` 下用 `renderToString` 渲染组件 | 「setup 顶层访问 `window` / `document`」这类致命错误 | 极低，随单测跑 | ✅ W3 已落地 |
 | 第 1 层 · 水合一致性测试 | jsdom 内先 SSR 再 `createSSRApp().mount()`，监听 `console.warn` 中的 `Hydration` | SSR 与 CSR 首帧输出不一致 | 低，随单测跑 | ✅ W3 已落地 |
-| 第 2 层 · 浏览器端到端 | Playwright 启动 `playground-nuxt4`，收集控制台 | 真实 Nuxt 运行时下的水合、样式、主题 | 中（约 2d） | ⏳ W7 建站后接入 |
+| 第 2 层 · 浏览器端到端 | Playwright 启动 `playground-nuxt4`，收集控制台 | 真实 Nuxt 运行时下的水合、样式、主题 | 中（约 2d） | ✅ W9 已落地 |
 | 第 3 层 · 手工走查 | 发版前开 `playground-nuxt4` 看控制台 | 兜底 | 低 | 长期保留 |
 
 第 0 层的价值在于**环境隔离本身**：`@vitest-environment node` 让 `window` 根本不存在，任何误用都会直接抛错，而不是等浏览器里才发现。
@@ -4592,7 +4620,7 @@ jobs:
 | W6 | 构建发布链路 | 多入口构建、样式三份产出、组件占位 CSS、resolver 清单同步、icons 依赖降级、产物校验三层、端到端安装验证 | 9 个组件各有独立入口与 `style.css`；tgz 装进全新 Vite 8 项目可构建并渲染 |
 | W7 | Nuxt 集成 + 文档站起步 | `@sunset-reverie/nuxt` module（样式/组件/自动导入/防闪烁）、`playground-nuxt4` 两行接入、VitePress 骨架 + 3 个组件文档 | Nuxt demo 全 P0 组件 SSR 正确，水合 0 告警 |
 | W8 | P1（上） | `SrSpinner`、`SrCheckbox`/`SrCheckboxGroup`、`SrRadio`/`SrRadioGroup`、`SrSwitch`、`SrTooltip`（含浮层定位内核 `srComputeFloating`） | 交互与 A11y 断言通过；单测 185 个 |
-| W9 | P1（中）+ E2E | `SrSelect`、`SrForm`/`SrFormItem`、Playwright 水合测试 | 表单校验闭环可用 |
+| W9 | P1（中）+ E2E | `SrSelect`（单选/多选/搜索/键盘）、`SrForm`/`SrFormItem`（规则校验 + 校验态下发）、Playwright 水合测试 5 条 | 表单校验闭环可用；真实浏览器下水合 0 告警 |
 | W10 | P1（下） | `SrTable`（含移动端卡片视图）、`SrTabs` | 表格 1000 行不卡顿；排序/选择可用 |
 | W11 | 文档完善 + 发布 v1.0.0 | 全部 P0/P1 组件文档、主题/响应式/图标指南、CHANGELOG、首个 tag | 文档站上线；`v1.0.0` tag 可被下游安装 |
 | W12 | P2 批次一 | `SrDrawer`、`SrPagination`、`SrCard`/`SrTag`/`SrBadge`/`SrAvatar` | 验收清单全过 |

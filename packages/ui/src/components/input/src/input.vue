@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, useAttrs, useSlots, watch } from 'vue'
+import { computed, inject, nextTick, ref, useAttrs, useSlots, watch } from 'vue'
 
 import { useSrConfig } from '../../../composables/use-sr-config'
+import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 import type { SrSize } from '../../../types/config'
 import type { SrResponsive } from '../../../types/theme'
 import { srOmit } from '../../../utils/attrs'
@@ -24,6 +25,8 @@ const emit = defineEmits<{
 const attrs = useAttrs()
 const slots = useSlots()
 const config = useSrConfig()
+// 表单内使用时由 SrFormItem 提供校验态，自身 status 优先级更高
+const formItem = inject(SR_FORM_ITEM_KEY, null)
 
 /** 原生输入元素 */
 const inputRef = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
@@ -69,6 +72,11 @@ const sizeVars = computed<Record<string, string>>(() => {
   return out
 })
 
+/** 实际校验态：自身显式指定优先，否则跟随表单项 */
+const resolvedStatus = computed(() =>
+  props.status !== 'default' ? props.status : (formItem?.status.value ?? 'default'),
+)
+
 /** 是否 textarea 分支 */
 const isTextarea = computed(() => props.type === 'textarea')
 
@@ -101,7 +109,7 @@ const countText = computed(() => {
  * @returns class 列表
  */
 const rootClass = computed(() => [
-  `sr-input--${props.status}`,
+  `sr-input--${resolvedStatus.value}`,
   {
     'is-disabled': props.disabled,
     'is-readonly': props.readonly,
@@ -135,7 +143,10 @@ function onInput(event: Event): void {
   const value = numeric ? Number(target.value) || 0 : target.value
 
   emit('update:modelValue', value)
-  if (!composing.value) emit('change', value)
+  if (!composing.value) {
+    emit('change', value)
+    formItem?.notify('change')
+  }
   if (props.autosize && isTextarea.value) resizeTextarea()
 }
 
@@ -160,6 +171,15 @@ function onCompositionEnd(event: CompositionEvent): void {
  */
 function onKeydown(event: KeyboardEvent): void {
   if (event.key === 'Enter' && !isTextarea.value) emit('enter', event)
+}
+
+/**
+ * 失焦：派发事件并通知表单项校验
+ * @param event 焦点事件
+ */
+function onBlur(event: FocusEvent): void {
+  emit('blur', event)
+  formItem?.notify('blur')
 }
 
 /** 清空 */
@@ -214,14 +234,16 @@ watch(
       :disabled="disabled"
       :readonly="readonly"
       :maxlength="maxlength"
-      :aria-invalid="status === 'error' ? 'true' : undefined"
+      :aria-invalid="resolvedStatus === 'error' ? 'true' : undefined"
+      :aria-describedby="resolvedStatus === 'error' ? formItem?.messageId : undefined"
+      :aria-labelledby="formItem?.labelId"
       v-bind="inputAttrs"
       @input="onInput"
       @compositionstart="onCompositionStart"
       @compositionend="onCompositionEnd"
       @keydown="onKeydown"
       @focus="emit('focus', $event)"
-      @blur="emit('blur', $event)"
+      @blur="onBlur($event)"
     />
 
     <input
@@ -234,14 +256,16 @@ watch(
       :disabled="disabled"
       :readonly="readonly"
       :maxlength="maxlength"
-      :aria-invalid="status === 'error' ? 'true' : undefined"
+      :aria-invalid="resolvedStatus === 'error' ? 'true' : undefined"
+      :aria-describedby="resolvedStatus === 'error' ? formItem?.messageId : undefined"
+      :aria-labelledby="formItem?.labelId"
       v-bind="inputAttrs"
       @input="onInput"
       @compositionstart="onCompositionStart"
       @compositionend="onCompositionEnd"
       @keydown="onKeydown"
       @focus="emit('focus', $event)"
-      @blur="emit('blur', $event)"
+      @blur="onBlur($event)"
     />
 
     <span v-if="showCount" class="sr-input__count">{{ countText }}</span>
