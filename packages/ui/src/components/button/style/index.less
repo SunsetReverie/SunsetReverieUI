@@ -29,6 +29,8 @@
   color: var(--sr-button-fg, var(--sr-color-text));
   // 辉光基础强度：对外暴露成变量，便于运行期调节（hover / active 相对它缩放）
   --sr-glow-base: 55%;
+  // 辉光半径默认取全局 token；个别变体可单独收敛
+  --sr-button-glow-blur: var(--sr-shadow-glow-blur, 0px);
 
   // 彩色辉光：颜色取自按钮自身的 accent，半径取自风格（flat 为 0）
   // color-mix 会在运行期解析，因此自定义主题色后辉光会自动跟着变
@@ -39,7 +41,7 @@
         var(--sr-button-accent, transparent) var(--sr-button-glow-strength, 55%),
         transparent
       ),
-    0 2px calc(var(--sr-shadow-glow-blur, 0px) * 0.4) -2px
+    0 2px calc(var(--sr-button-glow-blur) * 0.4) -2px
       color-mix(
         in oklab,
         var(--sr-button-accent, transparent) var(--sr-button-glow-strength, 55%),
@@ -191,8 +193,10 @@
 
   &--outline {
     --sr-button-accent: var(--sr-color-primary);
-    // 描边按钮是空心的，强辉光会显得「脏」，只留一点点边缘光提示存在感
-    --sr-glow-base: 22%;
+    // 描边按钮是空心的：既要降强度，也要收半径。
+    // 只降强度不够 —— 22px 的扩散范围本身就会形成一圈「大面积柔光」，看着依然很重
+    --sr-glow-base: 12%;
+    --sr-button-glow-blur: calc(var(--sr-shadow-glow-blur, 0px) * 0.35);
     --sr-button-bg: transparent;
     --sr-button-bg-hover: var(--sr-color-primary-alpha-08);
     // 文字与边框都用 primary-text：直接拿 primary 当文字只有约 2.9:1
