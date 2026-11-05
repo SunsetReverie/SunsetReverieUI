@@ -3225,6 +3225,31 @@ Git 依赖安装时，`pnpm` 会 clone 仓库并按 `prepare` 脚本构建。问
 1. **发布前产物自检**：CI 中 `pnpm build` 后执行 `scripts/verify-dist.mjs`，校验 `exports` 指向的文件全部存在、`d.ts` 可被 `tsc` 解析。
 2. **失败可降级**：README 明确写出「若安装时构建失败，可改用 `#v1.0.0-dist` 分支（含预构建产物）」。即：发版时 CI 额外把 `dist` 推到 `v1.0.0-dist` 分支，作为兜底通道。
 
+> ⚠️ **实施时发现的冲突（W1 实测）**：根 `package.json` 的 `prepare` 已经被 husky 占用，一个字段不能同时干两件事。
+> 解法是把 `prepare` 指向一个判断脚本，用 `.git` 目录是否存在区分场景：
+>
+> ```jsonc
+> // 根 package.json
+> { "scripts": { "prepare": "node scripts/prepare.mjs" } }
+> ```
+>
+> ```js
+> // scripts/prepare.mjs
+> import { execSync } from 'node:child_process'
+> import { existsSync } from 'node:fs'
+>
+> // 存在 .git → workspace 开发环境，只装 Git 钩子
+> // 不存在 .git → pnpm 解压后的 git 依赖目录，执行构建
+> // 依据：pnpm 打包 git 依赖时不会带上 .git 目录
+> if (existsSync('.git')) {
+>   execSync('husky', { stdio: 'inherit' })
+> } else {
+>   execSync('pnpm build', { stdio: 'inherit' })
+> }
+> ```
+>
+> 该脚本在 W6 验证下游安装时接入；W1 阶段 `prepare` 仍是纯 `husky`。
+
 > 方案 C 建议在**第 12 周之后**评估：如果下游项目超过 3 个，或出现「不同项目依赖不同版本、需要并存」的诉求，再上 Verdaccio。这是典型的「先简单后复杂」。
 
 ---

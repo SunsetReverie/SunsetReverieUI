@@ -92,7 +92,7 @@ pnpm build
 | --- | --- | --- |
 | D-01 | 一期用纯 pnpm `--filter` 编排，不引入 Turborepo | 根 `package.json` 的 `build:*` 顺序脚本 |
 | D-02 | 采用 changesets，只用 version + changelog | `.changeset/config.json`（四包版本 `fixed`） |
-| D-03 | `dist` 由 `prepare` 构建，另推 `<tag>-dist` 兜底分支 | 待 W6 接通（当前根 `prepare` 被 husky 占用） |
+| D-03 | `dist` 由 `prepare` 构建，另推 `<tag>-dist` 兜底分支 | 待 W6 接通（根 `prepare` 现为 husky；解法见规划文档 11.9：用 `.git` 是否存在区分场景） |
 | D-04 | `@sunset-reverie/icons` 内联进 ui 产物 | `packages/ui/vite.config.ts` 的 `external` 不含 icons |
 | D-11 | 组件前缀固定 `Sr`，不做可配置 | 校验脚本与 resolver 均写死 `Sr` |
 
