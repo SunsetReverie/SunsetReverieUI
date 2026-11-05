@@ -141,7 +141,10 @@
     --sr-button-glow-strength: calc(var(--sr-glow-base) * 1.4);
 
     background: var(--sr-button-bg-hover, var(--sr-button-bg));
-    border-color: var(--sr-button-border-hover, var(--sr-button-border));
+    // 三级兜底不可省：primary / danger 没有定义 --sr-button-border，
+    // 只写两层时整条声明会失效，border-color 回退成 currentColor ——
+    // 这两个变体的文字是白色，于是 hover 时边框突然变成白边。
+    border-color: var(--sr-button-border-hover, var(--sr-button-border, transparent));
   }
 
   &:not(:disabled):active {

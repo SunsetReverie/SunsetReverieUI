@@ -82,10 +82,11 @@ export const semanticLight: Record<string, string> = {
   'color-bg-inverse': 'var(--sr-night-900)',
 
   // ---------- 边框 ----------
-  'color-border': 'var(--sr-night-200)',
-  'color-border-strong': 'var(--sr-night-300)',
-  'color-border-subtle': 'var(--sr-night-100)',
-  'color-border-disabled': 'var(--sr-night-200)',
+  // 边框统一改为低透明度黑：实色色阶在白底上偏重，且叠在半透明玻璃上会发灰
+  'color-border': 'rgba(15, 18, 22, 0.11)',
+  'color-border-strong': 'rgba(15, 18, 22, 0.18)',
+  'color-border-subtle': 'rgba(15, 18, 22, 0.07)',
+  'color-border-disabled': 'rgba(15, 18, 22, 0.08)',
 
   // ---------- 主色 ----------
   'color-primary': 'var(--sr-sunset-500)',
@@ -156,10 +157,10 @@ export const semanticDark: Record<string, string> = {
   'color-bg-inverse': 'var(--sr-night-100)',
 
   // ---------- 边框 ----------
-  'color-border': 'var(--sr-night-700)',
-  'color-border-strong': 'var(--sr-night-600)',
-  'color-border-subtle': 'var(--sr-night-800)',
-  'color-border-disabled': 'var(--sr-night-700)',
+  'color-border': 'rgba(255, 255, 255, 0.12)',
+  'color-border-strong': 'rgba(255, 255, 255, 0.22)',
+  'color-border-subtle': 'rgba(255, 255, 255, 0.08)',
+  'color-border-disabled': 'rgba(255, 255, 255, 0.10)',
 
   // ---------- 主色 ----------
   'color-primary': 'var(--sr-sunset-400)',
