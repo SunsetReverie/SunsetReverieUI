@@ -261,6 +261,18 @@ function buildSemanticCss(): string {
   blocks.push(toDecls(themedDarkGlass()))
   blocks.push('}', '')
 
+  // 主题作用域：属性本身就代表「此处应用该主题」。
+  // 没有这条时，局部嵌套的主题只换了 CSS 变量，color 仍继承外层的深色，
+  // 暗色卡片里的图标会变成「深色字 + 深色底」直接看不见。
+  blocks.push(
+    '/* ---------- 主题作用域 ----------',
+    '   放在 data 属性上而非 html：局部嵌套时同样生效 ---------- */',
+    '[data-sr-theme] {',
+    '  color: var(--sr-color-text);',
+    '}',
+    '',
+  )
+
   blocks.push('/* ---------- 动效降级 ---------- */', '@media (prefers-reduced-motion: reduce) {')
   blocks.push('  :root {')
   for (const key of Object.keys(durations)) {

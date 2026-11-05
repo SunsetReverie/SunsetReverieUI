@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import { useSrBreakpoint, useSrTheme } from '@sunset-reverie/ui'
 
+import AuditView from './views/AuditView.vue'
 import ComponentsView from './views/ComponentsView.vue'
 import FeedbackView from './views/FeedbackView.vue'
 import FormsView from './views/FormsView.vue'
@@ -23,6 +24,7 @@ const views = [
   { key: 'feedback', label: '反馈', component: FeedbackView },
   { key: 'theme', label: '主题实验室', component: ThemeLab },
   { key: 'responsive', label: '断点实验室', component: ResponsiveLab },
+  { key: 'audit', label: '视觉审计', component: AuditView },
 ] as const
 
 // 支持 ?tab=theme 直达某个视图，方便截图与分享复现链接

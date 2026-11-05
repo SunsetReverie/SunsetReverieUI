@@ -91,6 +91,8 @@ export const semanticLight: Record<string, string> = {
   'color-primary-active': 'var(--sr-sunset-700)',
   'color-primary-disabled': 'var(--sr-sunset-200)',
   'color-on-primary': '#ffffff',
+  // 文字专用主色：直接拿 sunset-500 当文字只有约 2.9:1，达不到正文 4.5:1
+  'color-primary-text': 'var(--sr-sunset-700)',
   // alpha 派生：运行期切换主题色时由 useSrTheme 用 color-mix 覆写
   'color-primary-alpha-25': 'rgba(255, 122, 69, 0.25)',
   'color-primary-alpha-12': 'rgba(255, 122, 69, 0.12)',
@@ -162,6 +164,7 @@ export const semanticDark: Record<string, string> = {
   'color-primary-active': 'var(--sr-sunset-200)',
   'color-primary-disabled': 'var(--sr-sunset-900)',
   'color-on-primary': '#1a0e05',
+  'color-primary-text': 'var(--sr-sunset-300)',
   'color-primary-alpha-25': 'rgba(255, 139, 82, 0.25)',
   'color-primary-alpha-12': 'rgba(255, 139, 82, 0.12)',
   'color-primary-alpha-08': 'rgba(255, 139, 82, 0.08)',

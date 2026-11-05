@@ -74,6 +74,7 @@ function applyToDom(theme: SrResolvedTheme, currentStyle: SrStyleMode): void {
 function applyPrimaryColor(target: HTMLElement, color: string): void {
   const scale = srDerivePrimaryScale(color)
   target.style.setProperty('--sr-color-primary', scale.base)
+  target.style.setProperty('--sr-color-primary-text', scale.text)
   target.style.setProperty('--sr-color-primary-hover', scale.hover)
   target.style.setProperty('--sr-color-primary-active', scale.active)
   target.style.setProperty('--sr-color-primary-alpha-25', scale.alpha25)
@@ -256,6 +257,7 @@ export function useSrTheme() {
     const root = document.documentElement
     for (const name of [
       '--sr-color-primary',
+      '--sr-color-primary-text',
       '--sr-color-primary-hover',
       '--sr-color-primary-active',
       '--sr-color-primary-alpha-25',

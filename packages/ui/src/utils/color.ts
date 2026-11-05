@@ -9,6 +9,8 @@
 export interface SrPrimaryScale {
   /** 主色本身 */
   base: string
+  /** 文字专用主色：加深后保证正文对比度 */
+  text: string
   /** 悬停态 */
   hover: string
   /** 按下态 */
@@ -122,6 +124,8 @@ export function srDerivePrimaryScale(color: string): SrPrimaryScale {
   if (srSupportsColorMix()) {
     return {
       base: color,
+      // 亮色主题下文字需要更深；暗色主题由 CSS 层的 --sr-color-primary-text 兜底
+      text: `color-mix(in oklab, ${color} 82%, black)`,
       hover: `color-mix(in oklab, ${color} 88%, white)`,
       active: `color-mix(in oklab, ${color} 84%, black)`,
       alpha25: `color-mix(in oklab, ${color} 25%, transparent)`,
@@ -140,6 +144,7 @@ export function srDerivePrimaryScale(color: string): SrPrimaryScale {
 
   return {
     base: color,
+    text: srAdjustLightness(color, -0.16),
     hover,
     active,
     alpha25: alpha(0.25),

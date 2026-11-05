@@ -61,6 +61,7 @@ export function srThemeInitScript(options: SrThemeScriptOptions = {}): string {
     'if(p){',
     "d.style.setProperty('--sr-color-primary',p);",
     "if(window.CSS&&CSS.supports&&CSS.supports('color','color-mix(in oklab, red 50%, white)')){",
+    "d.style.setProperty('--sr-color-primary-text','color-mix(in oklab, '+p+' 82%, black)');",
     "d.style.setProperty('--sr-color-primary-hover','color-mix(in oklab, '+p+' 88%, white)');",
     "d.style.setProperty('--sr-color-primary-active','color-mix(in oklab, '+p+' 84%, black)');",
     "d.style.setProperty('--sr-color-primary-alpha-25','color-mix(in oklab, '+p+' 25%, transparent)');",

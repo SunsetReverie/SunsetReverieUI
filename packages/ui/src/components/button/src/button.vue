@@ -94,6 +94,10 @@ const isNativeDisabled = computed(() => props.disabled || props.loading)
       <sr-icon v-if="icon && iconPosition === 'right'" :name="icon" class="sr-button__icon" />
     </span>
 
-    <span v-if="loading" class="sr-button__spinner" aria-hidden="true" />
+    <span v-if="loading" class="sr-button__loading" aria-hidden="true">
+      <slot name="loading">
+        <span class="sr-button__spinner" />
+      </slot>
+    </span>
   </button>
 </template>
