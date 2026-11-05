@@ -9,6 +9,8 @@
     "pnpm": ">=9"
   },
   "scripts": {
+    "dev": "pnpm --filter playground-vue3 dev",
+    "dev:vue3": "pnpm --filter playground-vue3 dev",
     "build:tokens": "pnpm --filter @sunset-reverie/internal-tokens build",
     "build:gallery": "pnpm run build:tokens && pnpm --filter @sunset-reverie/internal-tokens build:gallery",
     "build:icons": "pnpm run build:tokens && pnpm --filter @sunset-reverie/icons build",

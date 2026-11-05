@@ -1,0 +1,178 @@
+// Playground 壳层样式
+// 注意：这里刻意全部消费 --sr-* 变量，顺带验证 token 覆盖是否够用
+
+.pg {
+  min-height: 100vh;
+  background: var(--sr-color-bg-page);
+  color: var(--sr-color-text);
+  font-family: var(--sr-font-family-base);
+
+  &__bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-4);
+    flex-wrap: wrap;
+    padding: var(--sr-space-3) var(--sr-space-5);
+    background: var(--sr-color-bg-container);
+    border-bottom: 1px solid var(--sr-color-border);
+    backdrop-filter: var(--sr-glass-filter);
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    font-size: var(--sr-font-size-md);
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__sun {
+    width: 18px;
+    height: 18px;
+    border-radius: var(--sr-radius-full);
+    background: linear-gradient(160deg, var(--sr-sunset-300), var(--sr-ember-500));
+    box-shadow: 0 0 12px var(--sr-color-primary-alpha-25);
+  }
+
+  &__status {
+    display: flex;
+    gap: var(--sr-space-2);
+    margin-inline-start: auto;
+  }
+
+  &__pill {
+    padding: 2px var(--sr-space-2);
+    border-radius: var(--sr-radius-full);
+    border: 1px solid var(--sr-color-border);
+    background: var(--sr-color-bg-sunken);
+    font-family: var(--sr-font-family-mono);
+    font-size: var(--sr-font-size-xs);
+    color: var(--sr-color-text-secondary);
+    white-space: nowrap;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--sr-space-2);
+  }
+
+  &__btn {
+    padding: 5px var(--sr-space-3);
+    border-radius: var(--sr-radius-base);
+    border: 1px solid var(--sr-color-border);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text);
+    font-size: var(--sr-font-size-sm);
+    cursor: pointer;
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      border-color: var(--sr-color-primary);
+      color: var(--sr-color-primary);
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    gap: var(--sr-space-1);
+    padding: var(--sr-space-3) var(--sr-space-5) 0;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  &__tab {
+    padding: 6px var(--sr-space-3);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-sm);
+    cursor: pointer;
+
+    &.is-active {
+      color: var(--sr-color-primary);
+      border-bottom-color: var(--sr-color-primary);
+      font-weight: var(--sr-font-weight-semibold);
+    }
+  }
+
+  &__body {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--sr-space-5);
+  }
+}
+
+// ---------- 通用卡片 ----------
+.panel {
+  background: var(--sr-color-bg-container);
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  box-shadow: var(--sr-shadow-sm);
+  padding: var(--sr-space-5);
+  margin-bottom: var(--sr-space-4);
+
+  &__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sr-space-2);
+    margin: 0 0 var(--sr-space-1);
+    font-size: var(--sr-font-size-md);
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__desc {
+    margin: 0 0 var(--sr-space-4);
+    font-size: var(--sr-font-size-sm);
+    color: var(--sr-color-text-secondary);
+  }
+}
+
+// 栅格演示块
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 0;
+  padding: 0 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-primary-alpha-12);
+  border: 1px dashed var(--sr-color-primary-alpha-25);
+  color: var(--sr-color-primary);
+  font-family: var(--sr-font-family-mono);
+  font-size: var(--sr-font-size-xs);
+}
+
+// 代码行
+.kv {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: var(--sr-space-2);
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--sr-color-border-subtle);
+  font-size: var(--sr-font-size-sm);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &__key {
+    color: var(--sr-color-text-secondary);
+    font-family: var(--sr-font-family-mono);
+    font-size: var(--sr-font-size-xs);
+  }
+
+  &__val {
+    font-family: var(--sr-font-family-mono);
+    word-break: break-all;
+  }
+}

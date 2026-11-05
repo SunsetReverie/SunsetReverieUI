@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/__tests__/**/*.spec.ts'],
     // 覆盖率阈值在 W3 引入首个组件后启用
     coverage: {

@@ -3,8 +3,8 @@
 packages:
   - 'packages/*'
   - 'internal/*'
+  - 'playground-vue3'
   # 以下成员在后续阶段加入（提前声明会因目录不存在而告警）
-  # - 'playground-vue3'   # W3
   # - 'playground-nuxt4'  # W7
   # - 'docs'              # W7（VitePress）
 

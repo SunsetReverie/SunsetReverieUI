@@ -1,0 +1,175 @@
+// 栅格列
+//
+// 全部尺寸由 CSS 变量驱动，JS 只负责把 props 写成变量，不参与布局计算。
+// fallback 链 var(--a, var(--b, 24)) 实现「就近继承」：
+// lg 未单独声明时自动沿用 md，md 未声明时沿用 xs。
+
+@import '../../../styles/mixins/index.less';
+
+@sr-grid-columns: 24;
+
+.sr-col {
+  position: relative;
+  box-sizing: border-box;
+  // 防止 flex 子项被内容撑破
+  min-width: 0;
+
+  // 间距：由 SrRow 设置的变量决定，横向用 padding 抵消行的负 margin
+  padding-inline: calc(var(--sr-row-gutter-x-xs, 0px) / 2);
+  padding-block: calc(var(--sr-row-gutter-y-xs, 0px) / 2);
+
+  // 用 width 而非 flex-basis：
+  // flex-basis 的百分比在不同引擎里对 padding 的计入方式不一致，
+  // 会导致带 gutter 时列宽累加大于 100%，在窄屏下尤其明显。
+  flex: 0 0 auto;
+  width: calc(var(--sr-col-span-xs, 24) / @sr-grid-columns * 100%);
+  max-width: calc(var(--sr-col-span-xs, 24) / @sr-grid-columns * 100%);
+  margin-inline-start: calc(var(--sr-col-offset-xs, 0) / @sr-grid-columns * 100%);
+  // push / pull 合成一个位移量，负值即向左拉
+  inset-inline-start: calc((var(--sr-col-push-xs, 0) - var(--sr-col-pull-xs, 0)) / @sr-grid-columns * 100%);
+
+  .sr-breakpoint-up(sm, {
+    padding-inline: calc(var(--sr-row-gutter-x-sm, var(--sr-row-gutter-x-xs, 0px)) / 2);
+    padding-block: calc(var(--sr-row-gutter-y-sm, var(--sr-row-gutter-y-xs, 0px)) / 2);
+    width: calc(var(--sr-col-span-sm, var(--sr-col-span-xs, 24)) / @sr-grid-columns * 100%);
+    max-width: calc(var(--sr-col-span-sm, var(--sr-col-span-xs, 24)) / @sr-grid-columns * 100%);
+    margin-inline-start: calc(
+      var(--sr-col-offset-sm, var(--sr-col-offset-xs, 0)) / @sr-grid-columns * 100%
+    );
+    inset-inline-start: calc(
+      (var(--sr-col-push-sm, var(--sr-col-push-xs, 0)) - var(--sr-col-pull-sm, var(--sr-col-pull-xs, 0))) /
+        @sr-grid-columns * 100%
+    );
+  });
+
+  .sr-breakpoint-up(md, {
+    padding-inline: calc(
+      var(--sr-row-gutter-x-md, var(--sr-row-gutter-x-sm, var(--sr-row-gutter-x-xs, 0px))) / 2
+    );
+    padding-block: calc(
+      var(--sr-row-gutter-y-md, var(--sr-row-gutter-y-sm, var(--sr-row-gutter-y-xs, 0px))) / 2
+    );
+    width: calc(
+      var(--sr-col-span-md, var(--sr-col-span-sm, var(--sr-col-span-xs, 24))) / @sr-grid-columns * 100%
+    );
+    max-width: calc(
+      var(--sr-col-span-md, var(--sr-col-span-sm, var(--sr-col-span-xs, 24))) / @sr-grid-columns * 100%
+    );
+    margin-inline-start: calc(
+      var(--sr-col-offset-md, var(--sr-col-offset-sm, var(--sr-col-offset-xs, 0))) / @sr-grid-columns * 100%
+    );
+    inset-inline-start: calc(
+      (
+          var(--sr-col-push-md, var(--sr-col-push-sm, var(--sr-col-push-xs, 0))) -
+            var(--sr-col-pull-md, var(--sr-col-pull-sm, var(--sr-col-pull-xs, 0)))
+        ) / @sr-grid-columns * 100%
+    );
+  });
+
+  .sr-breakpoint-up(lg, {
+    padding-inline: calc(
+      var(
+          --sr-row-gutter-x-lg,
+          var(--sr-row-gutter-x-md, var(--sr-row-gutter-x-sm, var(--sr-row-gutter-x-xs, 0px)))
+        ) / 2
+    );
+    padding-block: calc(
+      var(
+          --sr-row-gutter-y-lg,
+          var(--sr-row-gutter-y-md, var(--sr-row-gutter-y-sm, var(--sr-row-gutter-y-xs, 0px)))
+        ) / 2
+    );
+    width: calc(
+      var(--sr-col-span-lg, var(--sr-col-span-md, var(--sr-col-span-sm, var(--sr-col-span-xs, 24)))) /
+        @sr-grid-columns * 100%
+    );
+    max-width: calc(
+      var(--sr-col-span-lg, var(--sr-col-span-md, var(--sr-col-span-sm, var(--sr-col-span-xs, 24)))) /
+        @sr-grid-columns * 100%
+    );
+    margin-inline-start: calc(
+      var(
+          --sr-col-offset-lg,
+          var(--sr-col-offset-md, var(--sr-col-offset-sm, var(--sr-col-offset-xs, 0)))
+        ) / @sr-grid-columns * 100%
+    );
+    inset-inline-start: calc(
+      (
+          var(
+              --sr-col-push-lg,
+              var(--sr-col-push-md, var(--sr-col-push-sm, var(--sr-col-push-xs, 0)))
+            ) -
+            var(
+              --sr-col-pull-lg,
+              var(--sr-col-pull-md, var(--sr-col-pull-sm, var(--sr-col-pull-xs, 0)))
+            )
+        ) / @sr-grid-columns * 100%
+    );
+  });
+
+  .sr-breakpoint-up(xl, {
+    padding-inline: calc(
+      var(
+          --sr-row-gutter-x-xl,
+          var(
+            --sr-row-gutter-x-lg,
+            var(--sr-row-gutter-x-md, var(--sr-row-gutter-x-sm, var(--sr-row-gutter-x-xs, 0px)))
+          )
+        ) / 2
+    );
+    padding-block: calc(
+      var(
+          --sr-row-gutter-y-xl,
+          var(
+            --sr-row-gutter-y-lg,
+            var(--sr-row-gutter-y-md, var(--sr-row-gutter-y-sm, var(--sr-row-gutter-y-xs, 0px)))
+          )
+        ) / 2
+    );
+    width: calc(
+      var(
+          --sr-col-span-xl,
+          var(
+            --sr-col-span-lg,
+            var(--sr-col-span-md, var(--sr-col-span-sm, var(--sr-col-span-xs, 24)))
+          )
+        ) / @sr-grid-columns * 100%
+    );
+    max-width: calc(
+      var(
+          --sr-col-span-xl,
+          var(
+            --sr-col-span-lg,
+            var(--sr-col-span-md, var(--sr-col-span-sm, var(--sr-col-span-xs, 24)))
+          )
+        ) / @sr-grid-columns * 100%
+    );
+    margin-inline-start: calc(
+      var(
+          --sr-col-offset-xl,
+          var(
+            --sr-col-offset-lg,
+            var(--sr-col-offset-md, var(--sr-col-offset-sm, var(--sr-col-offset-xs, 0)))
+          )
+        ) / @sr-grid-columns * 100%
+    );
+    inset-inline-start: calc(
+      (
+          var(
+              --sr-col-push-xl,
+              var(
+                --sr-col-push-lg,
+                var(--sr-col-push-md, var(--sr-col-push-sm, var(--sr-col-push-xs, 0)))
+              )
+            ) -
+            var(
+              --sr-col-pull-xl,
+              var(
+                --sr-col-pull-lg,
+                var(--sr-col-pull-md, var(--sr-col-pull-sm, var(--sr-col-pull-xs, 0)))
+              )
+            )
+        ) / @sr-grid-columns * 100%
+    );
+  });
+}

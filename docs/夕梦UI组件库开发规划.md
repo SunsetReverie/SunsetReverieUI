@@ -1757,6 +1757,11 @@ export function useSrBreakpoint(options: { ssrWidth?: number } = {}) {
 - 客户端首帧也用同一个初值 → 结构一致，**无 mismatch**。
 - `onMounted` 后（实际这里是同步执行的，但被 `typeof window` 包裹）校正为真实断点 → 可能发生一次可见变化（例如移动端首屏短暂显示桌面结构）。
 
+> **实施差异（W3 实测）**：上例用 `matchMedia` 逐个监听断点。实际实现改为 **resize + rAF 读取真实视口宽度**，原因有三：
+> 1. 调试页需要显示精确的视口宽度，而 `matchMedia` 只能推算区间下界（`xs` 区间永远是 0，无法展示真实值）；
+> 2. 断点判定逻辑完全一致（同一份 `SR_BREAKPOINTS`），rAF 节流后每帧最多计算一次，性能差异在实测中可忽略；
+> 3. 结合 `getCurrentScope()` 判断是否处于组件作用域，避免在 setup 之外调用时 `onScopeDispose` 告警。
+
 **消除「首次渲染结构跳变」的方案对比**：
 
 | 方案 | 做法 | 效果 | 代价 | 结论 |
@@ -4466,7 +4471,7 @@ jobs:
 | --- | --- | --- | --- |
 | W1 | 立项与基建 | monorepo 骨架、pnpm workspace、TS/Less/ESLint/Prettier 配置、CI 骨架、命名校验脚本、**决策评审（Turborepo / changesets / dist 分发）** | `pnpm build` 能跑通空包；CI 绿 |
 | W2 | Token 与设计系统 | `internal/tokens` 生成链路、L1/L2/L3 Token、Less mixin（断点/surface）、`base.css`、**Token Gallery 生成版**（替换 W1 静态版） | Token 表格与文档一致；产物可被组件引用；Gallery 由 tokens.ts 自动生成 |
-| W3 | 主题与响应式内核 | `useSrTheme`、`data-sr-theme`/`data-sr-style` 两套 token、SSR 内联脚本、`useSrBreakpoint`、栅格 mixin | `playground-vue3` 可切换明暗/风格且无闪烁；`playground-nuxt4` 首屏无白闪 |
+| W3 | 主题与响应式内核 | `useSrTheme`、`useSrBreakpoint`、SSR 内联脚本生成器、`SrRow`/`SrCol`、`playground-vue3` | `playground-vue3` 可切换明暗/风格且无闪烁；栅格在 xs/sm/lg 三档布局正确。（SSR 首屏白闪的浏览器验证需 Nuxt 环境，顺延到 W7 随 Module 一起验，脚本本身 `srThemeInitScript()` 已就绪） |
 | W4 | 基础组件（上） | `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider` | 四种主题组合视觉通过；单测覆盖 ≥85% |
 | W5 | 基础组件（下）+ 栅格 | `SrRow`/`SrCol`（响应式）、`SrInput` | 三断点布局正确；SSR 无水合告警 |
 | W6 | P0 收尾 + 构建发布链路 | `SrModal`、`SrToast`、`resolver` 包、vite 多入口构建、`exports` 映射、样式拆分构建 | `pnpm build` 产出完整 dist；下游可 git 安装并跑通 |

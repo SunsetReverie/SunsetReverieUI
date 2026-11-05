@@ -1,0 +1,17 @@
+// 栅格行
+//
+// 负 margin 抵消 SrCol 的水平 padding，让最左/最右列与容器边缘对齐。
+// 垂直间距由 SrCol 的 padding-block 承担，因此这里不用 row-gap（否则间距翻倍）。
+
+.sr-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: var(--sr-row-justify, flex-start);
+  align-items: var(--sr-row-align, flex-start);
+  margin-inline: calc(var(--sr-row-gutter-x-xs, 0px) / -2);
+  box-sizing: border-box;
+
+  &.is-nowrap {
+    flex-wrap: nowrap;
+  }
+}

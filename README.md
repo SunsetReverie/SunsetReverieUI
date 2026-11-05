@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W2（Token 与设计系统）已完成
+## 当前进度：W3（主题与响应式内核）已完成
 
 ### W1 · 立项与基建
 
@@ -32,7 +32,18 @@
 | 响应式工具类（4 断点 × 10 类，≈2KB gzip） | ✅ |
 | Token Gallery 生成版（由 tokens 注入，非手写） | ✅ |
 
-W3 将实现 `useSrTheme` / `useSrBreakpoint`、SSR 防闪烁脚本与栅格内核。
+### W3 · 主题与响应式内核
+
+| 项 | 状态 |
+| --- | --- |
+| `useSrTheme`（状态机 / 持久化 / 系统跟随 / 跨标签页同步 / 主色注入） | ✅ |
+| `useSrBreakpoint`（resize + rAF，SSR 安全，作用域外调用不告警） | ✅ |
+| SSR 防闪烁脚本生成器（`srThemeInitScript` / `SR_THEME_INIT_SNIPPET`） | ✅ |
+| `SrRow` / `SrCol`（24 栅格 + 响应式 span/offset/push/pull/gutter） | ✅ |
+| `playground-vue3`（栅格概览 / 主题实验室 / 断点实验室） | ✅ |
+| 单元测试 34 个（两个内核 + 两个组件 + 脚本生成） | ✅ |
+
+W4 将实现 `SrIcon`（含离线集合）、`SrButton`、`SrTransition`、`SrConfigProvider`。
 
 ---
 
@@ -48,6 +59,7 @@ sunsetreverie-ui/
 ├── internal/
 │   ├── tokens/              # Token 唯一手写源 + 代码生成
 │   └── examples/            # 三处共用的示例源码
+├── playground-vue3/         # Vite + Vue 3 调试站（直连源码）
 ├── scripts/                 # 命名 / 图标 / 产物校验
 ├── docs/                    # 规划文档与 Token 验证页
 ├── .changeset/              # 变更说明（发版用）
@@ -87,6 +99,7 @@ pnpm build
 
 | 命令 | 说明 |
 | --- | --- |
+| `pnpm dev` | 启动 playground-vue3（直连源码，HMR） |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
