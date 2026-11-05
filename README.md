@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W5（输入与反馈）已完成
+## 当前进度：W6（构建发布链路）已完成
 
 ### W1 · 立项与基建
 
@@ -68,7 +68,19 @@
 | `playground-vue3` 新增「表单」「反馈」两个视图 | ✅ |
 | 单元测试 123 个（含 SSR 与列表渲染） | ✅ |
 
-W6 将聚焦构建发布链路：`resolver` 包、多入口产物、`exports` 映射、样式拆分、git 安装验证。
+### W6 · 构建发布链路
+
+| 项 | 状态 |
+| --- | --- |
+| 多入口构建（9 个组件各自独立入口 + 类型声明） | ✅ |
+| 样式三份产出（`base.css` / `style.css` / `components/<n>/style.css`） | ✅ |
+| 无样式组件产出占位 CSS（`config-provider`、`transition`） | ✅ |
+| `resolver` 组件清单自动同步（`pnpm gen:components`） | ✅ |
+| `@sunset-reverie/icons` 降为构建期依赖（决策 D-04 落地） | ✅ |
+| 产物校验三层（exports / 组件三件套 / 清单一致性） | ✅ |
+| 端到端验证：tgz 装进全新项目（Vite 8）构建并渲染通过 | ✅ |
+
+W7 将实现 `@sunset-reverie/nuxt` module 与 VitePress 文档站骨架。
 
 ---
 
@@ -127,6 +139,7 @@ pnpm build
 | --- | --- |
 | `pnpm dev` | 启动 playground-vue3（直连源码，HMR） |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
+| `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |

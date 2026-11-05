@@ -4589,7 +4589,7 @@ jobs:
 | W3 | 主题与响应式内核 | `useSrTheme`、`useSrBreakpoint`、SSR 内联脚本生成器、`SrRow`/`SrCol`、`playground-vue3`、**SSR 渲染与水合一致性测试（第 0/1 层防线）** | `playground-vue3` 可切换明暗/风格且无闪烁；栅格在 xs/sm/lg 三档布局正确；SSR 环境下组件渲染不抛错、水合无告警 |
 | W4 | 基础组件（上） | `SrIcon`（含离线集合子集化）、`SrButton`、`SrTransition`、`SrConfigProvider`、最小 `playground-nuxt4`（手写 plugin） | 四种主题组合视觉通过；SSR HTML 含根属性与内联脚本；水合 0 告警；单测 77 个 |
 | W5 | 输入与反馈 | `SrInput`、`SrModal`、`SrToast`、`playground-vue3` 表单 / 反馈视图 | 焦点陷阱与 Esc 嵌套行为正确；Toast 队列与上限正确；单测 123 个 |
-| W6 | 构建发布链路 | `resolver` 包、vite 多入口构建、`exports` 映射、样式拆分、git 安装验证 | `pnpm build` 产出完整 dist；下游可 git 安装并跑通 |
+| W6 | 构建发布链路 | 多入口构建、样式三份产出、组件占位 CSS、resolver 清单同步、icons 依赖降级、产物校验三层、端到端安装验证 | 9 个组件各有独立入口与 `style.css`；tgz 装进全新 Vite 8 项目可构建并渲染 |
 | W7 | Nuxt 集成 + 文档站起步 | `@sunset-reverie/nuxt` module、`nuxt.config` 一行接入、VitePress 骨架 + 3 个组件文档 | Nuxt demo 全 P0 组件 SSR 正确 |
 | W8 | P1（上） | `SrCheckbox`/`SrRadio`/`SrSwitch`/`SrSpinner`、`SrTooltip` | 交互与 A11y 断言通过 |
 | W9 | P1（中）+ E2E | `SrSelect`、`SrForm`/`SrFormItem`、Playwright 水合测试 | 表单校验闭环可用 |

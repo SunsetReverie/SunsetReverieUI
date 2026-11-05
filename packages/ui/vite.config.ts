@@ -2,6 +2,25 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import dts from 'vite-plugin-dts'
+import { globSync } from 'tinyglobby'
+
+const ROOT = fileURLToPath(new URL('.', import.meta.url))
+
+/**
+ * 组件入口：src/components/<name>/index.ts
+ *
+ * 显式列出而不是只靠 index.ts 的 re-export：
+ * 这样每个组件都能独立引入（`@sunset-reverie/ui/button`），
+ * 且将来某个组件不被主入口导出时也不会从产物里消失。
+ */
+const componentEntries = Object.fromEntries(
+  globSync('src/components/*/index.ts', { cwd: ROOT })
+    .sort()
+    .map((entry) => {
+      const name = entry.split('/').at(-2) ?? ''
+      return [`components/${name}/index`, fileURLToPath(new URL(entry, import.meta.url))]
+    }),
+)
 
 /**
  * 核心包构建配置
@@ -23,12 +42,14 @@ export default defineConfig({
 
   build: {
     target: 'es2020',
+    // 样式由 build-styles.mjs 单独产出（含每个组件的独立 CSS），
+    // 这里关掉 Vite 的 CSS 抽取，避免两套产物互相覆盖
     cssCodeSplit: false,
 
     lib: {
       entry: {
         index: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
-        // W6 起按 src/components/<name>/index.ts 自动追加多入口
+        ...componentEntries,
       },
       formats: ['es'],
     },

@@ -4,12 +4,14 @@
  * 约定：把 <sr-button> 解析为 @sunset-reverie/ui 的子路径导入，
  * 并附带组件级样式副作用（base.css 只在首个组件时注入一次）。
  *
- * W1 阶段组件清单为空；W6 起由 scripts/sync-components.mjs 从
- * packages/ui/src/components 目录同步写入。
+ * 组件清单由 scripts/sync-components.mjs 扫描目录自动生成，
+ * 新增组件后执行 pnpm gen:components 即可，无需手改本文件。
  */
 
-/** 组件名清单（PascalCase，不含 Sr 前缀） */
-const COMPONENT_NAMES: readonly string[] = []
+import { SR_COMPONENT_NAMES } from './components.generated'
+
+/** 组件名清单（PascalCase，不含 Sr 前缀），由 pnpm gen:components 自动同步 */
+const COMPONENT_NAMES: readonly string[] = SR_COMPONENT_NAMES
 
 /** Resolver 配置项 */
 export interface SunsetReverieResolverOptions {

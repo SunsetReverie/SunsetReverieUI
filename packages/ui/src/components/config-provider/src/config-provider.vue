@@ -26,6 +26,10 @@ provideSrConfig(merged)
 </script>
 
 <template>
-  <!-- 不渲染额外 DOM：配置只是上下文，不应该影响布局 -->
+  <!--
+    不渲染额外 DOM：配置只是上下文，不应该影响布局。
+    因此本组件没有 src/style/index.less —— 构建脚本会为它产出占位 CSS，
+    保证 resolver 引用的 components/config-provider/style.css 路径有效。
+  -->
   <slot />
 </template>
