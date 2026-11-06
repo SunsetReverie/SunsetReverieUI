@@ -69,7 +69,7 @@ const wideColumns: SrTableColumn[] = [
   { key: 'size', title: '体积', width: 120, align: 'right' },
   { key: 'status', title: '状态', width: 130 },
   { key: 'updated', title: '更新时间', width: 160 },
-  { key: 'actions', title: '操作', width: 140, fixed: 'right' },
+  { key: 'actions', title: '操作', width: 210, fixed: 'right' },
 ]
 
 /** 固定列演示数据 */
@@ -185,7 +185,11 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </SrTag>
         </template>
         <template #cell-actions>
-          <sr-button size="sm" variant="secondary">编辑</sr-button>
+          <div class="row-actions">
+            <sr-button size="xs" variant="primary">编辑</sr-button>
+            <sr-button size="xs" variant="outline">复制</sr-button>
+            <sr-button size="xs" variant="text" class="row-actions__danger">删除</sr-button>
+          </div>
         </template>
       </sr-table>
     </section>
@@ -544,4 +548,16 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* 操作列：三个小按钮挤在一格里 */
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.row-actions__danger {
+  color: var(--sr-color-danger) !important;
+}
+</style>

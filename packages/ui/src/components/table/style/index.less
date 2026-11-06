@@ -316,20 +316,14 @@
 
 .sr-table__head th.is-fixed {
   z-index: 4;
-  // 表头同样叠两层，避免横向滚动的表头文字透到固定表头下面
-  background-image:
-    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken)),
-    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
+  backdrop-filter: var(--sr-glass-filter-strong);
 }
 
-// 玻璃风格下容器色只有 0.72 不透明，单层会透出滚动过去的文字。
-// 底色 + 两层渐变叠加把不透明度推到约 0.98，固定列才够"实"。
+// 固定列保持半透，靠强模糊把背后的滚动内容糊成一片色块，
+// 而不是靠堆不透明度去"盖"——后者会变成一块死板的白底，没有磨砂感。
 .sr-table__body td.is-fixed {
-  background-color: var(--sr-color-bg-container);
-  background-image:
-    linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container)),
-    linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container));
-  backdrop-filter: var(--sr-glass-filter);
+  background: var(--sr-color-bg-container);
+  backdrop-filter: var(--sr-glass-filter-strong);
 }
 
 .sr-table .sr-table__row.is-selected td.is-fixed {
@@ -337,11 +331,8 @@
 }
 
 .sr-table.is-stripe .sr-table__body .sr-table__row:nth-child(even) td.is-fixed {
-  background-color: var(--sr-color-bg-sunken);
-  background-image:
-    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken)),
-    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
-  backdrop-filter: var(--sr-glass-filter);
+  background: var(--sr-color-bg-sunken);
+  backdrop-filter: var(--sr-glass-filter-strong);
 }
 
 .sr-table.is-hoverable .sr-table__body .sr-table__row:hover td.is-fixed {
@@ -355,9 +346,9 @@
   position: absolute;
   top: 0;
   bottom: -1px;
-  right: -8px;
-  width: 8px;
-  background: linear-gradient(to right, rgb(15 23 42 / 14%), transparent);
+  right: -6px;
+  width: 6px;
+  background: linear-gradient(to right, rgb(15 23 42 / 6%), transparent);
   pointer-events: none;
 }
 
@@ -367,9 +358,9 @@
   position: absolute;
   top: 0;
   bottom: -1px;
-  left: -8px;
-  width: 8px;
-  background: linear-gradient(to left, rgb(15 23 42 / 14%), transparent);
+  left: -6px;
+  width: 6px;
+  background: linear-gradient(to left, rgb(15 23 42 / 6%), transparent);
   pointer-events: none;
 }
 
