@@ -22,7 +22,7 @@ const iconCatalog = [
   { name: 'lucide:circle-check', label: '已完成' },
   { name: 'lucide:x', label: '关闭' },
   { name: 'lucide:circle-x', label: '取消' },
-  { name: 'lucide:triangle-exclamation-point', label: '警告' },
+  { name: 'lucide:alert-triangle', label: '警告' },
   { name: 'lucide:info', label: '信息' },
   { name: 'lucide:trash', label: '删除' },
   { name: 'lucide:pencil', label: '编辑' },
@@ -286,7 +286,7 @@ function triggerLoading(): void {
       <div class="icon-demo-row" style="margin-top: 16px">
         <sr-button variant="primary" icon="lucide:plus">继承按钮文字色</sr-button>
         <sr-button variant="success" icon="lucide:check">成功</sr-button>
-        <sr-button variant="warning" icon="lucide:triangle-exclamation-point">警告</sr-button>
+        <sr-button variant="warning" icon="lucide:alert-triangle">警告</sr-button>
         <sr-button variant="text" icon="lucide:music">文字按钮也继承</sr-button>
       </div>
 
@@ -340,7 +340,7 @@ function triggerLoading(): void {
 <style scoped>
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: 8px;
 }
 
@@ -349,7 +349,10 @@ function triggerLoading(): void {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 12px 4px;
+  /* 固定高度 + 隐藏溢出：图标名长短不一，靠内容撑高会让整行卡片被拉伸 */
+  height: 100px;
+  padding: 10px 6px;
+  overflow: hidden;
   border: 1px solid var(--sr-color-border);
   border-radius: var(--sr-radius-base);
   background: var(--sr-color-bg-elevated);
@@ -361,14 +364,27 @@ function triggerLoading(): void {
 }
 
 .icon-card__label {
+  max-width: 100%;
   font-size: 12px;
   color: var(--sr-color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .icon-card__name {
+  /* 最多两行：lucide:alert-triangle 这类长名能完整显示，
+     再多就省略，卡片高度始终固定不会互相拉伸 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  max-width: 100%;
   font-family: var(--sr-font-family-mono);
-  font-size: 10px;
+  font-size: 9px;
+  line-height: 1.35;
   color: var(--sr-color-text-tertiary);
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .icon-demo-row {

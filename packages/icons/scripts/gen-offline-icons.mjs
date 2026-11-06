@@ -125,8 +125,17 @@ for (const [prefix, names] of byPrefix) {
       subset.icons[name] = icon
       totalIcons += 1
     } else if (source.aliases?.[name]) {
-      subset.aliases[name] = source.aliases[name]
+      const alias = source.aliases[name]
+      subset.aliases[name] = alias
       totalIcons += 1
+
+      // 别名只是指向父图标，父图标本身必须一起打进子集，
+      // 否则 Iconify 拿到 alias 后找不到 parent，渲染成空 SVG
+      const parent = alias.parent
+      if (parent && source.icons?.[parent] && !subset.icons[parent]) {
+        subset.icons[parent] = source.icons[parent]
+        totalIcons += 1
+      }
     } else {
       missing.push(`${prefix}:${name}`)
     }

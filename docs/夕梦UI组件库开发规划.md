@@ -2600,7 +2600,7 @@ export default defineConfig({
 export type SrIconName =
   | 'lucide:house' | 'lucide:chevron-down' | 'lucide:chevron-right' | 'lucide:x'
   | 'lucide:check' | 'lucide:loader-circle' | 'lucide:search' | 'lucide:pencil' | 'lucide:trash'
-  | 'lucide:info' | 'lucide:triangle-exclamation-point' | 'lucide:circle-check' | 'lucide:circle-x'
+  | 'lucide:info' | 'lucide:alert-triangle' | 'lucide:circle-check' | 'lucide:circle-x'
   | 'lucide:moon-star' | 'lucide:sun' | 'lucide:settings'
 
 /** 常用图标常量，避免字符串拼写错误 */
@@ -2611,7 +2611,7 @@ export const SR_ICONS = {
   loading: 'lucide:loader-circle',
   search: 'lucide:search',
   success: 'lucide:circle-check',
-  warning: 'lucide:triangle-exclamation-point',
+  warning: 'lucide:alert-triangle',
   error: 'lucide:circle-x',
   info: 'lucide:info',
   themeLight: 'lucide:sun',

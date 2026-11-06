@@ -1,4 +1,5 @@
 [
+  "lucide:alert-triangle",
   "lucide:check",
   "lucide:chevron-down",
   "lucide:chevron-right",
@@ -21,6 +22,5 @@
   "lucide:settings",
   "lucide:sun",
   "lucide:trash",
-  "lucide:triangle-exclamation-point",
   "lucide:x"
 ]

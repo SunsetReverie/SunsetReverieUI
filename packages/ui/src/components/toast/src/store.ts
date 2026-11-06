@@ -36,6 +36,6 @@ export const SR_TOAST_POSITIONS: SrToastPosition[] = [
 export const SR_TOAST_ICONS: Record<SrToastType, string> = {
   info: 'lucide:info',
   success: 'lucide:circle-check',
-  warning: 'lucide:triangle-exclamation-point',
+  warning: 'lucide:alert-triangle',
   error: 'lucide:circle-x',
 }

@@ -20,7 +20,7 @@ export const SR_ICONS = {
   edit: 'lucide:pencil',
   delete: 'lucide:trash',
   success: 'lucide:circle-check',
-  warning: 'lucide:triangle-exclamation-point',
+  warning: 'lucide:alert-triangle',
   error: 'lucide:circle-x',
   info: 'lucide:info',
   themeLight: 'lucide:sun',
