@@ -103,9 +103,11 @@ export const semanticLight: Record<string, string> = {
   // 内联样式或 [data-sr-primary] 覆写，这里的 color-mix 会自动跟着重算。
   // warning 基础色偏亮，压暗一档才能让白字达到可读对比度。
   'color-solid-primary': 'var(--sr-color-primary)',
-  'color-solid-success': 'color-mix(in oklab, var(--sr-color-success) 88%, black)',
-  'color-solid-warning': 'color-mix(in oklab, var(--sr-color-warning) 78%, black)',
-  'color-solid-danger': 'var(--sr-color-danger)',
+  // 用 600 阶而非压暗 500 阶：新色板里 600 本身就是高饱和的翡翠/琥珀，
+  // 再 color-mix 加黑会退回老气的深绿/土棕
+  'color-solid-success': 'var(--sr-success-600)',
+  'color-solid-warning': 'var(--sr-warning-600)',
+  'color-solid-danger': 'var(--sr-danger-600)',
 
   // 文字专用主色：直接拿 sunset-500 当文字只有约 2.9:1，达不到正文 4.5:1
   'color-primary-text': 'var(--sr-sunset-700)',
@@ -187,9 +189,11 @@ export const semanticDark: Record<string, string> = {
   'color-on-solid': '#ffffff',
   // 同样从动态语义色派生；暗色下 400 阶太亮，统一压暗 22%
   'color-solid-primary': 'color-mix(in oklab, var(--sr-color-primary) 78%, black)',
-  'color-solid-success': 'color-mix(in oklab, var(--sr-color-success) 78%, black)',
-  'color-solid-warning': 'color-mix(in oklab, var(--sr-color-warning) 78%, black)',
-  'color-solid-danger': 'color-mix(in oklab, var(--sr-color-danger) 78%, black)',
+  // 状态色不跟主题色变化，两套主题统一用 600 阶即可；
+  // 只有 primary 需要压暗，因为它跟随动态主色
+  'color-solid-success': 'var(--sr-success-600)',
+  'color-solid-warning': 'var(--sr-warning-600)',
+  'color-solid-danger': 'var(--sr-danger-600)',
 
   'color-primary-text': 'var(--sr-sunset-300)',
   'color-primary-alpha-25': 'rgba(255, 139, 82, 0.25)',
