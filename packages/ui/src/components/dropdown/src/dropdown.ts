@@ -1,5 +1,6 @@
 import type { ExtractPropTypes, PropType } from 'vue'
 
+import type { SrSize } from '../../../types/config'
 import type { SrPlacement } from '../../../utils/floating'
 
 /** 菜单项 */
@@ -12,6 +13,10 @@ export interface SrDropdownItem {
   icon?: string
   /** 禁用 */
   disabled?: boolean
+  /** 危险项：文字与悬停底色换成红色 */
+  danger?: boolean
+  /** 当前选中项，右侧显示勾选标记 */
+  selected?: boolean
   /** 顶部加一条分割线 */
   divided?: boolean
   /** 分组标题，与上一项不同时渲染小标题 */
@@ -33,6 +38,11 @@ export const dropdownProps = {
   placement: {
     type: String as PropType<SrPlacement>,
     default: 'bottom-start',
+  },
+  /** 尺寸档位 */
+  size: {
+    type: String as PropType<SrSize>,
+    default: undefined,
   },
   /** 禁用整个下拉 */
   disabled: {

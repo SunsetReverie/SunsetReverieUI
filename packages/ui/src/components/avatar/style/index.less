@@ -17,8 +17,9 @@
   width: var(--sr-avatar-size);
   height: var(--sr-avatar-size);
   overflow: hidden;
-  background: var(--sr-color-primary-alpha-12);
-  color: var(--sr-color-primary-text);
+  // 底色由 accent 派生：淡底 + 同色深字，亮暗主题都成立
+  background: color-mix(in srgb, var(--sr-avatar-accent) 16%, transparent);
+  color: color-mix(in oklab, var(--sr-avatar-accent) 78%, #000);
   font-size: var(--sr-avatar-font);
   font-weight: var(--sr-font-weight-medium);
   line-height: 1;

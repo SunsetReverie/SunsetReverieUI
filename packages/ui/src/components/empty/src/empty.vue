@@ -16,8 +16,9 @@ const iconSize = computed(() => ICON_SIZE[props.size] ?? 40)
 </script>
 
 <template>
-  <div class="sr-empty" :class="`sr-empty--${size}`">
-    <sr-icon v-if="icon" class="sr-empty__icon" :name="icon" :size="iconSize" />
+  <div class="sr-empty" :class="[`sr-empty--${size}`, { 'is-bordered': bordered }]">
+    <img v-if="image" class="sr-empty__image" :src="image" alt="" />
+    <sr-icon v-else-if="icon" class="sr-empty__icon" :name="icon" :size="iconSize" />
 
     <p class="sr-empty__description">
       <slot>{{ description }}</slot>

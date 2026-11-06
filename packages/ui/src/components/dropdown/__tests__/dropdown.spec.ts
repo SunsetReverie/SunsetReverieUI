@@ -83,6 +83,29 @@ describe('SrDropdown', () => {
     wrapper.unmount()
   })
 
+  it('danger 与 selected 生成对应类名', async () => {
+    const wrapper = mountDropdown({
+      items: [
+        { key: 'a', label: '置顶', selected: true },
+        { key: 'b', label: '删除', danger: true },
+      ],
+    })
+
+    await wrapper.find('.sr-dropdown__trigger').trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.sr-dropdown__item.is-danger').exists()).toBe(true)
+    expect(wrapper.find('.sr-dropdown__item.is-selected').exists()).toBe(true)
+    expect(wrapper.find('.sr-dropdown__check').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('size 生成尺寸类名', () => {
+    const wrapper = mountDropdown({ size: 'lg' })
+    expect(wrapper.classes()).toContain('sr-dropdown--lg')
+    wrapper.unmount()
+  })
+
   it('disabled 时不展开', async () => {
     const wrapper = mountDropdown({ disabled: true })
 

@@ -50,16 +50,26 @@ const longCrumbs = [
 const menuItems = [
   { group: '编辑', key: 'rename', label: '重命名', icon: 'lucide:pencil' },
   { group: '编辑', key: 'copy', label: '复制' },
-  { group: '危险', key: 'delete', label: '删除', icon: 'lucide:trash', divided: true },
+  { group: '状态', key: 'pin', label: '置顶', selected: true },
+  { group: '危险', key: 'delete', label: '删除', icon: 'lucide:trash', danger: true, divided: true },
 ]
 
 /** 面板折叠状态 */
 const panelOpen = ref(true)
 
+/** 禁用项演示的面包屑 */
+const disabledCrumbs = [
+  { label: '首页', href: '#', icon: 'lucide:house' },
+  { label: '已归档项目', disabled: true },
+  { label: '详情' },
+]
+
 /** 抽屉开关 */
 const drawerRight = ref(false)
 const drawerLeft = ref(false)
 const drawerTop = ref(false)
+const drawerSm = ref(false)
+const drawerLg = ref(false)
 
 /** 下拉选择结果 */
 const lastAction = ref('—')
@@ -183,13 +193,31 @@ function onMenuSelect(key: string): void {
           <SrBadge :value="5" type="warning" />
         </div>
 
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap">
+          <SrBadge status="success" text="运行中" />
+          <SrBadge status="warning" text="待审核" />
+          <SrBadge status="danger" text="已停用" />
+          <SrBadge status="processing" text="部署中" />
+          <span class="muted">← status 状态点模式</span>
+        </div>
+
         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
           <SrAvatar alt="林深" />
           <SrAvatar alt="周夏" size="sm" />
           <SrAvatar alt="陈默" size="lg" />
           <SrAvatar icon="lucide:settings" shape="square" />
           <SrAvatar alt="苏白" :size="52" />
+          <SrAvatar color="#8b5cf6" alt="自定义" />
           <SrAvatar src="https://i.pravatar.cc/80?img=12" alt="远程" size="lg" />
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+          <SrAvatar alt="林深" />
+          <SrAvatar alt="周夏" />
+          <SrAvatar alt="陈默" />
+          <SrAvatar alt="苏白" />
+          <SrAvatar alt="顾言" />
+          <span class="muted">← 底色按名字自动取，同一个人始终同色</span>
         </div>
       </div>
     </SrPanel>
@@ -206,12 +234,30 @@ function onMenuSelect(key: string): void {
 
         <SrEmpty description="换个关键词试试" icon="lucide:search" />
       </div>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 16px;
+          margin-top: 16px;
+        "
+      >
+        <SrEmpty bordered description="虚线框占位，适合表格或画布" size="sm" />
+        <SrEmpty
+          image="https://illustrations.popsy.co/amber/box.svg"
+          description="image 用插图替代图标"
+          size="sm"
+        />
+      </div>
     </SrPanel>
 
     <SrPanel title="面包屑" description="支持自定义分隔符，超出条目数自动折叠。">
       <div style="display: flex; flex-direction: column; gap: 14px">
         <SrBreadcrumb :items="crumbs" />
         <SrBreadcrumb :items="longCrumbs" :max-items="4" separator="›" />
+        <SrBreadcrumb :items="crumbs" separator-icon="lucide:chevron-right" />
+        <SrBreadcrumb :items="disabledCrumbs" />
       </div>
     </SrPanel>
 
@@ -315,6 +361,14 @@ function onMenuSelect(key: string): void {
           <SrButton variant="text" size="sm">悬停触发</SrButton>
         </SrDropdown>
 
+        <SrDropdown :items="menuItems" size="lg">
+          <SrButton variant="outline" size="sm">大尺寸</SrButton>
+        </SrDropdown>
+
+        <SrDropdown :items="menuItems" placement="bottom-end">
+          <SrButton variant="outline" size="sm">右对齐</SrButton>
+        </SrDropdown>
+
         <SrTag type="default">最近选择：{{ lastAction }}</SrTag>
       </div>
     </SrPanel>
@@ -324,6 +378,8 @@ function onMenuSelect(key: string): void {
         <SrButton size="sm" variant="primary" @click="drawerRight = true">右侧</SrButton>
         <SrButton size="sm" variant="outline" @click="drawerLeft = true">左侧</SrButton>
         <SrButton size="sm" variant="outline" @click="drawerTop = true">顶部</SrButton>
+        <SrButton size="sm" variant="outline" @click="drawerSm = true">size = sm（320）</SrButton>
+        <SrButton size="sm" variant="outline" @click="drawerLg = true">size = lg（600）</SrButton>
       </div>
 
       <SrDrawer v-model="drawerRight" title="筛选条件" subtitle="">
@@ -341,6 +397,14 @@ function onMenuSelect(key: string): void {
 
       <SrDrawer v-model="drawerTop" title="批量操作" placement="top" :size="220">
         <p style="margin: 0">顶部抽屉，高度 220px。</p>
+      </SrDrawer>
+
+      <SrDrawer v-model="drawerSm" title="窄抽屉" size="sm">
+        <p style="margin: 0">size 传预设 sm，宽度 320px。</p>
+      </SrDrawer>
+
+      <SrDrawer v-model="drawerLg" title="宽抽屉" size="lg" :z-index="2400">
+        <p style="margin: 0">size 传预设 lg，宽度 600px；同时用 z-index 抬高层级。</p>
       </SrDrawer>
     </SrPanel>
 

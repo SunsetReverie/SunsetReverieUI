@@ -19,11 +19,38 @@ watch(
   },
 )
 
-/** 根样式：数字尺寸走内联，档位走类名 */
+/** 回退态的备用配色，按名字散列取一个，避免同一个人换机器就变色 */
+const PALETTE = ['#ff8a4c', '#10b981', '#6366f1', '#f43f5e', '#0ea5e9', '#f59e0b', '#8b5cf6']
+
+/**
+ * 取字符串散列
+ * @param value 输入
+ * @returns 非负整数
+ */
+function hashCode(value: string): number {
+  let hash = 0
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 1_000_003
+  }
+  return Math.abs(hash)
+}
+
+/** 回退态底色 */
+const accent = computed(() => {
+  if (props.color) return props.color
+  return PALETTE[hashCode(props.alt || props.icon || 'sr') % PALETTE.length] as string
+})
+
+/** 根样式：尺寸与配色都走变量 */
 const rootStyle = computed(() => {
-  if (typeof props.size !== 'number') return undefined
-  const px = `${props.size}px`
-  return { '--sr-avatar-size': px, '--sr-avatar-font': `${Math.round(props.size * 0.42)}px` }
+  const style: Record<string, string> = {
+    '--sr-avatar-accent': accent.value,
+  }
+  if (typeof props.size === 'number') {
+    style['--sr-avatar-size'] = `${props.size}px`
+    style['--sr-avatar-font'] = `${Math.round(props.size * 0.42)}px`
+  }
+  return style
 })
 
 /** 回退文字：取名称前两个字符 */

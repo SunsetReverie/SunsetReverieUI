@@ -26,6 +26,11 @@ export const avatarProps = {
     type: String as PropType<SrAvatarShape>,
     default: 'circle',
   },
+  /** 自定义底色，不传则按 alt 自动取一个稳定色 */
+  color: {
+    type: String,
+    default: '',
+  },
   /** 回退图标，优先于文字 */
   icon: {
     type: String,

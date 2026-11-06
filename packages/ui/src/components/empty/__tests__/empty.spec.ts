@@ -35,6 +35,20 @@ describe('SrEmpty', () => {
     wrapper.unmount()
   })
 
+  it('bordered 生成虚线框类名', () => {
+    const wrapper = mount(SrEmpty, { props: { bordered: true } })
+    expect(wrapper.classes()).toContain('is-bordered')
+    wrapper.unmount()
+  })
+
+  it('image 优先于图标', () => {
+    const wrapper = mount(SrEmpty, { props: { image: '/empty.png' } })
+
+    expect(wrapper.find('.sr-empty__image').attributes('src')).toBe('/empty.png')
+    expect(wrapper.find('.sr-empty__icon').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('尺寸生成对应类名', () => {
     const wrapper = mount(SrEmpty, { props: { size: 'lg' } })
     expect(wrapper.classes()).toContain('sr-empty--lg')

@@ -39,6 +39,29 @@ describe('SrAvatar', () => {
     wrapper.unmount()
   })
 
+  it('不传 color 时按名字自动取稳定色', () => {
+    const a = mount(SrAvatar, { props: { alt: '林深' } })
+    const b = mount(SrAvatar, { props: { alt: '林深' } })
+    const c = mount(SrAvatar, { props: { alt: '周夏' } })
+
+    const accentOf = (w: typeof a) =>
+      (w.attributes('style') ?? '').match(/--sr-avatar-accent:\s*([^;]+)/)?.[1]
+
+    expect(accentOf(a)).toBeTruthy()
+    expect(accentOf(a)).toBe(accentOf(b))
+    expect(accentOf(a)).not.toBe(accentOf(c))
+
+    a.unmount()
+    b.unmount()
+    c.unmount()
+  })
+
+  it('color 覆盖自动取色', () => {
+    const wrapper = mount(SrAvatar, { props: { alt: '林深', color: '#8b5cf6' } })
+    expect(wrapper.attributes('style')).toContain('--sr-avatar-accent: #8b5cf6')
+    wrapper.unmount()
+  })
+
   it('数字尺寸走内联变量', () => {
     const wrapper = mount(SrAvatar, { props: { size: 48 } })
     expect(wrapper.attributes('style')).toContain('--sr-avatar-size: 48px')

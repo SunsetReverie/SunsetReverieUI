@@ -73,6 +73,26 @@ describe('SrDrawer', () => {
     top.unmount()
   })
 
+  it('size 预设映射到对应像素', () => {
+    const sm = mountDrawer({ size: 'sm' })
+    expect(sm.find('.sr-drawer').attributes('style')).toContain('width: 320px')
+    sm.unmount()
+
+    const lg = mountDrawer({ size: 'lg' })
+    expect(lg.find('.sr-drawer').attributes('style')).toContain('width: 600px')
+    lg.unmount()
+  })
+
+  it('zIndex 同时作用到面板与遮罩', () => {
+    const wrapper = mountDrawer({ zIndex: 2400 })
+    const style = wrapper.find('.sr-drawer').attributes('style') ?? ''
+
+    expect(style).toContain('z-index: 2400')
+    // 遮罩用变量，比面板低一层
+    expect(style).toContain('--sr-drawer-z: 2399')
+    wrapper.unmount()
+  })
+
   it('closable 为 false 时不渲染关闭按钮', () => {
     const wrapper = mountDrawer({ title: '详情', closable: false })
     expect(wrapper.find('.sr-drawer__close').exists()).toBe(false)

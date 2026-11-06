@@ -3,6 +3,16 @@ import type { ExtractPropTypes, PropType } from 'vue'
 /** 抽屉方向 */
 export type SrDrawerPlacement = 'left' | 'right' | 'top' | 'bottom'
 
+/** 尺寸预设或自定义值 */
+export type SrDrawerSize = 'sm' | 'md' | 'lg' | string | number
+
+/** 尺寸预设对应的像素值 */
+export const DRAWER_SIZE_PRESET: Record<string, number> = {
+  sm: 320,
+  md: 440,
+  lg: 600,
+}
+
 /** 关闭原因 */
 export type SrDrawerCloseReason = 'close' | 'mask' | 'esc'
 
@@ -17,10 +27,18 @@ export const drawerProps = {
     type: String as PropType<SrDrawerPlacement>,
     default: 'right',
   },
-  /** 尺寸：左右方向为宽度、上下方向为高度；数字按 px */
+  /**
+   * 尺寸：左右方向为宽度、上下方向为高度。
+   * 可传 sm / md / lg 预设，也可传任意 CSS 值或数字（按 px）
+   */
   size: {
-    type: [String, Number] as PropType<string | number>,
+    type: [String, Number] as PropType<SrDrawerSize>,
     default: '',
+  },
+  /** 层级，需要盖在其它浮层之上时调大 */
+  zIndex: {
+    type: Number,
+    default: undefined,
   },
   /** 标题，留空则不渲染头部 */
   title: {

@@ -13,6 +13,16 @@ export const emptyProps = {
     type: String,
     default: 'lucide:inbox',
   },
+  /** 图片地址，传了就用图片替代图标 */
+  image: {
+    type: String,
+    default: '',
+  },
+  /** 是否套一层虚线框，用于表格或画布内的空占位 */
+  bordered: {
+    type: Boolean,
+    default: false,
+  },
   /** 尺寸档位 @default 'md' */
   size: {
     type: String as PropType<SrSize>,

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, onScopeDispose, ref, watch } from 'vue'
 
+import { useSrConfig } from '../../../composables/use-sr-config'
+import type { SrSize } from '../../../types/config'
+
 import { srComputeFloating, srGetRect } from '../../../utils/floating'
 import SrIcon from '../../icon/src/icon.vue'
 import { dropdownProps, type SrDropdownItem } from './dropdown'
@@ -15,6 +18,11 @@ const emit = defineEmits<{
   /** 展开状态变化 */
   'visible-change': [visible: boolean]
 }>()
+
+const config = useSrConfig()
+
+/** 最终尺寸 */
+const resolvedSize = computed<SrSize>(() => props.size ?? config.value.size)
 
 /** 触发元素 */
 const triggerRef = ref<HTMLElement>()
@@ -113,7 +121,10 @@ const triggerEvents = computed(() =>
 </script>
 
 <template>
-  <div class="sr-dropdown" :class="{ 'is-disabled': disabled, 'is-open': visible }">
+  <div
+    class="sr-dropdown"
+    :class="[`sr-dropdown--${resolvedSize}`, { 'is-disabled': disabled, 'is-open': visible }]"
+  >
     <div ref="triggerRef" class="sr-dropdown__trigger" v-bind="triggerEvents">
       <slot />
     </div>
@@ -130,7 +141,11 @@ const triggerEvents = computed(() =>
 
               <button
                 class="sr-dropdown__item"
-                :class="{ 'is-disabled': item.disabled }"
+                :class="{
+                  'is-disabled': item.disabled,
+                  'is-danger': item.danger,
+                  'is-selected': item.selected,
+                }"
                 type="button"
                 role="menuitem"
                 :disabled="item.disabled"
@@ -138,6 +153,7 @@ const triggerEvents = computed(() =>
               >
                 <sr-icon v-if="item.icon" class="sr-dropdown__icon" :name="item.icon" :size="15" />
                 <span class="sr-dropdown__label">{{ item.label }}</span>
+                <sr-icon v-if="item.selected" class="sr-dropdown__check" name="lucide:check" :size="14" />
               </button>
             </template>
           </slot>

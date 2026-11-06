@@ -40,6 +40,21 @@ describe('SrBadge', () => {
     wrapper.unmount()
   })
 
+  it('status 模式渲染状态点与文字，且不渲染 sup', () => {
+    const wrapper = mount(SrBadge, { props: { status: 'success', text: '运行中' } })
+
+    expect(wrapper.find('.sr-badge__status').text()).toBe('运行中')
+    expect(wrapper.find('.sr-badge__status').classes()).toContain('sr-badge__status--success')
+    expect(wrapper.find('.sr-badge__sup').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('processing 状态带脉冲类名', () => {
+    const wrapper = mount(SrBadge, { props: { status: 'processing', text: '部署中' } })
+    expect(wrapper.find('.sr-badge__status').classes()).toContain('is-processing')
+    wrapper.unmount()
+  })
+
   it('类型生成对应类名', () => {
     const wrapper = mount(SrBadge, { props: { value: 1, type: 'success' } })
     expect(wrapper.find('.sr-badge__sup').classes()).toContain('sr-badge--success')

@@ -30,6 +30,23 @@
     padding: var(--sr-space-10) var(--sr-space-5);
   }
 
+  &.is-bordered {
+    border: 1px dashed var(--sr-color-border);
+    border-radius: var(--sr-radius-base);
+  }
+
+  &__image {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  &--lg &__image {
+    width: 116px;
+    height: 116px;
+  }
+
   &__icon {
     color: var(--sr-color-text-tertiary);
     opacity: 0.5;

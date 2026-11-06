@@ -35,7 +35,7 @@ function isLast(index: number): boolean {
         v-for="(item, index) in displayItems"
         :key="index"
         class="sr-breadcrumb__item"
-        :class="{ 'is-last': isLast(index) }"
+        :class="{ 'is-last': isLast(index), 'is-disabled': item !== 'ellipsis' && item.disabled }"
       >
         <template v-if="item === 'ellipsis'">
           <span class="sr-breadcrumb__ellipsis" aria-hidden="true">…</span>
@@ -44,7 +44,11 @@ function isLast(index: number): boolean {
         <template v-else>
           <sr-icon v-if="item.icon" class="sr-breadcrumb__icon" :name="item.icon" :size="14" />
 
-          <a v-if="item.href && !isLast(index)" class="sr-breadcrumb__link" :href="item.href">
+          <a
+            v-if="item.href && !isLast(index) && !item.disabled"
+            class="sr-breadcrumb__link"
+            :href="item.href"
+          >
             {{ item.label }}
           </a>
           <span v-else class="sr-breadcrumb__text" :aria-current="isLast(index) ? 'page' : undefined">
@@ -53,7 +57,10 @@ function isLast(index: number): boolean {
         </template>
 
         <span v-if="!isLast(index)" class="sr-breadcrumb__separator" aria-hidden="true">
-          <slot name="separator">{{ separator }}</slot>
+          <slot name="separator">
+            <sr-icon v-if="separatorIcon" :name="separatorIcon" :size="12" />
+            <template v-else>{{ separator }}</template>
+          </slot>
         </span>
       </li>
     </ol>

@@ -8,6 +8,8 @@ export interface SrBreadcrumbItem {
   href?: string
   /** 图标名 */
   icon?: string
+  /** 禁用该项，只展示不可点击 */
+  disabled?: boolean
 }
 
 export const breadcrumbProps = {
@@ -15,6 +17,11 @@ export const breadcrumbProps = {
   items: {
     type: Array as PropType<SrBreadcrumbItem[]>,
     default: () => [],
+  },
+  /** 图标分隔符，设置后优先于 separator */
+  separatorIcon: {
+    type: String,
+    default: '',
   },
   /** 分隔符 @default '/' */
   separator: {

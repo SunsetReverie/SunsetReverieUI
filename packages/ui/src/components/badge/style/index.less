@@ -39,6 +39,47 @@
     box-shadow: 0 0 0 1px var(--sr-color-bg-container);
   }
 
+  // ---------- 状态点模式 ----------
+  &__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--sr-color-text-secondary);
+    font-size: 13px;
+
+    &::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: var(--sr-radius-full);
+      background: currentcolor;
+    }
+
+    &.is-processing::before {
+      animation: sr-badge-pulse 1.4s var(--sr-motion-easing-standard) infinite;
+    }
+  }
+
+  &__status--default {
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__status--success {
+    color: var(--sr-color-success-text);
+  }
+
+  &__status--warning {
+    color: var(--sr-color-warning-text);
+  }
+
+  &__status--danger {
+    color: var(--sr-color-danger-text);
+  }
+
+  &__status--processing {
+    color: var(--sr-color-primary-text);
+  }
+
   &--primary {
     background: var(--sr-color-primary);
   }
@@ -57,5 +98,17 @@
 
   &--info {
     background: var(--sr-color-info);
+  }
+}
+
+// 处理中的呼吸动画：只改透明度，避免额外合成层
+@keyframes sr-badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
   }
 }

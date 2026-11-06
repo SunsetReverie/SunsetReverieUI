@@ -29,6 +29,19 @@ export const badgeProps = {
     type: Boolean,
     default: false,
   },
+  /**
+   * 状态点模式：传值后切到「圆点 + 文字」形态，忽略 value
+   * 适合表达「运行中 / 已停用」这类状态
+   */
+  status: {
+    type: String as PropType<'default' | 'success' | 'warning' | 'danger' | 'processing'>,
+    default: '',
+  },
+  /** 状态点右侧的文字 */
+  text: {
+    type: String,
+    default: '',
+  },
   /** 隐藏徽标（保留占位语义时更直观） */
   hidden: {
     type: Boolean,

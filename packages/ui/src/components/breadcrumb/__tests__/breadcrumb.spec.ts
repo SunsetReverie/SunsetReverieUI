@@ -38,6 +38,34 @@ describe('SrBreadcrumb', () => {
     wrapper.unmount()
   })
 
+  it('separatorIcon 用图标替代文字分隔符', () => {
+    const wrapper = mount(SrBreadcrumb, {
+      props: { items, separatorIcon: 'lucide:chevron-right' },
+    })
+
+    const separator = wrapper.find('.sr-breadcrumb__separator')
+    expect(separator.find('svg').exists()).toBe(true)
+    expect(separator.text()).toBe('')
+    wrapper.unmount()
+  })
+
+  it('disabled 项不渲染链接', () => {
+    const wrapper = mount(SrBreadcrumb, {
+      props: {
+        items: [
+          { label: '首页', href: '/' },
+          { label: '已归档', href: '/x', disabled: true },
+          { label: '详情' },
+        ],
+      },
+    })
+
+    // 只有首项是链接
+    expect(wrapper.findAll('.sr-breadcrumb__link')).toHaveLength(1)
+    expect(wrapper.find('.sr-breadcrumb__item.is-disabled').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
   it('超过 maxItems 时中间折叠', () => {
     const many = [{ label: 'A' }, { label: 'B' }, { label: 'C' }, { label: 'D' }, { label: 'E' }]
     const wrapper = mount(SrBreadcrumb, { props: { items: many, maxItems: 4 } })

@@ -4,7 +4,7 @@ import { computed, nextTick, onScopeDispose, ref, useId, watch } from 'vue'
 import { srFocusFirst, srTrapTab } from '../../../utils/focus-trap'
 import { srLockScroll, srUnlockScroll } from '../../../utils/scroll-lock'
 import SrIcon from '../../icon/src/icon.vue'
-import { drawerProps, type SrDrawerCloseReason } from './drawer'
+import { DRAWER_SIZE_PRESET, drawerProps, type SrDrawerCloseReason } from './drawer'
 
 defineOptions({ name: 'SrDrawer' })
 
@@ -34,9 +34,25 @@ const isHorizontal = computed(() => props.placement === 'left' || props.placemen
 
 /** 面板尺寸样式 */
 const panelStyle = computed(() => {
-  if (props.size === '' || props.size === undefined) return undefined
-  const value = typeof props.size === 'number' ? `${props.size}px` : props.size
-  return isHorizontal.value ? { width: value } : { height: value }
+  const style: Record<string, string> = {}
+
+  if (props.size !== '' && props.size !== undefined) {
+    const preset = DRAWER_SIZE_PRESET[String(props.size)]
+    const value =
+      preset !== undefined
+        ? `${preset}px`
+        : typeof props.size === 'number'
+          ? `${props.size}px`
+          : String(props.size)
+    style[isHorizontal.value ? 'width' : 'height'] = value
+  }
+
+  if (props.zIndex !== undefined) {
+    style.zIndex = String(props.zIndex)
+    style['--sr-drawer-z'] = String(props.zIndex - 1)
+  }
+
+  return Object.keys(style).length > 0 ? style : undefined
 })
 
 /**
