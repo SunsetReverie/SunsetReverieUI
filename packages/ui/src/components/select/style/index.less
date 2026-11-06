@@ -64,6 +64,39 @@
 
   // 多选标签的外观由 SrTag 提供，这里不再重复实现
 
+  // 清空与箭头：不参与换行，跟触发器右缘对齐
+  &__clear,
+  &__arrow {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--sr-color-text);
+      background: var(--sr-color-bg-hover);
+    }
+  }
+
+  &__arrow {
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &.is-open &__arrow {
+    transform: rotate(180deg);
+  }
+
   // ---------- 校验态（0,2,0） ----------
   // 放在展开/禁用之前，符合「特异性由低到高」的文件顺序；
   // 展开时的焦点环会覆盖状态边框，错误文案仍由 SrFormItem 展示。
