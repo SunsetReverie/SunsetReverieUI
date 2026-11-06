@@ -96,21 +96,116 @@
     }
   }
 
-  // 卡片型：整体一块背板，激活项浮起
+  // ---------- 变体：连接式卡片 ----------
+  // 标签带边框、顶部圆角，选中项底部用容器色盖住分隔线，和内容连成一片
   &--card &__nav {
+    gap: 4px;
+    border-bottom: 1px solid var(--sr-color-border);
+  }
+
+  &--card &__nav &__tab {
+    margin-bottom: -1px;
+    border: 1px solid var(--sr-color-border);
+    border-bottom: 0;
+    border-radius: var(--sr-radius-sm) var(--sr-radius-sm) 0 0;
+    background: var(--sr-color-bg-sunken);
+
+    &.is-active {
+      background: var(--sr-color-bg-container);
+      // 用 1px 容器色盖住 nav 的下边线
+      box-shadow: 0 1px 0 0 var(--sr-color-bg-container);
+    }
+  }
+
+  // ---------- 变体：分段控件 ----------
+  // 整块背板内浮起，适合切换视图模式这类少量互斥项
+  &--segment &__nav {
+    // 背板跟着内容收缩，拉满整行会显得空
+    align-self: flex-start;
     gap: 2px;
     padding: 3px;
     border-radius: var(--sr-radius-sm);
     background: var(--sr-color-bg-sunken);
   }
 
-  &--card &__nav &__tab {
+  &--segment &__nav &__tab {
     border-bottom: 0;
     border-radius: var(--sr-radius-sm);
 
     &.is-active {
       background: var(--sr-color-bg-container);
       box-shadow: var(--sr-shadow-sm);
+    }
+  }
+
+  // ---------- 变体：胶囊 ----------
+  &--pill &__nav {
+    gap: 6px;
+  }
+
+  &--pill &__nav &__tab {
+    border-bottom: 0;
+    border-radius: var(--sr-radius-full);
+
+    &.is-active {
+      background: var(--sr-color-primary-alpha-12);
+      color: var(--sr-color-primary-text);
+    }
+  }
+
+  // ---------- 垂直方向 ----------
+  &.is-vertical {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--sr-space-4);
+
+    .sr-tabs__nav {
+      flex-direction: column;
+      align-items: stretch;
+      flex: 0 0 auto;
+      // 横向不需要滚动，纵向留给标签过多时
+      overflow: hidden auto;
+      border-bottom: 0;
+      border-right: 1px solid var(--sr-color-border-subtle);
+    }
+
+    .sr-tabs__tab {
+      justify-content: flex-start;
+      border-bottom: 0;
+      border-right: 2px solid transparent;
+
+      &.is-active {
+        border-right-color: var(--sr-color-primary);
+      }
+    }
+
+    .sr-tabs__content {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    // 垂直时卡片/分段/胶囊的形态收敛为左对齐块，避免和竖排布局打架
+    &.sr-tabs--card .sr-tabs__nav,
+    &.sr-tabs--segment .sr-tabs__nav,
+    &.sr-tabs--pill .sr-tabs__nav {
+      border-right: 1px solid var(--sr-color-border-subtle);
+    }
+
+    &.sr-tabs--card .sr-tabs__tab,
+    &.sr-tabs--segment .sr-tabs__tab,
+    &.sr-tabs--pill .sr-tabs__tab {
+      margin-bottom: 0;
+      border: 0;
+      border-radius: var(--sr-radius-sm);
+      border-right: 2px solid transparent;
+      background: transparent;
+      box-shadow: none;
+
+      &.is-active {
+        background: var(--sr-color-primary-alpha-08);
+        border-right-color: var(--sr-color-primary);
+        box-shadow: none;
+      }
     }
   }
 

@@ -2,6 +2,9 @@ import type { ExtractPropTypes, PropType } from 'vue'
 
 import type { SrSize } from '../../../types/config'
 
+/** 外观变体 */
+export type SrTabsType = 'line' | 'card' | 'segment' | 'pill'
+
 /** 单个标签页 */
 export interface SrTabsItem {
   /** 唯一标识，同时作为面板插槽名 `panel-<key>` */
@@ -27,10 +30,22 @@ export const tabsProps = {
     type: Array as PropType<SrTabsItem[]>,
     default: () => [],
   },
-  /** 外观：线条 / 卡片 @default 'line' */
+  /**
+   * 外观
+   * - line：下划线指示
+   * - card：连接式卡片，选中项与内容区连成一片
+   * - segment：背板内浮起，类似分段控件
+   * - pill：胶囊标签
+   * @default 'line'
+   */
   type: {
-    type: String as PropType<'line' | 'card'>,
+    type: String as PropType<SrTabsType>,
     default: 'line',
+  },
+  /** 排列方向 @default 'horizontal' */
+  direction: {
+    type: String as PropType<'horizontal' | 'vertical'>,
+    default: 'horizontal',
   },
   /** 尺寸档位 */
   size: {

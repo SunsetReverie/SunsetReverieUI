@@ -132,7 +132,10 @@ function isClosable(item: SrTabsItem): boolean {
 </script>
 
 <template>
-  <div class="sr-tabs" :class="[`sr-tabs--${resolvedSize}`, `sr-tabs--${type}`]">
+  <div
+    class="sr-tabs"
+    :class="[`sr-tabs--${resolvedSize}`, `sr-tabs--${type}`, { 'is-vertical': direction === 'vertical' }]"
+  >
     <div class="sr-tabs__nav" role="tablist">
       <button
         v-for="(item, index) in items"

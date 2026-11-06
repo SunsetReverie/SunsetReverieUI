@@ -66,6 +66,23 @@ describe('SrTabs', () => {
     wrapper.unmount()
   })
 
+  it('外观变体生成对应类名', () => {
+    for (const type of ['card', 'segment', 'pill'] as const) {
+      const wrapper = mount(SrTabs, { props: { items, modelValue: 'a', type } })
+      expect(wrapper.classes()).toContain(`sr-tabs--${type}`)
+      wrapper.unmount()
+    }
+  })
+
+  it('垂直方向生成 is-vertical', () => {
+    const wrapper = mount(SrTabs, {
+      props: { items, modelValue: 'a', direction: 'vertical' },
+    })
+
+    expect(wrapper.classes()).toContain('is-vertical')
+    wrapper.unmount()
+  })
+
   it('lazy 模式下未激活面板不渲染内容', async () => {
     const wrapper = mount(SrTabs, {
       props: { items, modelValue: 'a', lazy: true },

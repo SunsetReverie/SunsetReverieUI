@@ -215,25 +215,70 @@ function onMenuSelect(key: string): void {
       </div>
     </SrPanel>
 
-    <SrPanel title="标签页" description="线条与卡片两种外观，支持可关闭与懒加载。">
-      <div style="display: flex; flex-direction: column; gap: 24px">
-        <SrTabs v-model="activeTab" :items="tabs">
-          <template #panel-overview>
-            <p style="margin: 0">概览内容：当前激活 {{ activeTab }}</p>
-          </template>
-          <template #panel-config>
-            <p style="margin: 0">配置内容</p>
-          </template>
-          <template #panel-log>
-            <p style="margin: 0">日志内容</p>
-          </template>
-        </SrTabs>
+    <SrPanel
+      title="标签页"
+      description="四种外观加垂直方向，支持可关闭与懒加载。同一组数据换 type 就能切换形态。"
+    >
+      <div style="display: flex; flex-direction: column; gap: 26px">
+        <div>
+          <h3 class="sub-title">line（默认）</h3>
+          <SrTabs v-model="activeTab" :items="tabs">
+            <template #panel-overview>
+              <p class="muted">概览内容：当前激活 {{ activeTab }}</p>
+            </template>
+            <template #panel-config>
+              <p class="muted">配置内容</p>
+            </template>
+            <template #panel-log>
+              <p class="muted">日志内容</p>
+            </template>
+          </SrTabs>
+        </div>
 
-        <SrTabs :items="closableTabs" type="card" closable @close="onTabClose">
-          <template #panel="{ item }">
-            <p style="margin: 0">{{ item.label }} 的面板，点标签上的 × 可关闭。</p>
-          </template>
-        </SrTabs>
+        <div>
+          <h3 class="sub-title">card（连接式卡片）</h3>
+          <SrTabs :items="tabs" type="card" :model-value="'config'">
+            <template #panel="{ item }">
+              <p class="muted">{{ item.label }} 的面板，选中项与内容区连成一片。</p>
+            </template>
+          </SrTabs>
+        </div>
+
+        <div>
+          <h3 class="sub-title">segment（分段控件）</h3>
+          <SrTabs :items="tabs" type="segment" :model-value="'overview'">
+            <template #panel="{ item }">
+              <p class="muted">{{ item.label }} 的面板，背板内浮起，适合少量互斥项。</p>
+            </template>
+          </SrTabs>
+        </div>
+
+        <div>
+          <h3 class="sub-title">pill（胶囊）</h3>
+          <SrTabs :items="tabs" type="pill" :model-value="'log'">
+            <template #panel="{ item }">
+              <p class="muted">{{ item.label }} 的面板。</p>
+            </template>
+          </SrTabs>
+        </div>
+
+        <div>
+          <h3 class="sub-title">可关闭</h3>
+          <SrTabs :items="closableTabs" closable @close="onTabClose">
+            <template #panel="{ item }">
+              <p class="muted">{{ item.label }} 的面板，点标签上的 × 可关闭。</p>
+            </template>
+          </SrTabs>
+        </div>
+
+        <div>
+          <h3 class="sub-title">垂直方向</h3>
+          <SrTabs :items="tabs" direction="vertical" :model-value="'overview'" style="height: 160px">
+            <template #panel="{ item }">
+              <p class="muted">{{ item.label }} 的竖排布局，指示器改为右侧竖线。</p>
+            </template>
+          </SrTabs>
+        </div>
       </div>
     </SrPanel>
 
