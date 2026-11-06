@@ -72,12 +72,22 @@ function checkComponents() {
       continue
     }
 
-    const expectedName = `Sr${toPascal(dir.name)}`
-    const vueFile = join(COMPONENTS_DIR, dir.name, 'src', `${dir.name}.vue`)
+    const baseName = `Sr${toPascal(dir.name)}`
+    let expectedName = baseName
+    let vueFile = join(COMPONENTS_DIR, dir.name, 'src', `${dir.name}.vue`)
 
+    // 命令式组件没有同名 SFC：SrToast 是函数式 API，实际渲染的是
+    // toast-container.vue。存在 <name>-container.vue 时校验它即可。
     if (!existsSync(vueFile)) {
-      errors.push(`[组件文件] ${rel}：缺少 src/${dir.name}.vue`)
-      continue
+      const containerFile = join(COMPONENTS_DIR, dir.name, 'src', `${dir.name}-container.vue`)
+      if (existsSync(containerFile)) {
+        vueFile = containerFile
+        // 容器组件的 name 按约定带 Container 后缀
+        expectedName = `${baseName}Container`
+      } else {
+        errors.push(`[组件文件] ${rel}：缺少 src/${dir.name}.vue`)
+        continue
+      }
     }
 
     const code = readFileSync(vueFile, 'utf-8')
