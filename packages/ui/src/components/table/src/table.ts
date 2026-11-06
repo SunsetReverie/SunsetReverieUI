@@ -27,6 +27,11 @@ export interface SrTableColumn {
   sortable?: boolean
   /** 内容超长时省略（单行 + 省略号） */
   ellipsis?: boolean
+  /**
+   * 横向滚动时固定在左/右。
+   * 固定列必须给出 px 单位的宽度，否则无法累加偏移量
+   */
+  fixed?: 'left' | 'right'
   /** 自定义插槽名，默认取 key */
   slot?: string
   /**
@@ -42,6 +47,12 @@ export interface SrTableSortPayload {
   key: string
   /** 排序方向，取消排序时为 null */
   order: SrTableSortOrder | null
+}
+
+/** 分页配置 */
+export interface SrTablePagination {
+  /** 每页条数，缺省取 pageSize */
+  pageSize?: number
 }
 
 export const tableProps = {
@@ -149,6 +160,44 @@ export const tableProps = {
   tableLayout: {
     type: String as PropType<'auto' | 'fixed'>,
     default: 'auto',
+  },
+  /** 空数据图标，传空字符串则不显示 */
+  emptyIcon: {
+    type: String,
+    default: 'lucide:inbox',
+  },
+  /** 开启分页：传 true 或 { pageSize } */
+  pagination: {
+    type: [Boolean, Object] as PropType<boolean | SrTablePagination>,
+    default: false,
+  },
+  /** 当前页，支持 v-model:page */
+  page: {
+    type: Number,
+    default: 1,
+  },
+  /** 每页条数 */
+  pageSize: {
+    type: Number,
+    default: 10,
+  },
+  /**
+   * 懒加载：滚动到底部时派发 load-more。
+   * 需要配合 maxHeight 形成滚动容器
+   */
+  lazy: {
+    type: Boolean,
+    default: false,
+  },
+  /** 懒加载是否还有更多数据 */
+  hasMore: {
+    type: Boolean,
+    default: true,
+  },
+  /** 正在加载更多（底部显示加载态） */
+  loadingMore: {
+    type: Boolean,
+    default: false,
   },
 } as const
 

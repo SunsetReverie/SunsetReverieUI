@@ -31,6 +31,18 @@ const SCAN_DIRS = [
 const ICON_PATTERN = /['"`]([a-z0-9-]+:[a-z0-9-]+)['"`]/g
 
 /**
+ * 事件名不是图标名
+ *
+ * defineEmits 里 v-model 的事件写起来就是 'update:page' 这种「集合:名字」形状，
+ * 正则会把 update 当成图标集合。
+ * @param {string} icon 待判定的字面量
+ * @returns {boolean} 是否应当跳过
+ */
+function isNotIcon(icon) {
+  return icon.startsWith('update:') || icon.startsWith('v-slot:')
+}
+
+/**
  * 递归收集源码文件
  * @param {string} dir 目录
  * @param {string[]} out 结果
@@ -66,6 +78,7 @@ function scanUsage() {
       const code = readFileSync(file, 'utf-8')
       for (const m of code.matchAll(ICON_PATTERN)) {
         const icon = m[1]
+        if (isNotIcon(icon)) continue
         if (!found.has(icon)) found.set(icon, relative(ROOT, file))
       }
     }

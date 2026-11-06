@@ -67,6 +67,8 @@ for (const dir of SCAN_DIRS) {
     const code = readFileSync(file, 'utf-8')
     for (const m of code.matchAll(ICON_PATTERN)) {
       const icon = m[1]
+      // 'update:page' 这类事件名形状和「集合:图标」一致，不能算图标引用
+      if (icon.startsWith('update:') || icon.startsWith('v-slot:')) continue
       if (!found.has(icon)) found.set(icon, relative(ROOT, file))
     }
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, useAttrs } from 'vue'
+import { computed, onMounted, ref, useAttrs, watch } from 'vue'
 
 import { useSrBreakpoint } from '../../../composables/use-sr-breakpoint'
 import { useSrConfig } from '../../../composables/use-sr-config'
@@ -32,6 +32,12 @@ const emit = defineEmits<{
   'row-click': [row: SrTableRow, index: number]
   /** 展开态变化 */
   'expand-change': [keys: SrTableRowKey[], rows: SrTableRow[]]
+  /** 当前页变化，配合 v-model:page */
+  'update:page': [page: number]
+  /** 页码变化 */
+  'page-change': [page: number]
+  /** 滚动到底部，需要加载更多 */
+  'load-more': []
 }>()
 
 const attrs = useAttrs()
@@ -111,6 +117,169 @@ const displayData = computed<SrTableRow[]>(() => {
 const columnCount = computed(
   () => props.columns.length + (props.selectable ? 1 : 0) + (props.expandable ? 1 : 0),
 )
+
+// ---------- 分页 ----------
+
+/** 是否启用分页 */
+const paged = computed(() => Boolean(props.pagination))
+
+/** 每页条数，优先取 pagination.pageSize */
+const pageSizeResolved = computed(() => {
+  if (typeof props.pagination === 'object' && props.pagination?.pageSize) {
+    return props.pagination.pageSize
+  }
+  return props.pageSize
+})
+
+/** 内部页码：未绑定 v-model:page 时也能翻页 */
+const innerPage = ref(props.page)
+
+watch(
+  () => props.page,
+  (value) => {
+    innerPage.value = value
+  },
+)
+
+/** 总页数 */
+const pageCount = computed(() =>
+  paged.value ? Math.max(1, Math.ceil(displayData.value.length / pageSizeResolved.value)) : 1,
+)
+
+// 数据变少后可能停在空页，回落到最后一页
+watch(pageCount, (total) => {
+  if (innerPage.value > total) innerPage.value = total
+})
+
+/** 实际渲染的数据：分页时只取当前页 */
+const visibleData = computed<SrTableRow[]>(() => {
+  if (!paged.value) return displayData.value
+  const start = (innerPage.value - 1) * pageSizeResolved.value
+  return displayData.value.slice(start, start + pageSizeResolved.value)
+})
+
+/** 页码列表，超过 7 页时用省略号收拢 */
+const pageList = computed<(number | '...')[]>(() => {
+  const total = pageCount.value
+  if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1)
+
+  const pages: (number | '...')[] = [1]
+  const start = Math.max(2, innerPage.value - 1)
+  const end = Math.min(total - 1, innerPage.value + 1)
+  if (start > 2) pages.push('...')
+  for (let index = start; index <= end; index += 1) pages.push(index)
+  if (end < total - 1) pages.push('...')
+  pages.push(total)
+  return pages
+})
+
+/**
+ * 翻页
+ * @param page 目标页码
+ */
+function goPage(page: number): void {
+  const next = Math.min(Math.max(1, page), pageCount.value)
+  if (next === innerPage.value) return
+  innerPage.value = next
+  emit('update:page', next)
+  emit('page-change', next)
+}
+
+// ---------- 固定列 ----------
+
+/** 展开列宽度 */
+const EXPAND_WIDTH = 40
+/** 选择列宽度 */
+const SELECT_WIDTH = 44
+
+/**
+ * 列宽换算成像素；百分比等相对单位无法累加，按 0 处理
+ * @param column 列配置
+ * @returns 像素宽度
+ */
+function columnWidthPx(column: SrTableColumn): number {
+  const width = column.width
+  if (typeof width === 'number') return width
+  if (typeof width === 'string' && width.endsWith('px')) return Number.parseFloat(width) || 0
+  return 0
+}
+
+/** 固定列的 sticky 偏移量与贴边方向 */
+const fixedMap = computed(() => {
+  const map = new Map<string, { style: Record<string, string>; edge: 'left' | 'right' }>()
+
+  let left = (props.expandable ? EXPAND_WIDTH : 0) + (props.selectable ? SELECT_WIDTH : 0)
+  for (const column of props.columns) {
+    if (column.fixed !== 'left') continue
+    map.set(column.key, { style: { left: `${left}px` }, edge: 'left' })
+    left += columnWidthPx(column)
+  }
+
+  let right = 0
+  for (let index = props.columns.length - 1; index >= 0; index -= 1) {
+    const column = props.columns[index]
+    if (!column || column.fixed !== 'right') continue
+    map.set(column.key, { style: { right: `${right}px` }, edge: 'right' })
+    right += columnWidthPx(column)
+  }
+
+  return map
+})
+
+/**
+ * 表格最小宽度
+ *
+ * 固定列依赖横向滚动才成立，而 table-layout: auto 会把列压回容器宽度。
+ * 有固定列时按各列宽之和兜一个 min-width，保证一定溢出。
+ */
+const tableMinWidth = computed(() => {
+  if (!props.columns.some((column) => column.fixed)) return undefined
+  const total =
+    props.columns.reduce((sum, column) => sum + columnWidthPx(column), 0) +
+    (props.expandable ? EXPAND_WIDTH : 0) +
+    (props.selectable ? SELECT_WIDTH : 0)
+  return total > 0 ? `${total}px` : undefined
+})
+
+/** 是否存在左侧固定列：有的话展开/选择列也要贴左 */
+const hasFixedLeft = computed(() => props.columns.some((column) => column.fixed === 'left'))
+
+/**
+ * 固定列的内联样式
+ * @param column 列配置
+ * @returns 样式对象
+ */
+function fixedStyleOf(column: SrTableColumn): Record<string, string> | undefined {
+  return fixedMap.value.get(column.key)?.style
+}
+
+/**
+ * 固定列类名
+ * @param column 列配置
+ * @returns 类名映射
+ */
+function fixedClassOf(column: SrTableColumn): Record<string, boolean> {
+  const edge = fixedMap.value.get(column.key)?.edge
+  return {
+    'is-fixed': Boolean(edge),
+    'is-fixed-left': edge === 'left',
+    'is-fixed-right': edge === 'right',
+  }
+}
+
+// ---------- 懒加载 ----------
+
+/**
+ * 滚动到接近底部时请求更多数据
+ * @param event 滚动事件
+ */
+function onScroll(event: Event): void {
+  if (!props.lazy || !props.hasMore || props.loadingMore) return
+  const el = event.target as HTMLElement
+  // 留 48px 提前量，避免用户真的滚到最后一像素才触发
+  if (el.scrollHeight - el.scrollTop - el.clientHeight > 48) return
+  emit('load-more')
+}
 
 /** 已选 key 集合 */
 const selectedSet = computed(() => new Set(props.selectedKeys))
@@ -303,7 +472,7 @@ onMounted(() => {
   >
     <!-- ---------- 卡片视图（窄屏） ---------- -->
     <div v-if="isCardMode" class="sr-table__cards">
-      <div v-for="(row, index) in displayData" :key="rowKeyOf(row, index)" class="sr-table__card">
+      <div v-for="(row, index) in visibleData" :key="rowKeyOf(row, index)" class="sr-table__card">
         <div v-for="column in columns" :key="column.key" class="sr-table__card-field">
           <span class="sr-table__card-label">{{ column.title }}</span>
           <span class="sr-table__card-value">
@@ -320,14 +489,17 @@ onMounted(() => {
         </div>
       </div>
 
-      <div v-if="displayData.length === 0 && !loading" class="sr-table__empty">
-        <slot name="empty">{{ emptyText }}</slot>
+      <div v-if="visibleData.length === 0 && !loading" class="sr-table__empty">
+        <slot name="empty">
+          <sr-icon v-if="emptyIcon" class="sr-table__empty-icon" :name="emptyIcon" :size="30" />
+          <p class="sr-table__empty-text">{{ emptyText }}</p>
+        </slot>
       </div>
     </div>
 
     <!-- ---------- 表格视图 ---------- -->
-    <div v-else class="sr-table__scroll" :style="scrollStyle">
-      <table class="sr-table__inner" :style="{ tableLayout }">
+    <div v-else class="sr-table__scroll" :style="scrollStyle" @scroll="onScroll">
+      <table class="sr-table__inner" :style="{ tableLayout, minWidth: tableMinWidth }">
         <colgroup>
           <col v-if="expandable" style="width: 40px" />
           <col v-if="selectable" style="width: 44px" />
@@ -336,11 +508,23 @@ onMounted(() => {
 
         <thead class="sr-table__head">
           <tr>
-            <th v-if="expandable" class="sr-table__cell--expand" scope="col">
+            <th
+              v-if="expandable"
+              class="sr-table__cell--expand"
+              scope="col"
+              :class="{ 'is-fixed': hasFixedLeft, 'is-fixed-left': hasFixedLeft }"
+              :style="hasFixedLeft ? { left: '0px' } : undefined"
+            >
               <span class="sr-table__sr-only">展开</span>
             </th>
 
-            <th v-if="selectable" class="sr-table__cell--select" scope="col">
+            <th
+              v-if="selectable"
+              class="sr-table__cell--select"
+              scope="col"
+              :class="{ 'is-fixed': hasFixedLeft, 'is-fixed-left': hasFixedLeft }"
+              :style="hasFixedLeft ? { left: `${expandable ? EXPAND_WIDTH : 0}px` } : undefined"
+            >
               <sr-checkbox
                 :model-value="allSelected"
                 :indeterminate="someSelected"
@@ -356,7 +540,9 @@ onMounted(() => {
               :class="[
                 `is-${column.align ?? 'left'}`,
                 { 'is-sortable': column.sortable, 'is-sorted': sortKey === column.key },
+                fixedClassOf(column),
               ]"
+              :style="fixedStyleOf(column)"
               :aria-sort="ariaSortOf(column)"
               scope="col"
               @click="toggleSort(column)"
@@ -374,13 +560,18 @@ onMounted(() => {
         </thead>
 
         <tbody class="sr-table__body">
-          <template v-for="(row, index) in displayData" :key="rowKeyOf(row, index)">
+          <template v-for="(row, index) in visibleData" :key="rowKeyOf(row, index)">
             <tr
               class="sr-table__row"
               :class="{ 'is-selected': isSelected(row, index) }"
               @click="onRowClick(row, index)"
             >
-              <td v-if="expandable" class="sr-table__cell--expand">
+              <td
+                v-if="expandable"
+                class="sr-table__cell--expand"
+                :class="{ 'is-fixed': hasFixedLeft, 'is-fixed-left': hasFixedLeft }"
+                :style="hasFixedLeft ? { left: '0px' } : undefined"
+              >
                 <button
                   class="sr-table__expand-btn"
                   :class="{ 'is-expanded': isExpanded(row, index) }"
@@ -393,7 +584,13 @@ onMounted(() => {
                 </button>
               </td>
 
-              <td v-if="selectable" class="sr-table__cell--select" @click.stop>
+              <td
+                v-if="selectable"
+                class="sr-table__cell--select"
+                :class="{ 'is-fixed': hasFixedLeft, 'is-fixed-left': hasFixedLeft }"
+                :style="hasFixedLeft ? { left: `${expandable ? EXPAND_WIDTH : 0}px` } : undefined"
+                @click.stop
+              >
                 <sr-checkbox
                   :model-value="isSelected(row, index)"
                   size="sm"
@@ -405,7 +602,12 @@ onMounted(() => {
               <td
                 v-for="column in columns"
                 :key="column.key"
-                :class="[`is-${column.align ?? 'left'}`, { 'is-ellipsis': column.ellipsis }]"
+                :class="[
+                  `is-${column.align ?? 'left'}`,
+                  { 'is-ellipsis': column.ellipsis },
+                  fixedClassOf(column),
+                ]"
+                :style="fixedStyleOf(column)"
               >
                 <slot
                   :name="slotNameOf(column)"
@@ -428,9 +630,60 @@ onMounted(() => {
         </tbody>
       </table>
 
-      <div v-if="displayData.length === 0 && !loading" class="sr-table__empty">
-        <slot name="empty">{{ emptyText }}</slot>
+      <div v-if="visibleData.length === 0 && !loading" class="sr-table__empty">
+        <slot name="empty">
+          <sr-icon v-if="emptyIcon" class="sr-table__empty-icon" :name="emptyIcon" :size="30" />
+          <p class="sr-table__empty-text">{{ emptyText }}</p>
+        </slot>
       </div>
+    </div>
+
+    <!-- ---------- 分页 ---------- -->
+    <div v-if="paged" class="sr-table__pagination">
+      <span class="sr-table__total">共 {{ displayData.length }} 条</span>
+
+      <div class="sr-table__pager">
+        <button
+          class="sr-table__pager-btn"
+          type="button"
+          :disabled="innerPage <= 1"
+          @click="goPage(innerPage - 1)"
+        >
+          上一页
+        </button>
+
+        <template v-for="(item, index) in pageList" :key="`${item}-${index}`">
+          <span v-if="item === '...'" class="sr-table__pager-gap">…</span>
+          <button
+            v-else
+            class="sr-table__pager-btn"
+            :class="{ 'is-active': item === innerPage }"
+            type="button"
+            @click="goPage(Number(item))"
+          >
+            {{ item }}
+          </button>
+        </template>
+
+        <button
+          class="sr-table__pager-btn"
+          type="button"
+          :disabled="innerPage >= pageCount"
+          @click="goPage(innerPage + 1)"
+        >
+          下一页
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------- 懒加载底栏 ---------- -->
+    <div v-if="lazy" class="sr-table__lazy">
+      <span v-if="loadingMore" class="sr-table__lazy-text">
+        <sr-spinner size="sm" />
+        加载中…
+      </span>
+      <span v-else-if="!hasMore" class="sr-table__lazy-text">没有更多了</span>
+      <button v-else class="sr-table__lazy-btn" type="button" @click="emit('load-more')">加载更多</button>
     </div>
 
     <!-- 加载遮罩：盖在内容上而不是替换内容，避免高度跳动 -->

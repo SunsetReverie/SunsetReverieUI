@@ -59,6 +59,63 @@ function loadBigData(): void {
   })
 }
 
+/** 固定列演示：总宽超出容器才需要横向滚动 */
+const wideColumns: SrTableColumn[] = [
+  { key: 'id', title: 'ID', width: 80, fixed: 'left' },
+  { key: 'name', title: '组件', width: 170, fixed: 'left' },
+  { key: 'type', title: '类型', width: 130 },
+  { key: 'owner', title: '负责人', width: 130 },
+  { key: 'version', title: '版本', width: 120 },
+  { key: 'size', title: '体积', width: 120, align: 'right' },
+  { key: 'status', title: '状态', width: 130 },
+  { key: 'updated', title: '更新时间', width: 160 },
+  { key: 'actions', title: '操作', width: 140, fixed: 'right' },
+]
+
+/** 固定列演示数据 */
+const wideRows: SrTableRow[] = rows.map((row, index) => ({
+  ...row,
+  owner: ['林深', '周夏', '陈默', '苏白'][index % 4],
+  version: `0.${index + 2}.1`,
+  actions: '编辑',
+}))
+
+/** 分页演示的当前页 */
+const page = ref(1)
+
+/** 懒加载数据 */
+const lazyRows = ref<SrTableRow[]>([])
+/** 是否正在加载更多 */
+const lazyLoading = ref(false)
+/** 是否还有更多 */
+const lazyHasMore = ref(true)
+/** 已加载条数游标 */
+let lazyCursor = 0
+
+/** 懒加载演示的列 */
+const lazyColumns: SrTableColumn[] = [
+  { key: 'id', title: 'ID', width: 90 },
+  { key: 'name', title: '数据', minWidth: 180 },
+  { key: 'source', title: '来源', width: 140 },
+]
+
+/** 模拟分页请求下一批数据 */
+async function loadMore(): Promise<void> {
+  if (lazyLoading.value || !lazyHasMore.value) return
+  lazyLoading.value = true
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
+  const batch = Array.from({ length: 8 }, (_, index) => ({
+    id: lazyCursor + index + 1,
+    name: `数据 ${lazyCursor + index + 1}`,
+    source: '滚动加载',
+  }))
+  lazyRows.value = [...lazyRows.value, ...batch]
+  lazyCursor += batch.length
+  lazyHasMore.value = lazyCursor < 24
+  lazyLoading.value = false
+}
+
 /** 状态文案映射 */
 const statusText: Record<string, string> = {
   stable: '稳定',
@@ -78,6 +135,7 @@ function reload(): void {
 
 // ?big=1 自动生成 1000 行：无头截图无法点击按钮，用它验证大数据渲染
 onMounted(() => {
+  void loadMore()
   if (new URLSearchParams(window.location.search).get('big') === '1') loadBigData()
 })
 
@@ -111,6 +169,61 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
 
         <template #cell-size="{ value }">{{ Number(value).toFixed(1) }} KB</template>
       </sr-table>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">固定列</h2>
+      <p class="panel__desc">
+        给列配置 <code style="font-family: var(--sr-font-family-mono)">fixed: 'left' | 'right'</code>
+        后，横向滚动时这两列钉在两侧。固定列必须给出 px 宽度 —— 偏移量是按前面的列宽累加出来的。
+      </p>
+
+      <sr-table :columns="wideColumns" :data="wideRows" bordered>
+        <template #cell-status="{ value }">
+          <SrTag :type="value === 'stable' ? 'success' : 'warning'" round size="sm">
+            {{ statusText[value as string] ?? value }}
+          </SrTag>
+        </template>
+        <template #cell-actions>
+          <sr-button size="sm" variant="text">编辑</sr-button>
+        </template>
+      </sr-table>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">分页</h2>
+      <p class="panel__desc">
+        传 <code style="font-family: var(--sr-font-family-mono)">pagination</code> 开启前端分页， 配合
+        <code style="font-family: var(--sr-font-family-mono)">v-model:page</code> 拿当前页。 共
+        {{ rows.length }} 条，每页 3 条，当前第 {{ page }} 页。
+      </p>
+
+      <sr-table v-model:page="page" :columns="columns" :data="rows" :pagination="{ pageSize: 3 }">
+        <template #cell-status="{ value }">
+          <SrTag :type="value === 'stable' ? 'success' : 'warning'" round size="sm">
+            {{ statusText[value as string] ?? value }}
+          </SrTag>
+        </template>
+      </sr-table>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">懒加载</h2>
+      <p class="panel__desc">
+        开启 <code style="font-family: var(--sr-font-family-mono)">lazy</code> 后，滚动到底部自动派发
+        <code style="font-family: var(--sr-font-family-mono)">load-more</code>，
+        底部还会给一个「加载更多」按钮兜底。已加载 <strong>{{ lazyRows.length }}</strong> / 24 条。
+      </p>
+
+      <sr-table
+        :columns="lazyColumns"
+        :data="lazyRows"
+        lazy
+        :has-more="lazyHasMore"
+        :loading-more="lazyLoading"
+        :max-height="260"
+        @load-more="loadMore"
+      />
     </section>
 
     <section class="panel">
@@ -213,6 +326,220 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
       </p>
 
       <sr-table :columns="columns" :data="rows.slice(0, 3)" responsive />
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">SrTable Props 速查</h2>
+      <p class="panel__desc">
+        列级配置见 <code style="font-family: var(--sr-font-family-mono)">SrTableColumn</code>： key / title /
+        width / minWidth / align / sortable / ellipsis / fixed / slot / formatter。
+      </p>
+
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data</code></td>
+            <td><code>SrTableRow[]</code></td>
+            <td><code>[]</code></td>
+            <td>行数据</td>
+          </tr>
+          <tr>
+            <td><code>columns</code></td>
+            <td><code>SrTableColumn[]</code></td>
+            <td><code>[]</code></td>
+            <td>列配置</td>
+          </tr>
+          <tr>
+            <td><code>rowKey</code></td>
+            <td><code>string | Function</code></td>
+            <td><code>'id'</code></td>
+            <td>行唯一键字段或取值函数</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
+            <td>全局配置</td>
+            <td>行高与字号档位</td>
+          </tr>
+          <tr>
+            <td><code>bordered</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>显示竖线与外框</td>
+          </tr>
+          <tr>
+            <td><code>stripe</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>斑马纹</td>
+          </tr>
+          <tr>
+            <td><code>hoverable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>悬停高亮</td>
+          </tr>
+          <tr>
+            <td><code>maxHeight</code></td>
+            <td><code>number | string</code></td>
+            <td>—</td>
+            <td>滚动区最大高度，设置后表头吸顶</td>
+          </tr>
+          <tr>
+            <td><code>loading</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>加载遮罩</td>
+          </tr>
+          <tr>
+            <td><code>emptyText</code></td>
+            <td><code>string</code></td>
+            <td><code>'暂无数据'</code></td>
+            <td>空数据文案</td>
+          </tr>
+          <tr>
+            <td><code>emptyIcon</code></td>
+            <td><code>string</code></td>
+            <td><code>'lucide:inbox'</code></td>
+            <td>空数据图标，传空串则不显示</td>
+          </tr>
+          <tr>
+            <td><code>selectable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>显示多选列</td>
+          </tr>
+          <tr>
+            <td><code>selectedKeys</code></td>
+            <td><code>SrTableRowKey[]</code></td>
+            <td><code>[]</code></td>
+            <td>已选行，支持 v-model</td>
+          </tr>
+          <tr>
+            <td><code>expandable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>显示展开列</td>
+          </tr>
+          <tr>
+            <td><code>expandedKeys</code></td>
+            <td><code>SrTableRowKey[]</code></td>
+            <td><code>[]</code></td>
+            <td>展开行，支持 v-model</td>
+          </tr>
+          <tr>
+            <td><code>responsive</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>xs 档自动切换卡片视图</td>
+          </tr>
+          <tr>
+            <td><code>sortMode</code></td>
+            <td><code>'client' | 'server'</code></td>
+            <td><code>'client'</code></td>
+            <td>排序由本地还是调用方处理</td>
+          </tr>
+          <tr>
+            <td><code>defaultSort</code></td>
+            <td><code>{ key, order }</code></td>
+            <td>—</td>
+            <td>默认排序</td>
+          </tr>
+          <tr>
+            <td><code>tableLayout</code></td>
+            <td><code>'auto' | 'fixed'</code></td>
+            <td><code>'auto'</code></td>
+            <td>表格布局算法</td>
+          </tr>
+          <tr>
+            <td><code>pagination</code></td>
+            <td><code>boolean | { pageSize }</code></td>
+            <td><code>false</code></td>
+            <td>开启前端分页</td>
+          </tr>
+          <tr>
+            <td><code>page</code></td>
+            <td><code>number</code></td>
+            <td><code>1</code></td>
+            <td>当前页，支持 v-model:page</td>
+          </tr>
+          <tr>
+            <td><code>pageSize</code></td>
+            <td><code>number</code></td>
+            <td><code>10</code></td>
+            <td>每页条数</td>
+          </tr>
+          <tr>
+            <td><code>lazy</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>滚动到底派发 load-more</td>
+          </tr>
+          <tr>
+            <td><code>hasMore</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>是否还有更多数据</td>
+          </tr>
+          <tr>
+            <td><code>loadingMore</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>底部显示加载中</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">事件</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>事件</th>
+            <th>参数</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>sort-change</code></td>
+            <td><code>{ key, order }</code></td>
+            <td>排序变化</td>
+          </tr>
+          <tr>
+            <td><code>row-click</code></td>
+            <td><code>(row, index)</code></td>
+            <td>行点击</td>
+          </tr>
+          <tr>
+            <td><code>selection-change</code></td>
+            <td><code>(keys, rows)</code></td>
+            <td>选中集合变化</td>
+          </tr>
+          <tr>
+            <td><code>expand-change</code></td>
+            <td><code>(keys, rows)</code></td>
+            <td>展开集合变化</td>
+          </tr>
+          <tr>
+            <td><code>page-change</code></td>
+            <td><code>(page)</code></td>
+            <td>页码变化</td>
+          </tr>
+          <tr>
+            <td><code>load-more</code></td>
+            <td>—</td>
+            <td>滚动到底部，懒加载</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
   </div>
 </template>

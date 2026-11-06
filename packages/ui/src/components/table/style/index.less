@@ -161,11 +161,24 @@
 
   // ---------- 空状态 ----------
   &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sr-space-2);
     padding: var(--sr-space-8) var(--sr-space-4);
     color: var(--sr-color-text-tertiary);
     font-size: 0.92em;
     text-align: center;
     border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__empty-icon {
+    color: var(--sr-color-text-tertiary);
+    opacity: 0.55;
+  }
+
+  &__empty-text {
+    margin: 0;
   }
 
   // ---------- 加载遮罩 ----------
@@ -261,4 +274,149 @@
 .sr-table__card-value {
   min-width: 0;
   word-break: break-word;
+}
+
+// ---------- 固定列 ----------
+// sticky 单元格必须自带不透明背景，否则横向滚动的列会从下面透出来；
+// 背景取「行状态色压到容器色上」，保证与斑马纹 / 选中 / 悬停一致。
+
+.sr-table__head th.is-fixed,
+.sr-table__body td.is-fixed {
+  position: sticky;
+  z-index: 3;
+}
+
+.sr-table__head th.is-fixed {
+  z-index: 4;
+  // 表头同样叠一层，避免横向滚动的表头文字透到固定表头下面
+  background-image: linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
+}
+
+// 玻璃风格下容器色只有 0.72 不透明，单层会透出滚动过去的文字。
+// 底色 + 渐变各叠一层，把不透明度推到约 0.92，再配模糊就基本看不出残影了。
+.sr-table__body td.is-fixed {
+  background-color: var(--sr-color-bg-container);
+  background-image: linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container));
+  backdrop-filter: var(--sr-glass-filter);
+}
+
+.sr-table .sr-table__row.is-selected td.is-fixed {
+  background: color-mix(in srgb, var(--sr-color-primary) 8%, var(--sr-color-bg-container));
+}
+
+.sr-table.is-stripe .sr-table__body .sr-table__row:nth-child(even) td.is-fixed {
+  background-color: var(--sr-color-bg-sunken);
+  background-image: linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
+  backdrop-filter: var(--sr-glass-filter);
+}
+
+.sr-table.is-hoverable .sr-table__body .sr-table__row:hover td.is-fixed {
+  background: color-mix(in srgb, var(--sr-color-text) 5%, var(--sr-color-bg-container));
+}
+
+// 左侧固定列右缘的投影，提示右边还有内容
+.sr-table__head th.is-fixed-left::after,
+.sr-table__body td.is-fixed-left::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  right: -6px;
+  width: 6px;
+  background: linear-gradient(to right, rgb(15 23 42 / 7%), transparent);
+  pointer-events: none;
+}
+
+// ---------- 分页 ----------
+
+.sr-table__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sr-space-3);
+  flex-wrap: wrap;
+  padding: var(--sr-space-3) 0 0;
+}
+
+.sr-table__total {
+  color: var(--sr-color-text-tertiary);
+  font-size: 13px;
+}
+
+.sr-table__pager {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sr-table__pager-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--sr-color-primary);
+    color: var(--sr-color-primary-text);
+    background: var(--sr-color-bg-hover);
+  }
+
+  &.is-active {
+    border-color: var(--sr-color-primary);
+    background: var(--sr-color-primary);
+    color: #fff;
+    font-weight: var(--sr-font-weight-medium);
+  }
+}
+
+.sr-table__pager-gap {
+  padding: 0 2px;
+  color: var(--sr-color-text-tertiary);
+  font-size: 13px;
+}
+
+// ---------- 懒加载 ----------
+
+.sr-table__lazy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sr-space-3) 0 0;
+}
+
+.sr-table__lazy-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sr-color-text-tertiary);
+  font-size: 13px;
+}
+
+.sr-table__lazy-btn {
+  padding: 4px 14px;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--sr-color-primary);
+    color: var(--sr-color-primary-text);
+  }
 }
