@@ -29,8 +29,20 @@
     --sr-card-gap: var(--sr-space-3);
   }
 
+  // padding="none"：只有内容区贴边，头尾仍保留内边距（否则标题会顶到边框上）
+  &.is-flush {
+    --sr-card-padding: 0;
+
+    overflow: hidden;
+  }
+
   &.is-bordered {
     border: 1px solid var(--sr-color-border);
+  }
+
+  // 无描边时用一层浅阴影托住边界，否则和页面底色糊在一起
+  &:not(.is-bordered) {
+    box-shadow: var(--sr-shadow-sm);
   }
 
   &.is-hoverable {
@@ -39,6 +51,7 @@
     &:hover {
       transform: translateY(-2px);
       box-shadow: var(--sr-shadow-md);
+      border-color: color-mix(in srgb, var(--sr-color-primary) 45%, transparent);
     }
   }
 
@@ -49,6 +62,12 @@
     gap: var(--sr-card-gap);
     padding: var(--sr-card-padding);
     padding-bottom: 0;
+  }
+
+  &__extra {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
   }
 
   &__titles {
@@ -83,5 +102,14 @@
     gap: var(--sr-space-2);
     padding: var(--sr-card-padding);
     padding-top: 0;
+  }
+
+  // 排在 header / footer 之后，避免特异性顺序告警
+  &.is-flush &__header {
+    padding: var(--sr-space-4) var(--sr-space-4) 0;
+  }
+
+  &.is-flush &__footer {
+    padding: 0 var(--sr-space-4) var(--sr-space-4);
   }
 }

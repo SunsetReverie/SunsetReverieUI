@@ -83,14 +83,15 @@ function onMenuSelect(key: string): void {
 
 <template>
   <div class="display-page">
-    <SrPanel title="卡片" description="容器型组件：头部 / 主体 / 底部三段，悬停可轻微上浮。">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+    <SrPanel title="卡片" description="容器型组件：头部 / 主体 / 底部三段，内边距与描边都可调。">
+      <h3 class="sub-title">基础</h3>
+      <div class="card-grid">
         <SrCard title="组件覆盖率" subtitle="近 7 天">
           <p style="margin: 0; font-size: 26px; font-weight: 600">86.4%</p>
           <p style="margin: 4px 0 0; font-size: 12px; color: var(--sr-color-text-tertiary)">较上周 +3.2%</p>
         </SrCard>
 
-        <SrCard title="待处理缺陷" hoverable>
+        <SrCard title="待处理缺陷">
           <p style="margin: 0; font-size: 26px; font-weight: 600">12</p>
           <template #footer>
             <SrButton size="sm" variant="text">查看全部</SrButton>
@@ -98,9 +99,56 @@ function onMenuSelect(key: string): void {
         </SrCard>
 
         <SrCard>
-          <p style="margin: 0; font-size: 13px; color: var(--sr-color-text-tertiary)">
-            无标题时头部整块不渲染，适合纯内容卡片。
-          </p>
+          <p class="muted" style="margin: 0">无标题时头部整块不渲染，适合纯内容卡片。</p>
+        </SrCard>
+      </div>
+
+      <h3 class="sub-title">悬停与描边</h3>
+      <div class="card-grid">
+        <SrCard title="可悬停" hoverable>
+          <p class="muted">鼠标悬停时上浮并高亮描边。触摸设备不会触发悬停，因此不会出现假反馈。</p>
+        </SrCard>
+
+        <SrCard title="无描边" :bordered="false">
+          <p class="muted">去掉描边，改由一层浅阴影区分层级。</p>
+        </SrCard>
+      </div>
+
+      <h3 class="sub-title">内边距</h3>
+      <div class="card-stack">
+        <SrCard title="padding = none" padding="none">
+          <div class="flush-block">内容区无内边距，适合自带间距的图表或图片</div>
+        </SrCard>
+
+        <SrCard title="padding = sm" padding="sm">
+          <p class="muted">紧凑内边距，适合信息密度高的列表卡片。</p>
+        </SrCard>
+
+        <SrCard title="padding = lg" padding="lg">
+          <p class="muted">宽松内边距，适合营销位或详情页。</p>
+        </SrCard>
+      </div>
+
+      <h3 class="sub-title">三段式插槽（header / extra / footer）</h3>
+      <div class="card-grid">
+        <SrCard>
+          <template #header>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span class="card-swatch" />
+              <span style="font-weight: 600; font-size: 15px">自定义 header</span>
+            </div>
+          </template>
+
+          <template #extra>
+            <SrTag type="primary">extra</SrTag>
+          </template>
+
+          <p class="muted">header、extra 与下方的 footer 均可独立使用，互不依赖。</p>
+
+          <template #footer>
+            <SrButton size="sm" variant="outline">取消</SrButton>
+            <SrButton size="sm" variant="primary">确认</SrButton>
+          </template>
         </SrCard>
       </div>
     </SrPanel>
@@ -615,6 +663,52 @@ function onMenuSelect(key: string): void {
   border: 1px solid var(--sr-color-border);
   border-radius: var(--sr-radius-sm);
   font-size: 13px;
+}
+
+.sub-title {
+  margin: 22px 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sub-title:first-child {
+  margin-top: 0;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* padding="none" 时内容区贴边，用它演示 */
+.flush-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 68px;
+  background: linear-gradient(120deg, var(--sr-color-primary-alpha-12), var(--sr-color-primary-alpha-08));
+  color: var(--sr-color-primary-text);
+  font-size: 13px;
+}
+
+.card-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-primary);
+}
+
+.muted {
+  margin: 0;
+  font-size: 13px;
+  color: var(--sr-color-text-tertiary);
 }
 
 .props-title {

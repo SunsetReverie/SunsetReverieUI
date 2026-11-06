@@ -18,6 +18,14 @@ export const cardProps = {
     type: String as PropType<SrSize>,
     default: 'md',
   },
+  /**
+   * 单独指定内边距，优先于 size。
+   * 'none' 时内容紧贴边缘，适合自带内边距的图表或图片
+   */
+  padding: {
+    type: String as PropType<'none' | SrSize>,
+    default: '',
+  },
   /** 是否显示外边框 @default true */
   bordered: {
     type: Boolean,

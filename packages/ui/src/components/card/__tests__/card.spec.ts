@@ -37,6 +37,24 @@ describe('SrCard', () => {
     withFooter.unmount()
   })
 
+  it('padding 优先于 size，none 生成 is-flush', () => {
+    const wrapper = mount(SrCard, { props: { size: 'lg', padding: 'none' } })
+
+    expect(wrapper.classes()).toContain('is-flush')
+    expect(wrapper.classes()).not.toContain('sr-card--lg')
+    wrapper.unmount()
+  })
+
+  it('extra 插槽渲染到头部右侧并触发头部', () => {
+    const wrapper = mount(SrCard, {
+      slots: { default: () => '正文', extra: () => '更多' },
+    })
+
+    expect(wrapper.find('.sr-card__header').exists()).toBe(true)
+    expect(wrapper.find('.sr-card__extra').text()).toBe('更多')
+    wrapper.unmount()
+  })
+
   it('bordered / hoverable 生成类名', () => {
     const wrapper = mount(SrCard, { props: { bordered: false, hoverable: true } })
     expect(wrapper.classes()).not.toContain('is-bordered')
