@@ -4,7 +4,7 @@ import type { SrSize } from '../../../types/config'
 import type { SrResponsive } from '../../../types/theme'
 
 /** 视觉变体 */
-export type SrButtonVariant = 'primary' | 'secondary' | 'outline' | 'text' | 'danger'
+export type SrButtonVariant = 'primary' | 'secondary' | 'outline' | 'text' | 'success' | 'warning' | 'danger'
 
 /** 原生 type 属性（避免与组件的 type 语义冲突，改名 htmlType） */
 export type SrButtonHtmlType = 'button' | 'submit' | 'reset'

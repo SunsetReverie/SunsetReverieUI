@@ -94,6 +94,16 @@ export const semanticLight: Record<string, string> = {
   'color-primary-active': 'var(--sr-sunset-700)',
   'color-primary-disabled': 'var(--sr-sunset-200)',
   'color-on-primary': '#ffffff',
+
+  // ---------- 实心按钮专用色板 ----------
+  // on-solid 两套主题都是白色：实心按钮的文字不随主题翻转。
+  // 因为文字固定为白，背景必须选足够深的色阶（尤其 warning，亮黄底白字不可读）。
+  'color-on-solid': '#ffffff',
+  'color-solid-primary': 'var(--sr-sunset-500)',
+  'color-solid-success': 'var(--sr-success-600)',
+  'color-solid-warning': 'var(--sr-warning-600)',
+  'color-solid-danger': 'var(--sr-danger-500)',
+
   // 文字专用主色：直接拿 sunset-500 当文字只有约 2.9:1，达不到正文 4.5:1
   'color-primary-text': 'var(--sr-sunset-700)',
   // alpha 派生：运行期切换主题色时由 useSrTheme 用 color-mix 覆写
@@ -168,6 +178,15 @@ export const semanticDark: Record<string, string> = {
   'color-primary-active': 'var(--sr-sunset-200)',
   'color-primary-disabled': 'var(--sr-sunset-900)',
   'color-on-primary': '#1a0e05',
+
+  // 实心按钮：文字仍固定白色，背景改用 600 阶保证对比度
+  // （暗色下原先的 400 阶太亮，白字会糊在一起）
+  'color-on-solid': '#ffffff',
+  'color-solid-primary': 'var(--sr-sunset-600)',
+  'color-solid-success': 'var(--sr-success-600)',
+  'color-solid-warning': 'var(--sr-warning-600)',
+  'color-solid-danger': 'var(--sr-danger-600)',
+
   'color-primary-text': 'var(--sr-sunset-300)',
   'color-primary-alpha-25': 'rgba(255, 139, 82, 0.25)',
   'color-primary-alpha-12': 'rgba(255, 139, 82, 0.12)',

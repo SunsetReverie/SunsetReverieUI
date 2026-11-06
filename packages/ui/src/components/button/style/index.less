@@ -194,12 +194,31 @@
   }
 
   // ---------- 变体 ----------
+  // 所有「有背景色」的变体共用同一套规则：
+  // 1. 文字固定白色（--sr-color-on-solid 在亮暗主题下都是 #fff）
+  // 2. hover 提亮、active 压暗，用 color-mix 从背景色派生 —— 四个变体无需各写一份
+  &--primary,
+  &--success,
+  &--warning,
+  &--danger {
+    --sr-button-fg: var(--sr-color-on-solid, #fff);
+    --sr-button-bg-hover: color-mix(in oklab, var(--sr-button-bg) 86%, white);
+    --sr-button-bg-active: color-mix(in oklab, var(--sr-button-bg) 80%, black);
+  }
+
   &--primary {
-    --sr-button-accent: var(--sr-color-primary);
-    --sr-button-bg: var(--sr-color-primary);
-    --sr-button-bg-hover: var(--sr-color-primary-hover);
-    --sr-button-bg-active: var(--sr-color-primary-active);
-    --sr-button-fg: var(--sr-color-on-primary);
+    --sr-button-accent: var(--sr-color-solid-primary);
+    --sr-button-bg: var(--sr-color-solid-primary);
+  }
+
+  &--success {
+    --sr-button-accent: var(--sr-color-solid-success);
+    --sr-button-bg: var(--sr-color-solid-success);
+  }
+
+  &--warning {
+    --sr-button-accent: var(--sr-color-solid-warning);
+    --sr-button-bg: var(--sr-color-solid-warning);
   }
 
   &--secondary {
@@ -236,11 +255,8 @@
   }
 
   &--danger {
-    --sr-button-accent: var(--sr-color-danger);
-    --sr-button-bg: var(--sr-color-danger);
-    --sr-button-bg-hover: var(--sr-color-danger-hover);
-    --sr-button-bg-active: var(--sr-color-danger-active);
-    --sr-button-fg: var(--sr-color-text-inverse);
+    --sr-button-accent: var(--sr-color-solid-danger);
+    --sr-button-bg: var(--sr-color-solid-danger);
   }
 }
 
@@ -271,7 +287,7 @@
   --sr-button-border: transparent;
   --sr-button-border-hover: transparent;
   // 自定义色通常是饱和色，默认配白字；需要深色字请用 color prop
-  --sr-button-fg: #fff;
+  --sr-button-fg: var(--sr-color-on-solid, #fff);
   // 玻璃辉光跟随自定义色
   --sr-button-accent: var(--sr-button-custom-bg);
 }
