@@ -117,15 +117,14 @@
     margin-bottom: -1px;
     border: 1px solid var(--sr-color-border);
     border-bottom: 0;
-    border-radius: 10px 10px 0 0;
+    border-radius: 6px 6px 0 0;
     background: var(--sr-color-bg-sunken);
 
     &.is-active {
       border-color: color-mix(in srgb, var(--sr-color-primary) 34%, transparent);
       background: var(--sr-color-bg-container);
-      box-shadow:
-        inset 0 2px 0 0 var(--sr-color-primary),
-        0 1px 0 0 var(--sr-color-bg-container);
+      // 只留一条容器色盖住 nav 下边线，不做顶部色条
+      box-shadow: 0 1px 0 0 var(--sr-color-bg-container);
     }
   }
 
