@@ -1,0 +1,89 @@
+// 分区面板
+//
+// 比 Card 更轻：只负责"标题 + 内容"的分区，默认无边框，
+// 适合在页面里切分大块内容，也支持折叠。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-panel {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+
+  &.is-flush {
+    background: transparent;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--sr-space-3);
+    padding: var(--sr-space-4) var(--sr-space-5);
+
+    &.is-clickable {
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+
+  &.is-flush &__header {
+    padding-inline: 0;
+  }
+
+  &.is-collapsed &__header {
+    padding-bottom: var(--sr-space-4);
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--sr-color-text);
+    font-size: 15px;
+    font-weight: var(--sr-font-weight-semibold);
+    transition: color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__description {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+  }
+
+  // 排在 __title 之后，避免特异性顺序告警
+  &__header.is-clickable:hover &__title {
+    color: var(--sr-color-primary-text);
+  }
+
+  &__extra {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    flex: 0 0 auto;
+  }
+
+  &__arrow {
+    color: var(--sr-color-text-tertiary);
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &.is-open {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__body {
+    padding: 0 var(--sr-space-5) var(--sr-space-5);
+  }
+
+  &.is-flush &__body {
+    padding-inline: 0;
+  }
+}

@@ -1,0 +1,61 @@
+// 徽标
+//
+// 有插槽时贴在内容右上角，无插槽时作为独立标记。
+
+.sr-badge {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+
+  &__sup {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: var(--sr-radius-full);
+    color: #fff;
+    font-size: 11px;
+    font-weight: var(--sr-font-weight-medium);
+    line-height: 1;
+    white-space: nowrap;
+
+    &.is-dot {
+      min-width: 8px;
+      width: 8px;
+      height: 8px;
+      padding: 0;
+    }
+  }
+
+  // 有内容时绝对定位到右上角
+  &:not(.is-standalone) &__sup {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    box-shadow: 0 0 0 1px var(--sr-color-bg-container);
+  }
+
+  &--primary {
+    background: var(--sr-color-primary);
+  }
+
+  &--success {
+    background: var(--sr-color-success);
+  }
+
+  &--warning {
+    background: var(--sr-color-warning);
+  }
+
+  &--danger {
+    background: var(--sr-color-danger);
+  }
+
+  &--info {
+    background: var(--sr-color-info);
+  }
+}

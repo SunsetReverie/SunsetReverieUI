@@ -12,6 +12,7 @@ import FeedbackView from './views/FeedbackView.vue'
 import FormsView from './views/FormsView.vue'
 import OverviewView from './views/OverviewView.vue'
 import ResponsiveLab from './views/ResponsiveLab.vue'
+import DisplayView from './views/DisplayView.vue'
 import TableView from './views/TableView.vue'
 import ThemeLab from './views/ThemeLab.vue'
 
@@ -40,6 +41,7 @@ const views = [
   { key: 'controls', label: '选择控件', component: ControlsView },
   { key: 'feedback', label: '反馈', component: FeedbackView },
   { key: 'table', label: '表格', component: TableView },
+  { key: 'display', label: '容器与展示', component: DisplayView },
   { key: 'theme', label: '主题实验室', component: ThemeLab },
   { key: 'responsive', label: '断点实验室', component: ResponsiveLab },
   { key: 'audit', label: '视觉审计', component: AuditView },

@@ -36,7 +36,8 @@ function walk(dir, out = []) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name)
     if (entry.isDirectory()) {
-      if (entry.name === 'node_modules' || entry.name === 'dist') continue
+      // 与 gen-offline-icons 保持一致：collections 是产物、__tests__ 不参与构建
+      if (['node_modules', 'dist', 'collections', '__tests__'].includes(entry.name)) continue
       walk(full, out)
       continue
     }

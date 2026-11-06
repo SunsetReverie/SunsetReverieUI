@@ -1,0 +1,61 @@
+// 头像
+//
+// 尺寸用 CSS 变量下发，数字尺寸由内联样式覆盖。
+// 底色取主色淡档，保证文字回退态看着不脏。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-avatar {
+  --sr-avatar-size: 36px;
+  --sr-avatar-font: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--sr-avatar-size);
+  height: var(--sr-avatar-size);
+  overflow: hidden;
+  background: var(--sr-color-primary-alpha-12);
+  color: var(--sr-color-primary-text);
+  font-size: var(--sr-avatar-font);
+  font-weight: var(--sr-font-weight-medium);
+  line-height: 1;
+  user-select: none;
+  vertical-align: middle;
+
+  &--xs {
+    --sr-avatar-size: 24px;
+    --sr-avatar-font: 11px;
+  }
+
+  &--sm {
+    --sr-avatar-size: 30px;
+    --sr-avatar-font: 12px;
+  }
+
+  &--lg {
+    --sr-avatar-size: 44px;
+    --sr-avatar-font: 17px;
+  }
+
+  &--xl {
+    --sr-avatar-size: 56px;
+    --sr-avatar-font: 21px;
+  }
+
+  &.is-circle {
+    border-radius: var(--sr-radius-full);
+  }
+
+  &.is-square {
+    border-radius: var(--sr-radius-sm);
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

@@ -1,0 +1,101 @@
+// 下拉菜单
+//
+// 浮层质感与 Select 面板保持一致：半透底 + 白亮边 + 强模糊。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-dropdown {
+  display: inline-block;
+
+  &.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &__trigger {
+    display: inline-flex;
+  }
+
+  &__panel {
+    position: fixed;
+    z-index: var(--sr-dropdown-z, 3004);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 4px;
+    border: var(--sr-glass-border-width) solid var(--sr-popover-border-color);
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-popover);
+    box-shadow: var(--sr-shadow-md);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+  }
+
+  &__group {
+    padding: 6px 8px 4px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+  }
+
+  &__divider {
+    height: 1px;
+    margin: 4px 2px;
+    background: var(--sr-color-border-subtle);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    width: 100%;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    text-align: start;
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-instant) linear;
+
+    &:disabled {
+      color: var(--sr-color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--sr-color-primary-alpha-08);
+      color: var(--sr-color-primary-text);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    color: currentcolor;
+  }
+
+  &__label {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.sr-dropdown-zoom-enter-active,
+.sr-dropdown-zoom-leave-active {
+  transition:
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  transform-origin: top center;
+}
+
+.sr-dropdown-zoom-enter-from,
+.sr-dropdown-zoom-leave-to {
+  opacity: 0;
+  transform: scale(0.96);
+}

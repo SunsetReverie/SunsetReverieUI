@@ -1,0 +1,160 @@
+// 抽屉
+//
+// 四个方向共用一套结构，靠 is-<placement> 决定贴边位置与滑入方向。
+// 面板用不透明容器色：抽屉承载的是可操作内容，半透会干扰阅读。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-drawer {
+  position: fixed;
+  z-index: var(--sr-drawer-z, 2101);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  // 抽屉是可操作区，底色要够实；容器色只有 0.72 不透明，叠一层推到约 0.92
+  background-color: var(--sr-color-bg-container);
+  background-image: linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container));
+  box-shadow: var(--sr-shadow-lg);
+
+  &.is-right {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 380px;
+    max-width: 100vw;
+  }
+
+  &.is-left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 380px;
+    max-width: 100vw;
+  }
+
+  &.is-top {
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 320px;
+    max-height: 100vh;
+  }
+
+  &.is-bottom {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 320px;
+    max-height: 100vh;
+  }
+
+  &__mask {
+    position: fixed;
+    inset: 0;
+    z-index: var(--sr-drawer-z, 2100);
+    background: var(--sr-color-mask);
+    backdrop-filter: var(--sr-glass-filter);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sr-space-3);
+    flex: 0 0 auto;
+    padding: var(--sr-space-4) var(--sr-space-5);
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--sr-color-text);
+    font-size: 16px;
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sr-color-bg-hover);
+      color: var(--sr-color-text);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: var(--sr-space-5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    font-size: 14px;
+    color: var(--sr-color-text-secondary);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--sr-space-2);
+    flex: 0 0 auto;
+    padding: var(--sr-space-3) var(--sr-space-5);
+    border-top: 1px solid var(--sr-color-border-subtle);
+  }
+}
+
+// ---------- 遮罩淡入 ----------
+.sr-drawer-fade-enter-active,
+.sr-drawer-fade-leave-active {
+  transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.sr-drawer-fade-enter-from,
+.sr-drawer-fade-leave-to {
+  opacity: 0;
+}
+
+// ---------- 面板滑入 ----------
+.sr-drawer-slide-enter-active,
+.sr-drawer-slide-leave-active {
+  transition: transform var(--sr-motion-duration-normal) var(--sr-motion-easing-emphasized);
+}
+
+.sr-drawer-slide-enter-from,
+.sr-drawer-slide-leave-to {
+  &.is-right {
+    transform: translateX(100%);
+  }
+
+  &.is-left {
+    transform: translateX(-100%);
+  }
+
+  &.is-top {
+    transform: translateY(-100%);
+  }
+
+  &.is-bottom {
+    transform: translateY(100%);
+  }
+}

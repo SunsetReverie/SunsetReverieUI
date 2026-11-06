@@ -1,0 +1,628 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+import {
+  SrAvatar,
+  SrBadge,
+  SrBreadcrumb,
+  SrButton,
+  SrCard,
+  SrDrawer,
+  SrDropdown,
+  SrEmpty,
+  SrPanel,
+  SrTabs,
+  SrTag,
+} from '@sunset-reverie/ui'
+
+defineOptions({ name: 'DisplayView' })
+
+/** 标签页配置 */
+const tabs = [
+  { key: 'overview', label: '概览' },
+  { key: 'config', label: '配置' },
+  { key: 'log', label: '日志' },
+]
+
+/** 可关闭的标签页 */
+const closableTabs = ref([
+  { key: 'a', label: '基础组件' },
+  { key: 'b', label: '表单组件' },
+  { key: 'c', label: '数据展示' },
+])
+
+/** 当前标签页 */
+const activeTab = ref('overview')
+
+/** 面包屑 */
+const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '展示组件' }]
+
+/** 折叠面包屑 */
+const longCrumbs = [
+  { label: '工作台', href: '#' },
+  { label: '项目' },
+  { label: '夕梦 UI' },
+  { label: '组件库' },
+  { label: '展示组件' },
+]
+
+/** 下拉菜单项 */
+const menuItems = [
+  { group: '编辑', key: 'rename', label: '重命名', icon: 'lucide:pencil' },
+  { group: '编辑', key: 'copy', label: '复制' },
+  { group: '危险', key: 'delete', label: '删除', icon: 'lucide:trash', divided: true },
+]
+
+/** 面板折叠状态 */
+const panelOpen = ref(true)
+
+/** 抽屉开关 */
+const drawerRight = ref(false)
+const drawerLeft = ref(false)
+const drawerTop = ref(false)
+
+/** 下拉选择结果 */
+const lastAction = ref('—')
+
+/**
+ * 关闭标签页
+ * @param key 标签 key
+ */
+function onTabClose(key: string): void {
+  closableTabs.value = closableTabs.value.filter((tab) => tab.key !== key)
+}
+
+/**
+ * 下拉菜单选中
+ * @param key 菜单项 key
+ */
+function onMenuSelect(key: string): void {
+  lastAction.value = key
+}
+</script>
+
+<template>
+  <div>
+    <SrPanel title="卡片" description="容器型组件：头部 / 主体 / 底部三段，悬停可轻微上浮。">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+        <SrCard title="组件覆盖率" subtitle="近 7 天">
+          <p style="margin: 0; font-size: 26px; font-weight: 600">86.4%</p>
+          <p style="margin: 4px 0 0; font-size: 12px; color: var(--sr-color-text-tertiary)">较上周 +3.2%</p>
+        </SrCard>
+
+        <SrCard title="待处理缺陷" hoverable>
+          <p style="margin: 0; font-size: 26px; font-weight: 600">12</p>
+          <template #footer>
+            <SrButton size="sm" variant="text">查看全部</SrButton>
+          </template>
+        </SrCard>
+
+        <SrCard>
+          <p style="margin: 0; font-size: 13px; color: var(--sr-color-text-tertiary)">
+            无标题时头部整块不渲染，适合纯内容卡片。
+          </p>
+        </SrCard>
+      </div>
+    </SrPanel>
+
+    <SrPanel
+      v-model="panelOpen"
+      title="分区面板"
+      description="比 Card 更轻，只负责标题与内容分区，支持折叠。点标题试试。"
+      collapsible
+    >
+      <p style="margin: 0; font-size: 13px">
+        面板默认可折叠，收起时内容用 v-show 隐藏，DOM 保留，切换不丢状态。
+      </p>
+    </SrPanel>
+
+    <SrPanel title="徽标与头像" description="展示型标记，用于状态角标与用户标识。">
+      <div style="display: flex; flex-direction: column; gap: 20px">
+        <div style="display: flex; align-items: center; gap: 24px; flex-wrap: wrap">
+          <SrBadge :value="8">
+            <span class="demo-block">消息</span>
+          </SrBadge>
+          <SrBadge :value="120">
+            <span class="demo-block">通知</span>
+          </SrBadge>
+          <SrBadge dot>
+            <span class="demo-block">更新</span>
+          </SrBadge>
+          <SrBadge :value="0" show-zero>
+            <span class="demo-block">已读</span>
+          </SrBadge>
+          <SrBadge :value="3" type="success" />
+          <SrBadge :value="5" type="warning" />
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+          <SrAvatar alt="林深" />
+          <SrAvatar alt="周夏" size="sm" />
+          <SrAvatar alt="陈默" size="lg" />
+          <SrAvatar icon="lucide:settings" shape="square" />
+          <SrAvatar alt="苏白" :size="52" />
+          <SrAvatar src="https://i.pravatar.cc/80?img=12" alt="远程" size="lg" />
+        </div>
+      </div>
+    </SrPanel>
+
+    <SrPanel title="空状态" description="图标 + 描述 + 可选操作区。">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+        <SrEmpty />
+
+        <SrEmpty description="没有匹配的组件" size="sm">
+          <template #action>
+            <SrButton size="sm" variant="outline">清空筛选</SrButton>
+          </template>
+        </SrEmpty>
+
+        <SrEmpty description="换个关键词试试" icon="lucide:search" />
+      </div>
+    </SrPanel>
+
+    <SrPanel title="面包屑" description="支持自定义分隔符，超出条目数自动折叠。">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <SrBreadcrumb :items="crumbs" />
+        <SrBreadcrumb :items="longCrumbs" :max-items="4" separator="›" />
+      </div>
+    </SrPanel>
+
+    <SrPanel title="标签页" description="线条与卡片两种外观，支持可关闭与懒加载。">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <SrTabs v-model="activeTab" :items="tabs">
+          <template #panel-overview>
+            <p style="margin: 0">概览内容：当前激活 {{ activeTab }}</p>
+          </template>
+          <template #panel-config>
+            <p style="margin: 0">配置内容</p>
+          </template>
+          <template #panel-log>
+            <p style="margin: 0">日志内容</p>
+          </template>
+        </SrTabs>
+
+        <SrTabs :items="closableTabs" type="card" closable @close="onTabClose">
+          <template #panel="{ item }">
+            <p style="margin: 0">{{ item.label }} 的面板，点标签上的 × 可关闭。</p>
+          </template>
+        </SrTabs>
+      </div>
+    </SrPanel>
+
+    <SrPanel title="下拉菜单" description="支持分组与分割线，点击外部自动收起。">
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+        <SrDropdown :items="menuItems" @select="onMenuSelect">
+          <SrButton variant="outline" size="sm">更多操作</SrButton>
+        </SrDropdown>
+
+        <SrDropdown :items="menuItems" trigger="hover">
+          <SrButton variant="text" size="sm">悬停触发</SrButton>
+        </SrDropdown>
+
+        <SrTag type="default">最近选择：{{ lastAction }}</SrTag>
+      </div>
+    </SrPanel>
+
+    <SrPanel title="抽屉" description="四个方向滑出，打开时锁定页面滚动，支持 Esc 与遮罩关闭。">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap">
+        <SrButton size="sm" variant="primary" @click="drawerRight = true">右侧</SrButton>
+        <SrButton size="sm" variant="outline" @click="drawerLeft = true">左侧</SrButton>
+        <SrButton size="sm" variant="outline" @click="drawerTop = true">顶部</SrButton>
+      </div>
+
+      <SrDrawer v-model="drawerRight" title="筛选条件" subtitle="">
+        <p style="margin: 0 0 12px">从右侧滑出，宽度可传 size 调整。</p>
+        <SrEmpty description="这里放筛选表单" size="sm" />
+        <template #footer>
+          <SrButton size="sm" variant="text" @click="drawerRight = false">取消</SrButton>
+          <SrButton size="sm" variant="primary" @click="drawerRight = false">应用</SrButton>
+        </template>
+      </SrDrawer>
+
+      <SrDrawer v-model="drawerLeft" title="详情" placement="left" :size="320">
+        <p style="margin: 0">左侧抽屉，宽度 320px。</p>
+      </SrDrawer>
+
+      <SrDrawer v-model="drawerTop" title="批量操作" placement="top" :size="220">
+        <p style="margin: 0">顶部抽屉，高度 220px。</p>
+      </SrDrawer>
+    </SrPanel>
+
+    <SrPanel title="Props 速查" description="九个展示与容器组件的关键配置。">
+      <h3 class="props-title">SrCard</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>title</code> / <code>subtitle</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>头部标题与副标题</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
+            <td><code>'md'</code></td>
+            <td>内边距档位</td>
+          </tr>
+          <tr>
+            <td><code>bordered</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>显示外边框</td>
+          </tr>
+          <tr>
+            <td><code>hoverable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>悬停上浮</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrPanel</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>title</code> / <code>description</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>标题与说明</td>
+          </tr>
+          <tr>
+            <td><code>collapsible</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>点击头部折叠</td>
+          </tr>
+          <tr>
+            <td><code>modelValue</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>展开状态，支持 v-model</td>
+          </tr>
+          <tr>
+            <td><code>flush</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>去掉内边距</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrBadge</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>value</code></td>
+            <td><code>string | number</code></td>
+            <td><code>''</code></td>
+            <td>显示内容</td>
+          </tr>
+          <tr>
+            <td><code>max</code></td>
+            <td><code>number</code></td>
+            <td><code>99</code></td>
+            <td>数字上限，超出显示 max+</td>
+          </tr>
+          <tr>
+            <td><code>dot</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>只显示圆点</td>
+          </tr>
+          <tr>
+            <td><code>type</code></td>
+            <td><code>'primary' | 'success' | 'warning' | 'danger' | 'info'</code></td>
+            <td><code>'danger'</code></td>
+            <td>颜色</td>
+          </tr>
+          <tr>
+            <td><code>showZero</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>值为 0 时也显示</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrAvatar</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>src</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>图片地址，失败回退文字</td>
+          </tr>
+          <tr>
+            <td><code>alt</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>替代文案，同时作为回退文字</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg' | number</code></td>
+            <td><code>'md'</code></td>
+            <td>尺寸，数字按 px</td>
+          </tr>
+          <tr>
+            <td><code>shape</code></td>
+            <td><code>'circle' | 'square'</code></td>
+            <td><code>'circle'</code></td>
+            <td>形状</td>
+          </tr>
+          <tr>
+            <td><code>icon</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>回退图标，优先于文字</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrEmpty</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>description</code></td>
+            <td><code>string</code></td>
+            <td><code>'暂无数据'</code></td>
+            <td>描述文案</td>
+          </tr>
+          <tr>
+            <td><code>icon</code></td>
+            <td><code>string</code></td>
+            <td><code>'lucide:inbox'</code></td>
+            <td>图标，空串则不显示</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
+            <td><code>'md'</code></td>
+            <td>尺寸档位</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrBreadcrumb</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>items</code></td>
+            <td><code>{ label, href?, icon? }[]</code></td>
+            <td><code>[]</code></td>
+            <td>条目，末项自动标记当前页</td>
+          </tr>
+          <tr>
+            <td><code>separator</code></td>
+            <td><code>string</code></td>
+            <td><code>'/'</code></td>
+            <td>分隔符</td>
+          </tr>
+          <tr>
+            <td><code>maxItems</code></td>
+            <td><code>number</code></td>
+            <td><code>0</code></td>
+            <td>超出则中间折叠，0 不折叠</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrTabs</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>modelValue</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>激活的 key，支持 v-model</td>
+          </tr>
+          <tr>
+            <td><code>items</code></td>
+            <td><code>{ key, label, icon?, disabled?, closable? }[]</code></td>
+            <td><code>[]</code></td>
+            <td>标签配置</td>
+          </tr>
+          <tr>
+            <td><code>type</code></td>
+            <td><code>'line' | 'card'</code></td>
+            <td><code>'line'</code></td>
+            <td>外观</td>
+          </tr>
+          <tr>
+            <td><code>closable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>全部可关闭</td>
+          </tr>
+          <tr>
+            <td><code>lazy</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>未激活过的面板不渲染</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="props-note">
+        面板内容用 <code>#panel-&lt;key&gt;</code> 具名插槽提供，也可用 <code>#panel</code> 统一渲染。
+      </p>
+
+      <h3 class="props-title">SrDropdown</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>items</code></td>
+            <td><code>{ key, label, icon?, disabled?, divided?, group? }[]</code></td>
+            <td><code>[]</code></td>
+            <td>菜单项</td>
+          </tr>
+          <tr>
+            <td><code>trigger</code></td>
+            <td><code>'click' | 'hover'</code></td>
+            <td><code>'click'</code></td>
+            <td>触发方式</td>
+          </tr>
+          <tr>
+            <td><code>placement</code></td>
+            <td><code>SrPlacement</code></td>
+            <td><code>'bottom-start'</code></td>
+            <td>弹出位置</td>
+          </tr>
+          <tr>
+            <td><code>minWidth</code></td>
+            <td><code>string | number</code></td>
+            <td><code>160</code></td>
+            <td>菜单最小宽度</td>
+          </tr>
+          <tr>
+            <td><code>disabled</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>禁用</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="props-title">SrDrawer</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>modelValue</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>是否打开，支持 v-model</td>
+          </tr>
+          <tr>
+            <td><code>placement</code></td>
+            <td><code>'left' | 'right' | 'top' | 'bottom'</code></td>
+            <td><code>'right'</code></td>
+            <td>滑出方向</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>string | number</code></td>
+            <td><code>''</code></td>
+            <td>左右为宽度、上下为高度</td>
+          </tr>
+          <tr>
+            <td><code>title</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>标题，留空不渲染头部</td>
+          </tr>
+          <tr>
+            <td><code>maskClosable</code> / <code>escToClose</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>遮罩关闭 / Esc 关闭</td>
+          </tr>
+          <tr>
+            <td><code>lockScroll</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>打开时锁定页面滚动</td>
+          </tr>
+        </tbody>
+      </table>
+    </SrPanel>
+  </div>
+</template>
+
+<style scoped>
+.demo-block {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-sm);
+  font-size: 13px;
+}
+
+.props-title {
+  margin: 20px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.props-title:first-child {
+  margin-top: 0;
+}
+
+.props-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--sr-color-text-tertiary);
+}
+</style>

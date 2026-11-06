@@ -1,0 +1,87 @@
+// 卡片
+//
+// 容器型组件：头部 / 主体 / 底部三段，内边距按档位缩放。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-card {
+  --sr-card-padding: var(--sr-space-4);
+  --sr-card-gap: var(--sr-space-2);
+
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+  transition:
+    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  &--xs {
+    --sr-card-padding: var(--sr-space-2);
+  }
+
+  &--sm {
+    --sr-card-padding: var(--sr-space-3);
+  }
+
+  &--lg {
+    --sr-card-padding: var(--sr-space-6);
+    --sr-card-gap: var(--sr-space-3);
+  }
+
+  &.is-bordered {
+    border: 1px solid var(--sr-color-border);
+  }
+
+  &.is-hoverable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--sr-shadow-md);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--sr-card-gap);
+    padding: var(--sr-card-padding);
+    padding-bottom: 0;
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--sr-color-text);
+    font-size: 15px;
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: var(--sr-card-padding);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--sr-space-2);
+    padding: var(--sr-card-padding);
+    padding-top: 0;
+  }
+}

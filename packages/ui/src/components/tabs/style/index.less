@@ -1,0 +1,121 @@
+// 标签页
+//
+// 两种外观共用一套结构：line 用下划线指示，card 用背板。
+// 激活态的下划线跟随 token 主色，不做滑动动画（避免宽度测量）。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-tabs {
+  --sr-tabs-height: 40px;
+  --sr-tabs-font: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-3);
+
+  &--xs {
+    --sr-tabs-height: 30px;
+    --sr-tabs-font: 12px;
+  }
+
+  &--sm {
+    --sr-tabs-height: 34px;
+    --sr-tabs-font: 13px;
+  }
+
+  &--lg {
+    --sr-tabs-height: 46px;
+    --sr-tabs-font: 15px;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-1);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    height: var(--sr-tabs-height);
+    padding: 0 var(--sr-space-3);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-tabs-font);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover:not(.is-disabled) {
+      color: var(--sr-color-primary-text);
+    }
+
+    &.is-active {
+      border-bottom-color: var(--sr-color-primary);
+      color: var(--sr-color-primary-text);
+      font-weight: var(--sr-font-weight-medium);
+    }
+
+    &.is-disabled {
+      color: var(--sr-color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: var(--sr-radius-full);
+    opacity: 0.55;
+
+    &:hover {
+      background: color-mix(in srgb, currentcolor 16%, transparent);
+      opacity: 1;
+    }
+  }
+
+  // 卡片型：整体一块背板，激活项浮起
+  &--card &__nav {
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &--card &__nav &__tab {
+    border-bottom: 0;
+    border-radius: var(--sr-radius-sm);
+
+    &.is-active {
+      background: var(--sr-color-bg-container);
+      box-shadow: var(--sr-shadow-sm);
+    }
+  }
+
+  &__panel {
+    font-size: 13px;
+    color: var(--sr-color-text-secondary);
+  }
+}

@@ -1,0 +1,63 @@
+// 面包屑
+//
+// 用 ol/li 保证语义，分隔符由 CSS 间距控制，不参与读屏。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-breadcrumb {
+  &__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sr-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+  }
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sr-space-1);
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__link {
+    color: var(--sr-color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--sr-radius-sm);
+    transition: color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      color: var(--sr-color-primary-text);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  &__text {
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__item.is-last &__text {
+    color: var(--sr-color-text);
+    font-weight: var(--sr-font-weight-medium);
+  }
+
+  &__icon {
+    color: currentcolor;
+  }
+
+  &__separator {
+    color: var(--sr-color-text-tertiary);
+    opacity: 0.7;
+  }
+
+  &__ellipsis {
+    letter-spacing: 1px;
+  }
+}

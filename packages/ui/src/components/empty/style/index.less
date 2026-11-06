@@ -1,0 +1,51 @@
+// 空状态
+//
+// 图标 + 描述 + 可选操作，纵向居中。
+
+@import '../../../styles/mixins/index.less';
+@import '../../icon/style/index.less';
+
+.sr-empty {
+  --sr-empty-gap: var(--sr-space-3);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sr-empty-gap);
+  padding: var(--sr-space-8) var(--sr-space-4);
+  text-align: center;
+
+  &--xs {
+    --sr-empty-gap: var(--sr-space-2);
+    padding: var(--sr-space-5) var(--sr-space-3);
+  }
+
+  &--sm {
+    --sr-empty-gap: var(--sr-space-2);
+    padding: var(--sr-space-6) var(--sr-space-3);
+  }
+
+  &--lg {
+    padding: var(--sr-space-10) var(--sr-space-5);
+  }
+
+  &__icon {
+    color: var(--sr-color-text-tertiary);
+    opacity: 0.5;
+  }
+
+  &__description {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 13px;
+  }
+
+  &--lg &__description {
+    font-size: 14px;
+  }
+
+  &__action {
+    margin-top: var(--sr-space-1);
+  }
+}
