@@ -6,25 +6,7 @@
 @import '../../icon/style/index.less';
 
 .sr-dropdown {
-  --sr-dropdown-item-padding-y: 7px;
-  --sr-dropdown-item-font: 13px;
-
   display: inline-block;
-
-  &--xs {
-    --sr-dropdown-item-padding-y: 5px;
-    --sr-dropdown-item-font: 12px;
-  }
-
-  &--sm {
-    --sr-dropdown-item-padding-y: 6px;
-    --sr-dropdown-item-font: 13px;
-  }
-
-  &--lg {
-    --sr-dropdown-item-padding-y: 9px;
-    --sr-dropdown-item-font: 14px;
-  }
 
   &.is-disabled {
     opacity: 0.55;
@@ -35,40 +17,62 @@
     display: inline-flex;
   }
 
+  // 面板 Teleport 到 body，尺寸变量必须定义在面板自身，否则取不到
   &__panel {
+    --sr-dropdown-item-padding-y: 6px;
+    --sr-dropdown-item-font: 13px;
+
     position: fixed;
     z-index: var(--sr-dropdown-z, 3004);
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 4px;
+    gap: 1px;
+    padding: 6px;
     border: var(--sr-glass-border-width) solid var(--sr-popover-border-color);
-    border-radius: var(--sr-radius-sm);
+    border-radius: 10px;
     background: var(--sr-color-bg-popover);
-    box-shadow: var(--sr-shadow-md);
+    box-shadow: var(--sr-shadow-lg);
     .sr-glass-layer(var(--sr-glass-filter-strong));
+
+    &.sr-dropdown--xs {
+      --sr-dropdown-item-padding-y: 4px;
+      --sr-dropdown-item-font: 12px;
+    }
+
+    &.sr-dropdown--sm {
+      --sr-dropdown-item-padding-y: 5px;
+      --sr-dropdown-item-font: 13px;
+    }
+
+    &.sr-dropdown--lg {
+      --sr-dropdown-item-padding-y: 9px;
+      --sr-dropdown-item-font: 14px;
+    }
   }
 
   &__group {
-    padding: 6px 8px 4px;
+    padding: 8px 9px 4px;
     color: var(--sr-color-text-tertiary);
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: var(--sr-font-weight-medium);
+    letter-spacing: 0.02em;
   }
 
   &__divider {
     height: 1px;
-    margin: 4px 2px;
+    margin: 5px 6px;
     background: var(--sr-color-border-subtle);
   }
 
   &__item {
     display: flex;
     align-items: center;
-    gap: var(--sr-space-2);
+    gap: 9px;
     width: 100%;
-    padding: var(--sr-dropdown-item-padding-y) 8px;
+    padding: var(--sr-dropdown-item-padding-y) 9px;
     border: 0;
-    border-radius: var(--sr-radius-sm);
+    border-radius: 6px;
     background: transparent;
     color: var(--sr-color-text);
     font-size: var(--sr-dropdown-item-font);

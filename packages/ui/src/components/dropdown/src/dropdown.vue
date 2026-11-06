@@ -63,6 +63,7 @@ function updatePosition(): void {
 
 /** 打开 */
 function open(): void {
+  clearCloseTimer()
   if (props.disabled || visible.value) return
   visible.value = true
   emit('visible-change', true)
@@ -111,12 +112,34 @@ watch(visible, (open) => {
 })
 
 onScopeDispose(() => {
+  clearCloseTimer()
   document.removeEventListener('click', onDocumentClick, true)
 })
 
+/** 延迟关闭的定时器 */
+let closeTimer: number | undefined
+
+/** 清掉待执行的关闭 */
+function clearCloseTimer(): void {
+  if (closeTimer === undefined) return
+  window.clearTimeout(closeTimer)
+  closeTimer = undefined
+}
+
+/** 延时关闭：留出从触发器移到面板的时间 */
+function closeLater(): void {
+  clearCloseTimer()
+  closeTimer = window.setTimeout(close, 160)
+}
+
 /** 触发区事件 */
 const triggerEvents = computed(() =>
-  props.trigger === 'hover' ? { onMouseenter: open, onMouseleave: close } : { onClick: toggle },
+  props.trigger === 'hover' ? { onMouseenter: open, onMouseleave: closeLater } : { onClick: toggle },
+)
+
+/** 面板事件：移入要取消关闭，移出再延时关 */
+const panelEvents = computed(() =>
+  props.trigger === 'hover' ? { onMouseenter: clearCloseTimer, onMouseleave: closeLater } : {},
 )
 </script>
 
@@ -131,7 +154,15 @@ const triggerEvents = computed(() =>
 
     <Teleport to="body">
       <Transition name="sr-dropdown-zoom">
-        <div v-if="visible" ref="panelRef" class="sr-dropdown__panel" :style="panelStyle" role="menu">
+        <div
+          v-if="visible"
+          ref="panelRef"
+          class="sr-dropdown__panel"
+          :class="`sr-dropdown--${resolvedSize}`"
+          :style="panelStyle"
+          role="menu"
+          v-bind="panelEvents"
+        >
           <slot name="menu" :close="close">
             <template v-for="(item, index) in items" :key="item.key ?? index">
               <div v-if="item.divided" class="sr-dropdown__divider" role="separator" />
