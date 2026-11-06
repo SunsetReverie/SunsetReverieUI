@@ -103,7 +103,8 @@ describe('SrSelect', () => {
   it('多选：标签上的关闭按钮可移除单项', async () => {
     const wrapper = mountSelect({ multiple: true, modelValue: ['a', 'b'] })
 
-    const closeButtons = wrapper.findAll('.sr-select__tag-close')
+    // 标签改为复用 SrTag，关闭按钮类名随组件走
+    const closeButtons = wrapper.findAll('.sr-tag__close')
     expect(closeButtons).toHaveLength(2)
 
     await closeButtons[0].trigger('click')

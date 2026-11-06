@@ -8,6 +8,7 @@ import { srOmit } from '../../../utils/attrs'
 import { srComputeFloating, srGetRect } from '../../../utils/floating'
 import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 import SrIcon from '../../icon/src/icon.vue'
+import SrTag from '../../tag/src/tag.vue'
 import { SELECT_SIZE_MAP, selectProps, type SrSelectOption, type SrSelectValue } from './select'
 
 defineOptions({ name: 'SrSelect', inheritAttrs: false })
@@ -395,20 +396,17 @@ const panelStyle = computed(() => ({
       <div class="sr-select__values">
         <!-- 多选：标签列表 -->
         <template v-if="multiple">
-          <span v-for="option in selectedOptions" :key="option.value" class="sr-select__tag">
-            <span class="sr-select__tag-text">{{ option.label }}</span>
-            <button
-              v-if="!disabled"
-              class="sr-select__tag-close"
-              type="button"
-              tabindex="-1"
-              :aria-label="`移除 ${option.label}`"
-              @mousedown.prevent
-              @click.stop="removeTag(option.value)"
-            >
-              <sr-icon name="lucide:x" :size="12" />
-            </button>
-          </span>
+          <sr-tag
+            v-for="option in selectedOptions"
+            :key="option.value"
+            class="sr-select__tag"
+            type="primary"
+            size="sm"
+            :closable="!disabled"
+            @close="removeTag(option.value)"
+          >
+            {{ option.label }}
+          </sr-tag>
 
           <span v-if="selectedOptions.length === 0" class="sr-select__placeholder">
             {{ placeholder }}

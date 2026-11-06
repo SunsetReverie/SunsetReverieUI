@@ -116,6 +116,12 @@
     padding: var(--sr-space-5);
     overflow-y: auto;
     overscroll-behavior: contain;
+    // 内容区彻底隐藏滚动条，只保留滚轮/触控板滚动
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   &__footer {

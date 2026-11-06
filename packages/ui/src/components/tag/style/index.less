@@ -1,0 +1,116 @@
+// 标签
+//
+// 用 CSS 变量按尺寸档位下发高度/内距/字号，避免每个尺寸写一整套规则。
+// 语义类型只换底色与文字色，浅底 + 深字保证小字号也够清晰。
+
+@import '../../../styles/mixins/index.less';
+// 按需引入时 resolver 只带本组件的 CSS，因此把依赖的图标规则一起带上。
+@import '../../icon/style/index.less';
+
+.sr-tag {
+  --sr-tag-height: 24px;
+  --sr-tag-padding-x: 8px;
+  --sr-tag-font: 13px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  height: var(--sr-tag-height);
+  box-sizing: border-box;
+  padding: 0 var(--sr-tag-padding-x);
+  border: 1px solid transparent;
+  // 固定小圆角：跟随 glass 的 radius-base(12px) 会把矮标签变成胶囊
+  border-radius: var(--sr-radius-sm);
+  font-size: var(--sr-tag-font);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+
+  &--xs {
+    --sr-tag-height: 18px;
+    --sr-tag-padding-x: 5px;
+    --sr-tag-font: 11px;
+  }
+
+  &--sm {
+    --sr-tag-height: 20px;
+    --sr-tag-padding-x: 6px;
+    --sr-tag-font: 12px;
+  }
+
+  &--lg {
+    --sr-tag-height: 28px;
+    --sr-tag-padding-x: 10px;
+    --sr-tag-font: 14px;
+  }
+
+  &.is-round {
+    border-radius: var(--sr-radius-full);
+  }
+
+  &__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.2em;
+    height: 1.2em;
+    margin-inline-end: -3px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: transparent;
+    color: inherit;
+    font-size: 0.8em;
+    cursor: pointer;
+    opacity: 0.6;
+
+    &:hover {
+      background: color-mix(in srgb, currentcolor 16%, transparent);
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  // ---------- 语义类型 ----------
+  &--default {
+    border-color: var(--sr-color-border);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-secondary);
+  }
+
+  &--primary {
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary-text);
+  }
+
+  &--info {
+    background: var(--sr-color-info-bg);
+    color: var(--sr-color-info-text);
+  }
+
+  &--success {
+    background: var(--sr-color-success-bg);
+    color: var(--sr-color-success-text);
+  }
+
+  &--warning {
+    background: var(--sr-color-warning-bg);
+    color: var(--sr-color-warning-text);
+  }
+
+  &--danger {
+    background: var(--sr-color-danger-bg);
+    color: var(--sr-color-danger-text);
+  }
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { SrButton, SrTable, srToast, type SrTableColumn, type SrTableRow } from '@sunset-reverie/ui'
+import { SrButton, SrTable, SrTag, srToast, type SrTableColumn, type SrTableRow } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'TableView' })
 
@@ -104,9 +104,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
 
       <sr-table :columns="columns" :data="rows" @sort-change="onSortChange">
         <template #cell-status="{ value }">
-          <span class="badge" :class="value === 'stable' ? 'badge--ok' : 'badge--warn'">
+          <SrTag :type="value === 'stable' ? 'success' : 'warning'" round size="sm">
             {{ statusText[value as string] ?? value }}
-          </span>
+          </SrTag>
         </template>
 
         <template #cell-size="{ value }">{{ Number(value).toFixed(1) }} KB</template>
@@ -129,9 +129,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
 
       <sr-table v-model:selected-keys="selected" :columns="columns" :data="rows" selectable stripe>
         <template #cell-status="{ value }">
-          <span class="badge" :class="value === 'stable' ? 'badge--ok' : 'badge--warn'">
+          <SrTag :type="value === 'stable' ? 'success' : 'warning'" round size="sm">
             {{ statusText[value as string] ?? value }}
-          </span>
+          </SrTag>
         </template>
       </sr-table>
     </section>
@@ -163,9 +163,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
         </template>
 
         <template #cell-status="{ value }">
-          <span class="badge" :class="value === 'stable' ? 'badge--ok' : 'badge--warn'">
+          <SrTag :type="value === 'stable' ? 'success' : 'warning'" round size="sm">
             {{ statusText[value as string] ?? value }}
-          </span>
+          </SrTag>
         </template>
       </sr-table>
     </section>
@@ -217,23 +217,4 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
   </div>
 </template>
 
-<style scoped>
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--sr-radius-full);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.badge--ok {
-  background: var(--sr-color-success-bg);
-  color: var(--sr-color-success-text);
-}
-
-.badge--warn {
-  background: var(--sr-color-warning-bg);
-  color: var(--sr-color-warning-text);
-}
-</style>
+<style scoped></style>

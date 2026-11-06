@@ -62,78 +62,7 @@
     white-space: nowrap;
   }
 
-  // ---------- 多选标签 ----------
-  &__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    max-width: 100%;
-    padding: 1px 4px 1px 8px;
-    border-radius: var(--sr-radius-sm);
-    background: var(--sr-color-primary-alpha-12);
-    color: var(--sr-color-primary-text);
-    font-size: 0.86em;
-    line-height: 1.5;
-  }
-
-  &__tag-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &__tag-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    width: 14px;
-    height: 14px;
-    padding: 0;
-    border: 0;
-    border-radius: var(--sr-radius-full);
-    background: transparent;
-    color: inherit;
-    cursor: pointer;
-    opacity: 0.6;
-
-    &:hover {
-      opacity: 1;
-      background: var(--sr-color-primary-alpha-25);
-    }
-  }
-
-  &__clear,
-  &__arrow {
-    flex: 0 0 auto;
-    color: var(--sr-color-text-tertiary);
-  }
-
-  &__clear {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    border: 0;
-    border-radius: var(--sr-radius-full);
-    background: transparent;
-    cursor: pointer;
-
-    &:hover {
-      color: var(--sr-color-text);
-      background: var(--sr-color-bg-hover);
-    }
-  }
-
-  &__arrow {
-    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-  }
-
-  &.is-open &__arrow {
-    transform: rotate(180deg);
-  }
+  // 多选标签的外观由 SrTag 提供，这里不再重复实现
 
   // ---------- 校验态（0,2,0） ----------
   // 放在展开/禁用之前，符合「特异性由低到高」的文件顺序；

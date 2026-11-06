@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { SrButton, SrIcon } from '@sunset-reverie/ui'
+import { SrButton, SrIcon, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ComponentsView' })
 
 /** 变体清单 */
 const variants = ['primary', 'secondary', 'outline', 'text', 'success', 'warning', 'danger'] as const
+
+/** 标签语义类型 */
+const tagTypes = ['default', 'primary', 'info', 'success', 'warning', 'danger'] as const
+
+/** 可关闭标签的演示数据 */
+const closableTags = ref(['设计', '开发', '测试'])
+
+/**
+ * 移除一个可关闭标签
+ * @param index 下标
+ */
+function removeClosableTag(index: number): void {
+  closableTags.value.splice(index, 1)
+}
 
 /** 尺寸清单 */
 const sizes = ['xs', 'sm', 'md', 'lg'] as const
@@ -150,6 +164,87 @@ function triggerLoading(): void {
         <sr-button variant="outline" bg="#F5456B">variant 被 bg 覆盖</sr-button>
         <sr-button variant="secondary" color="var(--sr-color-danger)">只改文字色</sr-button>
       </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">标签</h2>
+      <p class="panel__desc">
+        用于状态、分类、多选值这类短文本标记。语义类型只换底色与文字色，尺寸由 CSS 变量下发，
+        <code style="font-family: var(--sr-font-family-mono)">round</code> 切换胶囊。
+      </p>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px">
+        <SrTag v-for="type in tagTypes" :key="type" :type="type">{{ type }}</SrTag>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px">
+        <SrTag v-for="size in sizes" :key="size" type="primary" :size="size">{{ size }}</SrTag>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px">
+        <SrTag type="success" round>稳定</SrTag>
+        <SrTag type="warning" round>预览</SrTag>
+        <SrTag type="default" round>已归档</SrTag>
+        <span style="font-size: 12px; color: var(--sr-color-text-tertiary)">← round 胶囊</span>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+        <SrTag
+          v-for="(tag, index) in closableTags"
+          :key="tag"
+          type="primary"
+          closable
+          @close="removeClosableTag(index)"
+        >
+          {{ tag }}
+        </SrTag>
+        <SrButton
+          v-if="closableTags.length < 3"
+          size="sm"
+          variant="text"
+          @click="closableTags = ['设计', '开发', '测试']"
+        >
+          恢复
+        </SrButton>
+      </div>
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">SrTag Props 速查</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>type</code></td>
+            <td><code>'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger'</code></td>
+            <td><code>'default'</code></td>
+            <td>语义类型，决定底色与文字色</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
+            <td><code>'md'</code></td>
+            <td>尺寸，高度 18 / 20 / 24 / 28</td>
+          </tr>
+          <tr>
+            <td><code>closable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>显示关闭按钮，点击派发 <code>close</code> 且不冒泡</td>
+          </tr>
+          <tr>
+            <td><code>round</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>胶囊圆角</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
 
     <section class="panel">
