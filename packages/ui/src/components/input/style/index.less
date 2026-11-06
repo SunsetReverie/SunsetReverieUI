@@ -69,19 +69,46 @@
     display: block;
     height: auto;
     min-height: calc(var(--sr-input-height-xs, var(--sr-input-height)) * 1.6);
-    // 水平内边距改由 textarea 自己承担：外层不再留白，
-    // 原生 resize 手柄才能贴到输入框右下角而不是缩在里面
-    padding-inline: var(--sr-input-padding-x-xs, var(--sr-input-padding-x));
     padding-block: 6px;
-    resize: vertical;
+    // 关掉原生手柄，改用 .sr-input__resize 自绘，位置才能贴住边框右下角
+    resize: none;
     line-height: 1.6;
+  }
 
-    .sr-breakpoint-up(md, {
-      padding-inline: var(
-        --sr-input-padding-x-md,
-        var(--sr-input-padding-x-xs, var(--sr-input-padding-x))
-      );
-    });
+  // ---------- 右下角拖拽手柄 ----------
+  &__resize {
+    position: absolute;
+    inset-inline-end: 3px;
+    inset-block-end: 3px;
+    width: 12px;
+    height: 12px;
+    color: var(--sr-color-text-tertiary);
+    cursor: nwse-resize;
+    opacity: 0.55;
+    transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      opacity: 1;
+    }
+
+    // 两道斜线，和系统级 resize 手柄视觉一致
+    &::before,
+    &::after {
+      position: absolute;
+      inset-block-end: 2px;
+      inset-inline-end: 2px;
+      width: 1px;
+      height: 5px;
+      background: currentcolor;
+      transform: rotate(-45deg);
+      transform-origin: bottom right;
+      content: '';
+    }
+
+    &::after {
+      inset-inline-end: 5px;
+      height: 9px;
+    }
   }
 
   // ---------- 前后缀与附加内容 ----------
@@ -177,9 +204,8 @@
 
   // textarea 需要上下对齐而非居中
   &.is-textarea {
+    position: relative;
     align-items: stretch;
-    // 特异性高于上方媒体查询里的 padding-inline，因此多行时始终为 0
-    padding-inline: 0;
     padding-block: 2px;
   }
 }

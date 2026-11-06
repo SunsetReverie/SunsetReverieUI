@@ -95,6 +95,11 @@ const hasValue = computed(() => stringValue.value.length > 0)
 /** 是否显示清空按钮 */
 const showClear = computed(() => props.clearable && hasValue.value && !props.disabled && !props.readonly)
 
+/** 是否显示自定义拖拽手柄：autosize 时高度自动，不需要手动拉 */
+const showResizeHandle = computed(
+  () => isTextarea.value && !props.autosize && !props.disabled && !props.readonly,
+)
+
 /** 是否显示密码切换按钮 */
 const showPasswordToggle = computed(() => props.type === 'password' && props.showPassword && !props.disabled)
 
@@ -202,6 +207,43 @@ function togglePassword(): void {
   })
 }
 
+/**
+ * 拖拽手柄按下：接管指针移动来调整 textarea 高度
+ *
+ * 用自绘手柄替代原生 resize：原生手柄落在 textarea 的角上，
+ * 而 textarea 外面还有一层带内边距的 wrapper，位置永远对不齐边框。
+ * @param event 鼠标按下事件
+ */
+function onResizeStart(event: MouseEvent): void {
+  const element = inputRef.value
+  if (!element || element.tagName !== 'TEXTAREA') return
+
+  event.preventDefault()
+
+  const startY = event.clientY
+  const startHeight = element.offsetHeight
+  const minHeight = Number.parseFloat(getComputedStyle(element).minHeight) || 0
+
+  /** 拖动中：按位移实时改高度，不超过最小高度 */
+  const onMove = (moveEvent: MouseEvent): void => {
+    const next = startHeight + moveEvent.clientY - startY
+    element.style.height = `${Math.max(minHeight, next)}px`
+  }
+
+  /** 松开：移除监听并恢复全局光标 */
+  const onUp = (): void => {
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('mouseup', onUp)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }
+
+  document.body.style.cursor = 'nwse-resize'
+  document.body.style.userSelect = 'none'
+  document.addEventListener('mousemove', onMove)
+  document.addEventListener('mouseup', onUp)
+}
+
 /** textarea 高度自适应 */
 function resizeTextarea(): void {
   const element = inputRef.value
@@ -267,6 +309,8 @@ watch(
       @focus="emit('focus', $event)"
       @blur="onBlur($event)"
     />
+
+    <span v-if="showResizeHandle" class="sr-input__resize" aria-hidden="true" @mousedown="onResizeStart" />
 
     <span v-if="showCount" class="sr-input__count">{{ countText }}</span>
 

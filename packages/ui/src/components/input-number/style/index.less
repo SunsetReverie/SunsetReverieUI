@@ -58,19 +58,47 @@
   }
 }
 
-// 两侧分列：描边按钮比实心灰块更轻，和输入框不打架。
-// 单独成块而不是嵌在 .sr-input-number 里，避免与 &__btn 的伪类竞态被 stylelint 拦下。
+// 两侧分列：按钮贴住输入框左右边缘、与边框同高，中间用细线分界，
+// 整体读起来是一个控件，而不是「输入框 + 两个独立按钮」。
+// wrapper 的内边距归零，改由 input 自己承担，按钮才能顶到边框。
+.sr-input.sr-input-number--both {
+  gap: 0;
+  padding-inline: 0;
+
+  .sr-input__inner {
+    padding-inline: var(--sr-input-padding-x-xs, var(--sr-input-padding-x));
+  }
+
+  .sr-breakpoint-up(md, {
+    .sr-input__inner {
+      padding-inline: var(
+        --sr-input-padding-x-md,
+        var(--sr-input-padding-x-xs, var(--sr-input-padding-x))
+      );
+    }
+  });
+}
+
 .sr-input-number--both .sr-input-number__btn--side {
-  flex: 0 0 auto;
   align-self: stretch;
   width: 30px;
-  border: 1px solid var(--sr-color-border);
-  border-radius: var(--sr-form-radius);
+  border: 0;
+  border-radius: 0;
   background: transparent;
-  font-size: var(
-    --sr-input-number-icon-md,
-    var(--sr-input-number-icon-xs, var(--sr-input-number-icon, 10px))
-  );
+  font-size: var(--sr-input-number-icon-md, var(--sr-input-number-icon-xs, 10px));
+}
+
+// 圆角只留在两端的角上，与外壳圆角对齐
+.sr-input-number--both .sr-input-number__btn--side:first-child {
+  border-inline-end: 1px solid var(--sr-color-border);
+  border-start-start-radius: var(--sr-form-radius);
+  border-end-start-radius: var(--sr-form-radius);
+}
+
+.sr-input-number--both .sr-input-number__btn--side:last-child {
+  border-inline-start: 1px solid var(--sr-color-border);
+  border-start-end-radius: var(--sr-form-radius);
+  border-end-end-radius: var(--sr-form-radius);
 }
 
 .sr-input-number--both .sr-input-number__btn--side:disabled {
@@ -79,7 +107,6 @@
 }
 
 .sr-input-number--both .sr-input-number__btn--side:hover:not(:disabled) {
-  border-color: var(--sr-color-primary);
   background: var(--sr-color-primary-alpha-08);
   color: var(--sr-color-primary);
 }

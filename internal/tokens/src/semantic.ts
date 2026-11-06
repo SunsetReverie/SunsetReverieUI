@@ -112,9 +112,11 @@ export const semanticLight: Record<string, string> = {
   // 文字专用主色：直接拿 sunset-500 当文字只有约 2.9:1，达不到正文 4.5:1
   'color-primary-text': 'var(--sr-sunset-700)',
   // alpha 派生：运行期切换主题色时由 useSrTheme 用 color-mix 覆写
-  'color-primary-alpha-25': 'rgba(255, 122, 69, 0.25)',
-  'color-primary-alpha-12': 'rgba(255, 122, 69, 0.12)',
-  'color-primary-alpha-08': 'rgba(255, 122, 69, 0.08)',
+  // 必须由 --sr-color-primary 派生：写死 rgba 会让主题色切到绿/紫后
+  // hover 与焦点环仍是橙色。srgb 空间混合才等价于「原色 + 透明度」。
+  'color-primary-alpha-25': 'color-mix(in srgb, var(--sr-color-primary) 25%, transparent)',
+  'color-primary-alpha-12': 'color-mix(in srgb, var(--sr-color-primary) 12%, transparent)',
+  'color-primary-alpha-08': 'color-mix(in srgb, var(--sr-color-primary) 8%, transparent)',
 
   // ---------- 状态色 ----------
   ...statusTokens('success', {
@@ -196,9 +198,9 @@ export const semanticDark: Record<string, string> = {
   'color-solid-danger': 'var(--sr-danger-600)',
 
   'color-primary-text': 'var(--sr-sunset-300)',
-  'color-primary-alpha-25': 'rgba(255, 139, 82, 0.25)',
-  'color-primary-alpha-12': 'rgba(255, 139, 82, 0.12)',
-  'color-primary-alpha-08': 'rgba(255, 139, 82, 0.08)',
+  'color-primary-alpha-25': 'color-mix(in srgb, var(--sr-color-primary) 25%, transparent)',
+  'color-primary-alpha-12': 'color-mix(in srgb, var(--sr-color-primary) 12%, transparent)',
+  'color-primary-alpha-08': 'color-mix(in srgb, var(--sr-color-primary) 8%, transparent)',
 
   // ---------- 状态色 ----------
   ...statusTokens('success', {

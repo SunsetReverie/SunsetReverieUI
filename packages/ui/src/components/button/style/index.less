@@ -225,7 +225,8 @@
     // 用 elevated 而非 container：暗色下 container 与页面底色同为 night-900，
     // 按钮会「融进背景」，只剩一条几乎看不见的边框
     --sr-button-bg: var(--sr-color-bg-elevated);
-    --sr-button-bg-hover: var(--sr-color-bg-hover);
+    // 悬停用主色淡档，与下拉菜单、表单项保持同一套反馈
+    --sr-button-bg-hover: var(--sr-color-primary-alpha-08);
     // 背景在玻璃风格下是半透明的，需要这一层才有磨砂感
     .sr-glass-layer();
 
