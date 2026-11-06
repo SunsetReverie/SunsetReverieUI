@@ -260,6 +260,7 @@ export const qualityFlat: Record<string, string> = {
   // 弹层（select 菜单等）独立取更透的底 + 玻璃亮边。
   // bg-elevated 在 glass 下仍是 0.84 不透明，backdrop-filter 几乎看不出效果。
   'color-bg-popover': 'var(--sr-color-bg-elevated)',
+  'color-bg-modal': 'var(--sr-color-bg-elevated)',
   'popover-border-color': 'var(--sr-color-border)',
 
   // 复选框「一点点」圆角：比 radius-sm(2px) 明显，又不到 form-radius(6px) 那么圆润
@@ -379,6 +380,8 @@ export const glassSurfaceLight: Record<string, string> = {
   'color-bg-sunken': 'rgba(237, 239, 243, 0.55)',
   // 浮层比容器更透，才看得到背后被模糊的内容
   'color-bg-popover': 'rgba(255, 255, 255, 0.42)',
+  // 弹窗面积大、内容多，比下拉更实一点；背后是遮罩，太透会把文字压灰
+  'color-bg-modal': 'rgba(255, 255, 255, 0.72)',
 }
 
 /** 玻璃质感 · 暗色表面 */
@@ -387,6 +390,7 @@ export const glassSurfaceDark: Record<string, string> = {
   'color-bg-elevated': 'rgba(43, 48, 56, 0.74)',
   'color-bg-sunken': 'rgba(11, 14, 18, 0.6)',
   'color-bg-popover': 'rgba(38, 43, 51, 0.52)',
+  'color-bg-modal': 'rgba(38, 43, 51, 0.68)',
 }
 
 /**

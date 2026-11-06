@@ -31,9 +31,8 @@
     position: absolute;
     inset: 0;
     background: var(--sr-color-mask);
-    // 玻璃风格下让遮罩也带模糊，强化层次；扁平风格下 --sr-glass-filter 为 none
-    backdrop-filter: var(--sr-glass-filter);
-    -webkit-backdrop-filter: var(--sr-glass-filter);
+    // 遮罩用强模糊：把页面内容彻底揉开，面板的半透底才有「磨砂玻璃」可透
+    .sr-glass-layer(var(--sr-glass-filter-strong));
   }
 
   &__panel {
@@ -44,11 +43,13 @@
     max-width: 100%;
     max-height: 100%;
     box-sizing: border-box;
-    border: 1px solid var(--sr-color-border);
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
-    background: var(--sr-color-bg-elevated);
+    background: var(--sr-color-bg-modal);
     color: var(--sr-color-text);
     box-shadow: var(--sr-shadow-xl), var(--sr-glass-highlight);
+    // 面板自身也要模糊：原来只有遮罩模糊，面板是实底，看着完全没有玻璃感
+    .sr-glass-layer(var(--sr-glass-filter-strong));
     outline: none;
 
     .sr-breakpoint-down(md, {

@@ -36,10 +36,14 @@ export const iconProps = {
     type: [Number, String] as PropType<number | string | SrSize>,
     default: '1em',
   },
-  /** 颜色，默认跟随父级 currentColor */
+  /**
+   * 颜色，默认不输出内联样式、直接继承父级 currentColor。
+   * 不能默认写 'currentColor'：内联样式的优先级会压掉外部类设置的颜色
+   * （例如 toast 按类型染的状态色），导致所有图标都变成正文黑。
+   */
   color: {
-    type: String,
-    default: 'currentColor',
+    type: String as PropType<string | undefined>,
+    default: undefined,
   },
   /** 翻转：true 等价于 horizontal */
   flip: {
