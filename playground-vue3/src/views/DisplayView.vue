@@ -46,12 +46,34 @@ const longCrumbs = [
   { label: '展示组件' },
 ]
 
-/** 下拉菜单项 */
-const menuItems = [
+/** 纯文字菜单：全部不带图标，最简洁 */
+const textMenu = [
+  { key: 'view', label: '查看详情' },
+  { key: 'export', label: '导出' },
+  { key: 'copy', label: '复制链接' },
+]
+
+/** 带图标菜单：每项都有图标，不会一有一没有 */
+const iconMenu = [
+  { key: 'edit', label: '编辑', icon: 'lucide:pencil' },
+  { key: 'download', label: '下载', icon: 'lucide:download' },
+  { key: 'delete', label: '删除', icon: 'lucide:trash' },
+]
+
+/** 分组菜单：每组内部图标保持一致 */
+const groupedMenu = [
   { group: '编辑', key: 'rename', label: '重命名', icon: 'lucide:pencil' },
-  { group: '编辑', key: 'copy', label: '复制' },
-  { group: '状态', key: 'pin', label: '置顶', selected: true },
+  { group: '编辑', key: 'copy', label: '复制副本', icon: 'lucide:download' },
+  { group: '编辑', key: 'move', label: '移动到…', icon: 'lucide:chevron-right' },
   { group: '危险', key: 'delete', label: '删除', icon: 'lucide:trash', danger: true, divided: true },
+]
+
+/** 状态菜单：选中项 + 禁用项 + 危险项 */
+const stateMenu = [
+  { key: 'pin', label: '置顶', icon: 'lucide:chevron-up', selected: true },
+  { key: 'unpin', label: '取消置顶', icon: 'lucide:chevron-down' },
+  { key: 'share', label: '分享给他人', icon: 'lucide:download', disabled: true },
+  { key: 'delete', label: '删除', icon: 'lucide:trash', danger: true, divided: true },
 ]
 
 /** 面板折叠状态 */
@@ -351,26 +373,73 @@ function onMenuSelect(key: string): void {
       </div>
     </SrPanel>
 
-    <SrPanel title="下拉菜单" description="支持分组与分割线，点击外部自动收起。">
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
-        <SrDropdown :items="menuItems" @select="onMenuSelect">
-          <SrButton variant="outline" size="sm">更多操作</SrButton>
-        </SrDropdown>
+    <SrPanel
+      title="下拉菜单"
+      description="四种菜单形态：纯文字、纯图标、分组、带状态。触发方式支持点击与悬停。"
+    >
+      <div class="menu-row">
+        <div class="menu-item">
+          <span class="menu-label">纯文字菜单</span>
+          <SrDropdown :items="textMenu" @select="onMenuSelect">
+            <SrButton variant="outline" size="sm">更多操作</SrButton>
+          </SrDropdown>
+        </div>
 
-        <SrDropdown :items="menuItems" trigger="hover">
-          <SrButton variant="text" size="sm">悬停触发</SrButton>
-        </SrDropdown>
+        <div class="menu-item">
+          <span class="menu-label">带图标菜单</span>
+          <SrDropdown :items="iconMenu" @select="onMenuSelect">
+            <SrButton variant="outline" size="sm">文件操作</SrButton>
+          </SrDropdown>
+        </div>
 
-        <SrDropdown :items="menuItems" size="lg">
-          <SrButton variant="outline" size="sm">大尺寸</SrButton>
-        </SrDropdown>
+        <div class="menu-item">
+          <span class="menu-label">分组菜单</span>
+          <SrDropdown :items="groupedMenu" @select="onMenuSelect">
+            <SrButton variant="outline" size="sm">编辑</SrButton>
+          </SrDropdown>
+        </div>
 
-        <SrDropdown :items="menuItems" placement="bottom-end">
-          <SrButton variant="outline" size="sm">右对齐</SrButton>
-        </SrDropdown>
-
-        <SrTag type="default">最近选择：{{ lastAction }}</SrTag>
+        <div class="menu-item">
+          <span class="menu-label">选中 / 禁用 / 危险</span>
+          <SrDropdown :items="stateMenu" @select="onMenuSelect">
+            <SrButton variant="outline" size="sm">状态示例</SrButton>
+          </SrDropdown>
+        </div>
       </div>
+
+      <div class="menu-row">
+        <div class="menu-item">
+          <span class="menu-label">悬停触发</span>
+          <SrDropdown :items="textMenu" trigger="hover" @select="onMenuSelect">
+            <SrButton variant="text" size="sm">鼠标移上来</SrButton>
+          </SrDropdown>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-label">右对齐</span>
+          <SrDropdown :items="textMenu" placement="bottom-end" @select="onMenuSelect">
+            <SrButton variant="outline" size="sm">贴右边</SrButton>
+          </SrDropdown>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-label">大尺寸</span>
+          <SrDropdown :items="iconMenu" size="lg" @select="onMenuSelect">
+            <SrButton variant="outline" size="sm">宽松密度</SrButton>
+          </SrDropdown>
+        </div>
+
+        <div class="menu-item">
+          <span class="menu-label">禁用</span>
+          <SrDropdown :items="textMenu" disabled>
+            <SrButton variant="outline" size="sm" disabled>不可用</SrButton>
+          </SrDropdown>
+        </div>
+      </div>
+
+      <p class="muted" style="margin-top: 14px">
+        最近选择：<SrTag type="default">{{ lastAction }}</SrTag>
+      </p>
     </SrPanel>
 
     <SrPanel title="抽屉" description="四个方向滑出，打开时锁定页面滚动，支持 Esc 与遮罩关闭。">
@@ -802,6 +871,29 @@ function onMenuSelect(key: string): void {
   padding: 18px;
   border-radius: 14px;
   background: var(--sr-color-bg-elevated);
+}
+
+/* 下拉演示：每个触发器配一行说明，避免按钮挤成一排看不出区别 */
+.menu-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 28px;
+}
+
+.menu-row + .menu-row {
+  margin-top: 18px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-label {
+  font-size: 12px;
+  color: var(--sr-color-text-tertiary);
+  white-space: nowrap;
 }
 
 .sub-title {
