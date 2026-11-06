@@ -57,8 +57,28 @@ const sizeVars = computed<Record<string, string>>(() => {
   return out
 })
 
-/** 根样式 */
-const rootStyle = computed(() => ({ ...sizeVars.value, ...(attrs.style as Record<string, string>) }))
+/**
+ * 根样式
+ *
+ * 自定义外观一律写 CSS 变量而不是直接写 background / border-radius：
+ * 这样 hover、active、辉光这些派生态仍由样式表统一管理，不会互相覆盖。
+ */
+const rootStyle = computed<Record<string, string>>(() => {
+  const out: Record<string, string> = {
+    ...sizeVars.value,
+    ...(attrs.style as Record<string, string> | undefined),
+  }
+
+  if (props.radius !== undefined && props.radius !== '') {
+    out['--sr-button-radius'] = typeof props.radius === 'number' ? `${props.radius}px` : props.radius
+  }
+
+  if (props.bg) out['--sr-button-custom-bg'] = props.bg
+  // 内联变量优先级高于类里的默认值，因此单独传 color 也能改文字色
+  if (props.color) out['--sr-button-fg'] = props.color
+
+  return out
+})
 
 /** 根 class */
 const rootClass = computed(() => [
@@ -68,6 +88,7 @@ const rootClass = computed(() => [
     'is-disabled': props.disabled,
     'is-block': props.block,
     'is-round': props.round,
+    'is-custom-bg': Boolean(props.bg),
   },
   attrs.class,
 ])

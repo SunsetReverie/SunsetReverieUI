@@ -41,10 +41,31 @@ export const buttonProps = {
     type: Boolean,
     default: false,
   },
-  /** 胶囊圆角 */
+  /** 胶囊圆角（快捷方式，等价于 radius="9999px"；同时传时 radius 优先） */
   round: {
     type: Boolean,
     default: false,
+  },
+  /**
+   * 自定义圆角：数字按 px，字符串原样透传（'1rem' / '50%' / 'var(--my-radius)'）
+   * 不传时跟随质感层：flat 6px、glass 10px
+   */
+  radius: {
+    type: [Number, String] as PropType<number | string>,
+    default: undefined,
+  },
+  /**
+   * 自定义背景色（任意 CSS 颜色）
+   * hover / active 由 color-mix 自动派生，辉光也会跟随这个颜色
+   */
+  bg: {
+    type: String,
+    default: '',
+  },
+  /** 自定义文字色；不传时自定义背景下默认白色 */
+  color: {
+    type: String,
+    default: '',
   },
   /** 原生 type */
   htmlType: {

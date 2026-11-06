@@ -219,6 +219,10 @@ export const qualityFlat: Record<string, string> = {
   'radius-2xl': '24px',
   'radius-full': '9999px',
 
+  // 按钮圆角单独收敛：玻璃风格下全局 radius-base 是 12px，
+  // 按钮跟着用会显得过于圆润（像药丸），这里保持扁平风格一致
+  'button-radius': 'var(--sr-radius-base)',
+
   'shadow-sm': '0 1px 2px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 2px 8px rgba(16, 20, 26, 0.08)',
   'shadow-lg': '0 8px 24px rgba(16, 20, 26, 0.1)',
@@ -254,6 +258,9 @@ export const qualityGlass: Record<string, string> = {
   'radius-xl': '22px',
   'radius-2xl': '28px',
   'radius-full': '9999px',
+
+  // 比全局 radius-base（12px）小 2px —— 只影响按钮，其它表面保持原有圆角
+  'button-radius': 'calc(var(--sr-radius-base) - 2px)',
 
   'shadow-sm': '0 2px 8px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 8px 24px -6px rgba(16, 20, 26, 0.12)',

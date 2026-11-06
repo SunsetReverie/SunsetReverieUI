@@ -24,7 +24,7 @@
   height: var(--sr-button-height-xs, var(--sr-button-height));
   padding-inline: var(--sr-button-padding-x-xs, var(--sr-button-padding-x));
   border: 1px solid var(--sr-button-border, transparent);
-  border-radius: var(--sr-radius-base);
+  border-radius: var(--sr-button-radius, var(--sr-radius-base));
   background: var(--sr-button-bg, transparent);
   color: var(--sr-button-fg, var(--sr-color-text));
   // 辉光基础强度：对外暴露成变量，便于运行期调节（hover / active 相对它缩放）
@@ -184,7 +184,8 @@
   }
 
   &.is-round {
-    border-radius: var(--sr-radius-full);
+    // 写成变量而非直接写 border-radius：内联的 radius prop 才能优先于胶囊快捷方式
+    --sr-button-radius: var(--sr-radius-full);
     padding-inline: calc(var(--sr-button-padding-x-xs, var(--sr-button-padding-x)) * 1.2);
   }
 
@@ -258,4 +259,19 @@
   .sr-button__spinner {
     animation-duration: 2.4s;
   }
+}
+
+// ---------- 自定义背景色 ----------
+// 放在最后：特异性 0,2,0 高于各变体（0,1,0），因此无论 variant 是什么都能覆盖。
+// hover / active 用 color-mix 从自定义色派生，避免 JS 里重新实现一套调色逻辑。
+.sr-button.is-custom-bg {
+  --sr-button-bg: var(--sr-button-custom-bg);
+  --sr-button-bg-hover: color-mix(in oklab, var(--sr-button-custom-bg) 88%, white);
+  --sr-button-bg-active: color-mix(in oklab, var(--sr-button-custom-bg) 84%, black);
+  --sr-button-border: transparent;
+  --sr-button-border-hover: transparent;
+  // 自定义色通常是饱和色，默认配白字；需要深色字请用 color prop
+  --sr-button-fg: #fff;
+  // 玻璃辉光跟随自定义色
+  --sr-button-accent: var(--sr-button-custom-bg);
 }
