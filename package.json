@@ -28,7 +28,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "prepare": "husky",
-    "test:e2e": "pkill -f 'index[.]mjs' || true; rm -rf playground-nuxt4/.output; pnpm --filter playground-nuxt4 build && playwright test"
+    "test:e2e": "pkill -f 'index[.]mjs' || true; rm -rf playground-nuxt4/.output; pnpm --filter playground-nuxt4 build && playwright test",
+    "check:hydration": "pnpm --filter playground-nuxt4 build && node scripts/check-hydration.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",

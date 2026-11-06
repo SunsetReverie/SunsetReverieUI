@@ -64,7 +64,13 @@ onMounted(() => {
         </div>
         <div class="kv">
           <span class="key">水合告警</span>
-          <span class="val" :style="hydrationWarnings.length ? 'color: var(--sr-color-danger)' : ''">
+          <span
+            class="val"
+            data-hydration-count
+            :data-count="hydrationWarnings.length"
+            :data-hydrated="hydrated ? '1' : '0'"
+            :style="hydrationWarnings.length ? 'color: var(--sr-color-danger)' : ''"
+          >
             {{ hydrationWarnings.length ? `${hydrationWarnings.length} 条` : '无' }}
           </span>
         </div>
