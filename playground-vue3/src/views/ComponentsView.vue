@@ -169,12 +169,31 @@ function triggerLoading(): void {
     <section class="panel">
       <h2 class="panel__title">标签</h2>
       <p class="panel__desc">
-        用于状态、分类、多选值这类短文本标记。语义类型只换底色与文字色，尺寸由 CSS 变量下发，
-        <code style="font-family: var(--sr-font-family-mono)">round</code> 切换胶囊。
+        用于状态、分类、多选值这类短文本标记。一个基色同时驱动浅色与深色两档：
+        浅色是淡底深字，深色是实底白字（只压 15% 黑，不会变成近黑的重色块）。
+        <code style="font-family: var(--sr-font-family-mono)">color</code> 可直接换基色， 两档派生逻辑照旧。
       </p>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px">
-        <SrTag v-for="type in tagTypes" :key="type" :type="type">{{ type }}</SrTag>
+      <div style="display: grid; gap: 10px; margin-bottom: 16px">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+          <span style="width: 44px; font-size: 12px; color: var(--sr-color-text-tertiary)">浅色</span>
+          <SrTag v-for="type in tagTypes" :key="type" :type="type">{{ type }}</SrTag>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+          <span style="width: 44px; font-size: 12px; color: var(--sr-color-text-tertiary)">深色</span>
+          <SrTag v-for="type in tagTypes" :key="type" :type="type" variant="dark">
+            {{ type }}
+          </SrTag>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px">
+        <SrTag color="#8b5cf6">自定义 #8b5cf6</SrTag>
+        <SrTag color="#8b5cf6" variant="dark">深色</SrTag>
+        <SrTag color="#0ea5e9" round>#0ea5e9</SrTag>
+        <SrTag color="#0ea5e9" variant="dark" round>深色</SrTag>
+        <span style="font-size: 12px; color: var(--sr-color-text-tertiary)">← color 自定义基色</span>
       </div>
 
       <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px">
@@ -226,10 +245,22 @@ function triggerLoading(): void {
             <td>语义类型，决定底色与文字色</td>
           </tr>
           <tr>
+            <td><code>variant</code></td>
+            <td><code>'light' | 'dark'</code></td>
+            <td><code>'light'</code></td>
+            <td>配色深浅；dark 为同色系实底白字</td>
+          </tr>
+          <tr>
+            <td><code>color</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>自定义基色（任意 CSS 颜色），覆盖 type 的基色</td>
+          </tr>
+          <tr>
             <td><code>size</code></td>
             <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
             <td><code>'md'</code></td>
-            <td>尺寸，高度 18 / 20 / 24 / 28</td>
+            <td>尺寸与按钮同为四档，高度 18 / 20 / 24 / 28</td>
           </tr>
           <tr>
             <td><code>closable</code></td>

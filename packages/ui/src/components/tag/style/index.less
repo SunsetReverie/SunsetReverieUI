@@ -1,7 +1,8 @@
 // 标签
 //
-// 用 CSS 变量按尺寸档位下发高度/内距/字号，避免每个尺寸写一整套规则。
-// 语义类型只换底色与文字色，浅底 + 深字保证小字号也够清晰。
+// 一个 --sr-tag-base 驱动全部配色：浅色档 = 淡底 + 深字，深色档 = 实色底 + 白字。
+// 自定义 color 只覆盖这个基色变量，两档派生逻辑完全复用。
+// 尺寸用 CSS 变量下发（与按钮同为 xs / sm / md / lg 四档），不写四套规则。
 
 @import '../../../styles/mixins/index.less';
 // 按需引入时 resolver 只带本组件的 CSS，因此把依赖的图标规则一起带上。
@@ -11,6 +12,7 @@
   --sr-tag-height: 24px;
   --sr-tag-padding-x: 8px;
   --sr-tag-font: 13px;
+  --sr-tag-base: var(--sr-color-text-secondary);
 
   display: inline-flex;
   align-items: center;
@@ -19,9 +21,14 @@
   height: var(--sr-tag-height);
   box-sizing: border-box;
   padding: 0 var(--sr-tag-padding-x);
-  border: 1px solid transparent;
-  // 固定小圆角：跟随 glass 的 radius-base(12px) 会把矮标签变成胶囊
+  // 底色是「基色 + 容器色」的半透明混合，玻璃风格下才能透出背后内容
+  border: 1px solid color-mix(in srgb, var(--sr-tag-base) 24%, transparent);
   border-radius: var(--sr-radius-sm);
+  background: color-mix(in srgb, var(--sr-tag-base) 12%, var(--sr-color-bg-container));
+  color: color-mix(in oklab, var(--sr-tag-base) 82%, #000);
+  box-shadow: var(--sr-glass-highlight);
+  // 小面积上模糊看不出细节，但能让透出来的底色更均匀；flat 下为 none
+  .sr-glass-layer(var(--sr-glass-filter));
   font-size: var(--sr-tag-font);
   line-height: 1;
   white-space: nowrap;
@@ -43,6 +50,13 @@
     --sr-tag-height: 28px;
     --sr-tag-padding-x: 10px;
     --sr-tag-font: 14px;
+  }
+
+  // 深色档：实色底 + 白字。只压 15% 黑，避免变成近黑的重色块
+  &.is-dark {
+    border-color: color-mix(in srgb, var(--sr-tag-base) 70%, transparent);
+    background: color-mix(in oklab, var(--sr-tag-base) 85%, #000);
+    color: #fff;
   }
 
   &.is-round {
@@ -82,35 +96,28 @@
     }
   }
 
-  // ---------- 语义类型 ----------
+  // ---------- 语义基色 ----------
   &--default {
-    border-color: var(--sr-color-border);
-    background: var(--sr-color-bg-sunken);
-    color: var(--sr-color-text-secondary);
+    --sr-tag-base: var(--sr-color-text-secondary);
   }
 
   &--primary {
-    background: var(--sr-color-primary-alpha-12);
-    color: var(--sr-color-primary-text);
+    --sr-tag-base: var(--sr-color-primary);
   }
 
   &--info {
-    background: var(--sr-color-info-bg);
-    color: var(--sr-color-info-text);
+    --sr-tag-base: var(--sr-color-info);
   }
 
   &--success {
-    background: var(--sr-color-success-bg);
-    color: var(--sr-color-success-text);
+    --sr-tag-base: var(--sr-color-success);
   }
 
   &--warning {
-    background: var(--sr-color-warning-bg);
-    color: var(--sr-color-warning-text);
+    --sr-tag-base: var(--sr-color-warning);
   }
 
   &--danger {
-    background: var(--sr-color-danger-bg);
-    color: var(--sr-color-danger-text);
+    --sr-tag-base: var(--sr-color-danger);
   }
 }

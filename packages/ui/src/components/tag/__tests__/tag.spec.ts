@@ -22,6 +22,21 @@ describe('SrTag', () => {
     expect(wrapper.classes()).toContain('sr-tag--sm')
   })
 
+  it('variant 为 dark 时生成 is-dark 类名', () => {
+    const wrapper = mount(SrTag, { props: { variant: 'dark' }, slots: { default: () => 'x' } })
+    expect(wrapper.classes()).toContain('is-dark')
+  })
+
+  it('自定义 color 通过内联变量覆盖基色', () => {
+    const wrapper = mount(SrTag, { props: { color: '#10b981' }, slots: { default: () => 'x' } })
+    expect(wrapper.attributes('style')).toContain('--sr-tag-base: #10b981')
+  })
+
+  it('未设置 color 时不输出内联样式', () => {
+    const wrapper = mount(SrTag, { slots: { default: () => 'x' } })
+    expect(wrapper.attributes('style')).toBeUndefined()
+  })
+
   it('round 生成胶囊类名', () => {
     const wrapper = mount(SrTag, { props: { round: true }, slots: { default: () => 'x' } })
     expect(wrapper.classes()).toContain('is-round')
