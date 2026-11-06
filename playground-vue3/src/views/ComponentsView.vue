@@ -412,43 +412,4 @@ function triggerLoading(): void {
   color: var(--sr-color-text-secondary);
   text-align: center;
 }
-
-.props-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.props-table th,
-.props-table td {
-  padding: 7px 10px;
-  border-bottom: 1px solid var(--sr-color-border-subtle);
-  text-align: left;
-  vertical-align: top;
-}
-
-.props-table th {
-  color: var(--sr-color-text-secondary);
-  font-weight: var(--sr-font-weight-medium);
-  background: var(--sr-color-bg-sunken);
-}
-
-.props-table code {
-  font-family: var(--sr-font-family-mono);
-  font-size: 12px;
-  color: var(--sr-color-primary-text);
-}
-
-.props-table tr.is-new {
-  background: var(--sr-color-primary-alpha-08);
-}
-
-.props-table em {
-  padding: 1px 5px;
-  border-radius: var(--sr-radius-full);
-  background: var(--sr-color-primary);
-  color: var(--sr-color-on-primary);
-  font-size: 10px;
-  font-style: normal;
-}
 </style>

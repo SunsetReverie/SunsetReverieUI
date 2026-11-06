@@ -250,6 +250,16 @@ export const qualityFlat: Record<string, string> = {
   // 按钮跟着用会显得过于圆润（像药丸），这里保持扁平风格一致
   'button-radius': 'var(--sr-radius-base)',
 
+  // 表单控件圆角：固定值，不随质感也不随尺寸变化。
+  // glass 的 radius-base 是 12px，而 xs 输入框只有 24px 高 ——
+  // 12px 恰好是高度的一半，会变成半圆/药丸；各尺寸统一 6px 才利落。
+  'form-radius': '6px',
+
+  // 弹层（select 菜单等）独立取更透的底 + 玻璃亮边。
+  // bg-elevated 在 glass 下仍是 0.84 不透明，backdrop-filter 几乎看不出效果。
+  'color-bg-popover': 'var(--sr-color-bg-elevated)',
+  'popover-border-color': 'var(--sr-color-border)',
+
   'shadow-sm': '0 1px 2px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 2px 8px rgba(16, 20, 26, 0.08)',
   'shadow-lg': '0 8px 24px rgba(16, 20, 26, 0.1)',
@@ -289,6 +299,11 @@ export const qualityGlass: Record<string, string> = {
   // 比全局 radius-base（12px）小 2px —— 只影响按钮，其它表面保持原有圆角
   'button-radius': 'calc(var(--sr-radius-base) - 2px)',
 
+  // 表单控件沿用扁平档圆角，避免小尺寸变药丸
+  'form-radius': '6px',
+  'color-bg-popover': 'var(--sr-color-bg-elevated)',
+  'popover-border-color': 'var(--sr-glass-border-color)',
+
   'shadow-sm': '0 2px 8px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 8px 24px -6px rgba(16, 20, 26, 0.12)',
   'shadow-lg': '0 16px 48px -12px rgba(16, 20, 26, 0.18)',
@@ -321,6 +336,8 @@ export const glassSurfaceLight: Record<string, string> = {
   'color-bg-container': 'rgba(255, 255, 255, 0.72)',
   'color-bg-elevated': 'rgba(255, 255, 255, 0.84)',
   'color-bg-sunken': 'rgba(237, 239, 243, 0.55)',
+  // 浮层比容器更透，才看得到背后被模糊的内容
+  'color-bg-popover': 'rgba(255, 255, 255, 0.6)',
 }
 
 /** 玻璃质感 · 暗色表面 */
@@ -328,6 +345,7 @@ export const glassSurfaceDark: Record<string, string> = {
   'color-bg-container': 'rgba(28, 32, 39, 0.62)',
   'color-bg-elevated': 'rgba(43, 48, 56, 0.74)',
   'color-bg-sunken': 'rgba(11, 14, 18, 0.6)',
+  'color-bg-popover': 'rgba(43, 48, 56, 0.58)',
 }
 
 /**

@@ -16,6 +16,7 @@ export const SR_COMPONENT_NAMES = [
   'FormItem',
   'Icon',
   'Input',
+  'InputNumber',
   'Modal',
   'Radio',
   'RadioGroup',

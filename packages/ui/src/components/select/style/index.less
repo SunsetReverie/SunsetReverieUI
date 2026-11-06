@@ -23,7 +23,7 @@
     min-height: var(--sr-select-height-xs, var(--sr-select-height));
     padding: 3px var(--sr-select-padding-x-xs, var(--sr-select-padding-x));
     border: 1px solid var(--sr-color-border);
-    border-radius: var(--sr-radius-base);
+    border-radius: var(--sr-form-radius);
     background: var(--sr-color-bg-container);
     color: var(--sr-color-text);
     cursor: pointer;
@@ -182,9 +182,11 @@
   // 面板可滚动，但列表区自己滚，搜索框固定
   overflow: hidden;
   padding: 4px;
-  border: 1px solid var(--sr-color-border);
+  // 浮层专用：flat 用实色，glass 下换成更透的底 + 白色亮边，
+  // 这样 backdrop-filter 才真正看得出模糊，而不是一层接近实色的白板
+  border: var(--sr-glass-border-width) solid var(--sr-popover-border-color);
   border-radius: var(--sr-radius-base);
-  background: var(--sr-color-bg-elevated);
+  background: var(--sr-color-bg-popover);
   box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
   .sr-glass-layer();
 }
@@ -199,7 +201,7 @@
   box-sizing: border-box;
   padding: 5px 8px;
   border: 1px solid var(--sr-color-border);
-  border-radius: var(--sr-radius-sm);
+  border-radius: var(--sr-form-radius);
   background: var(--sr-color-bg-container);
   color: var(--sr-color-text);
   font: inherit;

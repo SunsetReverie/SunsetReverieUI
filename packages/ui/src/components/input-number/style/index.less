@@ -1,0 +1,66 @@
+// 数字输入
+//
+// 外壳直接复用 .sr-input（边框、固定圆角、尺寸分档、焦点环、玻璃层都继承），
+// 这里只补步进控件，避免同一套表单外观维护两份。
+
+@import '../../../styles/mixins/index.less';
+// 按需引入时 resolver 只给本组件的 CSS，因此把依赖的 .sr-input 规则一起带上。
+// LESS 的 @import 默认 once，全量引入不会重复输出这一段。
+@import '../../input/style/index.less';
+
+.sr-input-number {
+  &__controls {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-self: stretch;
+    margin-inline-end: -4px;
+    overflow: hidden;
+    border-inline-start: 1px solid var(--sr-color-border);
+    border-radius: 0 var(--sr-form-radius) var(--sr-form-radius) 0;
+  }
+
+  &__btn {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    width: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    // xs 档输入框只有 24px 高，两个按钮平分后各 12px，图标须更克制
+    font-size: 9px;
+    cursor: pointer;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    &:hover:not(:disabled) {
+      color: var(--sr-color-primary);
+      background: var(--sr-color-primary-alpha-08);
+    }
+
+    &--up {
+      border-bottom: 1px solid var(--sr-color-border);
+    }
+  }
+
+  // 两侧分列：按钮不与输入框共用竖排控件，各自独立成块
+  &--both &__btn--side {
+    flex: 0 0 auto;
+    align-self: stretch;
+    width: 28px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-form-radius);
+    background: var(--sr-color-bg-sunken);
+    font-size: 12px;
+  }
+}

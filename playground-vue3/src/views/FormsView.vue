@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
-import { SrButton, SrForm, SrFormItem, SrInput, SrSelect, srToast } from '@sunset-reverie/ui'
+import { SrButton, SrForm, SrFormItem, SrInput, SrInputNumber, SrSelect, srToast } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'FormsView' })
 
@@ -24,6 +24,20 @@ const autosizeValue = ref('输入内容后高度会自动跟随……')
 
 /** 尺寸档位 */
 const sizes = ['xs', 'sm', 'md', 'lg'] as const
+
+// ---------- 数字输入 ----------
+/** 基础计数 */
+const numberBasic = ref<number | null>(1)
+/** 价格：两位小数 */
+const numberPrice = ref<number | null>(19.9)
+/** 边界钳制 0 ~ 10 */
+const numberRange = ref<number | null>(5)
+/** 两侧分列按钮 */
+const numberBoth = ref<number | null>(0)
+/** 隐藏步进按钮 */
+const numberPlain = ref<number | null>(8)
+/** 四档尺寸各自独立绑定，点击能立即看到反馈 */
+const numberSizes = ref<(number | null)[]>([3, 3, 3, 3])
 
 // ---------- 下拉选择 ----------
 /** 水果选项 */
@@ -260,6 +274,75 @@ function resetForm(): void {
     </section>
 
     <section class="panel">
+      <h2 class="panel__title">数字输入</h2>
+      <p class="panel__desc">
+        <code style="font-family: var(--sr-font-family-mono)">SrInputNumber</code>
+        复用输入框的尺寸、固定圆角与校验态，额外提供步进按钮、上下方向键、边界钳制和小数精度。
+        输入过程中的「1.」「-」这类中间态不会被格式化打断，失焦时才规范化。
+      </p>
+
+      <div style="display: grid; gap: 16px; max-width: 420px">
+        <div>
+          <div style="font-size: 12px; color: var(--sr-color-text-secondary); margin-bottom: 6px">
+            基础用法（点击右侧按钮或按 ↑ / ↓）
+          </div>
+          <sr-input-number v-model="numberBasic" />
+          <code style="font-size: 12px; color: var(--sr-color-text-secondary)">
+            v-model = {{ numberBasic }}
+          </code>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: var(--sr-color-text-secondary); margin-bottom: 6px">
+            小数精度：step = 0.1，显式 precision = 2
+          </div>
+          <sr-input-number v-model="numberPrice" :step="0.1" :precision="2" />
+          <code style="font-size: 12px; color: var(--sr-color-text-secondary)">
+            v-model = {{ numberPrice }}
+          </code>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: var(--sr-color-text-secondary); margin-bottom: 6px">
+            边界 0 ~ 10：到边界时按钮自动禁用，手动输入越界值失焦后钳回
+          </div>
+          <sr-input-number v-model="numberRange" :min="0" :max="10" />
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: var(--sr-color-text-secondary); margin-bottom: 6px">
+            controlsPosition = "both"（两侧分列）
+          </div>
+          <sr-input-number v-model="numberBoth" controls-position="both" :step="2" />
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: var(--sr-color-text-secondary); margin-bottom: 6px">
+            四档尺寸，圆角固定不随尺寸变化
+          </div>
+          <div style="display: grid; gap: 8px">
+            <sr-input-number
+              v-for="(size, index) in sizes"
+              :key="size"
+              v-model="numberSizes[index]"
+              :size="size"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 12px; color: var(--sr-color-text-secondary); margin-bottom: 6px">
+            隐藏步进按钮 / 禁用 / 只读
+          </div>
+          <div style="display: grid; gap: 8px">
+            <sr-input-number v-model="numberPlain" :controls="false" placeholder="纯数字输入" />
+            <sr-input-number :model-value="6" disabled />
+            <sr-input-number :model-value="6" readonly />
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
       <h2 class="panel__title">表单校验</h2>
       <p class="panel__desc">
         规则分「失焦」与「输入」两种时机；一旦出现错误会转为实时校验，改对即消失。 错误文案通过
@@ -308,4 +391,282 @@ function resetForm(): void {
       </sr-form>
     </section>
   </div>
+
+  <section class="panel">
+    <h2 class="panel__title">表单组件 Props 速查</h2>
+    <p class="panel__desc">
+      本页三个输入类组件的全部 props。尺寸不传时继承
+      <code style="font-family: var(--sr-font-family-mono)">SrConfigProvider</code> 的全局配置；
+      校验态不传时跟随所在 <code style="font-family: var(--sr-font-family-mono)">SrFormItem</code>。
+    </p>
+
+    <h3 style="font-size: 14px; margin: 18px 0 8px">SrInput</h3>
+    <table class="props-table">
+      <thead>
+        <tr>
+          <th>Prop</th>
+          <th>类型</th>
+          <th>默认</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>modelValue</code></td>
+          <td><code>string | number</code></td>
+          <td><code>''</code></td>
+          <td>绑定值，v-model</td>
+        </tr>
+        <tr>
+          <td><code>type</code></td>
+          <td><code>string</code></td>
+          <td><code>'text'</code></td>
+          <td>原生类型；<code>textarea</code> 走多行分支</td>
+        </tr>
+        <tr>
+          <td><code>size</code></td>
+          <td><code>SrSize | 断点对象</code></td>
+          <td>继承配置</td>
+          <td>xs / sm / md / lg，支持按断点分档</td>
+        </tr>
+        <tr>
+          <td><code>placeholder</code></td>
+          <td><code>string</code></td>
+          <td><code>''</code></td>
+          <td>占位文案</td>
+        </tr>
+        <tr>
+          <td><code>disabled</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>禁用</td>
+        </tr>
+        <tr>
+          <td><code>readonly</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>只读，可选中复制</td>
+        </tr>
+        <tr>
+          <td><code>clearable</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>有值时显示清空按钮</td>
+        </tr>
+        <tr>
+          <td><code>showPassword</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td><code>type="password"</code> 时显示明文切换</td>
+        </tr>
+        <tr>
+          <td><code>maxlength</code></td>
+          <td><code>number</code></td>
+          <td>—</td>
+          <td>最大长度，配合字数统计</td>
+        </tr>
+        <tr>
+          <td><code>showCount</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>显示字数统计</td>
+        </tr>
+        <tr>
+          <td><code>status</code></td>
+          <td><code>default | error | warning | success</code></td>
+          <td><code>'default'</code></td>
+          <td>校验态，影响边框与图标颜色</td>
+        </tr>
+        <tr>
+          <td><code>rows</code></td>
+          <td><code>number</code></td>
+          <td><code>3</code></td>
+          <td>textarea 行数</td>
+        </tr>
+        <tr>
+          <td><code>autosize</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>textarea 高度随内容自适应</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="panel__desc" style="margin: 10px 0 0">
+      事件：<code>update:modelValue</code> / <code>change</code> / <code>focus</code> / <code>blur</code> /
+      <code>clear</code> / <code>enter</code>；插槽：<code>prefix</code> / <code>suffix</code>。
+    </p>
+
+    <h3 style="font-size: 14px; margin: 22px 0 8px">SrSelect</h3>
+    <table class="props-table">
+      <thead>
+        <tr>
+          <th>Prop</th>
+          <th>类型</th>
+          <th>默认</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>modelValue</code></td>
+          <td><code>string | number | array</code></td>
+          <td>—</td>
+          <td>绑定值，多选时为数组</td>
+        </tr>
+        <tr>
+          <td><code>options</code></td>
+          <td><code>SrSelectOption[]</code></td>
+          <td><code>[]</code></td>
+          <td>选项，可带 <code>disabled</code></td>
+        </tr>
+        <tr>
+          <td><code>multiple</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>多选，面板不自动关闭</td>
+        </tr>
+        <tr>
+          <td><code>filterable</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>显示搜索框</td>
+        </tr>
+        <tr>
+          <td><code>clearable</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>可清空</td>
+        </tr>
+        <tr>
+          <td><code>disabled</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>禁用</td>
+        </tr>
+        <tr>
+          <td><code>size</code></td>
+          <td><code>SrSize</code></td>
+          <td>继承配置</td>
+          <td>xs / sm / md / lg</td>
+        </tr>
+        <tr>
+          <td><code>status</code></td>
+          <td><code>default | error | warning | success</code></td>
+          <td><code>'default'</code></td>
+          <td>校验态</td>
+        </tr>
+        <tr>
+          <td><code>placeholder</code></td>
+          <td><code>string</code></td>
+          <td><code>'请选择'</code></td>
+          <td>占位文案</td>
+        </tr>
+        <tr>
+          <td><code>emptyText</code></td>
+          <td><code>string</code></td>
+          <td>内置</td>
+          <td>无匹配项时的文案</td>
+        </tr>
+        <tr>
+          <td><code>maxHeight</code></td>
+          <td><code>number</code></td>
+          <td><code>260</code></td>
+          <td>下拉面板最大高度（px）</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 14px; margin: 22px 0 8px">
+      SrInputNumber
+      <em style="font-style: normal; font-size: 12px; color: var(--sr-color-primary)">本轮新增</em>
+    </h3>
+    <table class="props-table">
+      <thead>
+        <tr>
+          <th>Prop</th>
+          <th>类型</th>
+          <th>默认</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>modelValue</code></td>
+          <td><code>number | null</code></td>
+          <td><code>null</code></td>
+          <td>绑定值，空值为 null</td>
+        </tr>
+        <tr>
+          <td><code>min</code></td>
+          <td><code>number</code></td>
+          <td><code>-Infinity</code></td>
+          <td>最小值，到达时减按钮禁用</td>
+        </tr>
+        <tr>
+          <td><code>max</code></td>
+          <td><code>number</code></td>
+          <td><code>Infinity</code></td>
+          <td>最大值，到达时加按钮禁用</td>
+        </tr>
+        <tr>
+          <td><code>step</code></td>
+          <td><code>number</code></td>
+          <td><code>1</code></td>
+          <td>每次步进的增量</td>
+        </tr>
+        <tr>
+          <td><code>precision</code></td>
+          <td><code>number</code></td>
+          <td>由 step 推导</td>
+          <td>小数位，抹平浮点误差</td>
+        </tr>
+        <tr>
+          <td><code>size</code></td>
+          <td><code>SrSize | 断点对象</code></td>
+          <td>继承配置</td>
+          <td>与 SrInput 完全对齐</td>
+        </tr>
+        <tr>
+          <td><code>placeholder</code></td>
+          <td><code>string</code></td>
+          <td><code>''</code></td>
+          <td>占位文案</td>
+        </tr>
+        <tr>
+          <td><code>disabled</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>禁用，隐藏步进按钮</td>
+        </tr>
+        <tr>
+          <td><code>readonly</code></td>
+          <td><code>boolean</code></td>
+          <td><code>false</code></td>
+          <td>只读，步进按钮禁用</td>
+        </tr>
+        <tr>
+          <td><code>controls</code></td>
+          <td><code>boolean</code></td>
+          <td><code>true</code></td>
+          <td>是否显示步进按钮</td>
+        </tr>
+        <tr>
+          <td><code>controlsPosition</code></td>
+          <td><code>'right' | 'both'</code></td>
+          <td><code>'right'</code></td>
+          <td>右侧竖排或两侧分列</td>
+        </tr>
+        <tr>
+          <td><code>status</code></td>
+          <td><code>default | error | warning | success</code></td>
+          <td><code>'default'</code></td>
+          <td>校验态，复用输入框边框</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="panel__desc" style="margin: 10px 0 0">
+      事件：<code>update:modelValue</code> / <code>change</code> / <code>focus</code> / <code>blur</code> /
+      <code>step(value, type)</code>；键盘：↑ / ↓ 步进，Enter 立即规范化，失焦自动钳制到边界。
+    </p>
+  </section>
 </template>
