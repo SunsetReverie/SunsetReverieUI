@@ -1,7 +1,8 @@
 // 标签页
 //
-// 两种外观共用一套结构：line 用下划线指示，card 用背板。
-// 激活态的下划线跟随 token 主色，不做滑动动画（避免宽度测量）。
+// 四种外观共用一套结构：line 用下划线指示，card 用顶线 + 连体，
+// segment 用磨砂背板 + 浮起块，pill 用小圆角淡底。
+// 文件顺序按特异性从低到高排：结构 → 变体 → 方向 → 透明模式。
 
 @import '../../../styles/mixins/index.less';
 @import '../../icon/style/index.less';
@@ -27,6 +28,12 @@
   &--lg {
     --sr-tabs-height: 46px;
     --sr-tabs-font: 15px;
+  }
+
+  // ---------- 结构 ----------
+  &__panel {
+    font-size: 13px;
+    color: var(--sr-color-text-secondary);
   }
 
   &__nav {
@@ -59,10 +66,12 @@
     transition:
       color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
-    &:hover:not(.is-disabled) {
-      color: var(--sr-color-primary-text);
+    &.is-disabled {
+      color: var(--sr-color-text-disabled);
+      cursor: not-allowed;
     }
 
     &.is-active {
@@ -71,9 +80,10 @@
       font-weight: var(--sr-font-weight-medium);
     }
 
-    &.is-disabled {
-      color: var(--sr-color-text-disabled);
-      cursor: not-allowed;
+    &:hover:not(.is-disabled, .is-active) {
+      border-radius: 8px;
+      background: var(--sr-color-primary-alpha-08);
+      color: var(--sr-color-primary-text);
     }
 
     &:focus-visible {
@@ -97,7 +107,7 @@
   }
 
   // ---------- 变体：连接式卡片 ----------
-  // 标签带边框、顶部圆角，选中项底部用容器色盖住分隔线，和内容连成一片
+  // 选中项用内阴影画一条主色顶线，底部用容器色盖住 nav 下边线，与内容连成一片
   &--card &__nav {
     gap: 4px;
     border-bottom: 1px solid var(--sr-color-border);
@@ -107,53 +117,61 @@
     margin-bottom: -1px;
     border: 1px solid var(--sr-color-border);
     border-bottom: 0;
-    border-radius: var(--sr-radius-sm) var(--sr-radius-sm) 0 0;
+    border-radius: 10px 10px 0 0;
     background: var(--sr-color-bg-sunken);
 
     &.is-active {
+      border-color: color-mix(in srgb, var(--sr-color-primary) 34%, transparent);
       background: var(--sr-color-bg-container);
-      // 用 1px 容器色盖住 nav 的下边线
-      box-shadow: 0 1px 0 0 var(--sr-color-bg-container);
+      box-shadow:
+        inset 0 2px 0 0 var(--sr-color-primary),
+        0 1px 0 0 var(--sr-color-bg-container);
     }
   }
 
   // ---------- 变体：分段控件 ----------
-  // 整块背板内浮起，适合切换视图模式这类少量互斥项
+  // 磨砂背板 + 浮起块，背板按内容收缩
   &--segment &__nav {
-    // 背板跟着内容收缩，拉满整行会显得空
     align-self: flex-start;
     gap: 2px;
-    padding: 3px;
-    border-radius: var(--sr-radius-sm);
-    background: var(--sr-color-bg-sunken);
+    padding: 4px;
+    border: 1px solid color-mix(in srgb, var(--sr-color-text) 8%, transparent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--sr-color-bg-sunken) 72%, transparent);
+    .sr-glass-layer(var(--sr-glass-filter));
   }
 
   &--segment &__nav &__tab {
     border-bottom: 0;
-    border-radius: var(--sr-radius-sm);
+    border-radius: 9px;
 
     &.is-active {
       background: var(--sr-color-bg-container);
+      color: var(--sr-color-primary-text);
       box-shadow: var(--sr-shadow-sm);
     }
   }
 
-  // ---------- 变体：胶囊 ----------
+  // ---------- 变体：软标签 ----------
+  // 小圆角 + 主色淡底，不做成胶囊
   &--pill &__nav {
     gap: 6px;
   }
 
   &--pill &__nav &__tab {
+    border: 1px solid transparent;
     border-bottom: 0;
-    border-radius: var(--sr-radius-full);
+    border-radius: 8px;
 
     &.is-active {
+      border-color: color-mix(in srgb, var(--sr-color-primary) 30%, transparent);
       background: var(--sr-color-primary-alpha-12);
       color: var(--sr-color-primary-text);
     }
   }
 
   // ---------- 垂直方向 ----------
+  // 与变体同一层级，靠顺序覆盖；竖排时背板一律收敛成左对齐块
   &.is-vertical {
     flex-direction: row;
     align-items: flex-start;
@@ -165,17 +183,26 @@
       flex: 0 0 auto;
       // 横向不需要滚动，纵向留给标签过多时
       overflow: hidden auto;
-      border-bottom: 0;
+      padding: 0 var(--sr-space-2) 0 0;
+      border: 0;
       border-right: 1px solid var(--sr-color-border-subtle);
+      border-radius: 0;
+      background: transparent;
+      backdrop-filter: none;
     }
 
     .sr-tabs__tab {
       justify-content: flex-start;
-      border-bottom: 0;
+      border: 0;
       border-right: 2px solid transparent;
+      border-radius: var(--sr-radius-sm);
+      background: transparent;
+      box-shadow: none;
 
       &.is-active {
         border-right-color: var(--sr-color-primary);
+        background: var(--sr-color-primary-alpha-08);
+        box-shadow: none;
       }
     }
 
@@ -183,34 +210,35 @@
       flex: 1 1 auto;
       min-width: 0;
     }
+  }
 
-    // 垂直时卡片/分段/胶囊的形态收敛为左对齐块，避免和竖排布局打架
-    &.sr-tabs--card .sr-tabs__nav,
-    &.sr-tabs--segment .sr-tabs__nav,
-    &.sr-tabs--pill .sr-tabs__nav {
-      border-right: 1px solid var(--sr-color-border-subtle);
-    }
-
-    &.sr-tabs--card .sr-tabs__tab,
-    &.sr-tabs--segment .sr-tabs__tab,
-    &.sr-tabs--pill .sr-tabs__tab {
-      margin-bottom: 0;
+  // ---------- 透明模式：去掉背板与边框 ----------
+  // 适合嵌在已有容器里，只靠文字色与选中底色区分
+  &.is-plain {
+    .sr-tabs__nav {
+      padding: 0;
       border: 0;
-      border-radius: var(--sr-radius-sm);
-      border-right: 2px solid transparent;
+      border-radius: 0;
       background: transparent;
-      box-shadow: none;
-
-      &.is-active {
-        background: var(--sr-color-primary-alpha-08);
-        border-right-color: var(--sr-color-primary);
-        box-shadow: none;
-      }
+      backdrop-filter: none;
     }
   }
 
-  &__panel {
-    font-size: 13px;
-    color: var(--sr-color-text-secondary);
+  &.is-plain.sr-tabs--card .sr-tabs__nav {
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &.is-plain.sr-tabs--card .sr-tabs__tab,
+  &.is-plain.sr-tabs--segment .sr-tabs__tab,
+  &.is-plain.sr-tabs--pill .sr-tabs__tab {
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+
+    &.is-active {
+      background: var(--sr-color-primary-alpha-08);
+      box-shadow: none;
+    }
   }
 }

@@ -134,7 +134,11 @@ function isClosable(item: SrTabsItem): boolean {
 <template>
   <div
     class="sr-tabs"
-    :class="[`sr-tabs--${resolvedSize}`, `sr-tabs--${type}`, { 'is-vertical': direction === 'vertical' }]"
+    :class="[
+      `sr-tabs--${resolvedSize}`,
+      `sr-tabs--${type}`,
+      { 'is-vertical': direction === 'vertical', 'is-plain': !bordered },
+    ]"
   >
     <div class="sr-tabs__nav" role="tablist">
       <button

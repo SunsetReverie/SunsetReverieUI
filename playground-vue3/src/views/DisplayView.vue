@@ -254,10 +254,33 @@ function onMenuSelect(key: string): void {
         </div>
 
         <div>
-          <h3 class="sub-title">pill（胶囊）</h3>
+          <h3 class="sub-title">pill（软标签）</h3>
           <SrTabs :items="tabs" type="pill" :model-value="'log'">
             <template #panel="{ item }">
-              <p class="muted">{{ item.label }} 的面板。</p>
+              <p class="muted">{{ item.label }} 的面板，小圆角加主色淡底。</p>
+            </template>
+          </SrTabs>
+        </div>
+
+        <div>
+          <h3 class="sub-title">pill（深色背景）</h3>
+          <div class="dark-stage" data-sr-theme="dark">
+            <SrTabs :items="tabs" type="pill" :model-value="'config'">
+              <template #panel="{ item }">
+                <p class="muted">{{ item.label }} 的面板，深色主题下自动换色。</p>
+              </template>
+            </SrTabs>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="sub-title">bordered=false（去掉背板与边框）</h3>
+          <p class="muted" style="margin-bottom: 10px">
+            嵌在已有容器里时，用 <code>bordered</code> 关掉背板和边框，只留文字与选中底色。
+          </p>
+          <SrTabs :items="tabs" type="segment" :bordered="false" :model-value="'overview'">
+            <template #panel="{ item }">
+              <p class="muted">{{ item.label }} 的面板，没有背板。</p>
             </template>
           </SrTabs>
         </div>
@@ -708,6 +731,13 @@ function onMenuSelect(key: string): void {
   border: 1px solid var(--sr-color-border);
   border-radius: var(--sr-radius-sm);
   font-size: 13px;
+}
+
+/* 局部深色舞台：挂 data-sr-theme 后内部 token 整体切到暗色 */
+.dark-stage {
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--sr-color-bg-elevated);
 }
 
 .sub-title {

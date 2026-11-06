@@ -42,6 +42,15 @@ export const tabsProps = {
     type: String as PropType<SrTabsType>,
     default: 'line',
   },
+  /**
+   * 是否显示背板与边框。
+   * 传 false 时 card / segment / pill 只剩文字与选中态，适合嵌在已有容器里
+   * @default true
+   */
+  bordered: {
+    type: Boolean,
+    default: true,
+  },
   /** 排列方向 @default 'horizontal' */
   direction: {
     type: String as PropType<'horizontal' | 'vertical'>,
