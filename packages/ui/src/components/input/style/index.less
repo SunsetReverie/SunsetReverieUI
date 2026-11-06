@@ -73,6 +73,13 @@
     // 关掉原生手柄，改用 .sr-input__resize 自绘，位置才能贴住边框右下角
     resize: none;
     line-height: 1.6;
+    // 固定行数时内容超出仍要能滚，但用细滚动条，
+    // 避免系统「始终显示滚动条」时一条粗灰杠占掉一大块宽度
+    .sr-scrollbar(6px);
+  }
+
+  &.is-autosize .sr-input__inner--textarea {
+    overflow-y: hidden;
   }
 
   // ---------- 右下角拖拽手柄 ----------

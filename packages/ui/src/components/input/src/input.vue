@@ -119,6 +119,8 @@ const rootClass = computed(() => [
     'is-disabled': props.disabled,
     'is-readonly': props.readonly,
     'is-textarea': isTextarea.value,
+    // 高度自适应的文本域永远不需要滚动条，直接禁掉避免系统占位条常驻
+    'is-autosize': props.autosize && isTextarea.value,
     'has-prefix': Boolean(slots.prefix),
     'has-suffix': Boolean(slots.suffix),
     'has-count': props.showCount,
