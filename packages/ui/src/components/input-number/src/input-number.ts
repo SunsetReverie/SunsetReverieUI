@@ -78,6 +78,14 @@ export const inputNumberProps = {
 
 export type SrInputNumberProps = ExtractPropTypes<typeof inputNumberProps>
 
+/** 各尺寸档位的步进箭头图标大小 */
+export const NUMBER_ICON_SIZE: Record<SrSize, number> = {
+  xs: 8,
+  sm: 9,
+  md: 10,
+  lg: 11,
+}
+
 /**
  * 取一个数字的小数位数
  *

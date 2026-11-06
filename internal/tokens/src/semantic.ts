@@ -273,6 +273,7 @@ export const qualityFlat: Record<string, string> = {
   'glass-saturate': '100%',
   // flat 用 none 而非 blur(0)：后者仍会创建无意义的合成层
   'glass-filter': 'none',
+  'glass-filter-strong': 'none',
   // 注意不能写 none：surface mixin 会拼成 `box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight)`，
   // 若这里是 none 会导致整条 box-shadow 非法而失效。用零尺寸透明阴影占位。
   'glass-highlight': '0 0 0 0 transparent',
@@ -316,6 +317,9 @@ export const qualityGlass: Record<string, string> = {
   'glass-blur': '16px',
   'glass-saturate': '180%',
   'glass-filter': 'blur(16px) saturate(180%)',
+  // 浮层（下拉菜单等）用更强的模糊：面积小、悬浮在内容之上，
+  // 模糊不足时半透明底会显得像"没生效的白板"
+  'glass-filter-strong': 'blur(28px) saturate(200%)',
   'glass-highlight': 'inset 0 1px 0 rgba(255, 255, 255, 0.55)',
   'glass-border-width': '1px',
   'glass-border-color': 'rgba(255, 255, 255, 0.55)',
@@ -337,7 +341,7 @@ export const glassSurfaceLight: Record<string, string> = {
   'color-bg-elevated': 'rgba(255, 255, 255, 0.84)',
   'color-bg-sunken': 'rgba(237, 239, 243, 0.55)',
   // 浮层比容器更透，才看得到背后被模糊的内容
-  'color-bg-popover': 'rgba(255, 255, 255, 0.6)',
+  'color-bg-popover': 'rgba(255, 255, 255, 0.42)',
 }
 
 /** 玻璃质感 · 暗色表面 */
@@ -345,7 +349,7 @@ export const glassSurfaceDark: Record<string, string> = {
   'color-bg-container': 'rgba(28, 32, 39, 0.62)',
   'color-bg-elevated': 'rgba(43, 48, 56, 0.74)',
   'color-bg-sunken': 'rgba(11, 14, 18, 0.6)',
-  'color-bg-popover': 'rgba(43, 48, 56, 0.58)',
+  'color-bg-popover': 'rgba(38, 43, 51, 0.52)',
 }
 
 /**

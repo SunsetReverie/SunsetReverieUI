@@ -188,7 +188,8 @@
   border-radius: var(--sr-radius-base);
   background: var(--sr-color-bg-popover);
   box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
-  .sr-glass-layer();
+  // 浮层用强模糊档：面积小且悬浮，常规 16px 在浅色背景下几乎看不出模糊
+  .sr-glass-layer(var(--sr-glass-filter-strong));
 }
 
 .sr-select__search {

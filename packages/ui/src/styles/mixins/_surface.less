@@ -5,13 +5,14 @@
 
 /**
  * 玻璃层：给半透明表面加上背景模糊
+ * @param @filter 模糊强度变量，默认常规强度；浮层传 --sr-glass-filter-strong
  *
- * flat 风格下 --sr-glass-filter 为 none，等价于不写，因此组件无需判断风格。
+ * flat 风格下两者都是 none，等价于不写，因此组件无需判断风格。
  * 前提是背景本身半透明 —— 实色背景下这层完全看不出效果。
  */
-.sr-glass-layer() {
-  backdrop-filter: var(--sr-glass-filter);
-  -webkit-backdrop-filter: var(--sr-glass-filter);
+.sr-glass-layer(@filter: var(--sr-glass-filter)) {
+  backdrop-filter: @filter;
+  -webkit-backdrop-filter: @filter;
 }
 
 /**

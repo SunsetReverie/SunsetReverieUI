@@ -9,15 +9,19 @@
 @import '../../input/style/index.less';
 
 .sr-input-number {
+  // 数字用等宽字形，步进时数字不会左右跳动
+  font-variant-numeric: tabular-nums;
+
+  // 步进区不做分隔线，靠 hover 反馈：叠一条通高竖线会把它切成两块，显得生硬
   &__controls {
     display: flex;
     flex: 0 0 auto;
     flex-direction: column;
     align-self: stretch;
-    margin-inline-end: -4px;
-    overflow: hidden;
-    border-inline-start: 1px solid var(--sr-color-border);
-    border-radius: 0 var(--sr-form-radius) var(--sr-form-radius) 0;
+    gap: 1px;
+    margin-inline: -3px -7px;
+    // 仅留 2px：xs 档输入框只有 24px 高，垂直留白过大会把箭头挤出边框
+    padding-block: 2px;
   }
 
   &__btn {
@@ -26,13 +30,17 @@
     align-items: center;
     justify-content: center;
     min-height: 0;
-    width: 20px;
+    width: 22px;
     padding: 0;
     border: 0;
+    border-radius: 4px;
     background: transparent;
-    color: var(--sr-color-text-secondary);
-    // xs 档输入框只有 24px 高，两个按钮平分后各 12px，图标须更克制
-    font-size: 9px;
+    color: var(--sr-color-text-tertiary);
+    // 图标随档位缩放，保证各尺寸下箭头都不顶边框
+    font-size: var(
+      --sr-input-number-icon-md,
+      var(--sr-input-number-icon-xs, var(--sr-input-number-icon, 10px))
+    );
     cursor: pointer;
     transition:
       color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
@@ -40,27 +48,38 @@
 
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.45;
+      opacity: 0.35;
     }
 
     &:hover:not(:disabled) {
-      color: var(--sr-color-primary);
-      background: var(--sr-color-primary-alpha-08);
-    }
-
-    &--up {
-      border-bottom: 1px solid var(--sr-color-border);
+      color: var(--sr-color-text);
+      background: var(--sr-color-bg-sunken);
     }
   }
+}
 
-  // 两侧分列：按钮不与输入框共用竖排控件，各自独立成块
-  &--both &__btn--side {
-    flex: 0 0 auto;
-    align-self: stretch;
-    width: 28px;
-    border: 1px solid var(--sr-color-border);
-    border-radius: var(--sr-form-radius);
-    background: var(--sr-color-bg-sunken);
-    font-size: 12px;
-  }
+// 两侧分列：描边按钮比实心灰块更轻，和输入框不打架。
+// 单独成块而不是嵌在 .sr-input-number 里，避免与 &__btn 的伪类竞态被 stylelint 拦下。
+.sr-input-number--both .sr-input-number__btn--side {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 30px;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-form-radius);
+  background: transparent;
+  font-size: var(
+    --sr-input-number-icon-md,
+    var(--sr-input-number-icon-xs, var(--sr-input-number-icon, 10px))
+  );
+}
+
+.sr-input-number--both .sr-input-number__btn--side:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.sr-input-number--both .sr-input-number__btn--side:hover:not(:disabled) {
+  border-color: var(--sr-color-primary);
+  background: var(--sr-color-primary-alpha-08);
+  color: var(--sr-color-primary);
 }

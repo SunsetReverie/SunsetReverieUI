@@ -8,7 +8,7 @@ import type { SrResponsive } from '../../../types/theme'
 import { srOmit } from '../../../utils/attrs'
 import SrIcon from '../../icon/src/icon.vue'
 import { INPUT_SIZE_MAP } from '../../input/src/input'
-import { inputNumberProps, srClampNumber, srNumberPrecision } from './input-number'
+import { NUMBER_ICON_SIZE, inputNumberProps, srClampNumber, srNumberPrecision } from './input-number'
 
 defineOptions({ name: 'SrInputNumber', inheritAttrs: false })
 
@@ -54,6 +54,8 @@ const sizeVars = computed<Record<string, string>>(() => {
     out[`--sr-input-height${tail}`] = `${metrics.height}px`
     out[`--sr-input-padding-x${tail}`] = `${metrics.paddingX}px`
     out[`--sr-input-font-size${tail}`] = `${metrics.fontSize}px`
+    // 步进箭头跟着档位缩放：xs 只有 24px 高时用 10px 会顶到边框
+    out[`--sr-input-number-icon${tail}`] = `${NUMBER_ICON_SIZE[size]}px`
   }
 
   const size = resolvedSize.value
