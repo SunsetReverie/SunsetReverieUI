@@ -4,11 +4,16 @@ import { useSrTheme } from '@sunset-reverie/ui'
 import '@sunset-reverie/ui/style.css'
 
 import App from './App.vue'
+import { applyMotion, readMotion } from './motion'
 
 // 读取 localStorage、绑定系统主题监听、同步 DOM 属性。
 // 首帧的防闪烁由 index.html 里的内联脚本负责，这里只做状态对齐。
 const theme = useSrTheme()
 theme.init()
+
+// 动效模式：纯 CSS 变量覆盖，必须在挂载前写好属性
+// （不影响颜色，所以不需要像主题那样做防闪烁内联脚本）
+applyMotion(readMotion())
 
 // 调试便利：支持 ?theme=dark&style=glass，方便截图与分享复现链接
 const params = new URLSearchParams(window.location.search)

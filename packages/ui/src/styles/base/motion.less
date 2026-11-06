@@ -1,0 +1,15 @@
+// 动效模式 · 无
+//
+// duration / distance 变量由 semantic.generated.css 统一归零，
+// 但「无限循环动画」不吃 duration token —— 它有自己的 animation-duration。
+// 这类动画必须在这里显式停掉，否则切到「无」时 Spinner 仍在转。
+//
+// 单独成文件的原因：这些选择器引用了组件类名，若写进组件 Less 里，
+// 会与组件自身的变体规则产生 no-descending-specificity 顺序冲突。
+
+[data-sr-motion='none'] {
+  .sr-spinner__svg,
+  .sr-button__spinner {
+    animation: none;
+  }
+}

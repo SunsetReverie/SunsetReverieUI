@@ -84,6 +84,21 @@ export const easings = {
   linear: 'linear',
 } as const
 
+/**
+ * 交互反馈参数
+ *
+ * 与 duration / distance 分开：这几个是「手感常量」，由 data-sr-motion 三档整体调节。
+ * 组件只引用变量，不写死数值，切换模式时才能一次覆盖到位。
+ */
+export const motion = {
+  /** 按钮按下位移（px） */
+  pressOffset: 1,
+  /** 按钮按下缩放 */
+  pressScale: 0.98,
+  /** 卡片类容器悬停抬升（px）；轻动效档刻意保持 0 */
+  hoverLift: 0,
+} as const
+
 /** 动效位移（px） */
 export const distances = {
   sm: 6,

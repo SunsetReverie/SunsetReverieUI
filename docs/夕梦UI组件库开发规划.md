@@ -793,6 +793,40 @@ resolver    nuxt        （nuxt 依赖 ui 的产物 + resolver 的类型，故�
 
 加载指示器是例外：**降速而不停止**（0.9s → 2.6s）。完全静止会被误认为卡死。
 
+#### 动效模式三档（`data-sr-motion`）
+
+除了系统级 `prefers-reduced-motion`，库还提供**用户主动选择**的三档，只需在根元素写属性，纯 CSS 变量覆盖、零 JS：
+
+| 档位 | 写法 | 时长 | 位移 | 按钮按压 | 卡片悬停 |
+| --- | --- | --- | --- | --- | --- |
+| 无 | `data-sr-motion="none"` | `0.01ms` | `0px` | 不做缩放 | 不抬升 |
+| 轻（默认） | 不写属性 | 120 / 240 / 360ms | 6 / 12 / 24px | 1px + 0.98 | 只浮起阴影 |
+| 强 | `data-sr-motion="strong"` | 180 / 360 / 540ms | 11 / 22 / 43px | 3px + 0.94 | 抬升 2px |
+
+实现方式在 `semantic.generated.css` 末尾生成两段覆盖：
+
+```css
+[data-sr-motion='none'] {
+  --sr-motion-duration-fast: 0.01ms;
+  --sr-motion-distance-sm: 0px;
+  --sr-motion-press-scale: 1;
+}
+
+[data-sr-motion='strong'] {
+  --sr-motion-duration-fast: 180ms;
+  --sr-motion-distance-sm: 11px;
+  --sr-motion-press-scale: 0.94;
+}
+```
+
+**三个关键约束**：
+
+1. **组件不得写死数值**。`--sr-button-press-y` 必须写成 `var(--sr-motion-press-offset)`，视图切换过渡必须写成 `var(--sr-motion-duration-*)`。写死 `0.2s` 的那一条会绕过所有三档，切换时「还有东西在动」。
+2. **循环动画要单独处理**。Spinner 的 `animation: ... 0.9s infinite` 不吃 duration token，归零时长不等于停止 —— 会变成高频空转。`base/motion.less` 里针对 `none` 显式写了 `animation: none`。
+3. **优先级**：系统 `prefers-reduced-motion` 写在最后、优先级最高。用户选了「强」但系统要求减少动效时，仍以系统为准。这不是覆盖关系，是无障碍底线。
+
+这套机制同时是**动效系统的自检**：切到「无」若还有东西在动，就说明有组件写死了时长或漏了循环动画。演示站顶栏提供三档菜单（`?motion=none|light|strong`），可直接逐档验收。
+
 #### 当前落地情况
 
 | 场景 | 状态 |

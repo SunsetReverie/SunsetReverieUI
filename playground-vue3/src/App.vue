@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 
 import { SR_THEME_PRESETS, useSrBreakpoint, useSrTheme } from '@sunset-reverie/ui'
 
+import { applyMotion, MOTION_MODES, readMotion, type SrMotionMode } from './motion'
+
 import AuditView from './views/AuditView.vue'
 import ComponentsView from './views/ComponentsView.vue'
 import ControlsView from './views/ControlsView.vue'
@@ -16,6 +18,18 @@ import ThemeLab from './views/ThemeLab.vue'
 defineOptions({ name: 'PlaygroundApp' })
 
 const { resolved, style, preset, toggleTheme, toggleStyle, setPreset } = useSrTheme()
+
+/** 当前动效模式 */
+const motionMode = ref<SrMotionMode>(readMotion())
+
+/**
+ * 切换动效模式
+ * @param mode 目标模式
+ */
+function setMotion(mode: SrMotionMode): void {
+  motionMode.value = mode
+  applyMotion(mode)
+}
 const { current: breakpoint, width } = useSrBreakpoint()
 
 /** 视图定义 */
@@ -66,6 +80,23 @@ const activeView = computed(() => views.find((v) => v.key === activeKey.value)?.
             type="button"
             @click="setPreset(item.key)"
           />
+        </div>
+
+        <div class="pg__motion" role="group" aria-label="动效模式">
+          <span class="pg__motion-label">动效</span>
+
+          <button
+            v-for="mode in MOTION_MODES"
+            :key="mode.key"
+            class="pg__motion-btn"
+            :class="{ 'is-active': motionMode === mode.key }"
+            :title="mode.hint"
+            :aria-pressed="motionMode === mode.key"
+            type="button"
+            @click="setMotion(mode.key)"
+          >
+            {{ mode.label }}
+          </button>
         </div>
 
         <button class="pg__btn" type="button" @click="toggleTheme">

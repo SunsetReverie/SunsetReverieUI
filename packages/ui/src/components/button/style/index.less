@@ -32,8 +32,8 @@
 
   // 按压手感：位移 1px、缩放 0.98 —— 足够让手指/鼠标感觉到「按下去了」，
   // 又不会让按钮看起来在跳。两个值都开放给使用方覆写。
-  --sr-button-press-y: 1px;
-  --sr-button-press-scale: 0.98;
+  --sr-button-press-y: var(--sr-motion-press-offset, 1px);
+  --sr-button-press-scale: var(--sr-motion-press-scale, 0.98);
   // 辉光半径默认取全局 token；个别变体可单独收敛
   --sr-button-glow-blur: var(--sr-shadow-glow-blur, 0px);
 

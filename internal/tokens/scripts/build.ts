@@ -21,6 +21,7 @@ import {
   distances,
   fontSizes,
   lineHeights,
+  motion,
   palette,
   paletteSeries,
   paletteSteps,
@@ -234,6 +235,10 @@ function buildSemanticCss(): string {
 
   blocks.push('/* ---------- 结构语义（不随主题变化） ---------- */', ':root {')
   blocks.push(toDecls(structural))
+  // 交互反馈手感参数（独立于时长/位移，由 data-sr-motion 三档整体调节）
+  blocks.push(`  --sr-motion-press-offset: ${motion.pressOffset}px;`)
+  blocks.push(`  --sr-motion-press-scale: ${motion.pressScale};`)
+  blocks.push(`  --sr-motion-hover-lift: ${motion.hoverLift}px;`)
   blocks.push('}', '')
 
   blocks.push('/* ---------- L2 语义层 · 亮色 ---------- */', "[data-sr-theme='light'] {")
@@ -328,7 +333,47 @@ function buildSemanticCss(): string {
     '',
   )
 
-  blocks.push('/* ---------- 动效降级 ---------- */', '@media (prefers-reduced-motion: reduce) {')
+  // ---------- 动效模式（演示站菜单 / 下游可自行使用） ----------
+  // 只覆盖 CSS 变量，组件零改动；light 是默认值，因此不需要单独写规则。
+  blocks.push(
+    '/* ---------- 动效模式 · 无 ----------',
+    '   时长归零 + 位移归零；循环动画由组件内部配合 animation: none ---------- */',
+    "[data-sr-motion='none'] {",
+  )
+  for (const key of Object.keys(durations)) {
+    blocks.push(`  --sr-motion-duration-${key}: 0.01ms;`)
+  }
+  for (const key of Object.keys(distances)) {
+    blocks.push(`  --sr-motion-distance-${key}: 0px;`)
+  }
+  blocks.push(
+    '  --sr-motion-press-offset: 0px;',
+    '  --sr-motion-press-scale: 1;',
+    '  --sr-motion-hover-lift: 0px;',
+    '}',
+    '',
+  )
+
+  blocks.push('/* ---------- 动效模式 · 强 ---------- */', "[data-sr-motion='strong'] {")
+  for (const [key, value] of Object.entries(durations)) {
+    blocks.push(`  --sr-motion-duration-${key}: ${Math.round(value * 1.5)}ms;`)
+  }
+  for (const [key, value] of Object.entries(distances)) {
+    blocks.push(`  --sr-motion-distance-${key}: ${Math.round(value * 1.8)}px;`)
+  }
+  blocks.push(
+    '  --sr-motion-press-offset: 3px;',
+    '  --sr-motion-press-scale: 0.94;',
+    '  --sr-motion-hover-lift: 2px;',
+    '}',
+    '',
+  )
+
+  // 系统偏好优先级最高，放在最后覆盖三档
+  blocks.push(
+    '/* ---------- 动效降级（系统偏好优先） ---------- */',
+    '@media (prefers-reduced-motion: reduce) {',
+  )
   blocks.push('  :root {')
   for (const key of Object.keys(durations)) {
     blocks.push(`    --sr-motion-duration-${key}: 0.01ms;`)

@@ -76,6 +76,49 @@ body {
     gap: var(--sr-space-2);
   }
 
+  // 动效模式分段控件：三档切换直接演示库的动效参数化能力
+  &__motion {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__motion-label {
+    padding: 0 4px 0 8px;
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  &__motion-btn {
+    min-width: 26px;
+    padding: 3px 7px;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      color: var(--sr-color-text);
+    }
+
+    &.is-active {
+      background: var(--sr-color-bg-container);
+      color: var(--sr-color-primary-text);
+      box-shadow: var(--sr-shadow-sm);
+    }
+  }
+
   // 预设主题色：直接摆在顶栏，避免入口藏在二级页面里
   &__swatches {
     display: flex;
@@ -203,13 +246,16 @@ body {
   transition:
     background-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
     border-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
-    box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+    box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
 
   // 鼠标经过时浮起一层：不改位置，只加深边框与阴影 —— panel 本身不可点击，
   // 位移会让人误以为可以点进去
   &:hover {
     border-color: var(--sr-color-border-strong);
     box-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
+    // 轻动效档为 0（只浮起阴影），强动效档才抬升 2px
+    transform: translateY(calc(var(--sr-motion-hover-lift, 0px) * -1));
   }
 
   &__title {
@@ -282,24 +328,24 @@ body.force-tooltip .sr-tooltip {
 // 视觉上「快速让位、从容入场」，比两个方向同速更自然。
 .pg-view-enter-active {
   transition:
-    opacity 180ms var(--sr-motion-easing-decelerate),
-    transform 180ms var(--sr-motion-easing-decelerate);
+    opacity calc(var(--sr-motion-duration-fast) * 1.5) var(--sr-motion-easing-decelerate),
+    transform calc(var(--sr-motion-duration-fast) * 1.5) var(--sr-motion-easing-decelerate);
 }
 
 .pg-view-leave-active {
   transition:
-    opacity 120ms var(--sr-motion-easing-accelerate),
-    transform 120ms var(--sr-motion-easing-accelerate);
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate);
 }
 
 .pg-view-enter-from {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(var(--sr-motion-distance-sm, 6px));
 }
 
 .pg-view-leave-to {
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(calc(var(--sr-motion-distance-sm, 6px) / -1.5));
 }
 
 @media (prefers-reduced-motion: reduce) {
