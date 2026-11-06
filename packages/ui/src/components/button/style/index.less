@@ -151,6 +151,9 @@
     // 只写两层时整条声明会失效，border-color 回退成 currentColor ——
     // 这两个变体的文字是白色，于是 hover 时边框突然变成白边。
     border-color: var(--sr-button-border-hover, var(--sr-button-border, transparent));
+    // 微微浮起：与下方 active 的「下沉 1px + 缩放」形成完整的按下手感。
+    // 位移量走 token，因此「无」档为 0、「强」档为 3px，不需要风格分支。
+    transform: translateY(calc(var(--sr-motion-hover-lift, 1px) * -1));
   }
 
   &:not(:disabled):active {
@@ -164,6 +167,7 @@
   // 减少动效偏好下不做位移：位移是「状态」，不属于需要降级的「动画」，
   // 但缩放会让部分用户眩晕，这里一并取消
   @media (prefers-reduced-motion: reduce) {
+    &:not(:disabled):hover,
     &:not(:disabled):active {
       transform: none;
     }

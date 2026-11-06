@@ -364,7 +364,7 @@ function buildSemanticCss(): string {
   blocks.push(
     '  --sr-motion-press-offset: 3px;',
     '  --sr-motion-press-scale: 0.94;',
-    '  --sr-motion-hover-lift: 2px;',
+    '  --sr-motion-hover-lift: 3px;',
     '}',
     '',
   )

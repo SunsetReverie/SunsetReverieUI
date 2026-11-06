@@ -95,8 +95,11 @@ export const motion = {
   pressOffset: 1,
   /** 按钮按下缩放 */
   pressScale: 0.98,
-  /** 卡片类容器悬停抬升（px）；轻动效档刻意保持 0 */
-  hoverLift: 0,
+  /**
+   * 可交互元素（按钮）的悬停抬升（px）
+   * 只用于能点击的元素；展示型卡片刻意不位移，否则会误导用户以为可点
+   */
+  hoverLift: 1,
 } as const
 
 /** 动效位移（px） */

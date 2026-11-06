@@ -246,16 +246,14 @@ body {
   transition:
     background-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
     border-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
-    box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
-    transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+    box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
 
   // 鼠标经过时浮起一层：不改位置，只加深边框与阴影 —— panel 本身不可点击，
   // 位移会让人误以为可以点进去
   &:hover {
     border-color: var(--sr-color-border-strong);
     box-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
-    // 轻动效档为 0（只浮起阴影），强动效档才抬升 2px
-    transform: translateY(calc(var(--sr-motion-hover-lift, 0px) * -1));
+    // 刻意不做位移：panel 是展示容器，不是可点击的卡片
   }
 
   &__title {
