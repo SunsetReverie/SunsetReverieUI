@@ -28,7 +28,7 @@
   background: color-mix(in srgb, var(--sr-tag-base) 13%, var(--sr-color-bg-container));
   color: color-mix(in oklab, var(--sr-tag-base) 82%, #000);
   // 只用同色柔光托住形状，不做顶部反光那种刻意的高光
-  box-shadow: 0 0 16px -3px color-mix(in srgb, var(--sr-tag-base) 62%, transparent);
+  box-shadow: 0 0 10px -5px color-mix(in srgb, var(--sr-tag-base) 45%, transparent);
   // 小面积上模糊看不出细节，但能让透出来的底色更均匀；flat 下为 none
   .sr-glass-layer(var(--sr-glass-filter));
   font-size: var(--sr-tag-font);
@@ -59,7 +59,7 @@
     border-color: color-mix(in srgb, var(--sr-tag-base) 45%, transparent);
     background: color-mix(in oklab, var(--sr-tag-base) 78%, #000);
     color: #fff;
-    box-shadow: 0 0 18px -3px color-mix(in srgb, var(--sr-tag-base) 70%, transparent);
+    box-shadow: 0 0 12px -5px color-mix(in srgb, var(--sr-tag-base) 55%, transparent);
   }
 
   &.is-round {
