@@ -188,6 +188,14 @@ function triggerLoading(): void {
         </div>
       </div>
 
+      <div class="tag-frost">
+        <SrTag type="primary">磨砂</SrTag>
+        <SrTag type="success">半透</SrTag>
+        <SrTag type="warning">柔光</SrTag>
+        <SrTag color="#8b5cf6" variant="dark">深色</SrTag>
+        <span class="tag-frost__hint">← 有色背景上才看得出背后被模糊</span>
+      </div>
+
       <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px">
         <SrTag color="#8b5cf6">自定义 #8b5cf6</SrTag>
         <SrTag color="#8b5cf6" variant="dark">深色</SrTag>
@@ -464,6 +472,25 @@ function triggerLoading(): void {
 </template>
 
 <style scoped>
+/* 给标签一块彩色渐变底，才看得出磨砂与半透 */
+.tag-frost {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: var(--sr-radius-sm);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 138, 76, 0.35) 0 12px, rgba(16, 185, 129, 0.32) 12px 24px),
+    var(--sr-color-bg-sunken);
+}
+
+.tag-frost__hint {
+  font-size: 12px;
+  color: var(--sr-color-text-tertiary);
+}
+
 .icon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));

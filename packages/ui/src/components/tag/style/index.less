@@ -22,10 +22,12 @@
   height: var(--sr-tag-height);
   box-sizing: border-box;
   padding: 0 var(--sr-tag-padding-x);
-  // 底色是「基色 + 容器色」的半透明混合，磨砂靠这层透明度 + 背后的模糊
-  border: 1px solid color-mix(in srgb, var(--sr-tag-base) 22%, transparent);
-  border-radius: var(--sr-radius-sm);
-  background: color-mix(in srgb, var(--sr-tag-base) 13%, var(--sr-color-bg-container));
+  // 半透磨砂面 + 背后模糊，靠这层透明度出玻璃感
+  border: 1px solid color-mix(in srgb, var(--sr-tag-base) 48%, transparent);
+  // 只加一点点圆角，太圆会像胶囊
+  border-radius: 6px;
+  // 纯基色半透，不做白色稀释：白色会把底色压实，通透感就没了
+  background: color-mix(in srgb, var(--sr-tag-base) 34%, transparent);
   color: color-mix(in oklab, var(--sr-tag-base) 82%, #000);
   // 只用同色柔光托住形状，不做顶部反光那种刻意的高光
   box-shadow: 0 0 10px -5px color-mix(in srgb, var(--sr-tag-base) 45%, transparent);
@@ -57,7 +59,8 @@
   // 深色档：实色底 + 白字。只压 22% 黑，避免变成近黑的重色块
   &.is-dark {
     border-color: color-mix(in srgb, var(--sr-tag-base) 45%, transparent);
-    background: color-mix(in oklab, var(--sr-tag-base) 78%, #000);
+    // 深色档留一成透明，避免变成死板色块
+    background: color-mix(in srgb, color-mix(in oklab, var(--sr-tag-base) 78%, #000) 90%, transparent);
     color: #fff;
     box-shadow: 0 0 12px -5px color-mix(in srgb, var(--sr-tag-base) 55%, transparent);
   }
