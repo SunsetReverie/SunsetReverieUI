@@ -24,5 +24,5 @@ export const themePresets: readonly SrThemePreset[] = [
   { key: 'dusk', label: '霞紫', primary: '#7A64B5', mood: '沉静，适合工具型产品' },
   { key: 'ember', label: '余烬红', primary: '#F5456B', mood: '张扬，强调行动' },
   { key: 'night', label: '暮蓝', primary: '#2578F5', mood: '克制，偏企业风格' },
-  { key: 'jade', label: '青苔绿', primary: '#2E9B4E', mood: '自然，偏内容型产品' },
+  { key: 'jade', label: '翡翠绿', primary: '#10B981', mood: '清新自然，偏内容型产品' },
 ]
