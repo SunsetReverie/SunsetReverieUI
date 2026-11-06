@@ -52,11 +52,10 @@
     width: var(--sr-radio-size, 18px);
     height: var(--sr-radio-size, 18px);
     box-sizing: border-box;
-    border: var(--sr-glass-border-width) solid var(--sr-control-border);
+    border: 1px solid var(--sr-color-border-strong);
     border-radius: var(--sr-radius-full);
-    background: var(--sr-control-bg);
-    box-shadow: var(--sr-control-shadow);
-    .sr-glass-layer(var(--sr-control-filter));
+    background: var(--sr-color-bg-container);
+    box-shadow: 0 1px 4px color-mix(in oklab, var(--sr-color-primary) 12%, transparent);
     transition:
       border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
@@ -79,6 +78,7 @@
   // ---------- 选中（0,3,0） ----------
   &.is-checked &__circle {
     border-color: var(--sr-color-primary);
+    box-shadow: 0 2px 10px color-mix(in oklab, var(--sr-color-primary) 34%, transparent);
   }
 
   &.is-checked &__dot {
@@ -98,6 +98,7 @@
     .sr-radio__circle {
       background: var(--sr-color-bg-disabled);
       border-color: var(--sr-color-border);
+      box-shadow: none;
     }
 
     .sr-radio__dot {

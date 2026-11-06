@@ -48,6 +48,13 @@ describe('SrCheckbox', () => {
     const wrapper = mount(SrCheckbox, { props: { size: 'lg' } })
     expect(wrapper.classes()).toContain('sr-checkbox--lg')
   })
+
+  it('半选优先于选中，勾与横线不会同时出现', () => {
+    const wrapper = mount(SrCheckbox, { props: { modelValue: true, indeterminate: true } })
+
+    expect(wrapper.classes()).toContain('is-indeterminate')
+    expect(wrapper.classes()).not.toContain('is-checked')
+  })
 })
 
 describe('SrCheckboxGroup', () => {
@@ -122,5 +129,34 @@ describe('SrCheckboxGroup', () => {
 
     expect(wrapper.find('input').attributes('disabled')).toBeDefined()
     expect(wrapper.find('.sr-checkbox').classes()).toContain('is-disabled')
+  })
+
+  it('组内不带 value 的全选框按独立模式工作，不污染数组', async () => {
+    const groupValue = ref<(string | number)[]>(['a'])
+    const allChecked = ref(false)
+
+    const wrapper = mount({
+      render: () =>
+        h(SrCheckboxGroup, { modelValue: groupValue.value }, () => [
+          h(SrCheckbox, {
+            label: '全选',
+            modelValue: allChecked.value,
+            'onUpdate:modelValue': (next: boolean) => {
+              allChecked.value = next
+            },
+          }),
+          h(SrCheckbox, { value: 'a', label: 'A' }),
+        ]),
+    })
+
+    // 全选框自身可见的选中态由 modelValue 决定，而不是被组当成 undefined 选项
+    expect(wrapper.findAll('.sr-checkbox')[0].classes()).not.toContain('is-checked')
+
+    await wrapper.findAll('input[type="checkbox"]')[0].setValue(true)
+    await nextTick()
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(allChecked.value).toBe(true)
+    expect(groupValue.value).toEqual(['a'])
   })
 })

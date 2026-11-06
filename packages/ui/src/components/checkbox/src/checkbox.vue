@@ -21,12 +21,18 @@ const group = inject(SR_CHECKBOX_GROUP_KEY, null)
 /** 原生 input */
 const inputRef = ref<HTMLInputElement | null>(null)
 
-/** 是否处于分组中 */
-const isGrouped = computed(() => group !== null)
+/**
+ * 是否真正作为「组内选项」工作
+ *
+ * 组里允许放不带 value 的独立复选框（典型场景：表头的全选/半选框）。
+ * 若只看 group 是否存在，会把它当成值为 undefined 的选项写进数组，
+ * 既污染绑定值，也让 update:modelValue 永远不触发。
+ */
+const isGrouped = computed(() => group !== null && props.value !== undefined)
 
 /** 是否选中 */
 const checked = computed(() => {
-  if (group) {
+  if (isGrouped.value && group) {
     return group.value.value.includes(props.value as SrCheckboxValue)
   }
   return props.modelValue
@@ -45,7 +51,7 @@ const resolvedSize = computed(() => props.size ?? config.value.size)
 function onChange(event: Event): void {
   const next = (event.target as HTMLInputElement).checked
 
-  if (group) {
+  if (isGrouped.value && group) {
     group.toggle(props.value as SrCheckboxValue, next)
   } else {
     emit('update:modelValue', next)
@@ -72,7 +78,8 @@ watchEffect(
     :class="[
       `sr-checkbox--${resolvedSize}`,
       {
-        'is-checked': checked,
+        // 半选是独立视觉状态，优先于 checked，否则勾和横线会叠在一起
+        'is-checked': checked && !indeterminate,
         'is-indeterminate': indeterminate,
         'is-disabled': isDisabled,
       },
