@@ -104,12 +104,25 @@ function onDocumentClick(event: MouseEvent): void {
 /** 合并到下一帧重算位置，避免滚动时逐像素读布局 */
 let rafId: number | undefined
 
-/** 视口或滚动位置变化时重新定位，否则面板会停在原处和触发器脱节 */
+/** 触发器是否还在视口内 */
+function isTriggerVisible(): boolean {
+  const rect = triggerRef.value?.getBoundingClientRect()
+  if (!rect) return false
+  return rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth
+}
+
+/** 视口或滚动位置变化时重新定位；触发器滚出视口则直接关掉 */
 function onViewportChange(): void {
   if (rafId !== undefined) return
   rafId = window.requestAnimationFrame(() => {
     rafId = undefined
     if (!visible.value) return
+
+    if (!isTriggerVisible()) {
+      close()
+      return
+    }
+
     updatePosition()
   })
 }

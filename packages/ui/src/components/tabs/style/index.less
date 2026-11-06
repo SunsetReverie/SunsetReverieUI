@@ -40,7 +40,9 @@
     display: flex;
     align-items: center;
     gap: var(--sr-space-1);
-    overflow-x: auto;
+    // 显式关掉纵向滚动：只写 overflow-x 会按规范把 y 也算成 auto，
+    // 卡片变体的负边距会把容器撑高一点点，鼠标一放上去就能滚
+    overflow: auto hidden;
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
@@ -109,12 +111,11 @@
   // ---------- 变体：连接式卡片 ----------
   // 选中项用内阴影画一条主色顶线，底部用容器色盖住 nav 下边线，与内容连成一片
   &--card &__nav {
-    gap: 4px;
+    gap: 0;
     border-bottom: 1px solid var(--sr-color-border);
   }
 
   &--card &__nav &__tab {
-    margin-bottom: -1px;
     border: 1px solid var(--sr-color-border);
     border-bottom: 0;
     border-radius: 6px 6px 0 0;
@@ -162,9 +163,9 @@
     border: 1px solid transparent;
     border-bottom: 0;
     border-radius: var(--sr-radius-full);
-    // 未选中也给一层极淡的主色底，避免整排只剩文字像没做完
+    // 未选中也给一层极淡的主色底，文字用次级色保证可读
     background: var(--sr-color-primary-alpha-08);
-    color: var(--sr-color-text-tertiary);
+    color: var(--sr-color-text-secondary);
 
     &.is-active {
       border-color: var(--sr-color-primary);
@@ -187,7 +188,8 @@
       flex: 0 0 auto;
       // 横向不需要滚动，纵向留给标签过多时
       overflow: hidden auto;
-      padding: 0 var(--sr-space-2) 0 0;
+      // 右侧不留内边距，激活条才能贴住竖线
+      padding: 0;
       border: 0;
       border-right: 1px solid var(--sr-color-border-subtle);
       border-radius: 0;
@@ -214,6 +216,11 @@
       flex: 1 1 auto;
       min-width: 0;
     }
+  }
+
+  // 卡片变体相邻标签共用一条边框，避免双线
+  &--card &__nav &__tab + &__tab {
+    border-left: 0;
   }
 
   // ---------- 透明模式：去掉背板与边框 ----------
