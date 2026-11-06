@@ -51,6 +51,10 @@ function collectNames(dir) {
 
 const names = [...new Set(dirs.flatMap(collectNames))].sort()
 
+// 手写列表而非 JSON.stringify：后者输出双引号，会被 prettier(singleQuote)
+// 在提交时改成单引号，导致「每次构建后工作区都脏」。
+const nameList = '[\n' + names.map((name) => `  '${name}',`).join('\n') + '\n]'
+
 for (const target of TARGETS) {
   const content = `/**
  * 组件清单（自动生成，请勿手改）
@@ -60,7 +64,7 @@ for (const target of TARGETS) {
  */
 
 /** 所有组件的 PascalCase 名（不含 Sr 前缀） */
-export const SR_COMPONENT_NAMES = ${JSON.stringify(names, null, 2)} as const
+export const SR_COMPONENT_NAMES = ${nameList} as const
 
 /** 组件名联合类型，供类型体操与文档生成使用 */
 export type SrComponentName = (typeof SR_COMPONENT_NAMES)[number]
