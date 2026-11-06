@@ -134,6 +134,29 @@ describe('SrTooltip', () => {
     wrapper.unmount()
   })
 
+  it('默认使用深色气泡', () => {
+    const wrapper = mountTooltip()
+    expect(wrapper.find('.sr-tooltip').classes()).toContain('sr-tooltip--dark')
+    wrapper.unmount()
+  })
+
+  it('variant 切换为白色气泡', () => {
+    const wrapper = mountTooltip({ variant: 'light' })
+    const floating = wrapper.find('.sr-tooltip')
+
+    expect(floating.classes()).toContain('sr-tooltip--light')
+    expect(floating.classes()).not.toContain('sr-tooltip--dark')
+    wrapper.unmount()
+  })
+
+  it('backgroundColor 通过内联变量覆盖预设底色', () => {
+    const wrapper = mountTooltip({ variant: 'light', backgroundColor: 'rgba(16, 185, 129, 0.9)' })
+    const style = wrapper.find('.sr-tooltip').attributes('style')
+
+    expect(style).toContain('--sr-tooltip-bg: rgba(16, 185, 129, 0.9)')
+    wrapper.unmount()
+  })
+
   it('方位生成对应类名', () => {
     const wrapper = mountTooltip({ placement: 'right-start' })
     expect(wrapper.find('.sr-tooltip').classes()).toContain('sr-tooltip--right-start')

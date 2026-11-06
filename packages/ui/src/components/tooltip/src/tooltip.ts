@@ -2,9 +2,22 @@ import type { ExtractPropTypes, PropType } from 'vue'
 
 import type { SrPlacement } from '../../../utils/floating'
 
+/** 气泡配色预设：dark 黑玻璃 / light 白玻璃 */
+export type SrTooltipVariant = 'dark' | 'light'
+
 export const tooltipProps = {
   /** 文本内容，也可用 content 插槽 */
   content: {
+    type: String,
+    default: '',
+  },
+  /** 配色预设：dark 黑玻璃（默认）/ light 白玻璃 */
+  variant: {
+    type: String as PropType<SrTooltipVariant>,
+    default: 'dark',
+  },
+  /** 自定义背景色（任意 CSS 颜色），设置后覆盖 variant 的底色 */
+  backgroundColor: {
     type: String,
     default: '',
   },

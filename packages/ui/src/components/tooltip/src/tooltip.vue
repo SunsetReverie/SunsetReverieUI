@@ -152,6 +152,8 @@ const floatingStyle = computed(() => ({
   left: `${position.value.left}px`,
   maxWidth: `${props.maxWidth}px`,
   '--sr-tooltip-z': String((config.value.zIndex || 1000) + 1002),
+  // 内联变量优先级高于样式表里的 preset，因此能直接覆盖底色
+  ...(props.backgroundColor ? { '--sr-tooltip-bg': props.backgroundColor } : {}),
 }))
 </script>
 
@@ -177,7 +179,12 @@ const floatingStyle = computed(() => ({
         :id="contentId"
         ref="floatingRef"
         class="sr-tooltip"
-        :class="[`sr-tooltip--${actualPlacement}`, { 'has-arrow': arrow }, attrs.class]"
+        :class="[
+          `sr-tooltip--${actualPlacement}`,
+          `sr-tooltip--${variant}`,
+          { 'has-arrow': arrow },
+          attrs.class,
+        ]"
         :style="floatingStyle"
         role="tooltip"
         v-bind="srOmit(attrs as Record<string, unknown>, ['class', 'style'])"

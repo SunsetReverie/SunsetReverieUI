@@ -265,6 +265,16 @@ export const qualityFlat: Record<string, string> = {
   // 复选框「一点点」圆角：比 radius-sm(2px) 明显，又不到 form-radius(6px) 那么圆润
   'control-radius': '4px',
 
+  // Switch 滑块：它是浮在轨道上的实体，flat 下就是纯白，不该透出轨道色
+  'switch-handle-bg': '#ffffff',
+  'switch-handle-shadow': 'var(--sr-shadow-sm)',
+
+  // Tooltip 黑 / 白两套预设底色，flat 下用实色
+  'tooltip-bg-dark': '#1c2027',
+  'tooltip-bg-light': '#ffffff',
+  'tooltip-border': 'var(--sr-color-border)',
+  'tooltip-border-light': 'var(--sr-color-border)',
+
   'shadow-sm': '0 1px 2px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 2px 8px rgba(16, 20, 26, 0.08)',
   'shadow-lg': '0 8px 24px rgba(16, 20, 26, 0.1)',
@@ -330,6 +340,18 @@ export const qualityGlass: Record<string, string> = {
   'glass-border-color': 'rgba(255, 255, 255, 0.55)',
 
   'control-radius': '4px',
+
+  // Switch 滑块原本取 --sr-color-bg-container(0.72)，叠在主色轨道上会透成浅蓝，
+  // 看着只是「变了透明度」。收实到 0.92，再补顶部高光与主色柔光做出体积感。
+  'switch-handle-bg': 'rgba(255, 255, 255, 0.92)',
+  'switch-handle-shadow': 'inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 8px rgba(16, 20, 26, 0.14)',
+
+  // Tooltip 换半透玻璃底，模糊与亮边由组件叠加
+  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.72)',
+  'tooltip-bg-light': 'rgba(255, 255, 255, 0.78)',
+  'tooltip-border': 'rgba(255, 255, 255, 0.4)',
+  // 白气泡叠在浅色页面上时白亮边会整个融掉，改用可见的深色细线
+  'tooltip-border-light': 'rgba(16, 20, 26, 0.16)',
 
   // 位移衰减：毛玻璃层内做位移动画会掉帧，距离减半
   'motion-distance-sm': '3px',

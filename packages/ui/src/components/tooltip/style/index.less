@@ -20,15 +20,33 @@
   z-index: var(--sr-tooltip-z, 3002);
   padding: 6px 10px;
   border-radius: var(--sr-radius-base);
-  background: var(--sr-color-bg-inverse);
-  color: var(--sr-color-text-inverse);
+  background: var(--sr-tooltip-bg, var(--sr-tooltip-bg-dark));
+  color: var(--sr-tooltip-fg, #fff);
   font-size: 12px;
   line-height: 1.5;
-  box-shadow: var(--sr-shadow-lg);
+  // 高光 + 一圈玻璃亮边 + 投影；flat 下高光是零尺寸透明阴影、亮边退回普通描边
+  box-shadow:
+    var(--sr-glass-highlight),
+    0 0 0 1px var(--sr-tooltip-border),
+    var(--sr-shadow-lg);
+  // 半透底必须配背景模糊才有磨砂感；flat 下该变量为 none
+  .sr-glass-layer(var(--sr-glass-filter));
   // 提示本身不接收鼠标事件：否则鼠标移入气泡会触发 trigger 的 mouseleave，
   // 造成反复闪烁
   pointer-events: none;
   word-break: break-word;
+
+  // 两套预设都独立于明暗主题：显式指定的黑/白气泡不应随主题翻转
+  &--dark {
+    --sr-tooltip-bg: var(--sr-tooltip-bg-dark);
+    --sr-tooltip-fg: #fff;
+  }
+
+  &--light {
+    --sr-tooltip-bg: var(--sr-tooltip-bg-light);
+    --sr-tooltip-fg: #1c2027;
+    --sr-tooltip-border: var(--sr-tooltip-border-light);
+  }
 
   &__content {
     display: block;
