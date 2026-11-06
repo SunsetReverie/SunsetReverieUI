@@ -82,7 +82,7 @@ function onMenuSelect(key: string): void {
 </script>
 
 <template>
-  <div>
+  <div class="display-page">
     <SrPanel title="卡片" description="容器型组件：头部 / 主体 / 底部三段，悬停可轻微上浮。">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
         <SrCard title="组件覆盖率" subtitle="近 7 天">
@@ -602,6 +602,13 @@ function onMenuSelect(key: string): void {
 </template>
 
 <style scoped>
+/* 面板自身不带外边距，间距由页面容器统一给 */
+.display-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-4);
+}
+
 .demo-block {
   display: inline-block;
   padding: 2px 10px;
