@@ -274,6 +274,10 @@ export const qualityFlat: Record<string, string> = {
   'tooltip-bg-light': '#ffffff',
   'tooltip-border': 'var(--sr-color-border)',
   'tooltip-border-light': 'var(--sr-color-border)',
+  // 单行气泡只有约 30px 高，跟随 glass 的 radius-base(12px) 会变成椭圆；
+  // 圆角固定小值，与表单控件一致
+  'tooltip-radius': '6px',
+  'tooltip-sheen': 'none',
 
   'shadow-sm': '0 1px 2px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 2px 8px rgba(16, 20, 26, 0.08)',
@@ -347,11 +351,16 @@ export const qualityGlass: Record<string, string> = {
   'switch-handle-shadow': 'inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 8px rgba(16, 20, 26, 0.14)',
 
   // Tooltip 换半透玻璃底，模糊与亮边由组件叠加
-  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.72)',
-  'tooltip-bg-light': 'rgba(255, 255, 255, 0.78)',
-  'tooltip-border': 'rgba(255, 255, 255, 0.4)',
+  // 气泡面积小，0.7+ 的不透明度会把模糊完全盖住，只显得「颜色变浅」。
+  // 放到 0.55 左右并配强模糊，才能看到背后被磨砂的内容
+  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.56)',
+  'tooltip-bg-light': 'rgba(255, 255, 255, 0.55)',
+  'tooltip-border': 'rgba(255, 255, 255, 0.62)',
   // 白气泡叠在浅色页面上时白亮边会整个融掉，改用可见的深色细线
-  'tooltip-border-light': 'rgba(16, 20, 26, 0.16)',
+  'tooltip-border-light': 'rgba(16, 20, 26, 0.2)',
+  'tooltip-radius': '6px',
+  // 斜向反光：玻璃片的标志，比单纯半透色块更容易被认出来
+  'tooltip-sheen': 'linear-gradient(155deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 55%)',
 
   // 位移衰减：毛玻璃层内做位移动画会掉帧，距离减半
   'motion-distance-sm': '3px',

@@ -19,8 +19,9 @@
   position: fixed;
   z-index: var(--sr-tooltip-z, 3002);
   padding: 6px 10px;
-  border-radius: var(--sr-radius-base);
-  background: var(--sr-tooltip-bg, var(--sr-tooltip-bg-dark));
+  border-radius: var(--sr-tooltip-radius);
+  background-color: var(--sr-tooltip-bg, var(--sr-tooltip-bg-dark));
+  background-image: var(--sr-tooltip-sheen, none);
   color: var(--sr-tooltip-fg, #fff);
   font-size: 12px;
   line-height: 1.5;
@@ -29,8 +30,9 @@
     var(--sr-glass-highlight),
     0 0 0 1px var(--sr-tooltip-border),
     var(--sr-shadow-lg);
-  // 半透底必须配背景模糊才有磨砂感；flat 下该变量为 none
-  .sr-glass-layer(var(--sr-glass-filter));
+  // 小面积浮层用强模糊档（28px + 增饱和），常规 16px 在气泡上几乎看不出；
+  // flat 下 strong 为 none，等价于不写
+  .sr-glass-layer(var(--sr-glass-filter-strong));
   // 提示本身不接收鼠标事件：否则鼠标移入气泡会触发 trigger 的 mouseleave，
   // 造成反复闪烁
   pointer-events: none;
@@ -56,7 +58,9 @@
     position: absolute;
     width: var(--sr-tooltip-arrow-size);
     height: var(--sr-tooltip-arrow-size);
-    background: inherit;
+    // 只继承底色，不要连斜向反光一起继承（小三角会花掉）
+    background-color: inherit;
+    background-image: none;
     // 旋转 45° 变成菱形，露出一半形成小三角
     transform: rotate(45deg);
   }
