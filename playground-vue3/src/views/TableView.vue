@@ -185,7 +185,7 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </SrTag>
         </template>
         <template #cell-actions>
-          <sr-button size="sm" variant="text">编辑</sr-button>
+          <sr-button size="sm" variant="secondary">编辑</sr-button>
         </template>
       </sr-table>
     </section>

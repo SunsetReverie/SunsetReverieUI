@@ -22,6 +22,34 @@
     // 滚动时不把滚动链传递给页面
     overscroll-behavior: contain;
     border-radius: var(--sr-radius-base);
+    // 细滚动条：默认那根太抢眼，和玻璃面板不搭
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--sr-color-text) 20%, transparent) transparent;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: var(--sr-radius-full);
+      background: color-mix(in srgb, var(--sr-color-text) 20%, transparent);
+      background-clip: content-box;
+
+      &:hover {
+        background: color-mix(in srgb, var(--sr-color-text) 34%, transparent);
+        background-clip: content-box;
+      }
+    }
+
+    &::-webkit-scrollbar-corner {
+      background: transparent;
+    }
   }
 
   &__inner {
@@ -288,15 +316,19 @@
 
 .sr-table__head th.is-fixed {
   z-index: 4;
-  // 表头同样叠一层，避免横向滚动的表头文字透到固定表头下面
-  background-image: linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
+  // 表头同样叠两层，避免横向滚动的表头文字透到固定表头下面
+  background-image:
+    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken)),
+    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
 }
 
 // 玻璃风格下容器色只有 0.72 不透明，单层会透出滚动过去的文字。
-// 底色 + 渐变各叠一层，把不透明度推到约 0.92，再配模糊就基本看不出残影了。
+// 底色 + 两层渐变叠加把不透明度推到约 0.98，固定列才够"实"。
 .sr-table__body td.is-fixed {
   background-color: var(--sr-color-bg-container);
-  background-image: linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container));
+  background-image:
+    linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container)),
+    linear-gradient(var(--sr-color-bg-container), var(--sr-color-bg-container));
   backdrop-filter: var(--sr-glass-filter);
 }
 
@@ -306,7 +338,9 @@
 
 .sr-table.is-stripe .sr-table__body .sr-table__row:nth-child(even) td.is-fixed {
   background-color: var(--sr-color-bg-sunken);
-  background-image: linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
+  background-image:
+    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken)),
+    linear-gradient(var(--sr-color-bg-sunken), var(--sr-color-bg-sunken));
   backdrop-filter: var(--sr-glass-filter);
 }
 
@@ -314,16 +348,28 @@
   background: color-mix(in srgb, var(--sr-color-text) 5%, var(--sr-color-bg-container));
 }
 
-// 左侧固定列右缘的投影，提示右边还有内容
+// 固定列边缘的投影：提示滚动方向两侧还有内容
 .sr-table__head th.is-fixed-left::after,
 .sr-table__body td.is-fixed-left::after {
   content: '';
   position: absolute;
   top: 0;
   bottom: -1px;
-  right: -6px;
-  width: 6px;
-  background: linear-gradient(to right, rgb(15 23 42 / 7%), transparent);
+  right: -8px;
+  width: 8px;
+  background: linear-gradient(to right, rgb(15 23 42 / 14%), transparent);
+  pointer-events: none;
+}
+
+.sr-table__head th.is-fixed-right::before,
+.sr-table__body td.is-fixed-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  left: -8px;
+  width: 8px;
+  background: linear-gradient(to left, rgb(15 23 42 / 14%), transparent);
   pointer-events: none;
 }
 
