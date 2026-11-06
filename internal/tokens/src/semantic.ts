@@ -99,10 +99,13 @@ export const semanticLight: Record<string, string> = {
   // on-solid 两套主题都是白色：实心按钮的文字不随主题翻转。
   // 因为文字固定为白，背景必须选足够深的色阶（尤其 warning，亮黄底白字不可读）。
   'color-on-solid': '#ffffff',
-  'color-solid-primary': 'var(--sr-sunset-500)',
-  'color-solid-success': 'var(--sr-success-600)',
-  'color-solid-warning': 'var(--sr-warning-600)',
-  'color-solid-danger': 'var(--sr-danger-500)',
+  // 必须引用语义变量而非硬编码色阶：主题色切换时 --sr-color-primary 会被
+  // 内联样式或 [data-sr-primary] 覆写，这里的 color-mix 会自动跟着重算。
+  // warning 基础色偏亮，压暗一档才能让白字达到可读对比度。
+  'color-solid-primary': 'var(--sr-color-primary)',
+  'color-solid-success': 'color-mix(in oklab, var(--sr-color-success) 88%, black)',
+  'color-solid-warning': 'color-mix(in oklab, var(--sr-color-warning) 78%, black)',
+  'color-solid-danger': 'var(--sr-color-danger)',
 
   // 文字专用主色：直接拿 sunset-500 当文字只有约 2.9:1，达不到正文 4.5:1
   'color-primary-text': 'var(--sr-sunset-700)',
@@ -182,10 +185,11 @@ export const semanticDark: Record<string, string> = {
   // 实心按钮：文字仍固定白色，背景改用 600 阶保证对比度
   // （暗色下原先的 400 阶太亮，白字会糊在一起）
   'color-on-solid': '#ffffff',
-  'color-solid-primary': 'var(--sr-sunset-600)',
-  'color-solid-success': 'var(--sr-success-600)',
-  'color-solid-warning': 'var(--sr-warning-600)',
-  'color-solid-danger': 'var(--sr-danger-600)',
+  // 同样从动态语义色派生；暗色下 400 阶太亮，统一压暗 22%
+  'color-solid-primary': 'color-mix(in oklab, var(--sr-color-primary) 78%, black)',
+  'color-solid-success': 'color-mix(in oklab, var(--sr-color-success) 78%, black)',
+  'color-solid-warning': 'color-mix(in oklab, var(--sr-color-warning) 78%, black)',
+  'color-solid-danger': 'color-mix(in oklab, var(--sr-color-danger) 78%, black)',
 
   'color-primary-text': 'var(--sr-sunset-300)',
   'color-primary-alpha-25': 'rgba(255, 139, 82, 0.25)',
