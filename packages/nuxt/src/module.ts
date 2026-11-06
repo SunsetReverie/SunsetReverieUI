@@ -107,6 +107,7 @@ const sunsetReverieModule: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOp
         { name: 'useSrBreakpoint', from: '@sunset-reverie/ui' },
         { name: 'useSrConfig', from: '@sunset-reverie/ui' },
         { name: 'srToast', from: '@sunset-reverie/ui' },
+        { name: 'srConfirm', from: '@sunset-reverie/ui' },
         { name: 'srMessage', from: '@sunset-reverie/ui' },
         { name: 'srNotification', from: '@sunset-reverie/ui' },
       ])

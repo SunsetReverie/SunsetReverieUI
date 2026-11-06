@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import {
   SrButton,
+  SrConfirm,
   SrInput,
   SrModal,
+  srConfirm,
   srMessage,
   srNotification,
   srToast,
@@ -25,6 +27,22 @@ const longOpen = ref(false)
 const outerOpen = ref(false)
 /** 内层弹窗 */
 const innerOpen = ref(false)
+/** 必须做选择 */
+const forceChoiceOpen = ref(false)
+/** 无头部弹窗 */
+const headlessOpen = ref(false)
+/** 声明式确认框：一个实例按类型切换 */
+const confirmOpen = ref(false)
+const confirmType = ref<'primary' | 'warning' | 'danger'>('primary')
+const CONFIRM_TEXT = {
+  primary: { title: '确认保存？', content: '保存后当前草稿会覆盖线上版本。' },
+  warning: { title: '当前配置尚未验证', content: '继续可能使用未经验证的参数，建议先跑一次检查。' },
+  danger: { title: '删除项目？', content: '项目及其下所有数据都会被移除，且无法恢复。' },
+}
+const confirmTitle = computed(() => CONFIRM_TEXT[confirmType.value].title)
+const confirmContent = computed(() => CONFIRM_TEXT[confirmType.value].content)
+/** 命令式确认框的用户选择 */
+const confirmResult = ref('尚未选择')
 /** 长内容页数 */
 const pages = Array.from({ length: 8 }, (_, index) => index + 1)
 
@@ -53,6 +71,52 @@ function showToast(type: 'info' | 'success' | 'warning' | 'error'): void {
 
 /** 全局消息类型 */
 type FeedbackType = 'info' | 'success' | 'warning' | 'error'
+
+/**
+ * 打开声明式确认框
+ * @param type 类型
+ */
+function openConfirm(type: 'primary' | 'warning' | 'danger'): void {
+  confirmType.value = type
+  confirmOpen.value = true
+}
+
+/**
+ * 命令式确认：await 用户选择
+ */
+async function confirmDelete(): Promise<void> {
+  const ok = await srConfirm.danger({
+    title: '删除这条记录？',
+    content: '删除后无法恢复，请确认是否继续。',
+    confirmText: '删除',
+  })
+  confirmResult.value = ok ? '用户选择「删除」' : '用户选择「取消」'
+}
+
+/**
+ * 命令式确认：onConfirm 返回 Promise 时按钮自动进入加载态
+ */
+async function confirmWithLoading(): Promise<void> {
+  const ok = await srConfirm({
+    title: '提交审核',
+    content: '点击确认后按钮进入加载态，等异步操作完成才关闭。',
+    onConfirm: () => new Promise<void>((resolve) => window.setTimeout(resolve, 1200)),
+  })
+  confirmResult.value = ok ? '异步操作完成' : '用户取消'
+}
+
+/**
+ * 命令式确认：隐藏取消按钮
+ */
+async function confirmNoCancel(): Promise<void> {
+  await srConfirm.primary({
+    title: '版本更新说明',
+    content: '这个确认框没有取消按钮，只能点确认。',
+    showCancel: false,
+    confirmText: '知道了',
+  })
+  confirmResult.value = '用户已确认'
+}
 
 /**
  * 弹出一条全局消息
@@ -177,6 +241,8 @@ onMounted(() => {
         <sr-button variant="secondary" @click="centeredOpen = true">垂直居中</sr-button>
         <sr-button variant="secondary" @click="longOpen = true">长内容滚动</sr-button>
         <sr-button variant="outline" @click="outerOpen = true">嵌套弹窗</sr-button>
+        <sr-button variant="outline" @click="forceChoiceOpen = true">必须做选择</sr-button>
+        <sr-button variant="outline" @click="headlessOpen = true">无头部</sr-button>
       </div>
     </section>
 
@@ -214,8 +280,38 @@ onMounted(() => {
       </div>
     </sr-modal>
 
-    <sr-modal v-model="outerOpen" title="外层弹窗" :width="480">
-      <p style="margin: 0 0 12px">点下面的按钮打开内层弹窗，再按 Esc —— 只会关闭内层。</p>
+    <sr-modal
+      v-model="forceChoiceOpen"
+      title="必须做选择"
+      :width="520"
+      :mask-closable="false"
+      :closable="false"
+      :esc-to-close="false"
+    >
+      <p style="margin: 0; line-height: 1.8; color: var(--sr-color-text-secondary)">
+        点击遮罩不会关闭，也没有关闭按钮，必须通过下方按钮做出选择。
+      </p>
+
+      <template #footer>
+        <sr-button variant="secondary" @click="forceChoiceOpen = false">放弃</sr-button>
+        <sr-button variant="primary" @click="forceChoiceOpen = false">确认</sr-button>
+      </template>
+    </sr-modal>
+
+    <sr-modal v-model="headlessOpen" :width="560" :closable="false">
+      <p style="margin: 0; line-height: 1.8; color: var(--sr-color-text-secondary)">
+        没有头部，也没有关闭按钮，宽度由 width 覆盖。
+      </p>
+
+      <template #footer>
+        <sr-button variant="primary" @click="headlessOpen = false">关闭</sr-button>
+      </template>
+    </sr-modal>
+
+    <sr-modal v-model="outerOpen" title="外层弹窗" :width="480" centered>
+      <p style="margin: 0 0 12px">
+        两层都垂直居中、叠在同一位置。点下面的按钮打开内层弹窗，再按 Esc —— 只会关闭内层。
+      </p>
       <sr-button variant="primary" @click="innerOpen = true">打开内层</sr-button>
 
       <sr-modal v-model="innerOpen" title="内层弹窗" centered :width="360">
@@ -289,6 +385,124 @@ onMounted(() => {
         <sr-button size="sm" variant="text" @click="srNotification.closeAll()">全部关闭</sr-button>
       </div>
     </section>
+
+    <section class="panel">
+      <h2 class="panel__title">确认框</h2>
+      <p class="panel__desc">
+        确认框不显示头部与右上角关闭按钮，焦点集中在「做选择」上。图标底色、图标与确认按钮始终同色，
+        不会出现红色图标配蓝色按钮。内部复用
+        <code style="font-family: var(--sr-font-family-mono)">SrModal</code>
+        的遮罩、焦点循环与 Esc 能力。
+      </p>
+
+      <h3 style="font-size: 14px; margin: 18px 0 8px">声明式用法（SrConfirm）</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap">
+        <sr-button variant="primary" @click="openConfirm('primary')">普通确认</sr-button>
+        <sr-button variant="secondary" @click="openConfirm('warning')">警告确认</sr-button>
+        <sr-button variant="danger" @click="openConfirm('danger')">危险确认</sr-button>
+      </div>
+
+      <h3 style="font-size: 14px; margin: 18px 0 8px">命令式用法（srConfirm）</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap">
+        <sr-button variant="primary" @click="confirmDelete">删除（await 结果）</sr-button>
+        <sr-button variant="secondary" @click="confirmWithLoading">带加载态</sr-button>
+        <sr-button variant="secondary" @click="confirmNoCancel">无取消按钮</sr-button>
+      </div>
+      <p style="margin: 12px 0 0; font-size: 13px; color: var(--sr-color-primary-text)">
+        {{ confirmResult }}
+      </p>
+
+      <h3 style="font-size: 14px; margin: 18px 0 8px">类型与视觉</h3>
+      <p style="margin: 0; font-size: 13px; line-height: 1.9; color: var(--sr-color-text-secondary)">
+        <code style="font-family: var(--sr-font-family-mono)">primary</code> 问号图标 + 主色底 +
+        主色确认按钮<br />
+        <code style="font-family: var(--sr-font-family-mono)">warning</code> 三角警告 + 警告色底 +
+        警告色确认按钮<br />
+        <code style="font-family: var(--sr-font-family-mono)">danger</code> 感叹号 + 危险色底 + 危险色确认按钮
+      </p>
+
+      <h3 style="font-size: 14px; margin: 18px 0 8px">SrConfirm Props / srConfirm Options 速查</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>字段</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>modelValue</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>显示状态，v-model（仅声明式）</td>
+          </tr>
+          <tr>
+            <td><code>type</code></td>
+            <td><code>'primary' | 'warning' | 'danger'</code></td>
+            <td><code>'primary'</code></td>
+            <td>图标、图标底色与确认按钮颜色</td>
+          </tr>
+          <tr>
+            <td><code>title</code> / <code>content</code></td>
+            <td><code>string</code></td>
+            <td><code>''</code></td>
+            <td>标题与说明；命令式直接调用时也可传字符串作为 content</td>
+          </tr>
+          <tr>
+            <td><code>confirmText</code> / <code>cancelText</code></td>
+            <td><code>string</code></td>
+            <td><code>'确认'</code> / <code>'取消'</code></td>
+            <td>按钮文案</td>
+          </tr>
+          <tr>
+            <td><code>showCancel</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>是否显示取消按钮</td>
+          </tr>
+          <tr>
+            <td><code>loading</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>确认按钮加载态，期间禁止关闭（仅声明式）</td>
+          </tr>
+          <tr>
+            <td><code>maskClosable</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>点击遮罩是否按「取消」处理</td>
+          </tr>
+          <tr>
+            <td><code>width</code></td>
+            <td><code>number | string</code></td>
+            <td><code>420</code></td>
+            <td>面板宽度</td>
+          </tr>
+          <tr>
+            <td><code>onConfirm</code></td>
+            <td><code>() =&gt; void | Promise&lt;void&gt;</code></td>
+            <td><code>—</code></td>
+            <td>仅命令式；返回 Promise 时自动 loading，完成后才 resolve(true)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin: 10px 0 0; font-size: 13px; color: var(--sr-color-text-secondary)">
+        命令式返回 <code style="font-family: var(--sr-font-family-mono)">Promise&lt;boolean&gt;</code>， 另有
+        <code style="font-family: var(--sr-font-family-mono)">srConfirm.primary / .warning / .danger</code>
+        快捷方法；同一时刻只保留一个确认框。
+      </p>
+    </section>
+
+    <SrConfirm
+      v-model="confirmOpen"
+      :type="confirmType"
+      :title="confirmTitle"
+      :content="confirmContent"
+      confirm-text="继续"
+      @confirm="confirmOpen = false"
+    />
 
     <section class="panel">
       <h2 class="panel__title">反馈组件 Options 速查</h2>

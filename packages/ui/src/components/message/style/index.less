@@ -45,7 +45,11 @@
 
   &__content {
     min-width: 0;
-    word-break: break-word;
+    // 离场时 sr-list-leave-active 会 position:absolute，宽度退回 shrink-to-fit，
+    // 不锁单行的话整句话会被压成竖排再消失
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   // ---------- 类型 ----------

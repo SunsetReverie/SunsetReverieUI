@@ -31,8 +31,8 @@
     position: absolute;
     inset: 0;
     background: var(--sr-color-mask);
-    // 遮罩用强模糊：把页面内容彻底揉开，面板的半透底才有「磨砂玻璃」可透
-    .sr-glass-layer(var(--sr-glass-filter-strong));
+    // 遮罩只做轻度磨砂：强模糊会把背景揉成一片糊，反而看不出层次
+    .sr-glass-layer(var(--sr-glass-filter));
   }
 
   &__panel {

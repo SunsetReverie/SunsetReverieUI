@@ -1,0 +1,102 @@
+// 确认框
+//
+// 独立面板而非嵌套 SrModal：确认框不需要头部 / 关闭按钮 / 三段式滚动区，
+// 独立实现也让「同时存在多个隐藏弹层」的场景不会渲染多余 Teleport DOM。
+// 不显示头部与右上角关闭按钮，焦点集中在做选择上。
+
+@import '../../../styles/mixins/index.less';
+// 按需引入时 resolver 只带本组件的 CSS，因此把依赖的组件规则一起带上。
+@import '../../button/style/index.less';
+@import '../../icon/style/index.less';
+
+.sr-confirm-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sr-confirm-z, 3004);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sr-space-4);
+}
+
+.sr-confirm-mask {
+  position: absolute;
+  inset: 0;
+  background: var(--sr-color-mask);
+  // 与弹窗遮罩保持同一档，不用强模糊
+  .sr-glass-layer(var(--sr-glass-filter));
+}
+
+.sr-confirm-panel {
+  position: relative;
+  width: var(--sr-confirm-width, 420px);
+  max-width: 100%;
+  border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+  border-radius: var(--sr-radius-md);
+  background: var(--sr-color-bg-modal);
+  box-shadow: var(--sr-shadow-xl), var(--sr-glass-highlight);
+  .sr-glass-layer(var(--sr-glass-filter-strong));
+  outline: none;
+}
+
+.sr-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sr-space-4);
+  padding: var(--sr-space-5);
+
+  // 图标砖与确认按钮始终同色，不会出现红色图标配蓝色按钮
+  &--primary {
+    --sr-confirm-accent: var(--sr-color-primary);
+  }
+
+  &--warning {
+    --sr-confirm-accent: var(--sr-color-warning);
+  }
+
+  &--danger {
+    --sr-confirm-accent: var(--sr-color-danger);
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-confirm-accent, var(--sr-color-primary));
+    color: #fff;
+  }
+
+  &__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-top: 2px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--sr-font-size-md);
+    font-weight: var(--sr-font-weight-semibold);
+    line-height: 1.5;
+  }
+
+  &__content {
+    margin: 6px 0 0;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-sm);
+    line-height: 1.7;
+    word-break: break-word;
+  }
+}
+
+.sr-confirm-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-3) var(--sr-space-5);
+  border-top: 1px solid var(--sr-color-border-subtle);
+}
