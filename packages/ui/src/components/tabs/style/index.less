@@ -151,21 +151,24 @@
     }
   }
 
-  // ---------- 变体：软标签 ----------
-  // 小圆角 + 主色淡底，不做成胶囊
+  // ---------- 变体：胶囊分段 ----------
+  // 选中项主色实底 + 白字 + 柔光，未选中留空，适合主题切换这类互斥选项
   &--pill &__nav {
-    gap: 6px;
+    gap: 8px;
   }
 
   &--pill &__nav &__tab {
+    padding: 0 var(--sr-space-4);
     border: 1px solid transparent;
     border-bottom: 0;
-    border-radius: 8px;
+    border-radius: var(--sr-radius-full);
+    color: var(--sr-color-text-tertiary);
 
     &.is-active {
-      border-color: color-mix(in srgb, var(--sr-color-primary) 30%, transparent);
-      background: var(--sr-color-primary-alpha-12);
-      color: var(--sr-color-primary-text);
+      border-color: var(--sr-color-primary);
+      background: var(--sr-color-primary);
+      color: #fff;
+      box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--sr-color-primary) 70%, transparent);
     }
   }
 
@@ -228,8 +231,7 @@
   }
 
   &.is-plain.sr-tabs--card .sr-tabs__tab,
-  &.is-plain.sr-tabs--segment .sr-tabs__tab,
-  &.is-plain.sr-tabs--pill .sr-tabs__tab {
+  &.is-plain.sr-tabs--segment .sr-tabs__tab {
     border: 0;
     border-radius: 8px;
     background: transparent;
@@ -238,6 +240,17 @@
     &.is-active {
       background: var(--sr-color-primary-alpha-08);
       box-shadow: none;
+    }
+  }
+
+  // 胶囊变体的实色填充是它的识别特征，透明模式只去掉未选中项的背景
+  &.is-plain.sr-tabs--pill .sr-tabs__tab {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+
+    &.is-active {
+      background: var(--sr-color-primary);
     }
   }
 }

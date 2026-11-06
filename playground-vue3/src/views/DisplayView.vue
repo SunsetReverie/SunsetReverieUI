@@ -55,7 +55,7 @@ const { mode, style, preset, setTheme, setStyle, setPreset, resetPrimaryColor } 
 const themeItems = [
   { key: 'light', label: '亮色' },
   { key: 'dark', label: '暗色' },
-  { key: 'system', label: '跟随系统' },
+  { key: 'auto', label: '跟随系统' },
 ]
 
 /** 风格选项 */
@@ -72,7 +72,7 @@ const currentTheme = computed(() => mode.value)
  * @param key 主题 key
  */
 function onThemeChange(key: string): void {
-  setTheme(key as 'light' | 'dark' | 'system')
+  setTheme(key as 'light' | 'dark' | 'auto')
 }
 
 /**
@@ -85,7 +85,7 @@ function onStyleChange(key: string): void {
 
 /** 恢复默认外观 */
 function resetAppearance(): void {
-  setTheme('system')
+  setTheme('auto')
   setStyle('glass')
   resetPrimaryColor()
 }
@@ -502,7 +502,7 @@ function onMenuSelect(key: string): void {
               <SrTabs
                 :items="themeItems"
                 :model-value="currentTheme"
-                type="segment"
+                type="pill"
                 size="sm"
                 @update:model-value="onThemeChange"
               />
@@ -530,7 +530,7 @@ function onMenuSelect(key: string): void {
               <SrTabs
                 :items="styleItems"
                 :model-value="style"
-                type="segment"
+                type="pill"
                 size="sm"
                 @update:model-value="onStyleChange"
               />
