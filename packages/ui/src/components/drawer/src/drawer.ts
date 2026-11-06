@@ -60,6 +60,14 @@ export const drawerProps = {
     type: Boolean,
     default: true,
   },
+  /**
+   * 内嵌形态：不贴视口边缘，四周留出间距、四角圆角。
+   * 玻璃质感在这种形态下才看得出来
+   */
+  inset: {
+    type: Boolean,
+    default: false,
+  },
   /** 显示遮罩 */
   mask: {
     type: Boolean,

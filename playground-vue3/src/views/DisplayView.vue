@@ -136,6 +136,7 @@ const drawerLeft = ref(false)
 const drawerTop = ref(false)
 const drawerSm = ref(false)
 const drawerLg = ref(false)
+const drawerInset = ref(false)
 
 /** 下拉选择结果 */
 const lastAction = ref('—')
@@ -553,6 +554,7 @@ function onMenuSelect(key: string): void {
         <SrButton size="sm" variant="outline" @click="drawerTop = true">顶部</SrButton>
         <SrButton size="sm" variant="outline" @click="drawerSm = true">size = sm（320）</SrButton>
         <SrButton size="sm" variant="outline" @click="drawerLg = true">size = lg（600）</SrButton>
+        <SrButton size="sm" variant="primary" @click="drawerInset = true">内嵌圆角</SrButton>
       </div>
 
       <SrDrawer v-model="drawerRight" title="筛选条件" subtitle="">
@@ -578,6 +580,13 @@ function onMenuSelect(key: string): void {
 
       <SrDrawer v-model="drawerLg" title="宽抽屉" size="lg" :z-index="2400">
         <p style="margin: 0">size 传预设 lg，宽度 600px；同时用 z-index 抬高层级。</p>
+      </SrDrawer>
+
+      <SrDrawer v-model="drawerInset" title="内嵌抽屉" inset :size="420">
+        <p style="margin: 0 0 12px">
+          <code>inset</code> 让抽屉与视口四周留出 12px，四角圆角，玻璃质感在这种形态下最明显。
+        </p>
+        <SrEmpty description="内容区透出背后的页面" size="sm" />
       </SrDrawer>
     </SrPanel>
 
