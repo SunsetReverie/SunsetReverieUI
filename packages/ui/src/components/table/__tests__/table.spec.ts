@@ -349,7 +349,7 @@ describe('SrTable 其他', () => {
     })
 
     expect(wrapper.findAll('.sr-table__body .sr-table__row')).toHaveLength(2)
-    expect(wrapper.find('.sr-table__total').text()).toContain('3')
+    expect(wrapper.find('.sr-pagination__total').text()).toContain('3')
 
     wrapper.unmount()
   })
@@ -360,9 +360,8 @@ describe('SrTable 其他', () => {
       attachTo: document.body,
     })
 
-    const buttons = wrapper.findAll('.sr-table__pager-btn')
-    // 上一页 / 1 / 2 / 下一页
-    await buttons.at(-1)?.trigger('click')
+    // 3 条 / 每页 2 条共 2 页，点第二个页码
+    await wrapper.findAll('.sr-pagination__page')[1]?.trigger('click')
     await nextTick()
 
     expect(wrapper.emitted('update:page')?.[0]).toEqual([2])

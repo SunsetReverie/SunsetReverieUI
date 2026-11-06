@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { SrButton, SrIcon, SrTag } from '@sunset-reverie/ui'
+import { SrButton, SrIcon, SrPagination, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ComponentsView' })
 
@@ -10,6 +10,13 @@ const variants = ['primary', 'secondary', 'outline', 'text', 'success', 'warning
 
 /** 标签语义类型 */
 const tagTypes = ['default', 'primary', 'info', 'success', 'warning', 'danger'] as const
+
+/** 分页演示：当前页 */
+const page = ref(1)
+/** 分页演示：每页条数 */
+const pageSize = ref(10)
+/** 分页演示：简洁模式的当前页 */
+const simplePage = ref(1)
 
 /** 可关闭标签的演示数据 */
 const closableTags = ref(['设计', '开发', '测试'])
@@ -281,6 +288,121 @@ function triggerLoading(): void {
             <td><code>boolean</code></td>
             <td><code>false</code></td>
             <td>胶囊圆角</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">分页</h2>
+      <p class="panel__desc">
+        页码 / 每页条数 / 跳转。当前第 <strong>{{ page }}</strong> 页，每页
+        <strong>{{ pageSize }}</strong> 条，共 120 条。
+      </p>
+
+      <SrPagination v-model="page" v-model:page-size="pageSize" :total="120" show-jumper />
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">简洁模式</h3>
+      <SrPagination v-model="simplePage" :total="120" simple :show-total="false" />
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">尺寸</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+        <SrPagination v-for="size in sizes" :key="size" :size="size" :total="80" />
+      </div>
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">SrPagination Props 速查</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>modelValue</code></td>
+            <td><code>number</code></td>
+            <td><code>1</code></td>
+            <td>当前页，支持 v-model</td>
+          </tr>
+          <tr>
+            <td><code>total</code></td>
+            <td><code>number</code></td>
+            <td><code>0</code></td>
+            <td>总条数，决定页数</td>
+          </tr>
+          <tr>
+            <td><code>pageSize</code></td>
+            <td><code>number</code></td>
+            <td><code>10</code></td>
+            <td>每页条数，支持 v-model:page-size</td>
+          </tr>
+          <tr>
+            <td><code>pageSizeOptions</code></td>
+            <td><code>number[]</code></td>
+            <td><code>[10, 20, 50]</code></td>
+            <td>可切换的每页条数；空数组则隐藏切换器</td>
+          </tr>
+          <tr>
+            <td><code>showTotal</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>显示「共 N 条」</td>
+          </tr>
+          <tr>
+            <td><code>showSizer</code></td>
+            <td><code>boolean</code></td>
+            <td><code>true</code></td>
+            <td>显示每页条数切换器</td>
+          </tr>
+          <tr>
+            <td><code>showJumper</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>显示跳页输入框</td>
+          </tr>
+          <tr>
+            <td><code>simple</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>简洁模式，只留上一页 / 下一页</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
+            <td>全局配置</td>
+            <td>尺寸档位</td>
+          </tr>
+          <tr>
+            <td><code>disabled</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>禁用整个分页</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">事件</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>事件</th>
+            <th>参数</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>change</code></td>
+            <td><code>(page, pageSize)</code></td>
+            <td>页码或每页条数变化</td>
+          </tr>
+          <tr>
+            <td><code>size-change</code></td>
+            <td><code>(pageSize)</code></td>
+            <td>每页条数变化，页码会重置为 1</td>
           </tr>
         </tbody>
       </table>

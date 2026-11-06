@@ -1,0 +1,114 @@
+// 分页
+//
+// 尺寸用 CSS 变量下发，四个档位不重复写规则。
+// 页码按钮与「上一页 / 下一页」共用一套外观，当前页换主色实底。
+
+@import '../../../styles/mixins/index.less';
+// 按需引入时 resolver 只带本组件的 CSS，因此把依赖的输入框与下拉规则一起带上。
+@import '../../input/style/index.less';
+@import '../../select/style/index.less';
+
+.sr-pagination {
+  --sr-pagination-size: 32px;
+  --sr-pagination-font: 13px;
+
+  display: flex;
+  align-items: center;
+  gap: var(--sr-space-2);
+  flex-wrap: wrap;
+  font-size: var(--sr-pagination-font);
+
+  &--xs {
+    --sr-pagination-size: 24px;
+    --sr-pagination-font: 12px;
+  }
+
+  &--sm {
+    --sr-pagination-size: 28px;
+    --sr-pagination-font: 13px;
+  }
+
+  &--lg {
+    --sr-pagination-size: 36px;
+    --sr-pagination-font: 15px;
+  }
+
+  &.is-disabled {
+    opacity: 0.6;
+  }
+
+  &__total {
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__simple {
+    padding: 0 var(--sr-space-2);
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__btn,
+  &__page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--sr-pagination-size);
+    height: var(--sr-pagination-size);
+    padding: 0 var(--sr-space-2);
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: inherit;
+    cursor: pointer;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--sr-color-primary);
+      color: var(--sr-color-primary-text);
+      background: var(--sr-color-bg-hover);
+    }
+
+    // 激活态要连 hover 一起盖住，否则鼠标停在当前页上会退回浅底
+    &.is-active,
+    &.is-active:hover:not(:disabled) {
+      border-color: var(--sr-color-primary);
+      background: var(--sr-color-primary);
+      color: #fff;
+      font-weight: var(--sr-font-weight-medium);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  &__gap {
+    padding: 0 2px;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  // 子组件根节点上带的是这两个类，单独写会输给 .sr-select / .sr-input 的宽度规则，
+  // 嵌在 .sr-pagination 里抬一层特异性
+  .sr-pagination__sizer {
+    width: 118px;
+  }
+
+  .sr-pagination__jumper-input {
+    width: 68px;
+  }
+
+  &__jumper {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sr-space-1);
+    color: var(--sr-color-text-secondary);
+  }
+}

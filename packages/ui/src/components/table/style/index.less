@@ -365,65 +365,10 @@
 }
 
 // ---------- 分页 ----------
+// 外观由 SrPagination 提供，这里只管它在表格下方的间距
 
 .sr-table__pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sr-space-3);
-  flex-wrap: wrap;
   padding: var(--sr-space-3) 0 0;
-}
-
-.sr-table__total {
-  color: var(--sr-color-text-tertiary);
-  font-size: 13px;
-}
-
-.sr-table__pager {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.sr-table__pager-btn {
-  min-width: 30px;
-  height: 30px;
-  padding: 0 9px;
-  border: 1px solid var(--sr-color-border);
-  border-radius: var(--sr-radius-sm);
-  background: var(--sr-color-bg-container);
-  color: var(--sr-color-text-secondary);
-  font-size: 13px;
-  cursor: pointer;
-  transition:
-    color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-    border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    border-color: var(--sr-color-primary);
-    color: var(--sr-color-primary-text);
-    background: var(--sr-color-bg-hover);
-  }
-
-  &.is-active {
-    border-color: var(--sr-color-primary);
-    background: var(--sr-color-primary);
-    color: #fff;
-    font-weight: var(--sr-font-weight-medium);
-  }
-}
-
-.sr-table__pager-gap {
-  padding: 0 2px;
-  color: var(--sr-color-text-tertiary);
-  font-size: 13px;
 }
 
 // ---------- 懒加载 ----------

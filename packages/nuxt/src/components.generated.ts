@@ -19,6 +19,7 @@ export const SR_COMPONENT_NAMES = [
   'Input',
   'InputNumber',
   'Modal',
+  'Pagination',
   'Radio',
   'RadioGroup',
   'Row',

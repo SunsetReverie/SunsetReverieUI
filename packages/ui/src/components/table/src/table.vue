@@ -7,6 +7,7 @@ import type { SrSize } from '../../../types/config'
 import { srOmit } from '../../../utils/attrs'
 import SrCheckbox from '../../checkbox/src/checkbox.vue'
 import SrIcon from '../../icon/src/icon.vue'
+import SrPagination from '../../pagination/src/pagination.vue'
 import SrSpinner from '../../spinner/src/spinner.vue'
 import {
   TABLE_SIZE_MAP,
@@ -156,21 +157,6 @@ const visibleData = computed<SrTableRow[]>(() => {
   if (!paged.value) return displayData.value
   const start = (innerPage.value - 1) * pageSizeResolved.value
   return displayData.value.slice(start, start + pageSizeResolved.value)
-})
-
-/** 页码列表，超过 7 页时用省略号收拢 */
-const pageList = computed<(number | '...')[]>(() => {
-  const total = pageCount.value
-  if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1)
-
-  const pages: (number | '...')[] = [1]
-  const start = Math.max(2, innerPage.value - 1)
-  const end = Math.min(total - 1, innerPage.value + 1)
-  if (start > 2) pages.push('...')
-  for (let index = start; index <= end; index += 1) pages.push(index)
-  if (end < total - 1) pages.push('...')
-  pages.push(total)
-  return pages
 })
 
 /**
@@ -638,43 +624,16 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- ---------- 分页 ---------- -->
-    <div v-if="paged" class="sr-table__pagination">
-      <span class="sr-table__total">共 {{ displayData.length }} 条</span>
-
-      <div class="sr-table__pager">
-        <button
-          class="sr-table__pager-btn"
-          type="button"
-          :disabled="innerPage <= 1"
-          @click="goPage(innerPage - 1)"
-        >
-          上一页
-        </button>
-
-        <template v-for="(item, index) in pageList" :key="`${item}-${index}`">
-          <span v-if="item === '...'" class="sr-table__pager-gap">…</span>
-          <button
-            v-else
-            class="sr-table__pager-btn"
-            :class="{ 'is-active': item === innerPage }"
-            type="button"
-            @click="goPage(Number(item))"
-          >
-            {{ item }}
-          </button>
-        </template>
-
-        <button
-          class="sr-table__pager-btn"
-          type="button"
-          :disabled="innerPage >= pageCount"
-          @click="goPage(innerPage + 1)"
-        >
-          下一页
-        </button>
-      </div>
-    </div>
+    <!-- ---------- 分页：复用 SrPagination ---------- -->
+    <sr-pagination
+      v-if="paged"
+      class="sr-table__pagination"
+      :model-value="innerPage"
+      :total="displayData.length"
+      :page-size="pageSizeResolved"
+      :show-sizer="false"
+      @update:model-value="goPage"
+    />
 
     <!-- ---------- 懒加载底栏 ---------- -->
     <div v-if="lazy" class="sr-table__lazy">
