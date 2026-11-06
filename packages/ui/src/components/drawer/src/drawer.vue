@@ -88,6 +88,10 @@ watch(
   (open) => {
     emit('visible-change', open)
 
+    // 服务端没有 document：immediate 会在 setup 阶段就跑到这里，
+    // 不加判断会直接抛 "document is not defined"，整个 SSR 渲染失败
+    if (typeof document === 'undefined') return
+
     if (open) {
       if (props.lockScroll && !locked.value) {
         srLockScroll()
@@ -110,6 +114,7 @@ watch(
 )
 
 onScopeDispose(() => {
+  if (typeof document === 'undefined') return
   document.removeEventListener('keydown', onKeydown, true)
   if (locked.value) {
     srUnlockScroll()
