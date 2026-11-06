@@ -272,7 +272,6 @@ export const qualityFlat: Record<string, string> = {
   // Tooltip 黑 / 白两套预设底色，flat 下用实色
   'tooltip-bg-dark': '#1c2027',
   'tooltip-bg-light': '#ffffff',
-  'tooltip-border': 'var(--sr-color-border)',
   'tooltip-border-light': 'var(--sr-color-border)',
   // 单行气泡只有约 30px 高，跟随 glass 的 radius-base(12px) 会变成椭圆；
   // 圆角固定小值，与表单控件一致
@@ -353,9 +352,9 @@ export const qualityGlass: Record<string, string> = {
   // Tooltip 换半透玻璃底，模糊与亮边由组件叠加
   // 气泡面积小，0.7+ 的不透明度会把模糊完全盖住，只显得「颜色变浅」。
   // 放到 0.55 左右并配强模糊，才能看到背后被磨砂的内容
-  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.56)',
-  'tooltip-bg-light': 'rgba(255, 255, 255, 0.55)',
-  'tooltip-border': 'rgba(255, 255, 255, 0.62)',
+  // 黑气泡太透会发灰、文字发虚；收实到 0.82，玻璃感交给模糊 / 高光 / 反光
+  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.82)',
+  'tooltip-bg-light': 'rgba(255, 255, 255, 0.72)',
   // 白气泡叠在浅色页面上时白亮边会整个融掉，改用可见的深色细线
   'tooltip-border-light': 'rgba(16, 20, 26, 0.2)',
   'tooltip-radius': '6px',

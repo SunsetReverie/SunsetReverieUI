@@ -18,49 +18,60 @@
 
   position: fixed;
   z-index: var(--sr-tooltip-z, 3002);
-  padding: 6px 10px;
-  border-radius: var(--sr-tooltip-radius);
-  background-color: var(--sr-tooltip-bg, var(--sr-tooltip-bg-dark));
-  background-image: var(--sr-tooltip-sheen, none);
   color: var(--sr-tooltip-fg, #fff);
   font-size: 12px;
   line-height: 1.5;
-  // 高光 + 一圈玻璃亮边 + 投影；flat 下高光是零尺寸透明阴影、亮边退回普通描边
-  box-shadow:
-    var(--sr-glass-highlight),
-    0 0 0 1px var(--sr-tooltip-border),
-    var(--sr-shadow-lg);
-  // 小面积浮层用强模糊档（28px + 增饱和），常规 16px 在气泡上几乎看不出；
-  // flat 下 strong 为 none，等价于不写
-  .sr-glass-layer(var(--sr-glass-filter-strong));
   // 提示本身不接收鼠标事件：否则鼠标移入气泡会触发 trigger 的 mouseleave，
   // 造成反复闪烁
   pointer-events: none;
   word-break: break-word;
 
+  // 表面单独一层绘制：让小三角可以垫在它下面，重叠的一半被盖住，
+  // 不会出现「半透明叠两次 → 三角比气泡更深」的拼接线
+  &::before {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--sr-tooltip-radius);
+    background-color: var(--sr-tooltip-bg, var(--sr-tooltip-bg-dark));
+    background-image: var(--sr-tooltip-sheen, none);
+    // 深色气泡不要白色亮边；浅色气泡在浅背景上仍需一条淡边勾轮廓
+    box-shadow: var(--sr-tooltip-highlight), var(--sr-tooltip-ring), var(--sr-shadow-lg);
+    // 小面积浮层用强模糊档；flat 下 strong 为 none
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+    content: '';
+  }
+
   // 两套预设都独立于明暗主题：显式指定的黑/白气泡不应随主题翻转
   &--dark {
     --sr-tooltip-bg: var(--sr-tooltip-bg-dark);
     --sr-tooltip-fg: #fff;
+    // 深色气泡不要任何白色描边/高光线，避免看起来像镶了一圈白边
+    --sr-tooltip-ring: 0 0 0 0 transparent;
+    --sr-tooltip-highlight: 0 0 0 0 transparent;
   }
 
   &--light {
     --sr-tooltip-bg: var(--sr-tooltip-bg-light);
     --sr-tooltip-fg: #1c2027;
-    --sr-tooltip-border: var(--sr-tooltip-border-light);
+    --sr-tooltip-ring: 0 0 0 1px var(--sr-tooltip-border-light);
+    --sr-tooltip-highlight: var(--sr-glass-highlight);
   }
 
   &__content {
+    position: relative;
+    z-index: 1;
     display: block;
+    padding: 6px 10px;
   }
 
   &__arrow {
     position: absolute;
+    z-index: -1;
     width: var(--sr-tooltip-arrow-size);
     height: var(--sr-tooltip-arrow-size);
-    // 只继承底色，不要连斜向反光一起继承（小三角会花掉）
-    background-color: inherit;
-    background-image: none;
+    // 与气泡表面同底色、同模糊；因为垫在下层，露在外面的那一半颜色才一致
+    background-color: var(--sr-tooltip-bg, var(--sr-tooltip-bg-dark));
+    .sr-glass-layer(var(--sr-glass-filter-strong));
     // 旋转 45° 变成菱形，露出一半形成小三角
     transform: rotate(45deg);
   }
