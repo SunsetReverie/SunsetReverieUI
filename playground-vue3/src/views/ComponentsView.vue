@@ -16,44 +16,44 @@ const sizes = ['xs', 'sm', 'md', 'lg'] as const
  * 这些名字会被 gen-offline-icons 扫描并收录进离线集合
  */
 const iconCatalog = [
-  { name: 'mdi:home', label: '主页' },
-  { name: 'mdi:magnify', label: '搜索' },
-  { name: 'mdi:check', label: '确认' },
-  { name: 'mdi:check-circle', label: '已完成' },
-  { name: 'mdi:close', label: '关闭' },
-  { name: 'mdi:close-circle', label: '取消' },
-  { name: 'mdi:alert', label: '警告' },
-  { name: 'mdi:information', label: '信息' },
-  { name: 'mdi:delete', label: '删除' },
-  { name: 'mdi:pencil', label: '编辑' },
-  { name: 'mdi:eye', label: '可见' },
-  { name: 'mdi:eye-off', label: '隐藏' },
-  { name: 'mdi:plus', label: '新增' },
-  { name: 'mdi:image', label: '图片' },
-  { name: 'mdi:play', label: '播放' },
-  { name: 'mdi:music-note', label: '音乐' },
-  { name: 'mdi:download', label: '下载' },
-  { name: 'mdi:loading', label: '加载' },
-  { name: 'ph:sun', label: '亮色' },
-  { name: 'ph:moon-stars', label: '暗色' },
-  { name: 'ph:gear-six', label: '设置' },
+  { name: 'lucide:house', label: '主页' },
+  { name: 'lucide:search', label: '搜索' },
+  { name: 'lucide:check', label: '确认' },
+  { name: 'lucide:circle-check', label: '已完成' },
+  { name: 'lucide:x', label: '关闭' },
+  { name: 'lucide:circle-x', label: '取消' },
+  { name: 'lucide:triangle-exclamation-point', label: '警告' },
+  { name: 'lucide:info', label: '信息' },
+  { name: 'lucide:trash', label: '删除' },
+  { name: 'lucide:pencil', label: '编辑' },
+  { name: 'lucide:eye', label: '可见' },
+  { name: 'lucide:eye-off', label: '隐藏' },
+  { name: 'lucide:plus', label: '新增' },
+  { name: 'lucide:image', label: '图片' },
+  { name: 'lucide:play', label: '播放' },
+  { name: 'lucide:music', label: '音乐' },
+  { name: 'lucide:download', label: '下载' },
+  { name: 'lucide:loader-circle', label: '加载' },
+  { name: 'lucide:sun', label: '亮色' },
+  { name: 'lucide:moon-star', label: '暗色' },
+  { name: 'lucide:settings', label: '设置' },
 ]
 
 /** 颜色继承演示：图标都不传 color，靠父级 currentColor 上色 */
 const colorDemos = [
-  { icon: 'mdi:image', color: 'var(--sr-color-info)', label: '蓝色 · 图片' },
-  { icon: 'mdi:play', color: 'var(--sr-color-success)', label: '绿色 · 播放' },
-  { icon: 'mdi:music-note', color: 'var(--sr-color-warning)', label: '橙色 · 音乐' },
+  { icon: 'lucide:image', color: 'var(--sr-color-info)', label: '蓝色 · 图片' },
+  { icon: 'lucide:play', color: 'var(--sr-color-success)', label: '绿色 · 播放' },
+  { icon: 'lucide:music', color: 'var(--sr-color-warning)', label: '橙色 · 音乐' },
 ]
 
 /** 变换演示：每项都有明确说明 */
 const transformDemos = [
-  { label: 'spin 匀速旋转', name: 'mdi:loading', props: { spin: true } },
-  { label: 'rotate 45°', name: 'mdi:plus', props: { rotate: 45 } },
-  { label: 'rotate 90°', name: 'mdi:download', props: { rotate: 90 } },
-  { label: 'flip 水平', name: 'mdi:pencil', props: { flip: 'horizontal' } },
-  { label: 'flip 垂直', name: 'mdi:download', props: { flip: 'vertical' } },
-  { label: 'flip 双向', name: 'mdi:play', props: { flip: 'both' } },
+  { label: 'spin 匀速旋转', name: 'lucide:loader-circle', props: { spin: true } },
+  { label: 'rotate 45°', name: 'lucide:plus', props: { rotate: 45 } },
+  { label: 'rotate 90°', name: 'lucide:download', props: { rotate: 90 } },
+  { label: 'flip 水平', name: 'lucide:pencil', props: { flip: 'horizontal' } },
+  { label: 'flip 垂直', name: 'lucide:download', props: { flip: 'vertical' } },
+  { label: 'flip 双向', name: 'lucide:play', props: { flip: 'both' } },
 ] as const
 
 /** 加载态演示 */
@@ -284,16 +284,16 @@ function triggerLoading(): void {
       </div>
 
       <div class="icon-demo-row" style="margin-top: 16px">
-        <sr-button variant="primary" icon="mdi:plus">继承按钮文字色</sr-button>
-        <sr-button variant="success" icon="mdi:check">成功</sr-button>
-        <sr-button variant="warning" icon="mdi:alert">警告</sr-button>
-        <sr-button variant="text" icon="mdi:music-note">文字按钮也继承</sr-button>
+        <sr-button variant="primary" icon="lucide:plus">继承按钮文字色</sr-button>
+        <sr-button variant="success" icon="lucide:check">成功</sr-button>
+        <sr-button variant="warning" icon="lucide:triangle-exclamation-point">警告</sr-button>
+        <sr-button variant="text" icon="lucide:music">文字按钮也继承</sr-button>
       </div>
 
       <p class="panel__desc" style="margin: 12px 0 0">
         也可以显式指定颜色覆盖继承：
-        <sr-icon name="ph:sun" :size="22" color="var(--sr-color-primary)" label="指定主色" />
-        <sr-icon name="mdi:heart" :size="22" color="var(--sr-color-danger)" label="指定危险色" />
+        <sr-icon name="lucide:sun" :size="22" color="var(--sr-color-primary)" label="指定主色" />
+        <sr-icon name="lucide:heart" :size="22" color="var(--sr-color-danger)" label="指定危险色" />
       </p>
     </section>
 
@@ -322,14 +322,14 @@ function triggerLoading(): void {
       </p>
 
       <div style="display: flex; gap: 10px; flex-wrap: wrap">
-        <sr-button variant="primary" icon="mdi:check">带图标</sr-button>
-        <sr-button variant="outline" icon="mdi:close" icon-position="right">图标在右</sr-button>
+        <sr-button variant="primary" icon="lucide:check">带图标</sr-button>
+        <sr-button variant="outline" icon="lucide:x" icon-position="right">图标在右</sr-button>
         <sr-button variant="secondary">
-          <template #icon><sr-icon name="mdi:magnify" /></template>
+          <template #icon><sr-icon name="lucide:search" /></template>
           自定义图标插槽
         </sr-button>
         <sr-button variant="secondary" :loading="loading" @click="triggerLoading">
-          <template #loading><sr-icon name="mdi:loading" :size="18" spin /></template>
+          <template #loading><sr-icon name="lucide:loader-circle" :size="18" spin /></template>
           自定义加载指示器
         </sr-button>
       </div>

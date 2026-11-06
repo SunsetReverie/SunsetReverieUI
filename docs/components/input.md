@@ -18,7 +18,7 @@
 </sr-input>
 
 <sr-input placeholder="搜索">
-  <template #prefix><sr-icon name="mdi:magnify" /></template>
+  <template #prefix><sr-icon name="lucide:search" /></template>
 </sr-input>
 
 <sr-input placeholder="0.00">

@@ -138,7 +138,7 @@ function resetForm(): void {
 
         <sr-input placeholder="搜索组件">
           <template #prefix>
-            <sr-icon name="mdi:magnify" :size="15" />
+            <sr-icon name="lucide:search" :size="15" />
           </template>
         </sr-input>
 

@@ -2269,7 +2269,7 @@ export function srSwitchThemeWithTransition(next: SrThemeMode, theme: ReturnType
 
 **不自建图标库、不画 SVG**。统一走 Iconify 生态：
 
-- 使用约定：`集合:图标名`，如 `mdi:home`、`solar:sunset-bold`、`ph:moon-stars`。
+- 使用约定：`集合:图标名`，如 `lucide:house`、`solar:sunset-bold`、`lucide:moon-star`。
 - 主用集合：`mdi`（体量最大，覆盖全）、`ph`（风格柔和，契合黄昏调性）、`solar`（线性细腻）。
 - 自定义品牌图标（Logo 等）放 `@sunset-reverie/icons` 的自有集合 `sr`，即 `sr:logo`，此集合图标由团队自己提供 SVG 数据（仅此一处例外，因为 Iconify 公共集里没有品牌图形）。
 
@@ -2280,7 +2280,7 @@ export function srSwitchThemeWithTransition(next: SrThemeMode, theme: ReturnType
 import type { ExtractPropTypes, PropType } from 'vue'
 
 export const iconProps = {
-  /** 图标名，格式「集合:图标名」，如 'mdi:home'；也支持直接传 SVG 字符串（以 <svg 开头） */
+  /** 图标名，格式「集合:图标名」，如 'lucide:house'；也支持直接传 SVG 字符串（以 <svg 开头） */
   name: { type: String, required: true },
   /**
    * 尺寸，三种形态：
@@ -2477,7 +2477,7 @@ function scanIconUsage(dir) {
       if (statSync(full).isDirectory()) { walk(full); continue }
       if (!/\.(vue|ts|tsx|md)$/.test(entry)) continue
       const code = readFileSync(full, 'utf-8')
-      // 匹配 'mdi:home' / "ph:moon-stars" 形式
+      // 匹配 'lucide:house' / "lucide:moon-star" 形式
       for (const m of code.matchAll(/['"`]([a-z0-9-]+:[a-z0-9-]+)['"`]/g)) found.add(m[1])
     }
   }
@@ -2539,7 +2539,7 @@ export default defineConfig({
 
 | 维度 | 方案 1（本地集合 JSON） | 方案 2（unplugin-icons） |
 | --- | --- | --- |
-| 与 `SrIcon name="mdi:home"` API 兼容 | ✅ | ❌ |
+| 与 `SrIcon name="lucide:house"` API 兼容 | ✅ | ❌ |
 | 动态图标名 | ✅ | ❌ |
 | 运行时代价 | 低（注册一次，内存缓存） | 零 |
 | 配置成本 | 库内一次配好，下游零配置 | 每个下游项目都要配 |
@@ -2598,25 +2598,25 @@ export default defineConfig({
 // packages/icons/src/index.ts
 /** 内置高频图标名（联合字面量，提供 Volar 自动补全与拼写校验） */
 export type SrIconName =
-  | 'mdi:home' | 'mdi:chevron-down' | 'mdi:chevron-right' | 'mdi:close'
-  | 'mdi:check' | 'mdi:loading' | 'mdi:magnify' | 'mdi:pencil' | 'mdi:delete'
-  | 'mdi:information' | 'mdi:alert' | 'mdi:check-circle' | 'mdi:close-circle'
-  | 'ph:moon-stars' | 'ph:sun' | 'ph:gear-six'
+  | 'lucide:house' | 'lucide:chevron-down' | 'lucide:chevron-right' | 'lucide:x'
+  | 'lucide:check' | 'lucide:loader-circle' | 'lucide:search' | 'lucide:pencil' | 'lucide:trash'
+  | 'lucide:info' | 'lucide:triangle-exclamation-point' | 'lucide:circle-check' | 'lucide:circle-x'
+  | 'lucide:moon-star' | 'lucide:sun' | 'lucide:settings'
 
 /** 常用图标常量，避免字符串拼写错误 */
 export const SR_ICONS = {
-  home: 'mdi:home',
-  chevronDown: 'mdi:chevron-down',
-  close: 'mdi:close',
-  loading: 'mdi:loading',
-  search: 'mdi:magnify',
-  success: 'mdi:check-circle',
-  warning: 'mdi:alert',
-  error: 'mdi:close-circle',
-  info: 'mdi:information',
-  themeLight: 'ph:sun',
-  themeDark: 'ph:moon-stars',
-  settings: 'ph:gear-six',
+  home: 'lucide:house',
+  chevronDown: 'lucide:chevron-down',
+  close: 'lucide:x',
+  loading: 'lucide:loader-circle',
+  search: 'lucide:search',
+  success: 'lucide:circle-check',
+  warning: 'lucide:triangle-exclamation-point',
+  error: 'lucide:circle-x',
+  info: 'lucide:info',
+  themeLight: 'lucide:sun',
+  themeDark: 'lucide:moon-star',
+  settings: 'lucide:settings',
 } as const satisfies Record<string, SrIconName>
 
 /**
@@ -3616,7 +3616,7 @@ function useDuskPrimary() {
     <header class="app__header">
       <sr-button variant="text" @click="toggleTheme">
         <template #icon>
-          <sr-icon :name="resolved === 'dark' ? 'ph:sun' : 'ph:moon-stars'" />
+          <sr-icon :name="resolved === 'dark' ? 'lucide:sun' : 'lucide:moon-star'" />
         </template>
         {{ resolved === 'dark' ? '浅色' : '深色' }}
       </sr-button>
@@ -4104,7 +4104,7 @@ onMounted(() => {
     <p v-if="warnings.length" class="warn">发现 {{ warnings.length }} 条水合警告</p>
     <!-- 每个组件固定一套 props，确保 SSR/CSR 输入一致 -->
     <sr-button variant="primary">按钮</sr-button>
-    <sr-icon name="mdi:home" />
+    <sr-icon name="lucide:house" />
     <sr-row :gutter="16"><sr-col :span="12">A</sr-col><sr-col :span="12">B</sr-col></sr-row>
     <!-- ...其余组件 -->
   </div>

@@ -1778,7 +1778,7 @@ pnpm add git+ssh://git@github.com/your-org/sunsetreverie-ui.git#main</pre>
       <table>
         <thead><tr><th>Props</th><th>类型</th><th>默认</th><th>说明</th></tr></thead>
         <tbody>
-          <tr><td><code>name</code></td><td><code>string</code></td><td>必填</td><td><code>集合:图标名</code>，如 <code>mdi:home</code></td></tr>
+          <tr><td><code>name</code></td><td><code>string</code></td><td>必填</td><td><code>集合:图标名</code>，如 <code>lucide:house</code></td></tr>
           <tr><td><code>size</code></td><td><code>number \| string</code></td><td><code>1em</code></td><td>数字按 px 处理</td></tr>
           <tr><td><code>color</code></td><td><code>string</code></td><td><code>currentColor</code></td><td>建议优先用父级 <code>color</code></td></tr>
           <tr><td><code>flip</code></td><td><code>boolean \| 'horizontal' \| 'vertical' \| 'both'</code></td><td><code>false</code></td><td><code>true</code> 等价 horizontal</td></tr>
@@ -1816,7 +1816,7 @@ defineOptions({ name: <span class="s">'SrIcon'</span>, inheritAttrs: <span class
       <table>
         <thead><tr><th>维度</th><th>方案 1：本地集合 JSON（<code>addCollection</code>）</th><th>方案 2：<code>unplugin-icons</code> 构建期</th></tr></thead>
         <tbody>
-          <tr><td>与 <code>name="mdi:home"</code> API 兼容</td><td>✅</td><td>❌ 变成 <code>&lt;i-mdi-home /&gt;</code></td></tr>
+          <tr><td>与 <code>name="lucide:house"</code> API 兼容</td><td>✅</td><td>❌ 变成 <code>&lt;i-mdi-home /&gt;</code></td></tr>
           <tr><td>动态图标名</td><td>✅ <code>`mdi:${name}`</code></td><td>❌ 编译期固化</td></tr>
           <tr><td>运行时代价</td><td>低（注册一次 + 内存缓存）</td><td>零（纯 SVG）</td></tr>
           <tr><td>配置成本</td><td>库内一次配好，下游零配置</td><td>每个下游都要配插件</td></tr>
@@ -2375,7 +2375,7 @@ app.use(router).mount(<span class="s">'#app'</span>)</pre>
   &lt;<span class="k">header</span> class=<span class="s">"app__header"</span>&gt;
     &lt;<span class="k">sr-button</span> variant=<span class="s">"text"</span> @click=<span class="s">"toggleTheme"</span>&gt;
       &lt;<span class="k">template</span> #icon&gt;
-        &lt;<span class="k">sr-icon</span> :name=<span class="s">"resolved === 'dark' ? 'ph:sun' : 'ph:moon-stars'"</span> /&gt;
+        &lt;<span class="k">sr-icon</span> :name=<span class="s">"resolved === 'dark' ? 'lucide:sun' : 'lucide:moon-star'"</span> /&gt;
       &lt;/<span class="k">template</span>&gt;
       {{ resolved === <span class="s">'dark'</span> ? <span class="s">'浅色'</span> : <span class="s">'深色'</span> }}
     &lt;/<span class="k">sr-button</span>&gt;

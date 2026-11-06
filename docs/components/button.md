@@ -40,11 +40,11 @@
 ## 图标
 
 ```vue
-<sr-button icon="mdi:check">确认</sr-button>
-<sr-button icon="mdi:close" icon-position="right">关闭</sr-button>
+<sr-button icon="lucide:check">确认</sr-button>
+<sr-button icon="lucide:x" icon-position="right">关闭</sr-button>
 
 <sr-button>
-  <template #icon><sr-icon name="mdi:magnify" /></template>
+  <template #icon><sr-icon name="lucide:search" /></template>
   自定义图标
 </sr-button>
 ```
@@ -62,7 +62,7 @@
 
 ```vue
 <sr-button loading>
-  <template #loading><sr-icon name="mdi:loading" spin /></template>
+  <template #loading><sr-icon name="lucide:loader-circle" spin /></template>
   处理中
 </sr-button>
 ```

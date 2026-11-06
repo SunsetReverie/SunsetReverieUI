@@ -98,7 +98,7 @@ describe('SrButton', () => {
   })
 
   it('icon 渲染为图标容器', () => {
-    const wrapper = mount(SrButton, { props: { icon: 'mdi:check' } })
+    const wrapper = mount(SrButton, { props: { icon: 'lucide:check' } })
     expect(wrapper.find('.sr-button__icon').exists()).toBe(true)
   })
 })

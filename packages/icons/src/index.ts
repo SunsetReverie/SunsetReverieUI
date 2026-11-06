@@ -10,22 +10,22 @@ export type SrIconName = string
 
 /** 常用图标常量：避免业务侧手写字符串拼错 */
 export const SR_ICONS = {
-  home: 'mdi:home',
-  chevronDown: 'mdi:chevron-down',
-  chevronRight: 'mdi:chevron-right',
-  close: 'mdi:close',
-  check: 'mdi:check',
-  loading: 'mdi:loading',
-  search: 'mdi:magnify',
-  edit: 'mdi:pencil',
-  delete: 'mdi:delete',
-  success: 'mdi:check-circle',
-  warning: 'mdi:alert',
-  error: 'mdi:close-circle',
-  info: 'mdi:information',
-  themeLight: 'ph:sun',
-  themeDark: 'ph:moon-stars',
-  settings: 'ph:gear-six',
+  home: 'lucide:house',
+  chevronDown: 'lucide:chevron-down',
+  chevronRight: 'lucide:chevron-right',
+  close: 'lucide:x',
+  check: 'lucide:check',
+  loading: 'lucide:loader-circle',
+  search: 'lucide:search',
+  edit: 'lucide:pencil',
+  delete: 'lucide:trash',
+  success: 'lucide:circle-check',
+  warning: 'lucide:triangle-exclamation-point',
+  error: 'lucide:circle-x',
+  info: 'lucide:info',
+  themeLight: 'lucide:sun',
+  themeDark: 'lucide:moon-star',
+  settings: 'lucide:settings',
 } as const satisfies Record<string, string>
 
 /**

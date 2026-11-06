@@ -406,7 +406,7 @@ const panelStyle = computed(() => ({
               @mousedown.prevent
               @click.stop="removeTag(option.value)"
             >
-              <sr-icon name="mdi:close" :size="12" />
+              <sr-icon name="lucide:x" :size="12" />
             </button>
           </span>
 
@@ -431,10 +431,10 @@ const panelStyle = computed(() => ({
         @mousedown.prevent
         @click.stop="clear"
       >
-        <sr-icon name="mdi:close" :size="14" />
+        <sr-icon name="lucide:x" :size="14" />
       </button>
 
-      <sr-icon class="sr-select__arrow" name="mdi:chevron-down" :size="16" />
+      <sr-icon class="sr-select__arrow" name="lucide:chevron-down" :size="16" />
     </div>
 
     <Teleport to="body">
@@ -482,7 +482,7 @@ const panelStyle = computed(() => ({
               <sr-icon
                 v-if="isSelected(option.value)"
                 class="sr-select__option-check"
-                name="mdi:check"
+                name="lucide:check"
                 :size="14"
               />
             </li>

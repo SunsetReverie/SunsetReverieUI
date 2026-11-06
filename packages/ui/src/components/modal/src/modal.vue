@@ -199,7 +199,7 @@ onScopeDispose(() => {
               aria-label="关闭"
               @click="close('close-button')"
             >
-              <sr-icon name="mdi:close" :size="18" />
+              <sr-icon name="lucide:x" :size="18" />
             </button>
           </header>
 

@@ -87,15 +87,15 @@ onMounted(() => {
         <div class="row">
           <sr-button variant="primary">主要按钮</sr-button>
           <sr-button variant="secondary">次要按钮</sr-button>
-          <sr-button variant="outline" icon="mdi:check">带图标</sr-button>
+          <sr-button variant="outline" icon="lucide:check">带图标</sr-button>
           <sr-button variant="danger" :size="{ xs: 'sm', md: 'md' }">危险操作</sr-button>
         </div>
         <div class="row" style="margin-top: 14px">
-          <sr-icon name="mdi:home" :size="22" />
-          <sr-icon name="mdi:magnify" :size="22" />
-          <sr-icon name="mdi:loading" :size="22" spin />
-          <sr-icon name="ph:sun" :size="22" color="var(--sr-color-primary)" />
-          <sr-icon name="ph:moon-stars" :size="22" />
+          <sr-icon name="lucide:house" :size="22" />
+          <sr-icon name="lucide:search" :size="22" />
+          <sr-icon name="lucide:loader-circle" :size="22" spin />
+          <sr-icon name="lucide:sun" :size="22" color="var(--sr-color-primary)" />
+          <sr-icon name="lucide:moon-star" :size="22" />
         </div>
       </section>
     </main>

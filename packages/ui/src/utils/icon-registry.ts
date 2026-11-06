@@ -26,8 +26,13 @@ export function srEnsureOfflineIcons(): void {
   if (registered) return
   registered = true
 
-  for (const [prefix, data] of Object.entries(SR_OFFLINE_COLLECTIONS)) {
+  for (const [, data] of Object.entries(SR_OFFLINE_COLLECTIONS)) {
     if (!data) continue
-    addCollection(data as Parameters<typeof addCollection>[0], prefix)
+
+    // 刻意不传第二个参数：@iconify/vue 有两个构建，这个参数在
+    // iconify.mjs 里是 provider、在 offline.mjs 里是图标名前缀，
+    // 传了会把图标注册到错误位置（表现为渲染出空 SVG）。
+    // 集合数据自带 prefix，让 Iconify 自己读即可，两种构建都正确。
+    addCollection(data as Parameters<typeof addCollection>[0])
   }
 }

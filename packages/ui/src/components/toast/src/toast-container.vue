@@ -41,7 +41,7 @@ const groups = computed(() =>
           aria-label="关闭提示"
           @click="srToast.close(item.id)"
         >
-          <sr-icon name="mdi:close" :size="14" />
+          <sr-icon name="lucide:x" :size="14" />
         </button>
       </div>
     </TransitionGroup>

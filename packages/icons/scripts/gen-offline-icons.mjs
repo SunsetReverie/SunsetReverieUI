@@ -7,7 +7,7 @@
  * 2. 从 @iconify-json/<集合> 中只提取用到的图标
  * 3. 生成 packages/icons/src/collections/<集合>.json 与 usage.json
  *
- * 为什么必须子集化：mdi 全量有 7000+ 图标（≈3MB），整体打包会把库体积毁掉。
+ * 为什么必须子集化：Lucide 全量 2100+ 图标（≈2MB），整体打包会把库体积毁掉。
  * usage.json 同时是 check-icons.mjs 的比对依据 —— 漏扫会导致 CI 报错而不是线上缺图标。
  */
 
@@ -75,7 +75,7 @@ function scanUsage() {
 
 /**
  * 载入某个集合的全量数据
- * @param {string} prefix 集合前缀，如 mdi
+ * @param {string} prefix 集合前缀，如 lucide
  * @returns {object | null} Iconify 集合数据；未安装则返回 null
  */
 function loadCollection(prefix) {
@@ -114,6 +114,7 @@ for (const [prefix, names] of byPrefix) {
     info: source.info,
     ...(source.width ? { width: source.width } : {}),
     ...(source.height ? { height: source.height } : {}),
+    ...(source.lastModified ? { lastModified: source.lastModified } : {}),
     ...(source.aliases ? { aliases: {} } : {}),
     icons: {},
   }

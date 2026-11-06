@@ -279,7 +279,7 @@ watch(
       @mousedown.prevent
       @click="onClear"
     >
-      <sr-icon name="mdi:close" />
+      <sr-icon name="lucide:x" />
     </button>
 
     <button
@@ -291,7 +291,7 @@ watch(
       @mousedown.prevent
       @click="togglePassword"
     >
-      <sr-icon :name="passwordVisible ? 'mdi:eye-off' : 'mdi:eye'" />
+      <sr-icon :name="passwordVisible ? 'lucide:eye-off' : 'lucide:eye'" />
     </button>
 
     <span v-if="slots.suffix" class="sr-input__suffix">

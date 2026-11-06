@@ -19,7 +19,14 @@ const combos = [
 
 const variants = ['primary', 'secondary', 'outline', 'text', 'danger'] as const
 const sizes = ['xs', 'sm', 'md', 'lg'] as const
-const icons = ['mdi:home', 'mdi:check', 'mdi:magnify', 'ph:sun', 'ph:moon-stars', 'mdi:loading']
+const icons = [
+  'lucide:house',
+  'lucide:check',
+  'lucide:search',
+  'lucide:sun',
+  'lucide:moon-star',
+  'lucide:loader-circle',
+]
 
 /** 输入框演示值 */
 const value = ref('夕梦 UI')
@@ -81,7 +88,7 @@ function show(key: string): boolean {
               <sr-button variant="outline" round>胶囊</sr-button>
             </div>
 
-            <sr-button variant="secondary" block icon="mdi:check">整行按钮</sr-button>
+            <sr-button variant="secondary" block icon="lucide:check">整行按钮</sr-button>
           </div>
         </div>
       </div>
@@ -136,23 +143,23 @@ function show(key: string): boolean {
 
             <!-- size 现在也接受档位，与 SrButton 的 size 是同一个概念 -->
             <div class="matrix__row" style="align-items: baseline">
-              <sr-icon name="ph:sun" size="xs" />
-              <sr-icon name="ph:sun" size="sm" />
-              <sr-icon name="ph:sun" size="md" />
-              <sr-icon name="ph:sun" size="lg" color="var(--sr-color-primary)" />
+              <sr-icon name="lucide:sun" size="xs" />
+              <sr-icon name="lucide:sun" size="sm" />
+              <sr-icon name="lucide:sun" size="md" />
+              <sr-icon name="lucide:sun" size="lg" color="var(--sr-color-primary)" />
             </div>
 
             <!-- 具体尺寸仍然可用：数字按 px，带单位字符串原样透传 -->
             <div class="matrix__row" style="align-items: baseline">
-              <sr-icon name="ph:moon-stars" :size="14" />
-              <sr-icon name="ph:moon-stars" :size="20" />
-              <sr-icon name="ph:moon-stars" size="1.6em" />
+              <sr-icon name="lucide:moon-star" :size="14" />
+              <sr-icon name="lucide:moon-star" :size="20" />
+              <sr-icon name="lucide:moon-star" size="1.6em" />
             </div>
 
             <div class="matrix__row">
-              <sr-icon name="mdi:loading" :size="20" spin />
-              <sr-icon name="mdi:check" :size="20" rotate="45" />
-              <sr-icon name="mdi:home" :size="20" flip="horizontal" />
+              <sr-icon name="lucide:loader-circle" :size="20" spin />
+              <sr-icon name="lucide:check" :size="20" rotate="45" />
+              <sr-icon name="lucide:house" :size="20" flip="horizontal" />
             </div>
           </div>
         </div>

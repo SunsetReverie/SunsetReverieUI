@@ -365,8 +365,8 @@ onMounted(() => {
                 {{ column.title }}
 
                 <span v-if="column.sortable" class="sr-table__sorter" aria-hidden="true">
-                  <sr-icon class="sr-table__sorter-icon is-asc" name="mdi:chevron-down" :size="10" />
-                  <sr-icon class="sr-table__sorter-icon is-desc" name="mdi:chevron-down" :size="10" />
+                  <sr-icon class="sr-table__sorter-icon is-asc" name="lucide:chevron-down" :size="10" />
+                  <sr-icon class="sr-table__sorter-icon is-desc" name="lucide:chevron-down" :size="10" />
                 </span>
               </span>
             </th>
@@ -389,7 +389,7 @@ onMounted(() => {
                   aria-label="展开行"
                   @click.stop="toggleExpand(row, index)"
                 >
-                  <sr-icon name="mdi:chevron-right" :size="16" />
+                  <sr-icon name="lucide:chevron-right" :size="16" />
                 </button>
               </td>
 

@@ -34,8 +34,8 @@ export const SR_TOAST_POSITIONS: SrToastPosition[] = [
 
 /** 各类型对应的图标（均在离线集合内） */
 export const SR_TOAST_ICONS: Record<SrToastType, string> = {
-  info: 'mdi:information',
-  success: 'mdi:check-circle',
-  warning: 'mdi:alert',
-  error: 'mdi:close-circle',
+  info: 'lucide:info',
+  success: 'lucide:circle-check',
+  warning: 'lucide:triangle-exclamation-point',
+  error: 'lucide:circle-x',
 }

@@ -18,7 +18,7 @@ export type SrIconFlip = boolean | 'horizontal' | 'vertical' | 'both'
 
 export const iconProps = {
   /**
-   * 图标名，格式「集合:图标名」，如 'mdi:home'
+   * 图标名，格式「集合:图标名」，如 'lucide:house'
    * 使用 default 插槽自定义渲染时可省略
    */
   name: {
