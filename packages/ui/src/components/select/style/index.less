@@ -205,11 +205,6 @@
     white-space: nowrap;
   }
 
-  &-check {
-    flex: 0 0 auto;
-    color: var(--sr-color-primary);
-  }
-
   // 键盘高亮与鼠标悬停共用同一个视觉，避免两个高亮同时存在。
   // 用主色淡档而不是灰色：灰色在彩色主题下会显得脱节
   &.is-active {
@@ -217,6 +212,7 @@
   }
 
   &.is-selected {
+    background: var(--sr-color-primary-alpha-08);
     color: var(--sr-color-primary-text);
     font-weight: var(--sr-font-weight-medium);
   }

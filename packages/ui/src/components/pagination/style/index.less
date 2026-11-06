@@ -55,7 +55,8 @@
     height: var(--sr-pagination-size);
     padding: 0 var(--sr-space-2);
     border: 1px solid var(--sr-color-border);
-    border-radius: var(--sr-radius-sm);
+    // 比 radius-sm 圆一点，和标签、卡片保持同一手感
+    border-radius: 6px;
     background: transparent;
     color: var(--sr-color-text-secondary);
     font-size: inherit;
@@ -97,8 +98,11 @@
 
   // 子组件根节点上带的是这两个类，单独写会输给 .sr-select / .sr-input 的宽度规则，
   // 嵌在 .sr-pagination 里抬一层特异性
+  // 宽度跟着内容走：写死的话文案只有「10 条/页」时右边会空一大截
   .sr-pagination__sizer {
-    width: 118px;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 88px;
   }
 
   .sr-pagination__jumper-input {

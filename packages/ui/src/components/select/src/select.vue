@@ -476,13 +476,6 @@ const panelStyle = computed(() => ({
               <span class="sr-select__option-label">
                 <slot name="option" :option="option">{{ option.label }}</slot>
               </span>
-
-              <sr-icon
-                v-if="isSelected(option.value)"
-                class="sr-select__option-check"
-                name="lucide:check"
-                :size="14"
-              />
             </li>
           </ul>
 
