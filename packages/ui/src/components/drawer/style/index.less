@@ -51,41 +51,18 @@
     max-height: 100vh;
   }
 
-  // ---------- 内嵌形态：不贴边，四角圆角 ----------
+  // ---------- 圆角形态：仍然贴边，只是四个角做成圆角 ----------
   &.is-inset {
     border-radius: 16px;
-
-    &.is-right {
-      top: 12px;
-      right: 12px;
-      bottom: 12px;
-    }
-
-    &.is-left {
-      top: 12px;
-      bottom: 12px;
-      left: 12px;
-    }
-
-    &.is-top {
-      top: 12px;
-      right: 12px;
-      left: 12px;
-    }
-
-    &.is-bottom {
-      right: 12px;
-      bottom: 12px;
-      left: 12px;
-    }
   }
 
   &__mask {
     position: fixed;
     inset: 0;
     z-index: var(--sr-drawer-z, 2100);
-    background: var(--sr-color-mask);
-    backdrop-filter: var(--sr-glass-filter);
+    // 遮罩只做轻度压暗 + 轻微模糊，糊太狠会把背景信息全吃掉
+    background: color-mix(in srgb, var(--sr-color-mask) 55%, transparent);
+    backdrop-filter: blur(6px);
   }
 
   &__header {

@@ -554,7 +554,7 @@ function onMenuSelect(key: string): void {
         <SrButton size="sm" variant="outline" @click="drawerTop = true">顶部</SrButton>
         <SrButton size="sm" variant="outline" @click="drawerSm = true">size = sm（320）</SrButton>
         <SrButton size="sm" variant="outline" @click="drawerLg = true">size = lg（600）</SrButton>
-        <SrButton size="sm" variant="primary" @click="drawerInset = true">内嵌圆角</SrButton>
+        <SrButton size="sm" variant="primary" @click="drawerInset = true">贴边圆角</SrButton>
       </div>
 
       <SrDrawer v-model="drawerRight" title="筛选条件" subtitle="">
@@ -582,9 +582,9 @@ function onMenuSelect(key: string): void {
         <p style="margin: 0">size 传预设 lg，宽度 600px；同时用 z-index 抬高层级。</p>
       </SrDrawer>
 
-      <SrDrawer v-model="drawerInset" title="内嵌抽屉" inset :size="420">
+      <SrDrawer v-model="drawerInset" title="圆角抽屉" inset :size="420">
         <p style="margin: 0 0 12px">
-          <code>inset</code> 让抽屉与视口四周留出 12px，四角圆角，玻璃质感在这种形态下最明显。
+          <code>inset</code> 让抽屉照样贴边，只把四个角做成圆角，磨砂质感在这种形态下更明显。
         </p>
         <SrEmpty description="内容区透出背后的页面" size="sm" />
       </SrDrawer>
