@@ -101,19 +101,40 @@ function onDocumentClick(event: MouseEvent): void {
   close()
 }
 
+/** 合并到下一帧重算位置，避免滚动时逐像素读布局 */
+let rafId: number | undefined
+
+/** 视口或滚动位置变化时重新定位，否则面板会停在原处和触发器脱节 */
+function onViewportChange(): void {
+  if (rafId !== undefined) return
+  rafId = window.requestAnimationFrame(() => {
+    rafId = undefined
+    if (!visible.value) return
+    updatePosition()
+  })
+}
+
 watch(visible, (open) => {
   if (open) {
     document.addEventListener('click', onDocumentClick, true)
+    // 捕获阶段监听：内部滚动容器（maxHeight 之类）也能收到
+    window.addEventListener('scroll', onViewportChange, true)
+    window.addEventListener('resize', onViewportChange)
     // 等一帧拿到面板高度再定位，避免首帧贴到错误的位置
     requestAnimationFrame(updatePosition)
     return
   }
   document.removeEventListener('click', onDocumentClick, true)
+  window.removeEventListener('scroll', onViewportChange, true)
+  window.removeEventListener('resize', onViewportChange)
 })
 
 onScopeDispose(() => {
   clearCloseTimer()
   document.removeEventListener('click', onDocumentClick, true)
+  window.removeEventListener('scroll', onViewportChange, true)
+  window.removeEventListener('resize', onViewportChange)
+  if (rafId !== undefined) window.cancelAnimationFrame(rafId)
 })
 
 /** 延迟关闭的定时器 */

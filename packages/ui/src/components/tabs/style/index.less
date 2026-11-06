@@ -162,6 +162,8 @@
     border: 1px solid transparent;
     border-bottom: 0;
     border-radius: var(--sr-radius-full);
+    // 未选中也给一层极淡的主色底，避免整排只剩文字像没做完
+    background: var(--sr-color-primary-alpha-08);
     color: var(--sr-color-text-tertiary);
 
     &.is-active {
