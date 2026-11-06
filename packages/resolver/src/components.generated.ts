@@ -18,6 +18,7 @@ export const SR_COMPONENT_NAMES = [
   'Icon',
   'Input',
   'InputNumber',
+  'LoadMore',
   'Modal',
   'Pagination',
   'Radio',

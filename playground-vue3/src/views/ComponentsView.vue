@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { SrButton, SrIcon, SrPagination, SrTag } from '@sunset-reverie/ui'
+import { SrButton, SrIcon, SrLoadMore, SrPagination, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ComponentsView' })
 
@@ -10,6 +10,20 @@ const variants = ['primary', 'secondary', 'outline', 'text', 'success', 'warning
 
 /** 标签语义类型 */
 const tagTypes = ['default', 'primary', 'info', 'success', 'warning', 'danger'] as const
+
+/** 加载更多演示：状态 */
+const moreStatus = ref<'idle' | 'loading' | 'done'>('idle')
+/** 加载更多演示：已加载条数 */
+const moreCount = ref(0)
+
+/** 模拟拉下一批 */
+async function onLoadMore(): Promise<void> {
+  if (moreStatus.value !== 'idle') return
+  moreStatus.value = 'loading'
+  await new Promise((resolve) => setTimeout(resolve, 700))
+  moreCount.value += 5
+  moreStatus.value = moreCount.value >= 15 ? 'done' : 'idle'
+}
 
 /** 分页演示：当前页 */
 const page = ref(1)
@@ -406,6 +420,105 @@ function triggerLoading(): void {
           </tr>
         </tbody>
       </table>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel__title">加载更多</h2>
+      <p class="panel__desc">
+        分页的另一种呈现：只能顺序前进，适合信息流、日志这类不需要回看的场景。 已加载
+        <strong>{{ moreCount }}</strong> 条，点按钮模拟拉取下一批，三批后进入「没有更多」。
+      </p>
+
+      <div
+        style="
+          border: 1px solid var(--sr-color-border);
+          border-radius: var(--sr-radius-sm);
+          padding: 0 var(--sr-space-3);
+        "
+      >
+        <div
+          v-for="item in moreCount"
+          :key="item"
+          style="padding: 10px 0; border-bottom: 1px solid var(--sr-color-border-subtle); font-size: 13px"
+        >
+          第 {{ item }} 条记录
+        </div>
+
+        <SrLoadMore :status="moreStatus" @load="onLoadMore" />
+      </div>
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">三种状态</h3>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <SrLoadMore status="idle" />
+        <SrLoadMore status="loading" />
+        <SrLoadMore status="done" />
+      </div>
+
+      <h3 style="font-size: 14px; margin: 20px 0 8px">SrLoadMore Props 速查</h3>
+      <table class="props-table">
+        <thead>
+          <tr>
+            <th>Prop</th>
+            <th>类型</th>
+            <th>默认</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>status</code></td>
+            <td><code>'idle' | 'loading' | 'done'</code></td>
+            <td><code>'idle'</code></td>
+            <td>三态：可加载 / 加载中 / 到底</td>
+          </tr>
+          <tr>
+            <td><code>auto</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>进入可视区自动派发 load，无需点击</td>
+          </tr>
+          <tr>
+            <td><code>rootMargin</code></td>
+            <td><code>string</code></td>
+            <td><code>'0px 0px 120px 0px'</code></td>
+            <td>自动模式的触发提前量</td>
+          </tr>
+          <tr>
+            <td><code>loadText</code></td>
+            <td><code>string</code></td>
+            <td><code>'加载更多'</code></td>
+            <td>可加载时的按钮文案</td>
+          </tr>
+          <tr>
+            <td><code>loadingText</code></td>
+            <td><code>string</code></td>
+            <td><code>'加载中'</code></td>
+            <td>加载中文案</td>
+          </tr>
+          <tr>
+            <td><code>doneText</code></td>
+            <td><code>string</code></td>
+            <td><code>'没有更多了'</code></td>
+            <td>到底文案</td>
+          </tr>
+          <tr>
+            <td><code>size</code></td>
+            <td><code>'xs' | 'sm' | 'md' | 'lg'</code></td>
+            <td>全局配置</td>
+            <td>字号档位</td>
+          </tr>
+          <tr>
+            <td><code>disabled</code></td>
+            <td><code>boolean</code></td>
+            <td><code>false</code></td>
+            <td>禁用点击</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="panel__desc" style="margin-top: 10px">
+        事件：<code style="font-family: var(--sr-font-family-mono)">load</code> —— 需要加载下一批。
+        组件只负责呈现与触发，数据怎么取由调用方决定。
+      </p>
     </section>
 
     <section class="panel">

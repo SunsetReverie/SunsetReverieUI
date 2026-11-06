@@ -381,46 +381,41 @@ describe('SrTable 其他', () => {
     wrapper.unmount()
   })
 
-  it('懒加载滚动到底部派发 load-more', async () => {
+  it('懒加载点击底栏按钮派发 load-more', async () => {
     const wrapper = mount(SrTable, {
-      props: { columns, data, lazy: true, maxHeight: 200 },
+      props: { columns, data, lazy: true },
       attachTo: document.body,
     })
 
-    const scroll = wrapper.find('.sr-table__scroll')
-    const el = scroll.element as HTMLElement
+    const button = wrapper.find('.sr-table__load-more .sr-load-more__btn')
+    expect(button.exists()).toBe(true)
 
-    // jsdom 里没有真实布局，手动构造「已滚到底」的度量
-    Object.defineProperty(el, 'scrollHeight', { value: 800, configurable: true })
-    Object.defineProperty(el, 'clientHeight', { value: 200, configurable: true })
-    Object.defineProperty(el, 'scrollTop', { value: 600, configurable: true })
-
-    await scroll.trigger('scroll')
-    expect(wrapper.emitted('load-more')).toHaveLength(1)
-
-    // 未到底不触发
-    Object.defineProperty(el, 'scrollTop', { value: 100, configurable: true })
-    await scroll.trigger('scroll')
+    await button.trigger('click')
     expect(wrapper.emitted('load-more')).toHaveLength(1)
 
     wrapper.unmount()
   })
 
-  it('没有更多数据时不再派发 load-more', async () => {
+  it('loadingMore 时底栏显示加载中且无按钮', () => {
+    const wrapper = mount(SrTable, {
+      props: { columns, data, lazy: true, loadingMore: true },
+      attachTo: document.body,
+    })
+
+    expect(wrapper.find('.sr-table__load-more').text()).toContain('加载中')
+    expect(wrapper.find('.sr-load-more__btn').exists()).toBe(false)
+
+    wrapper.unmount()
+  })
+
+  it('没有更多数据时显示到底文案且不派发', () => {
     const wrapper = mount(SrTable, {
       props: { columns, data, lazy: true, hasMore: false },
       attachTo: document.body,
     })
 
-    const scroll = wrapper.find('.sr-table__scroll')
-    const el = scroll.element as HTMLElement
-    Object.defineProperty(el, 'scrollHeight', { value: 800, configurable: true })
-    Object.defineProperty(el, 'clientHeight', { value: 200, configurable: true })
-    Object.defineProperty(el, 'scrollTop', { value: 600, configurable: true })
-
-    await scroll.trigger('scroll')
+    expect(wrapper.find('.sr-table__load-more').text()).toContain('没有更多')
     expect(wrapper.emitted('load-more')).toBeUndefined()
-    expect(wrapper.find('.sr-table__lazy-text').text()).toContain('没有更多')
 
     wrapper.unmount()
   })

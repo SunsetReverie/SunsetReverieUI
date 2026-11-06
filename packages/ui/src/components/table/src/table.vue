@@ -7,6 +7,7 @@ import type { SrSize } from '../../../types/config'
 import { srOmit } from '../../../utils/attrs'
 import SrCheckbox from '../../checkbox/src/checkbox.vue'
 import SrIcon from '../../icon/src/icon.vue'
+import SrLoadMore from '../../load-more/src/load-more.vue'
 import SrPagination from '../../pagination/src/pagination.vue'
 import SrSpinner from '../../spinner/src/spinner.vue'
 import {
@@ -255,17 +256,12 @@ function fixedClassOf(column: SrTableColumn): Record<string, boolean> {
 
 // ---------- 懒加载 ----------
 
-/**
- * 滚动到接近底部时请求更多数据
- * @param event 滚动事件
- */
-function onScroll(event: Event): void {
-  if (!props.lazy || !props.hasMore || props.loadingMore) return
-  const el = event.target as HTMLElement
-  // 留 48px 提前量，避免用户真的滚到最后一像素才触发
-  if (el.scrollHeight - el.scrollTop - el.clientHeight > 48) return
-  emit('load-more')
-}
+/** 懒加载底栏状态，映射到 SrLoadMore 的三态 */
+const lazyStatus = computed<'idle' | 'loading' | 'done'>(() => {
+  if (props.loadingMore) return 'loading'
+  if (!props.hasMore) return 'done'
+  return 'idle'
+})
 
 /** 已选 key 集合 */
 const selectedSet = computed(() => new Set(props.selectedKeys))
@@ -484,7 +480,7 @@ onMounted(() => {
     </div>
 
     <!-- ---------- 表格视图 ---------- -->
-    <div v-else class="sr-table__scroll" :style="scrollStyle" @scroll="onScroll">
+    <div v-else class="sr-table__scroll" :style="scrollStyle">
       <table class="sr-table__inner" :style="{ tableLayout, minWidth: tableMinWidth }">
         <colgroup>
           <col v-if="expandable" style="width: 40px" />
@@ -622,6 +618,15 @@ onMounted(() => {
           <p class="sr-table__empty-text">{{ emptyText }}</p>
         </slot>
       </div>
+
+      <!-- 放在滚动内容内部：滚到底部它才进入视口，由 SrLoadMore 自己判断 -->
+      <sr-load-more
+        v-if="lazy && visibleData.length > 0"
+        class="sr-table__load-more"
+        auto
+        :status="lazyStatus"
+        @load="emit('load-more')"
+      />
     </div>
 
     <!-- ---------- 分页：复用 SrPagination ---------- -->
@@ -634,16 +639,6 @@ onMounted(() => {
       :show-sizer="false"
       @update:model-value="goPage"
     />
-
-    <!-- ---------- 懒加载底栏 ---------- -->
-    <div v-if="lazy" class="sr-table__lazy">
-      <span v-if="loadingMore" class="sr-table__lazy-text">
-        <sr-spinner size="sm" />
-        加载中…
-      </span>
-      <span v-else-if="!hasMore" class="sr-table__lazy-text">没有更多了</span>
-      <button v-else class="sr-table__lazy-btn" type="button" @click="emit('load-more')">加载更多</button>
-    </div>
 
     <!-- 加载遮罩：盖在内容上而不是替换内容，避免高度跳动 -->
     <div v-if="loading" class="sr-table__loading" role="status" aria-label="加载中">

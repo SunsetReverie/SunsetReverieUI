@@ -372,33 +372,8 @@
 }
 
 // ---------- 懒加载 ----------
+// 外观由 SrLoadMore 提供，这里只压一下上下留白
 
-.sr-table__lazy {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sr-space-3) 0 0;
-}
-
-.sr-table__lazy-text {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--sr-color-text-tertiary);
-  font-size: 13px;
-}
-
-.sr-table__lazy-btn {
-  padding: 4px 14px;
-  border: 1px solid var(--sr-color-border);
-  border-radius: var(--sr-radius-sm);
-  background: var(--sr-color-bg-container);
-  color: var(--sr-color-text-secondary);
-  font-size: 13px;
-  cursor: pointer;
-
-  &:hover {
-    border-color: var(--sr-color-primary);
-    color: var(--sr-color-primary-text);
-  }
+.sr-table__load-more {
+  padding: var(--sr-space-2) 0 var(--sr-space-3);
 }

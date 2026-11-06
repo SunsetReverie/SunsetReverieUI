@@ -1,0 +1,72 @@
+// 加载更多
+//
+// 三种状态共用一个容器：可加载时是按钮，加载中是转圈，到底时两侧出分隔线。
+// 自动模式不改变外观，只改触发方式。
+
+@import '../../../styles/mixins/index.less';
+// 按需引入时 resolver 只带本组件的 CSS，因此把依赖的 spinner 规则一起带上。
+@import '../../spinner/style/index.less';
+
+.sr-load-more {
+  --sr-load-more-font: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sr-space-2);
+  padding: var(--sr-space-3) 0;
+  font-size: var(--sr-load-more-font);
+  color: var(--sr-color-text-tertiary);
+
+  &--xs {
+    --sr-load-more-font: 12px;
+  }
+
+  &--sm {
+    --sr-load-more-font: 13px;
+  }
+
+  &--lg {
+    --sr-load-more-font: 15px;
+  }
+
+  &__text {
+    white-space: nowrap;
+  }
+
+  &__line {
+    flex: 1 1 auto;
+    max-width: 120px;
+    height: 1px;
+    background: var(--sr-color-border);
+  }
+
+  &__btn {
+    padding: 5px 16px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-full);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: inherit;
+    cursor: pointer;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--sr-color-primary);
+      background: var(--sr-color-bg-hover);
+      color: var(--sr-color-primary-text);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+}
