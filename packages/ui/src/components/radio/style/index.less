@@ -52,9 +52,11 @@
     width: var(--sr-radio-size, 18px);
     height: var(--sr-radio-size, 18px);
     box-sizing: border-box;
-    border: 1px solid var(--sr-color-border-strong);
+    border: var(--sr-glass-border-width) solid var(--sr-control-border);
     border-radius: var(--sr-radius-full);
-    background: var(--sr-color-bg-container);
+    background: var(--sr-control-bg);
+    box-shadow: var(--sr-control-shadow);
+    .sr-glass-layer(var(--sr-control-filter));
     transition:
       border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);

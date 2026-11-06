@@ -262,6 +262,16 @@ export const qualityFlat: Record<string, string> = {
   'color-bg-popover': 'var(--sr-color-bg-elevated)',
   'popover-border-color': 'var(--sr-color-border)',
 
+  // 选择控件（checkbox / radio）专用表面。
+  // 它们面积只有 14~20px，直接套容器配方（0.72 不透明 + 灰边）完全看不出玻璃感，
+  // 所以单独给一组更透的底、亮边与内高光；flat 下保持实底普通边框，视觉不变。
+  'control-bg': 'var(--sr-color-bg-container)',
+  'control-border': 'var(--sr-color-border-strong)',
+  'control-shadow': '0 0 0 0 transparent',
+  'control-filter': 'none',
+  // 复选框「一点点」圆角：比 radius-sm(2px) 明显，又不到 form-radius(6px) 那么圆润
+  'control-radius': '4px',
+
   'shadow-sm': '0 1px 2px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 2px 8px rgba(16, 20, 26, 0.08)',
   'shadow-lg': '0 8px 24px rgba(16, 20, 26, 0.1)',
@@ -326,6 +336,16 @@ export const qualityGlass: Record<string, string> = {
   'glass-border-width': '1px',
   'glass-border-color': 'rgba(255, 255, 255, 0.55)',
 
+  // 选择控件：把容器底再透一层（亮/暗自动跟随 --sr-color-bg-container），
+  // 换玻璃亮边 + 内高光 + 背景模糊，小方块上才看得出通透感
+  'control-bg': 'color-mix(in srgb, var(--sr-color-bg-container) 70%, transparent)',
+  // 纯白亮边在浅色面板上会整个融掉，边界用半透明中性色才看得见；
+  // 玻璃反光交给内高光，二者叠起来仍是「透亮但不消失」的玻璃小砖
+  'control-border': 'rgba(16, 20, 26, 0.16)',
+  'control-shadow': 'var(--sr-glass-highlight), var(--sr-shadow-sm)',
+  'control-filter': 'var(--sr-glass-filter)',
+  'control-radius': '4px',
+
   // 位移衰减：毛玻璃层内做位移动画会掉帧，距离减半
   'motion-distance-sm': '3px',
   'motion-distance-md': '6px',
@@ -361,6 +381,8 @@ export const glassSurfaceDark: Record<string, string> = {
 export const glassDark: Record<string, string> = {
   'glass-border-color': 'rgba(255, 255, 255, 0.14)',
   'glass-highlight': 'inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+  // 暗底上边界要反过来用浅色线
+  'control-border': 'rgba(255, 255, 255, 0.24)',
 }
 
 /**

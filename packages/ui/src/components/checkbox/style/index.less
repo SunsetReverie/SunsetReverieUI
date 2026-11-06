@@ -54,10 +54,12 @@
     width: var(--sr-checkbox-size, 18px);
     height: var(--sr-checkbox-size, 18px);
     box-sizing: border-box;
-    border: 1px solid var(--sr-color-border-strong);
-    border-radius: var(--sr-radius-sm);
-    background: var(--sr-color-bg-container);
+    border: var(--sr-glass-border-width) solid var(--sr-control-border);
+    border-radius: var(--sr-control-radius);
+    background: var(--sr-control-bg);
+    box-shadow: var(--sr-control-shadow);
     color: var(--sr-color-on-primary);
+    .sr-glass-layer(var(--sr-control-filter));
     transition:
       background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
