@@ -44,6 +44,19 @@ export const dropdownProps = {
     type: String as PropType<SrSize>,
     default: undefined,
   },
+  /**
+   * 去掉面板内边距，内容自己控制留白。
+   * 用 #menu 插槽塞表单或设置面板时打开它
+   */
+  flush: {
+    type: Boolean,
+    default: false,
+  },
+  /** 面板的 ARIA role：菜单用 menu，自定义面板建议 dialog */
+  role: {
+    type: String,
+    default: 'menu',
+  },
   /** 禁用整个下拉 */
   disabled: {
     type: Boolean,

@@ -158,9 +158,9 @@ const panelEvents = computed(() =>
           v-if="visible"
           ref="panelRef"
           class="sr-dropdown__panel"
-          :class="`sr-dropdown--${resolvedSize}`"
+          :class="[`sr-dropdown--${resolvedSize}`, { 'is-flush': flush }]"
           :style="panelStyle"
-          role="menu"
+          :role="role"
           v-bind="panelEvents"
         >
           <slot name="menu" :close="close">

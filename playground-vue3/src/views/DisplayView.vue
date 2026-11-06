@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import {
+  SR_THEME_PRESETS,
   SrAvatar,
   SrBadge,
   SrBreadcrumb,
@@ -13,6 +14,7 @@ import {
   SrPanel,
   SrTabs,
   SrTag,
+  useSrTheme,
 } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'DisplayView' })
@@ -45,6 +47,48 @@ const longCrumbs = [
   { label: '组件库' },
   { label: '展示组件' },
 ]
+
+/** 主题外观设置：直接驱动全局主题 */
+const { mode, style, preset, setTheme, setStyle, setPreset, resetPrimaryColor } = useSrTheme()
+
+/** 主题选项 */
+const themeItems = [
+  { key: 'light', label: '亮色' },
+  { key: 'dark', label: '暗色' },
+  { key: 'system', label: '跟随系统' },
+]
+
+/** 风格选项 */
+const styleItems = [
+  { key: 'glass', label: '玻璃' },
+  { key: 'flat', label: '扁平' },
+]
+
+/** 当前主题 */
+const currentTheme = computed(() => mode.value)
+
+/**
+ * 切换明暗
+ * @param key 主题 key
+ */
+function onThemeChange(key: string): void {
+  setTheme(key as 'light' | 'dark' | 'system')
+}
+
+/**
+ * 切换质感风格
+ * @param key 风格 key
+ */
+function onStyleChange(key: string): void {
+  setStyle(key as 'glass' | 'flat')
+}
+
+/** 恢复默认外观 */
+function resetAppearance(): void {
+  setTheme('system')
+  setStyle('glass')
+  resetPrimaryColor()
+}
 
 /** 纯文字菜单：全部不带图标，最简洁 */
 const textMenu = [
@@ -436,6 +480,66 @@ function onMenuSelect(key: string): void {
           </SrDropdown>
         </div>
       </div>
+
+      <h3 class="sub-title">自定义面板（#menu 插槽）</h3>
+      <p class="muted" style="margin-bottom: 12px">
+        不传 <code>items</code>，用 <code>#menu</code> 插槽塞任意内容，配合
+        <code>flush</code> 让内容自己控制留白，就能当下拉面板用。下面这个面板是真的在改主题。
+      </p>
+
+      <SrDropdown flush role="dialog" :min-width="288" placement="bottom-start">
+        <SrButton variant="primary" size="sm">外观设置</SrButton>
+
+        <template #menu>
+          <div class="setting-panel">
+            <header class="setting-panel__head">
+              <span class="setting-panel__title">外观设置</span>
+              <button class="setting-panel__reset" type="button" @click="resetAppearance">恢复默认</button>
+            </header>
+
+            <div class="setting-panel__section">
+              <span class="setting-panel__label">主题</span>
+              <SrTabs
+                :items="themeItems"
+                :model-value="currentTheme"
+                type="segment"
+                size="sm"
+                @update:model-value="onThemeChange"
+              />
+            </div>
+
+            <div class="setting-panel__section">
+              <span class="setting-panel__label">品牌色</span>
+              <div class="setting-panel__swatches">
+                <button
+                  v-for="item in SR_THEME_PRESETS"
+                  :key="item.key"
+                  class="setting-panel__swatch"
+                  :class="{ 'is-active': preset === item.key }"
+                  :style="{ background: item.primary }"
+                  :title="item.label"
+                  :aria-label="`切换到${item.label}`"
+                  type="button"
+                  @click="setPreset(item.key)"
+                />
+              </div>
+            </div>
+
+            <div class="setting-panel__section">
+              <span class="setting-panel__label">风格</span>
+              <SrTabs
+                :items="styleItems"
+                :model-value="style"
+                type="segment"
+                size="sm"
+                @update:model-value="onStyleChange"
+              />
+            </div>
+
+            <p class="setting-panel__hint">设置会记在本机浏览器；「扁平」会关掉全部毛玻璃，低端设备更省。</p>
+          </div>
+        </template>
+      </SrDropdown>
 
       <p class="muted" style="margin-top: 14px">
         最近选择：<SrTag type="default">{{ lastAction }}</SrTag>
@@ -871,6 +975,81 @@ function onMenuSelect(key: string): void {
   padding: 18px;
   border-radius: 14px;
   background: var(--sr-color-bg-elevated);
+}
+
+/* 下拉面板里的设置界面：面板本身 flush，留白由这里控制 */
+.setting-panel {
+  width: 288px;
+  padding: 16px 18px 14px;
+}
+
+.setting-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.setting-panel__title {
+  color: var(--sr-color-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.setting-panel__reset {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--sr-color-primary-text);
+  }
+}
+
+.setting-panel__section + .setting-panel__section {
+  margin-top: 16px;
+}
+
+.setting-panel__label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--sr-color-text-secondary);
+  font-size: 13px;
+}
+
+.setting-panel__swatches {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.setting-panel__swatch {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--sr-radius-full);
+  cursor: pointer;
+  transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &.is-active {
+    border-color: var(--sr-color-text);
+    box-shadow: 0 0 0 2px var(--sr-color-bg-container) inset;
+  }
+}
+
+.setting-panel__hint {
+  margin: 16px 0 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 /* 下拉演示：每个触发器配一行说明，避免按钮挤成一排看不出区别 */

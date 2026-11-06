@@ -28,6 +28,9 @@
     flex-direction: column;
     box-sizing: border-box;
     gap: 1px;
+    // 宽度按内容撑开，菜单项短时由 minWidth 兜底
+    width: max-content;
+    max-width: calc(100vw - 16px);
     padding: 6px;
     border: var(--sr-glass-border-width) solid var(--sr-popover-border-color);
     border-radius: 10px;
@@ -48,6 +51,13 @@
     &.sr-dropdown--lg {
       --sr-dropdown-item-padding-y: 9px;
       --sr-dropdown-item-font: 14px;
+    }
+
+    // 自定义面板：内边距交给内容自己控制
+    &.is-flush {
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
     }
   }
 
