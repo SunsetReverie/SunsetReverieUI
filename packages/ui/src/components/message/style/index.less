@@ -1,0 +1,67 @@
+// 全局消息
+//
+// 顶部居中的一行式反馈，结构上只有「图标 + 文案」。
+// 容器 pointer-events: none，只有消息本体接收事件，不遮挡页面。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-message {
+  position: fixed;
+  top: var(--sr-space-6);
+  left: 50%;
+  z-index: var(--sr-z-message, 3001);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sr-space-2);
+  max-width: min(480px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  pointer-events: none;
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    max-width: 100%;
+    padding: 8px var(--sr-space-4);
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    // 固定小圆角：跟随 glass 的 radius-base(12px) 会把矮条变成药丸
+    border-radius: var(--sr-form-radius);
+    // --sr-message-bg 由 backgroundColor 选项写入
+    background-color: var(--sr-message-bg, var(--sr-feedback-bg));
+    background-image: var(--sr-feedback-sheen, none);
+    box-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
+    color: var(--sr-color-text);
+    font-size: var(--sr-font-size-sm);
+    line-height: var(--sr-line-height-sm);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+    pointer-events: auto;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    color: var(--sr-message-icon, var(--sr-color-info));
+  }
+
+  &__content {
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  // ---------- 类型 ----------
+  &__item--info {
+    --sr-message-icon: var(--sr-color-info);
+  }
+
+  &__item--success {
+    --sr-message-icon: var(--sr-color-success);
+  }
+
+  &__item--warning {
+    --sr-message-icon: var(--sr-color-warning);
+  }
+
+  &__item--error {
+    --sr-message-icon: var(--sr-color-danger);
+  }
+}

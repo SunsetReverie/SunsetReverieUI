@@ -54,13 +54,14 @@
     gap: var(--sr-space-2);
     max-width: 100%;
     padding: 10px var(--sr-space-4);
-    border: 1px solid var(--sr-color-border);
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-base);
-    background: var(--sr-color-bg-elevated);
+    // --sr-toast-bg 由命令式 API 的 backgroundColor 选项写入，可覆盖预设底
+    background-color: var(--sr-toast-bg, var(--sr-feedback-bg));
+    background-image: var(--sr-feedback-sheen, none);
     color: var(--sr-color-text);
     box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
-    backdrop-filter: var(--sr-glass-filter);
-    -webkit-backdrop-filter: var(--sr-glass-filter);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
     font-size: var(--sr-font-size-sm);
     line-height: var(--sr-line-height-sm);
     // 只有提示本体接收点击，容器其余区域不拦截

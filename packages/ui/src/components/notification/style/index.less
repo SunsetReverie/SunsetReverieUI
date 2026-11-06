@@ -1,0 +1,118 @@
+// 通知提醒
+//
+// 四角固定的通知卡片，结构为「图标 + 标题/描述 + 关闭」。
+// 容器 pointer-events: none，只有卡片本体接收事件。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-notification {
+  position: fixed;
+  z-index: var(--sr-z-notification, 3003);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-3);
+  width: min(340px, calc(100vw - 32px));
+  pointer-events: none;
+
+  &--top-right {
+    top: var(--sr-space-6);
+    right: var(--sr-space-6);
+  }
+
+  &--top-left {
+    top: var(--sr-space-6);
+    left: var(--sr-space-6);
+  }
+
+  &--bottom-right {
+    right: var(--sr-space-6);
+    bottom: var(--sr-space-6);
+  }
+
+  &--bottom-left {
+    bottom: var(--sr-space-6);
+    left: var(--sr-space-6);
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sr-space-3);
+    padding: var(--sr-space-4);
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    border-radius: var(--sr-form-radius);
+    // --sr-notification-bg 由 backgroundColor 选项写入
+    background-color: var(--sr-notification-bg, var(--sr-feedback-bg));
+    background-image: var(--sr-feedback-sheen, none);
+    box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
+    color: var(--sr-color-text);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+    pointer-events: auto;
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: var(--sr-notification-icon, var(--sr-color-info));
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: var(--sr-font-size-sm);
+    font-weight: var(--sr-font-weight-semibold);
+    line-height: 1.5;
+  }
+
+  &__message {
+    margin-top: 2px;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-xs);
+    line-height: 1.6;
+    word-break: break-word;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin: -2px -4px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--sr-color-text);
+    }
+
+    &:focus-visible {
+      .sr-focus-ring();
+    }
+  }
+
+  // ---------- 类型 ----------
+  &__item--info {
+    --sr-notification-icon: var(--sr-color-info);
+  }
+
+  &__item--success {
+    --sr-notification-icon: var(--sr-color-success);
+  }
+
+  &__item--warning {
+    --sr-notification-icon: var(--sr-color-warning);
+  }
+
+  &__item--error {
+    --sr-notification-icon: var(--sr-color-danger);
+  }
+}

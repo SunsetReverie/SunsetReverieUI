@@ -13,6 +13,8 @@ export interface SrToastItem {
   message: string
   position: SrToastPosition
   closable: boolean
+  /** 自定义背景色（任意 CSS 颜色） */
+  backgroundColor?: string
 }
 
 /**

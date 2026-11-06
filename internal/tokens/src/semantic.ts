@@ -278,6 +278,9 @@ export const qualityFlat: Record<string, string> = {
   // 圆角固定小值，与表单控件一致
   'tooltip-radius': '6px',
   'tooltip-sheen': 'none',
+  // 反馈浮层（轻提示 / 全局消息 / 通知）共用底色：flat 下实色
+  'feedback-bg': 'var(--sr-color-bg-elevated)',
+  'feedback-sheen': 'none',
 
   'shadow-sm': '0 1px 2px rgba(16, 20, 26, 0.06)',
   'shadow-md': '0 2px 8px rgba(16, 20, 26, 0.08)',
@@ -361,6 +364,8 @@ export const qualityGlass: Record<string, string> = {
   'tooltip-radius': '6px',
   // 斜向反光：玻璃片的标志，比单纯半透色块更容易被认出来
   'tooltip-sheen': 'linear-gradient(155deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 55%)',
+  // 反馈浮层比容器更透，才看得到背后被磨砂的内容
+  'feedback-sheen': 'linear-gradient(155deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 55%)',
 
   // 位移衰减：毛玻璃层内做位移动画会掉帧，距离减半
   'motion-distance-sm': '3px',
@@ -382,6 +387,7 @@ export const glassSurfaceLight: Record<string, string> = {
   'color-bg-popover': 'rgba(255, 255, 255, 0.42)',
   // 弹窗面积大、内容多，比下拉更实一点；背后是遮罩，太透会把文字压灰
   'color-bg-modal': 'rgba(255, 255, 255, 0.72)',
+  'feedback-bg': 'rgba(255, 255, 255, 0.6)',
 }
 
 /** 玻璃质感 · 暗色表面 */
@@ -391,6 +397,7 @@ export const glassSurfaceDark: Record<string, string> = {
   'color-bg-sunken': 'rgba(11, 14, 18, 0.6)',
   'color-bg-popover': 'rgba(38, 43, 51, 0.52)',
   'color-bg-modal': 'rgba(38, 43, 51, 0.68)',
+  'feedback-bg': 'rgba(38, 43, 51, 0.6)',
 }
 
 /**

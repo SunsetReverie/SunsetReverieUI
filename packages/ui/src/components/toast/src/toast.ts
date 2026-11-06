@@ -27,6 +27,8 @@ export interface SrToastOptions {
   position?: SrToastPosition
   /** 是否显示关闭按钮 @default false */
   closable?: boolean
+  /** 自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底 */
+  backgroundColor?: string
 }
 
 /** 命令式 API 的函数签名 */
@@ -116,6 +118,7 @@ function show(message: string, options: SrToastOptions = {}): number {
     message,
     position: options.position ?? 'top',
     closable: options.closable ?? false,
+    ...(options.backgroundColor ? { backgroundColor: options.backgroundColor } : {}),
   }
 
   srToastItems.value.push(item)

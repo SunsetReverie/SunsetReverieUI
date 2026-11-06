@@ -27,6 +27,7 @@ const groups = computed(() =>
         :key="item.id"
         class="sr-toast__item"
         :class="`sr-toast__item--${item.type}`"
+        :style="item.backgroundColor ? { '--sr-toast-bg': item.backgroundColor } : undefined"
         :role="item.type === 'error' ? 'alert' : 'status'"
         :aria-live="item.type === 'error' ? 'assertive' : 'polite'"
       >
