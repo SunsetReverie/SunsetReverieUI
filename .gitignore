@@ -43,3 +43,6 @@ Thumbs.db
 test-results/
 playwright-report/
 blob-report/
+
+# vite 临时配置产物
+*.timestamp-*.mjs
