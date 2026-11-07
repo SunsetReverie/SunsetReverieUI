@@ -182,7 +182,7 @@ const propGroups = computed(() => {
 
 .api-table__row {
   display: grid;
-  grid-template-columns: 140px minmax(120px, 1fr) 110px minmax(160px, 1.6fr);
+  grid-template-columns: 130px minmax(170px, 1.15fr) 100px minmax(150px, 1.5fr);
   gap: 12px;
   padding: 9px 14px;
   border-bottom: 1px solid var(--sr-color-border-subtle);
@@ -209,7 +209,8 @@ const propGroups = computed(() => {
 .api-table__type {
   color: var(--sr-color-text-tertiary);
   font-family: var(--sr-font-family-mono);
-  word-break: break-word;
+  /* 类型名里的 | 两侧有空格，允许在空格处折行，但不把单词拆开 */
+  overflow-wrap: break-word;
 }
 
 .api-table__default {

@@ -1049,7 +1049,7 @@
       {
         "from": "inputProps",
         "name": "type",
-        "type": "{",
+        "type": "string",
         "default": "'text'",
         "description": "原生 input type textarea 是独立分支，不看这个字段"
       },

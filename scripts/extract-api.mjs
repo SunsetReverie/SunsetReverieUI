@@ -108,13 +108,16 @@ function parseProps(code, name) {
     }
 
     const blockText = block.join('\n')
+    // 第一行是「propName: {」本身，其中可能就含 "type:" 字样（prop 名恰好叫 type），
+    // 必须跳过，否则会把 '{' 当成类型
+    const body = blockText.replace(/^[\s\S]*?\n/, '')
     // PropType<...> 里的内容才是对外类型，注意里面可能还有嵌套尖括号
     let type = ''
-    const propTypeAt = blockText.indexOf('PropType<')
+    const propTypeAt = body.indexOf('PropType<')
     if (propTypeAt >= 0) {
       let depth = 0
-      for (let k = propTypeAt + 'PropType<'.length; k < blockText.length; k += 1) {
-        const ch = blockText[k]
+      for (let k = propTypeAt + 'PropType<'.length; k < body.length; k += 1) {
+        const ch = body[k]
         if (ch === '<') depth += 1
         if (ch === '>') {
           if (depth === 0) break
@@ -123,7 +126,7 @@ function parseProps(code, name) {
         type += ch
       }
     } else {
-      const raw = /type:\s*([^,\n]+)/.exec(blockText)
+      const raw = /type:\s*([^,\n]+)/.exec(body)
       type = raw?.[1] ?? ''
       // 数组写法 [String, Number] 转成联合类型
       const tuple = /^\[([^\]]+)\]/.exec(type.trim())
@@ -137,7 +140,7 @@ function parseProps(code, name) {
       }
     }
 
-    const defaultMatch = /default:\s*([^\n]+)/.exec(blockText)
+    const defaultMatch = /default:\s*([^\n]+)/.exec(body)
     const def = (defaultMatch?.[1] ?? '')
       .trim()
       .replace(/,$/, '')
