@@ -83,6 +83,35 @@ body {
     }
   }
 
+  // 侧栏底部的用户区：收起态只留头像
+  &__user {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  &__user-name {
+    overflow: hidden;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    font-weight: var(--sr-font-weight-medium);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__user-role {
+    overflow: hidden;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__side .sr-nav.is-collapsed .pg__user {
+    display: none;
+  }
+
   &__pill {
     padding: 2px 9px;
     border: 1px solid var(--sr-color-border);

@@ -20,6 +20,10 @@
   flex: 0 0 auto;
   flex-direction: column;
   gap: var(--sr-nav-gap);
+  // 折叠/展开时宽度平滑变化，否则整块会瞬移
+  transition:
+    width var(--sr-motion-duration-base) var(--sr-motion-easing-spring),
+    padding var(--sr-motion-duration-base) var(--sr-motion-easing-spring);
   padding: var(--sr-nav-padding);
   border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
   border-radius: var(--sr-nav-radius);
@@ -85,13 +89,16 @@
   }
 
   // ---------- 品牌区 ----------
+  // 高度与 header 对齐，底部那条线才能和 header 的分隔线接上；
+  // 负 margin 抵消导航自身的 padding，让品牌区从顶边开始
   &__brand {
     display: flex;
     align-items: center;
     gap: 10px;
     flex: 0 0 auto;
-    padding: 4px 6px 14px;
-    margin-bottom: 6px;
+    height: 56px;
+    padding: 0 16px;
+    margin: calc(-1 * var(--sr-nav-padding)) calc(-1 * var(--sr-nav-padding)) 8px;
     border-bottom: 1px solid var(--sr-color-border-subtle);
   }
 
@@ -119,7 +126,7 @@
 
   &.is-collapsed &__brand {
     justify-content: center;
-    padding: 4px 0 12px;
+    padding: 0;
   }
 
   // ---------- 结构 ----------
@@ -228,6 +235,18 @@
     height: 6px;
     border-radius: var(--sr-radius-full);
     background: var(--sr-color-primary);
+  }
+
+  // ---------- 底部固定区 ----------
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    // 菜单区撑满后把它推到底部
+    margin-top: auto;
+    padding: 10px 8px 2px;
+    border-top: 1px solid var(--sr-color-border-subtle);
   }
 
   &__divider {
@@ -391,4 +410,27 @@
   &--active-bar &__item--child.is-active::before {
     height: 50%;
   }
+}
+
+// ---------- 子菜单展开/收起 ----------
+// 高度不定，用 max-height 过渡：足够覆盖常见条目数，超出会被内容撑开遮挡
+
+.sr-nav-sub-enter-active,
+.sr-nav-sub-leave-active {
+  overflow: hidden;
+  transition:
+    max-height var(--sr-motion-duration-base) var(--sr-motion-easing-spring),
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.sr-nav-sub-enter-from,
+.sr-nav-sub-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.sr-nav-sub-enter-to,
+.sr-nav-sub-leave-from {
+  max-height: 320px;
+  opacity: 1;
 }

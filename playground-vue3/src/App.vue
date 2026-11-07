@@ -8,6 +8,7 @@ import {
   SrButton,
   SrDrawer,
   SrIcon,
+  SrAvatar,
   SrNav,
   SrTabs,
   useSrBreakpoint,
@@ -94,7 +95,15 @@ const styleItems = [
         :collapsed="collapsed"
         :width="216"
         @select="onSelect"
-      />
+      >
+        <template #footer>
+          <SrAvatar alt="林" size="sm" />
+          <span class="pg__user">
+            <span class="pg__user-name">林深</span>
+            <span class="pg__user-role">组件库维护</span>
+          </span>
+        </template>
+      </SrNav>
     </aside>
 
     <div class="pg__main">

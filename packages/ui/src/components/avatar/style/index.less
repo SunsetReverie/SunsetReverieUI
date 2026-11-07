@@ -9,6 +9,8 @@
 .sr-avatar {
   --sr-avatar-size: 36px;
   --sr-avatar-font: 14px;
+  // 由组件按 alt 散列算出来内联设置；给个兜底值，避免未设置时整条声明失效
+  --sr-avatar-accent: var(--sr-color-primary);
 
   display: inline-flex;
   align-items: center;

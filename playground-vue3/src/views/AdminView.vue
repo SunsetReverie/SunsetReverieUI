@@ -107,6 +107,7 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
       <aside class="admin__side">
         <SrNav
           v-model="menuKey"
+          bare
           :items="menus"
           logo="lucide:moon-star"
           title="夕梦 UI"
@@ -189,8 +190,9 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
 
 .admin__side {
   flex: 0 0 auto;
-  padding: 10px;
+  height: 100%;
   overflow: hidden;
+  border-right: 1px solid var(--sr-color-border-subtle);
 }
 
 .admin__main {

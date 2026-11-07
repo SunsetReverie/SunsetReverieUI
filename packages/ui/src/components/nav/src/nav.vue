@@ -71,6 +71,9 @@ function isGroupCollapsible(item: SrNavItem): boolean {
  * @returns 是否收起
  */
 function isGroupHidden(item: SrNavItem): boolean {
+  // 收起态只有图标，分组折叠无从体现；若沿用折叠状态，
+  // 被折叠组里的图标会一起消失，看起来像「菜单丢了」
+  if (props.collapsed) return false
   return Boolean(item.group && closedGroups.value.has(item.group))
 }
 
@@ -196,24 +199,26 @@ function pick(item: SrNavItem): void {
         </button>
 
         <!-- 展开态：子项就地展开 -->
-        <div
-          v-if="!collapsed && item.children?.length && openKeys.has(item.key ?? '')"
-          class="sr-nav__children"
-        >
-          <button
-            v-for="child in item.children"
-            :key="child.key"
-            class="sr-nav__item sr-nav__item--child"
-            :class="{ 'is-active': child.key === modelValue, 'is-disabled': child.disabled }"
-            type="button"
-            :disabled="child.disabled || disabled"
-            @click="pick(child)"
+        <Transition name="sr-nav-sub">
+          <div
+            v-if="!collapsed && item.children?.length && openKeys.has(item.key ?? '')"
+            class="sr-nav__children"
           >
-            <sr-icon v-if="child.icon" class="sr-nav__icon" :name="child.icon" :size="15" />
-            <span class="sr-nav__label">{{ child.label }}</span>
-            <span v-if="hasBadge(child)" class="sr-nav__badge">{{ child.badge }}</span>
-          </button>
-        </div>
+            <button
+              v-for="child in item.children"
+              :key="child.key"
+              class="sr-nav__item sr-nav__item--child"
+              :class="{ 'is-active': child.key === modelValue, 'is-disabled': child.disabled }"
+              type="button"
+              :disabled="child.disabled || disabled"
+              @click="pick(child)"
+            >
+              <sr-icon v-if="child.icon" class="sr-nav__icon" :name="child.icon" :size="15" />
+              <span class="sr-nav__label">{{ child.label }}</span>
+              <span v-if="hasBadge(child)" class="sr-nav__badge">{{ child.badge }}</span>
+            </button>
+          </div>
+        </Transition>
 
         <!-- 收起态：悬停浮层 -->
         <!--
@@ -236,5 +241,10 @@ function pick(item: SrNavItem): void {
         </div>
       </div>
     </template>
+
+    <!-- 底部固定区：用户信息、版本号之类，和菜单之间用一条线隔开 -->
+    <div v-if="$slots.footer" class="sr-nav__footer">
+      <slot name="footer" />
+    </div>
   </nav>
 </template>
