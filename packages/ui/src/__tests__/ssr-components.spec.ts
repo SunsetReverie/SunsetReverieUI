@@ -24,6 +24,7 @@ import {
   SrModal,
   SrNav,
   SrPagination,
+  SrProgress,
   SrPanel,
   SrRadio,
   SrRadioGroup,
@@ -167,6 +168,11 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
   it('SrUpload 服务端只渲染入口，不碰 objectURL', async () => {
     await expectRenderable(SrUpload, { multiple: true })
+  })
+
+  it('SrProgress 服务端输出稳定的百分比', async () => {
+    const html = await render(SrProgress, { percent: 62 })
+    expect(html).toContain('62%')
   })
 
   it('SrPagination', async () => {

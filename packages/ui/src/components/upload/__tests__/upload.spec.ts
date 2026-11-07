@@ -166,6 +166,92 @@ describe('SrUpload', () => {
     wrapper.unmount()
   })
 
+  it('按钮形态渲染按钮而非拖拽区', () => {
+    const wrapper = mountUpload({ triggerType: 'button' })
+
+    expect(wrapper.find('.sr-upload__btn').exists()).toBe(true)
+    expect(wrapper.find('.sr-upload__trigger').exists()).toBe(false)
+    expect(wrapper.classes?.()).toBeDefined()
+    wrapper.unmount()
+  })
+
+  it('按钮形态可自定义文案与图标', () => {
+    const wrapper = mountUpload({ triggerType: 'button', buttonText: '上传附件', icon: 'lucide:heart' })
+
+    expect(wrapper.find('.sr-upload__btn').text()).toContain('上传附件')
+    wrapper.unmount()
+  })
+
+  it('icon 传空字符串时不渲染图标', () => {
+    const wrapper = mountUpload({ icon: '' })
+    expect(wrapper.find('.sr-upload__icon').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('#icon 插槽可自定义拖拽区图标', () => {
+    const wrapper = mount(SrUpload, {
+      props: {},
+      slots: { icon: '<i class="my-icon" />' },
+      global: { stubs: { SrIcon: true } },
+      attachTo: document.body,
+    })
+
+    expect(wrapper.find('.my-icon').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('回显已有文件：不发起上传，名字是链接', () => {
+    const httpRequest = vi.fn(async () => 'x')
+    const wrapper = mount(SrUpload, {
+      props: {
+        httpRequest,
+        files: [
+          {
+            uid: 'old-1',
+            name: '季度报告.pdf',
+            size: 2.3 * 1024 * 1024,
+            type: 'application/pdf',
+            url: 'https://cdn.example.com/a.pdf',
+            status: 'success',
+            percent: 100,
+          },
+        ],
+      },
+      global: { stubs: { SrIcon: true, SrProgress: true } },
+      attachTo: document.body,
+    })
+
+    expect(wrapper.findAll('.sr-upload__item')).toHaveLength(1)
+    expect(wrapper.find('.sr-upload__name--link').attributes('href')).toBe('https://cdn.example.com/a.pdf')
+    expect(httpRequest).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('上传中的文件不允许移除', async () => {
+    let finish: (() => void) | undefined
+    const httpRequest = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          finish = () => resolve('https://cdn.example.com/a.png')
+        }),
+    )
+
+    const wrapper = mountUpload({ httpRequest })
+    await selectFiles(wrapper, [makeFile('a.png', 100, 'image/png')])
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-upload__item').classes()).toContain('is-uploading')
+    })
+
+    const removeBtn = wrapper.findAll('.sr-upload__action').at(-1)
+    expect(removeBtn?.attributes('disabled')).toBeDefined()
+
+    finish?.()
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-upload__item').classes()).toContain('is-success')
+    })
+    wrapper.unmount()
+  })
+
   it('达到上限后拖拽区提示不可用', async () => {
     const wrapper = mountUpload({ maxCount: 1 })
     await selectFiles(wrapper, [makeFile('a.txt')])

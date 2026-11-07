@@ -8,6 +8,9 @@ export type SrUploadStatus = 'ready' | 'uploading' | 'success' | 'error'
 /** 列表展示形态 */
 export type SrUploadListType = 'list' | 'card'
 
+/** 触发区形态 */
+export type SrUploadTriggerType = 'area' | 'button'
+
 /** 文件条目 */
 export interface SrUploadFile {
   /** 唯一标识，删除与去重都靠它 */
@@ -39,6 +42,15 @@ export interface SrUploadFile {
 export type SrUploadRequest = (file: File, onProgress: (percent: number) => void) => Promise<string | void>
 
 export const uploadProps = {
+  /**
+   * 已有文件列表，支持 v-model:files
+   *
+   * 回显场景：服务端只返回 url/name/size，没有 raw，组件不会为它们发上传请求。
+   */
+  files: {
+    type: Array as PropType<SrUploadFile[]>,
+    default: () => [],
+  },
   /** 接受的文件类型，写法同原生 input 的 accept */
   accept: {
     type: String,
@@ -63,6 +75,29 @@ export const uploadProps = {
   listType: {
     type: String as PropType<SrUploadListType>,
     default: 'list',
+  },
+  /**
+   * 触发区形态 @default 'area'
+   *
+   * button 是一个紧凑的按钮，适合放在表单里；area 是大块拖拽区。
+   */
+  triggerType: {
+    type: String as PropType<SrUploadTriggerType>,
+    default: 'area',
+  },
+  /**
+   * 拖拽区图标，传空字符串可去掉 @default 'lucide:box'
+   *
+   * 拖拽悬停时会换成下载图标；想固定不变就自己用 #icon 插槽。
+   */
+  icon: {
+    type: String,
+    default: 'lucide:box',
+  },
+  /** 按钮形态下的文案 @default '选择文件' */
+  buttonText: {
+    type: String,
+    default: '选择文件',
   },
   /** 允许拖拽到区域上传 @default true */
   draggable: {

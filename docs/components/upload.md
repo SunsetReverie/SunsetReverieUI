@@ -53,6 +53,68 @@ const upload: SrUploadRequest = (file, onProgress) =>
 
 拖拽时边框变实线、文案变成「松开即可上传」。上传中显示进度条，成功显示对勾，失败显示重试按钮。
 
+## 按钮形态
+
+`trigger-type="button"` 换成紧凑按钮，适合嵌在表单里：
+
+```vue
+<SrUpload trigger-type="button" button-text="上传附件" :http-request="upload" />
+```
+
+| 形态 | 适用 |
+| --- | --- |
+| `area`（默认） | 独立的上传区域，支持拖拽 |
+| `button` | 嵌在表单或工具栏里，只支持点击 |
+
+单文件场景传 `:multiple="false"`（默认值），选完文件后按钮右侧会出现一行文件名。
+
+## 自定义图标
+
+`icon` 换掉拖拽区图标，传空字符串则不显示：
+
+```vue
+<SrUpload icon="lucide:heart" />
+<SrUpload icon="" />          <!-- 纯文字 -->
+```
+
+拖拽悬停时图标会自动换成下载图标；想完全固定就用 `#icon` 插槽：
+
+```vue
+<SrUpload>
+  <template #icon>
+    <SrIcon name="lucide:cloud-upload" :size="26" />
+  </template>
+</SrUpload>
+```
+
+## 回显已有文件
+
+编辑页里文件已经上传过，服务端只返回地址，没有原始 `File`。通过 `v-model:files` 传进去即可：
+
+```vue
+<SrUpload v-model:files="files" :http-request="upload" />
+```
+
+```ts
+const files = ref([
+  {
+    uid: 'old-1',
+    name: '季度报告.pdf',
+    size: 2.3 * 1024 * 1024,
+    type: 'application/pdf',
+    url: 'https://cdn.example.com/report.pdf',
+    status: 'success',
+    percent: 100,
+  },
+])
+```
+
+组件的处理：
+
+- **没有 `raw` 的条目不会再发上传请求**，直接视为已上传
+- `status: 'success'` 且有 `url` 时，文件名渲染成链接，点击可打开
+- 删除时会一并释放预览地址（`blob:` 开头的才释放）
+
 ## 数量与大数限制
 
 <div class="sr-demo is-block">
@@ -127,6 +189,10 @@ type SrUploadRequest = (
 | `maxCount` | `number` | `0` | 最多保留几个文件，0 表示不限 |
 | `maxSize` | `number` | `0` | 单文件大小上限（MB），0 表示不限 |
 | `listType` | `'list' \| 'card'` | `'list'` | 列表形态 |
+| `triggerType` | `'area' \| 'button'` | `'area'` | 触发区形态 |
+| `icon` | `string` | `'lucide:box'` | 拖拽区图标，传空字符串则不显示 |
+| `buttonText` | `string` | `'选择文件'` | 按钮形态的文案 |
+| `files` | `SrUploadFile[]` | `[]` | 已有文件列表，配合 `v-model:files` |
 | `draggable` | `boolean` | `true` | 允许拖拽上传 |
 | `disabled` | `boolean` | `false` | 禁用 |
 | `autoUpload` | `boolean` | `true` | 选择后立即调用 `httpRequest` |
@@ -164,7 +230,8 @@ type SrUploadRequest = (
 
 | 插槽 | 说明 |
 | --- | --- |
-| `trigger` | 自定义拖拽区，覆盖默认样式 |
+| `trigger` | 自定义整个触发区，覆盖默认样式 |
+| `icon` | 只替换拖拽区图标 |
 
 ## 暴露的方法
 
@@ -181,3 +248,5 @@ type SrUploadRequest = (
 - `maxSize` 单位是 **MB**，可以传小数（`0.5` 就是 512KB）。
 - `accept` 同时用于原生 input 与拖拽校验。拖拽时浏览器不会自动过滤，所以校验必须在组件里做。
 - 组件不处理并发限制，多文件会同时发起全部请求。需要串行或限流时自己在外层包一层。
+- **上传中的文件不能移除**，删除按钮会置灰。请求还在跑，进度回调会去改一份已不在列表里的数据。
+- 进度条内部复用 `SrProgress`，`strokeWidth` 固定 3px、不显示文字——列表行里再放百分比会挤。

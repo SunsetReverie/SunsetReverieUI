@@ -1810,6 +1810,77 @@
     ],
     "slots": ["default", "extra", "header"]
   },
+  "progress": {
+    "name": "progress",
+    "options": [
+      {
+        "from": "progressProps",
+        "name": "percent",
+        "type": "number",
+        "default": "0",
+        "description": "百分比 0-100，超出会被夹到边界 @default 0"
+      },
+      {
+        "from": "progressProps",
+        "name": "status",
+        "type": "SrProgressStatus",
+        "default": "'normal'",
+        "description": "状态 @default 'normal'"
+      },
+      {
+        "from": "progressProps",
+        "name": "strokeWidth",
+        "type": "number",
+        "default": "6",
+        "description": "轨道高度（px）@default 6"
+      },
+      {
+        "from": "progressProps",
+        "name": "showText",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示百分比文字 @default true"
+      },
+      {
+        "from": "progressProps",
+        "name": "textInside",
+        "type": "boolean",
+        "default": "false",
+        "description": "文字放在轨道内部 @default false 只有轨道足够高（strokeWidth >= 16）时才好看，否则会溢出。"
+      },
+      {
+        "from": "progressProps",
+        "name": "format",
+        "type": "(percent: number) =",
+        "default": "undefined",
+        "description": "自定义文字，覆盖默认的百分比"
+      },
+      {
+        "from": "progressProps",
+        "name": "striped",
+        "type": "boolean",
+        "default": "false",
+        "description": "条纹背景 @default false"
+      },
+      {
+        "from": "progressProps",
+        "name": "animated",
+        "type": "boolean",
+        "default": "false",
+        "description": "条纹流动动画 @default false"
+      },
+      {
+        "from": "progressProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位，同时影响高度与字号；传了以对应档位为准"
+      }
+    ],
+    "sources": ["progress"],
+    "emits": [],
+    "slots": ["default"]
+  },
   "radio": {
     "name": "radio",
     "options": [
@@ -2676,6 +2747,13 @@
     "options": [
       {
         "from": "uploadProps",
+        "name": "files",
+        "type": "SrUploadFile[]",
+        "default": "() => []",
+        "description": "已有文件列表，支持 v-model:files 回显场景：服务端只返回 url/name/size，没有 raw，组件不会为它们发上传请求。"
+      },
+      {
+        "from": "uploadProps",
         "name": "accept",
         "type": "string",
         "default": "''",
@@ -2708,6 +2786,27 @@
         "type": "SrUploadListType",
         "default": "'list'",
         "description": "列表形态 @default 'list'"
+      },
+      {
+        "from": "uploadProps",
+        "name": "triggerType",
+        "type": "SrUploadTriggerType",
+        "default": "'area'",
+        "description": "触发区形态 @default 'area' button 是一个紧凑的按钮，适合放在表单里；area 是大块拖拽区。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "icon",
+        "type": "string",
+        "default": "'lucide:box'",
+        "description": "拖拽区图标，传空字符串可去掉 @default 'lucide:box' 拖拽悬停时会换成下载图标；想固定不变就自己用 #icon 插槽。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "buttonText",
+        "type": "string",
+        "default": "'选择文件'",
+        "description": "按钮形态下的文案 @default '选择文件'"
       },
       {
         "from": "uploadProps",
@@ -2789,6 +2888,6 @@
         "params": ["maxCount"]
       }
     ],
-    "slots": ["trigger"]
+    "slots": ["icon", "trigger"]
   }
 }

@@ -51,6 +51,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./spinner/SpinnerDemo.vue'),
       },
       {
+        key: 'progress',
+        name: 'SrProgress',
+        description: '进度条。四种状态、条纹流动、文字内外两态。',
+        demo: () => import('./progress/ProgressDemo.vue'),
+      },
+      {
         key: 'tag',
         name: 'SrTag',
         description: '状态标签。六种语义色、深浅两档。',

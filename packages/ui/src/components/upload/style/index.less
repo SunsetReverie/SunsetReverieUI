@@ -25,6 +25,41 @@
     pointer-events: none;
   }
 
+  // ---------- 按钮形态 ----------
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    align-self: flex-start;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-form-radius);
+    background: color-mix(in srgb, var(--sr-color-bg-container) 75%, transparent);
+    color: var(--sr-color-text);
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sr-color-primary-alpha-25);
+      outline-offset: 2px;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--sr-color-primary);
+      color: var(--sr-color-primary-text);
+    }
+  }
+
   // ---------- 拖拽区 ----------
   &__trigger {
     display: flex;
@@ -157,6 +192,15 @@
     text-overflow: ellipsis;
   }
 
+  &__name--link {
+    color: var(--sr-color-primary-text);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   &__meta {
     color: var(--sr-color-text-tertiary);
     font-size: 12px;
@@ -166,20 +210,9 @@
     color: var(--sr-color-danger);
   }
 
-  // ---------- 进度条 ----------
-  &__bar {
-    height: 3px;
+  // 上传中的进度条：挂在信息区下方，高度压到 3px
+  &__progress {
     margin-top: 2px;
-    overflow: hidden;
-    border-radius: var(--sr-radius-full);
-    background: var(--sr-color-border-subtle);
-  }
-
-  &__bar-fill {
-    height: 100%;
-    border-radius: inherit;
-    background: var(--sr-color-primary);
-    transition: width var(--sr-motion-duration-fast) linear;
   }
 
   // ---------- 右侧操作 ----------

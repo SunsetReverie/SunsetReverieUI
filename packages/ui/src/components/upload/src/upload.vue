@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import SrIcon from '../../icon/src/icon.vue'
+import SrProgress from '../../progress/src/progress.vue'
 import { uploadProps, type SrUploadFile } from './upload'
 
 defineOptions({ name: 'SrUpload' })
@@ -21,8 +22,15 @@ const emit = defineEmits<{
   exceed: [maxCount: number]
 }>()
 
-/** 当前文件列表 */
-const files = ref<SrUploadFile[]>([])
+defineSlots<{
+  /** 完全自定义触发区 */
+  trigger?: () => unknown
+  /** 只替换拖拽区图标 */
+  icon?: () => unknown
+}>()
+
+/** 当前文件列表：以外部传入的为初始值，之后由组件自己维护 */
+const files = ref<SrUploadFile[]>([...props.files])
 
 /** 隐藏的原生 input */
 const inputRef = ref<HTMLInputElement>()
@@ -36,11 +44,25 @@ const previewUrl = ref('')
 /** id 种子 */
 let seed = 0
 
+// 外部改了列表（例如编辑页异步拿到已有文件）时同步进来
+watch(
+  () => props.files,
+  (next) => {
+    const sameLength = next.length === files.value.length
+    const sameIds = next.every((file, index) => file.uid === files.value[index]?.uid)
+    if (sameLength && sameIds) return
+    files.value = [...next]
+  },
+)
+
 /** 是否达到数量上限 */
 const reachLimit = computed(() => props.maxCount > 0 && files.value.length >= props.maxCount)
 
 /** 拖拽区是否可交互 */
 const interactive = computed(() => !props.disabled && !reachLimit.value)
+
+/** 按钮形态 */
+const isButton = computed(() => props.triggerType === 'button')
 
 /**
  * 字节数转可读大小
@@ -75,9 +97,7 @@ function sync(): void {
   emit('update:files', [...files.value])
 }
 
-/**
- * 触发选择文件
- */
+/** 触发选择文件 */
 function openPicker(): void {
   if (!interactive.value) return
   inputRef.value?.click()
@@ -149,10 +169,14 @@ function addFiles(list: FileList | File[]): void {
  * 执行上传
  *
  * 进度来自 httpRequest 的回调；函数抛错即视为失败，列表保留以便重试。
- * @param file 待上传条目
+ * @param input 待上传条目
  */
 async function startUpload(input: SrUploadFile): Promise<void> {
-  if (!props.httpRequest || !input.raw) return
+  // 回显的历史文件只有 url、没有 raw，不该再发一次请求
+  if (!props.httpRequest || !input.raw) {
+    if (!input.raw && input.status === 'ready') input.status = 'success'
+    return
+  }
 
   // 必须操作 files 里的那份：它才是被 Vue 代理过的响应式对象，
   // 直接改外部传入的引用不会触发视图更新
@@ -190,11 +214,22 @@ function retry(file: SrUploadFile): void {
 }
 
 /**
+ * 是否允许移除
+ *
+ * 上传中的文件不能删：请求还在跑，进度回调会去改一份已不在列表里的数据。
+ * @param file 条目
+ * @returns 是否可移除
+ */
+function canRemove(file: SrUploadFile): boolean {
+  return !props.disabled && file.status !== 'uploading'
+}
+
+/**
  * 移除条目
  * @param file 条目
  */
 function remove(file: SrUploadFile): void {
-  if (props.disabled) return
+  if (!canRemove(file)) return
   const index = files.value.indexOf(file)
   if (index < 0) return
 
@@ -216,7 +251,7 @@ function onInputChange(event: Event): void {
 function onDragOver(event: DragEvent): void {
   if (!interactive.value) return
   event.preventDefault()
-  if (props.draggable) dragOver.value = true
+  if (props.draggable && !isButton.value) dragOver.value = true
 }
 
 /** 拖出 */
@@ -227,7 +262,7 @@ function onDragLeave(): void {
 /** 放下 */
 function onDrop(event: DragEvent): void {
   dragOver.value = false
-  if (!interactive.value || !props.draggable) return
+  if (!interactive.value || !props.draggable || isButton.value) return
   event.preventDefault()
 
   const dropped = event.dataTransfer?.files
@@ -261,7 +296,10 @@ defineExpose({ submit, clear, files })
 </script>
 
 <template>
-  <div class="sr-upload" :class="[`sr-upload--${listType}`, { 'is-disabled': disabled }]">
+  <div
+    class="sr-upload"
+    :class="[`sr-upload--${listType}`, `sr-upload--${triggerType}`, { 'is-disabled': disabled }]"
+  >
     <input
       ref="inputRef"
       class="sr-upload__input"
@@ -272,7 +310,24 @@ defineExpose({ submit, clear, files })
       @change="onInputChange"
     />
 
+    <!-- 按钮形态：紧凑的「+ 选择文件」 -->
+    <button
+      v-if="isButton"
+      class="sr-upload__btn"
+      :class="{ 'is-disabled': !interactive }"
+      type="button"
+      :disabled="!interactive"
+      @click="openPicker"
+    >
+      <slot name="icon">
+        <SrIcon v-if="icon" :name="icon" :size="14" />
+      </slot>
+      {{ reachLimit ? `最多 ${maxCount} 个文件` : buttonText }}
+    </button>
+
+    <!-- 区域形态：大块拖拽区 -->
     <div
+      v-else
       class="sr-upload__trigger"
       :class="{ 'is-dragover': dragOver, 'is-disabled': !interactive }"
       role="button"
@@ -286,7 +341,15 @@ defineExpose({ submit, clear, files })
       @drop="onDrop"
     >
       <slot name="trigger">
-        <SrIcon class="sr-upload__icon" :name="dragOver ? 'lucide:download' : 'lucide:box'" :size="22" />
+        <slot name="icon">
+          <SrIcon v-if="icon && !(draggable && dragOver)" class="sr-upload__icon" :name="icon" :size="22" />
+          <SrIcon
+            v-else-if="draggable && dragOver"
+            class="sr-upload__icon"
+            name="lucide:download"
+            :size="22"
+          />
+        </slot>
         <span class="sr-upload__text">
           {{ reachLimit ? `最多 ${maxCount} 个文件` : dragOver ? '松开即可上传' : dragText }}
         </span>
@@ -308,20 +371,31 @@ defineExpose({ submit, clear, files })
         </button>
 
         <div class="sr-upload__info">
-          <span class="sr-upload__name" :title="file.name">{{ file.name }}</span>
+          <!-- 成功且有地址时渲染成链接，回显场景可以直接下载 -->
+          <a
+            v-if="file.status === 'success' && file.url"
+            class="sr-upload__name sr-upload__name--link"
+            :href="file.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            :title="file.name"
+          >
+            {{ file.name }}
+          </a>
+          <span v-else class="sr-upload__name" :title="file.name">{{ file.name }}</span>
+
           <span class="sr-upload__meta">
-            <template v-if="file.status === 'error'">
-              {{ file.error || '上传失败' }}
-            </template>
-            <template v-else-if="file.status === 'uploading'"> 上传中 {{ file.percent }}% </template>
-            <template v-else>
-              {{ readableSize(file.size) }}
-            </template>
+            <template v-if="file.status === 'error'">{{ file.error || '上传失败' }}</template>
+            <template v-else>{{ readableSize(file.size) }}</template>
           </span>
 
-          <div v-if="file.status === 'uploading'" class="sr-upload__bar">
-            <div class="sr-upload__bar-fill" :style="{ width: `${file.percent}%` }" />
-          </div>
+          <SrProgress
+            v-if="file.status === 'uploading'"
+            class="sr-upload__progress"
+            :percent="file.percent"
+            :stroke-width="3"
+            :show-text="false"
+          />
         </div>
 
         <span
@@ -345,7 +419,8 @@ defineExpose({ submit, clear, files })
         <button
           class="sr-upload__action"
           type="button"
-          :disabled="disabled"
+          :disabled="!canRemove(file)"
+          :title="file.status === 'uploading' ? '上传中不可移除' : '移除'"
           aria-label="移除"
           @click="remove(file)"
         >

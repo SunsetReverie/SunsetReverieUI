@@ -31,6 +31,7 @@ export const SR_COMPONENT_NAMES = [
   'Nav',
   'Pagination',
   'Panel',
+  'Progress',
   'Radio',
   'RadioGroup',
   'Row',

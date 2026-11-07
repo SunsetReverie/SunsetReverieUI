@@ -235,6 +235,14 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Progress</span>
+        <div class="cell__body cell__body--column">
+          <sr-progress :percent="62" />
+          <sr-progress :percent="100" status="success" :show-text="false" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Upload</span>
         <div class="cell__body cell__body--column">
           <sr-upload :show-file-list="false" tip="支持拖拽" />
