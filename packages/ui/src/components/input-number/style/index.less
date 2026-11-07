@@ -81,6 +81,8 @@
 
 .sr-input-number--both .sr-input-number__btn--side {
   align-self: stretch;
+  // 必须显式覆盖 __btn 的 flex: 1 1 0，否则两侧按钮会和输入区平分宽度
+  flex: 0 0 auto;
   width: 30px;
   border: 0;
   border-radius: 0;

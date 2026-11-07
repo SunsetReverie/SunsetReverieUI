@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrIcon, SrInput, SrInputNumber, SrTag } from '@sunset-reverie/ui'
+import { SrButton, SrIcon, SrInput, SrInputNumber, SrSelect, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'InputDemo' })
 
@@ -13,16 +13,48 @@ const password = ref('12345678')
 const limited = ref('')
 const status = ref('')
 const count = ref(1)
+const pick = ref('')
+const options = [
+  { value: 'a', label: '选项 A' },
+  { value: 'b', label: '选项 B' },
+]
 </script>
 
 <template>
   <div class="demo">
     <section>
-      <h3>基础与尺寸</h3>
+      <h3>基础</h3>
       <div class="grid">
         <SrInput v-model="basic" placeholder="请输入内容" />
-        <SrInput v-model="basic" size="sm" placeholder="size = sm" />
+        <SrInput v-model="basic" placeholder="带初始值" />
       </div>
+    </section>
+
+    <section>
+      <h3>四档尺寸（xs / sm / md / lg）</h3>
+      <div class="stack">
+        <div v-for="s in ['xs', 'sm', 'md', 'lg']" :key="s" class="size-row">
+          <span class="size-row__label">size = {{ s }}</span>
+          <SrInput v-model="basic" :size="s as 'md'" :placeholder="`${s} 档输入框`" />
+        </div>
+      </div>
+      <p class="hint">高度依次 24 / 28 / 32 / 40px；字号与左右内边距同步缩放，图标也应该跟着变</p>
+    </section>
+
+    <section>
+      <h3>尺寸对齐（同档位的按钮与选择器）</h3>
+      <div class="stack">
+        <div v-for="s in ['sm', 'md', 'lg']" :key="s" class="size-row">
+          <span class="size-row__label">{{ s }}</span>
+          <div class="size-row__group">
+            <SrInput v-model="basic" :size="s as 'md'" placeholder="输入" />
+            <SrSelect v-model="pick" :options="options" :size="s as 'md'" placeholder="选择" />
+            <SrButton :size="s as 'md'" variant="primary">按钮</SrButton>
+            <SrInputNumber v-model="count" :size="s as 'md'" :min="0" :max="99" />
+          </div>
+        </div>
+      </div>
+      <p class="hint">同一档位下四种控件高度一致，混排时不会参差</p>
     </section>
 
     <section>
@@ -136,6 +168,26 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.size-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.size-row__label {
+  flex: 0 0 84px;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+}
+
+.size-row__group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .combo__tail {
