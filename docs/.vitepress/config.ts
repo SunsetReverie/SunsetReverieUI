@@ -111,9 +111,17 @@ export default defineConfig({
         {
           text: '展示元素',
           items: [
+            { text: 'SrTag', link: '/components/tag' },
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
             { text: 'SrEmpty', link: '/components/empty' },
+          ],
+        },
+        {
+          text: '容器',
+          items: [
+            { text: 'SrCard', link: '/components/card' },
+            { text: 'SrPanel', link: '/components/panel' },
           ],
         },
         {
@@ -122,6 +130,7 @@ export default defineConfig({
             { text: 'SrNav', link: '/components/nav' },
             { text: 'SrTabs', link: '/components/tabs' },
             { text: 'SrDropdown', link: '/components/dropdown' },
+            { text: 'SrBreadcrumb', link: '/components/breadcrumb' },
           ],
         },
         {
