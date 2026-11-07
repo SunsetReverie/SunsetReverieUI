@@ -79,4 +79,67 @@ describe('SrNav', () => {
     expect(wrapper.findAll('.sr-nav__divider')).toHaveLength(1)
     wrapper.unmount()
   })
+  it('activeStyle 生成对应类名', () => {
+    const pill = mount(SrNav, { props: { items, activeStyle: 'pill' } })
+    expect(pill.classes()).toContain('sr-nav--active-pill')
+    pill.unmount()
+
+    const bar = mount(SrNav, { props: { items, activeStyle: 'bar' } })
+    expect(bar.classes()).toContain('sr-nav--active-bar')
+    bar.unmount()
+  })
+
+  it('有子项的节点点击展开，不改变选中', async () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        modelValue: 'home',
+        items: [
+          { key: 'home', label: '首页' },
+          { key: 'res', label: '资源', children: [{ key: 'file', label: '文件' }] },
+        ],
+      },
+    })
+
+    await wrapper.findAll('.sr-nav__item')[1]?.trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.sr-nav__children').exists()).toBe(true)
+    expect(wrapper.find('.sr-nav__item--child').text()).toBe('文件')
+    // 父节点只负责展开，不抢选中
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('收起态只留图标，徽标退化成圆点', () => {
+    const wrapper = mount(SrNav, {
+      props: { items, modelValue: 'home', collapsed: true },
+    })
+
+    expect(wrapper.classes()).toContain('is-collapsed')
+    expect(wrapper.findAll('.sr-nav__label')).toHaveLength(0)
+    expect(wrapper.find('.sr-nav__dot').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('分组可折叠，collapsible 为 false 时不可点', async () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        items: [
+          { group: '基础', key: 'a', label: 'A' },
+          { group: '说明', key: 'b', label: 'B', collapsible: false },
+        ],
+      },
+    })
+
+    const groups = wrapper.findAll('.sr-nav__group')
+    await groups[0]?.trigger('click')
+    await nextTick()
+    // 第一组收起后，组内条目隐藏
+    expect(wrapper.findAll('.sr-nav__item')).toHaveLength(1)
+
+    expect(groups[1]?.classes()).not.toContain('is-toggle')
+    wrapper.unmount()
+  })
 })

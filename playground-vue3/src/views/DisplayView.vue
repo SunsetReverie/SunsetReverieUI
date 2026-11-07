@@ -91,24 +91,79 @@ function resetAppearance(): void {
   resetPrimaryColor()
 }
 
-/** 导航选中项 */
-const navKey = ref('home')
+/** 侧边导航选中项 */
+const sideKey = ref('overview')
 
-/** 导航项 */
-const navItems = [
-  { key: 'home', label: '首页', icon: 'lucide:house' },
-  { key: 'list', label: '组件', icon: 'lucide:inbox', badge: 12 },
-  { key: 'fav', label: '收藏', icon: 'lucide:heart' },
-  { key: 'setting', label: '设置', icon: 'lucide:settings', disabled: true },
+/** 两级导航选中项 */
+const nestedKey = ref('overview')
+
+/** 分组导航选中项 */
+const groupKey = ref('button')
+
+/** 侧边导航：分组 + 图标 + 徽标 + 禁用 */
+const sideNav = [
+  { group: '工作台', key: 'overview', label: '概览', icon: 'lucide:house' },
+  { group: '工作台', key: 'activity', label: '动态', icon: 'lucide:heart', badge: 12 },
+  { group: '工作台', key: 'message', label: '消息', icon: 'lucide:inbox', badge: '新' },
+  { group: '资源管理', key: 'file', label: '文件', icon: 'lucide:inbox', divider: true },
+  { group: '资源管理', key: 'image', label: '图片', icon: 'lucide:image' },
+  { group: '资源管理', key: 'video', label: '视频', icon: 'lucide:play', badge: 3 },
+  { group: '资源管理', key: 'trash', label: '回收站', icon: 'lucide:trash' },
+  { group: '系统', key: 'setting', label: '设置', icon: 'lucide:settings', divider: true },
+  { group: '系统', key: 'bill', label: '账单', disabled: true },
+  { group: '系统', key: 'log', label: '日志' },
 ]
 
-/** 带分组的垂直导航 */
-const groupedNav = [
-  { group: '主菜单', key: 'home', label: '首页', icon: 'lucide:house' },
-  { group: '主菜单', key: 'list', label: '组件', icon: 'lucide:inbox', badge: 12 },
-  { group: '主菜单', key: 'fav', label: '收藏', icon: 'lucide:heart' },
-  { group: '系统', key: 'setting', label: '设置', icon: 'lucide:settings', divider: true },
-  { group: '系统', key: 'about', label: '关于', disabled: true },
+/** 两级导航 */
+const nestedNav = [
+  { group: '工作台', key: 'overview', label: '概览', icon: 'lucide:house' },
+  {
+    group: '工作台',
+    key: 'res',
+    label: '资源',
+    icon: 'lucide:inbox',
+    children: [
+      { key: 'file', label: '文件' },
+      { key: 'image', label: '图片' },
+    ],
+  },
+  {
+    group: '工作台',
+    key: 'team',
+    label: '团队',
+    icon: 'lucide:heart',
+    children: [
+      { key: 'member', label: '成员' },
+      { key: 'role', label: '角色' },
+    ],
+  },
+  { group: '系统', key: 'setting', label: '设置', icon: 'lucide:settings' },
+]
+
+/** 可折叠分组；最后一组显式关掉折叠，标题只是说明文字 */
+const groupNav = [
+  { group: '基础组件', key: 'button', label: 'Button' },
+  { group: '基础组件', key: 'icon', label: 'Icon' },
+  { group: '基础组件', key: 'input', label: 'Input' },
+  { group: '布局组件', key: 'space', label: 'Space' },
+  { group: '布局组件', key: 'divider', label: 'Divider' },
+  { group: '反馈组件', key: 'modal', label: 'Modal', collapsible: false },
+  { group: '反馈组件', key: 'drawer', label: 'Drawer' },
+]
+
+/** 激活样式对比用的极简导航 */
+const styleDemo = [
+  { key: 'overview', label: '概览', icon: 'lucide:house' },
+  { key: 'message', label: '消息', icon: 'lucide:inbox', badge: 6 },
+  { key: 'setting', label: '设置', icon: 'lucide:settings' },
+]
+
+/** 水平导航 */
+const horizNav = [
+  { key: 'overview', label: '概览', icon: 'lucide:house' },
+  { key: 'message', label: '消息', icon: 'lucide:inbox', badge: 6 },
+  { key: 'favorite', label: '收藏', icon: 'lucide:heart' },
+  { key: 'setting', label: '设置', icon: 'lucide:settings', disabled: true },
 ]
 
 /** 纯文字菜单：全部不带图标，最简洁 */
@@ -439,30 +494,77 @@ function onMenuSelect(key: string): void {
       </div>
     </SrPanel>
 
-    <SrPanel title="导航" description="水平与垂直两种排列，支持图标、徽标、分组与禁用。">
-      <div style="display: flex; flex-direction: column; gap: 24px">
+    <SrPanel
+      title="导航"
+      description="侧边导航的完整形态：分组、两级子菜单、整体收起、可折叠分组，以及两种激活样式。"
+    >
+      <div class="nav-grid">
         <div>
-          <h3 class="sub-title">水平（当前选中：{{ navKey }}）</h3>
-          <SrNav v-model="navKey" :items="navItems" />
+          <h3 class="sub-title">基础（分组 · 图标 · 徽标 · 禁用）</h3>
+          <SrNav v-model="sideKey" :items="sideNav" mode="vertical" :max-height="380" />
         </div>
 
         <div>
-          <h3 class="sub-title">垂直（含分组与分割线）</h3>
-          <SrNav v-model="navKey" :items="groupedNav" mode="vertical" style="width: 200px" />
+          <h3 class="sub-title">子菜单（两级）</h3>
+          <SrNav v-model="nestedKey" :items="nestedNav" mode="vertical" :max-height="380" />
         </div>
 
         <div>
-          <h3 class="sub-title">尺寸</h3>
-          <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
-            <SrNav
-              v-for="size in ['xs', 'sm', 'md', 'lg']"
-              :key="size"
-              :items="navItems"
-              :model-value="'home'"
-              :size="size as 'xs'"
-            />
-          </div>
+          <h3 class="sub-title">整体收起（仅图标，悬停弹子菜单）</h3>
+          <SrNav v-model="nestedKey" :items="nestedNav" mode="vertical" collapsed :max-height="380" />
         </div>
+
+        <div>
+          <h3 class="sub-title">可折叠分组</h3>
+          <SrNav v-model="groupKey" :items="groupNav" mode="vertical" :max-height="380" />
+        </div>
+      </div>
+
+      <p class="muted" style="margin: 14px 0 0">
+        当前激活：<SrTag type="primary">{{ sideKey }}</SrTag>
+        「账单」是禁用项；最后一组的分组标题设了
+        <code>collapsible: false</code>，只作说明文字，不可点。
+      </p>
+
+      <h3 class="sub-title" style="margin-top: 26px">激活样式变体</h3>
+      <div class="nav-styles">
+        <div>
+          <p class="muted">pill（默认，实色胶囊 + 柔光）</p>
+          <SrNav
+            v-model="sideKey"
+            :items="styleDemo"
+            mode="vertical"
+            active-style="pill"
+            style="width: 180px"
+          />
+        </div>
+
+        <div>
+          <p class="muted">bar（淡底 + 左侧竖条，侧边栏常用）</p>
+          <SrNav
+            v-model="sideKey"
+            :items="styleDemo"
+            mode="vertical"
+            active-style="bar"
+            style="width: 180px"
+          />
+        </div>
+
+        <div>
+          <p class="muted">水平</p>
+          <SrNav v-model="sideKey" :items="horizNav" />
+        </div>
+      </div>
+
+      <h3 class="sub-title" style="margin-top: 26px">尺寸</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+        <SrNav
+          v-for="size in ['xs', 'sm', 'md', 'lg']"
+          :key="size"
+          :items="horizNav"
+          :model-value="'overview'"
+          :size="size as 'xs'"
+        />
       </div>
     </SrPanel>
 
@@ -1110,13 +1212,41 @@ function onMenuSelect(key: string): void {
 }
 
 /* 下拉演示：每个触发器配一行说明，避免按钮挤成一排看不出区别 */
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.nav-styles {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
 .menu-row {
   display: flex;
   flex-wrap: wrap;
   gap: 20px 28px;
 }
 
-.menu-row + .menu-row {
+.menu-row + .nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.nav-styles {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.menu-row {
   margin-top: 18px;
 }
 

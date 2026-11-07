@@ -1,7 +1,9 @@
 // 导航
 //
-// 整条导航是一块浮起的磨砂玻璃，选中项是实色胶囊 + 同色柔光。
-// 不做下划线 / 竖条这类后台模板的指示器 —— 选中态靠填充和发光表达。
+// 整条导航是一块浮起的磨砂玻璃。激活态有两种语言：
+// - pill：实色胶囊 + 同色柔光（默认，适合顶栏）
+// - bar：淡底 + 左侧主色竖条（侧边栏常用，色弱也能分辨）
+// 收起态只留图标，徽标退化成圆点，带子项的节点悬停弹浮层。
 
 @import '../../../styles/mixins/index.less';
 @import '../../icon/style/index.less';
@@ -15,6 +17,8 @@
 
   display: flex;
   box-sizing: border-box;
+  flex: 0 0 auto;
+  flex-direction: column;
   gap: var(--sr-nav-gap);
   padding: var(--sr-nav-padding);
   border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
@@ -29,7 +33,7 @@
   }
 
   &--sm {
-    --sr-nav-height: 32px;
+    --sr-nav-height: 30px;
     --sr-nav-font: 13px;
   }
 
@@ -38,21 +42,32 @@
     --sr-nav-font: 15px;
   }
 
+  // 水平：一条胶囊，按内容收缩
   &--horizontal {
     flex-direction: row;
     align-items: center;
-    // 胶囊条跟着内容走，拉满整行会显得空
-    width: fit-content;
+    width: fit-content !important;
   }
 
-  // 竖排用更大的圆角，胶囊形在纵向会说不上是"条"
+  // 竖排用更大的圆角，胶囊形纵向说不通
   &--vertical {
-    --sr-nav-radius: 18px;
-    --sr-nav-gap: 3px;
-    --sr-nav-padding: 8px;
+    --sr-nav-radius: 16px;
+    --sr-nav-gap: 2px;
+    --sr-nav-padding: 10px;
 
-    flex-direction: column;
+    overflow-y: auto;
+    // 侧边栏常配滚动，但不该露出滚动条
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &.is-collapsed {
     align-items: stretch;
+    // 收起态条目少，允许浮层溢出
+    overflow: visible;
   }
 
   &.is-disabled {
@@ -60,14 +75,19 @@
   }
 
   // ---------- 结构 ----------
+  &__entry {
+    position: relative;
+  }
+
   &__item {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     box-sizing: border-box;
-    min-width: 0;
+    width: 100%;
     height: var(--sr-nav-height);
-    padding: 0 14px;
+    padding: 0 12px;
     border: 0;
     border-radius: var(--sr-radius-full);
     background: transparent;
@@ -78,8 +98,7 @@
     transition:
       color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
     &:disabled {
       color: var(--sr-color-text-disabled);
@@ -92,7 +111,28 @@
   }
 
   &--vertical &__item {
-    border-radius: 11px;
+    border-radius: 10px;
+  }
+
+  &.is-collapsed &__item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  // 子项缩进，并用左侧竖线表达层级
+  &__children {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 2px 0 2px 18px;
+    padding-left: 10px;
+    border-left: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__item--child {
+    height: calc(var(--sr-nav-height) - 4px);
+    padding: 0 10px;
+    font-size: calc(var(--sr-nav-font) - 1px);
   }
 
   &__label {
@@ -106,6 +146,17 @@
     flex: 0 0 auto;
   }
 
+  &__arrow {
+    flex: 0 0 auto;
+    color: currentcolor;
+    opacity: 0.55;
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &.is-open {
+      transform: rotate(90deg);
+    }
+  }
+
   &__badge {
     flex: 0 0 auto;
     min-width: 18px;
@@ -117,55 +168,135 @@
     font-weight: var(--sr-font-weight-medium);
     line-height: 18px;
     text-align: center;
-    transition:
-      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  // 收起态：徽标退化成右上角圆点，56px 里放不下数字
+  &__dot {
+    position: absolute;
+    top: 6px;
+    right: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-primary);
   }
 
   &__divider {
     flex: 0 0 auto;
+    height: 1px;
+    margin: 6px 10px;
     background: var(--sr-color-border-subtle);
   }
 
+  // ---------- 分组 ----------
   &__group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
+    padding: 12px 10px 4px;
+    border: 0;
+    background: transparent;
     color: var(--sr-color-text-tertiary);
     font-size: 11px;
     font-weight: var(--sr-font-weight-medium);
     letter-spacing: 0.04em;
+    text-align: start;
+    cursor: default;
+
+    &.is-toggle {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--sr-color-text-secondary);
+      }
+    }
+
+    &:disabled {
+      cursor: default;
+    }
   }
 
-  // ---------- 悬停：轻轻的淡色胶囊 ----------
+  &__group-arrow {
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+    transform: rotate(-90deg);
+
+    &.is-open {
+      transform: rotate(0deg);
+    }
+  }
+
+  // 水平模式不显示分组与分割线：一横排里分组没有意义
+  &--horizontal &__group,
+  &--horizontal &__divider {
+    display: none;
+  }
+
+  // ---------- 收起态浮层 ----------
+  &__flyout {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 8px);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 168px;
+    padding: 8px;
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    border-radius: 12px;
+    background: var(--sr-color-bg-popover);
+    box-shadow: var(--sr-shadow-lg);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+  }
+
+  &__flyout-title {
+    padding: 4px 8px 6px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+  }
+
+  // ---------- 悬停 ----------
   &__item:hover:not(:disabled, .is-active) {
     background: color-mix(in srgb, var(--sr-color-primary) 10%, transparent);
     color: var(--sr-color-primary-text);
   }
 
-  // ---------- 选中：实色胶囊 + 柔光 ----------
-  &__item.is-active {
+  // ---------- 激活：pill ----------
+  &--active-pill &__item.is-active {
     background: var(--sr-color-primary);
     color: #fff;
     font-weight: var(--sr-font-weight-medium);
     box-shadow: 0 5px 16px -6px color-mix(in srgb, var(--sr-color-primary) 85%, transparent);
   }
 
-  // 选中时徽标反过来：白底主色字，避免白字白底
-  &__item.is-active &__badge {
+  &--active-pill &__item.is-active &__badge {
     background: color-mix(in srgb, #fff 92%, transparent);
     color: var(--sr-color-primary-text);
   }
 
-  // ---------- 分组只在垂直模式有意义 ----------
-  &--horizontal &__group,
-  &--horizontal &__divider {
-    display: none;
+  // ---------- 激活：bar（侧边栏语言） ----------
+  &--active-bar &__item.is-active {
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary-text);
+    font-weight: var(--sr-font-weight-medium);
+    box-shadow: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 3px;
+      height: 60%;
+      border-radius: 0 3px 3px 0;
+      background: var(--sr-color-primary);
+      transform: translateY(-50%);
+    }
   }
 
-  &--vertical &__group {
-    padding: 10px 10px 4px;
-  }
-
-  &--vertical &__divider {
-    height: 1px;
-    margin: 6px 10px;
+  &--active-bar &__item--child.is-active::before {
+    height: 50%;
   }
 }
