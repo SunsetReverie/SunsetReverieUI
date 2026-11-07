@@ -2,6 +2,40 @@
 
 列配置驱动的表格。支持排序、多选、展开行、固定列、分页与懒加载，窄屏自动切换卡片视图。
 
+<script setup>
+import { ref } from 'vue'
+
+const columns = [
+  { key: 'name', title: '组件', minWidth: 140, sortable: true },
+  { key: 'owner', title: '负责人', width: 110 },
+  { key: 'status', title: '状态', width: 110 },
+]
+
+const data = ref([
+  { id: 1, name: 'SrTable', owner: '林深', status: 'stable' },
+  { id: 2, name: 'SrNav', owner: '周夏', status: 'beta' },
+  { id: 3, name: 'SrDrawer', owner: '陈默', status: 'stable' },
+  { id: 4, name: 'SrTag', owner: '苏白', status: 'beta' },
+])
+
+const statusText = { stable: '稳定', beta: '预览版' }
+
+const selected = ref([])
+const page = ref(1)
+
+const wideColumns = [
+  { key: 'id', title: 'ID', width: 80, fixed: 'left' },
+  { key: 'name', title: '组件', width: 160, fixed: 'left' },
+  { key: 'type', title: '类型', width: 130 },
+  { key: 'owner', title: '负责人', width: 130 },
+  { key: 'version', title: '版本', width: 120 },
+  { key: 'status', title: '状态', width: 130 },
+  { key: 'actions', title: '操作', width: 150, fixed: 'right' },
+]
+
+const wideRows = data.value.map((row, i) => ({ ...row, type: '展示型', version: `0.${i + 2}.1` }))
+</script>
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -27,6 +61,23 @@ const data = ref<SrTableRow[]>([
   </SrTable>
 </template>
 ```
+
+## 交互演示
+
+排序、多选都是真的，点表头试试：
+
+<div class="sr-demo is-block">
+  <SrTable v-model:selected-keys="selected" :columns="columns" :data="data" selectable>
+    <template #cell-status="{ value }">
+      <SrTag :type="value === 'stable' ? 'success' : 'warning'" size="sm" round>
+        {{ statusText[value] ?? value }}
+      </SrTag>
+    </template>
+  </SrTable>
+  <p style="margin: 12px 0 0; font-size: 13px; color: var(--vp-c-text-3)">
+    已选 {{ selected.length }} 行
+  </p>
+</div>
 
 ## 列配置
 
@@ -114,6 +165,21 @@ const columns: SrTableColumn[] = [
 
 左右两侧各有 6px 渐变投影，提示还有内容。
 
+横向滚一下就能看到两侧固定列的效果：
+
+<div class="sr-demo is-block">
+  <SrTable :columns="wideColumns" :data="wideRows" bordered>
+    <template #cell-status="{ value }">
+      <SrTag :type="value === 'stable' ? 'success' : 'warning'" size="sm" round>
+        {{ statusText[value] ?? value }}
+      </SrTag>
+    </template>
+    <template #cell-actions>
+      <SrButton size="xs" variant="primary">编辑</SrButton>
+    </template>
+  </SrTable>
+</div>
+
 ## 分页
 
 ```vue
@@ -121,6 +187,16 @@ const columns: SrTableColumn[] = [
 ```
 
 组件内部切片数据，页脚复用 `SrPagination`（隐藏了每页条数选择器）。总条数变少时会自动回落到最后一页，不会停在空页上。
+
+<div class="sr-demo is-block">
+  <SrTable v-model:page="page" :columns="columns" :data="data" :pagination="{ pageSize: 2 }">
+    <template #cell-status="{ value }">
+      <SrTag :type="value === 'stable' ? 'success' : 'warning'" size="sm" round>
+        {{ statusText[value] ?? value }}
+      </SrTag>
+    </template>
+  </SrTable>
+</div>
 
 ## 懒加载
 

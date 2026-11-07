@@ -2,6 +2,33 @@
 
 容器 + 校验。`SrForm` 管数据、规则与提交，`SrFormItem` 管单个字段的标签、必填标记与错误展示。
 
+<script setup>
+import { ref } from 'vue'
+import { srToast } from '@sunset-reverie/ui'
+
+const model = ref({ username: '', email: '' })
+const formRef = ref(null)
+const result = ref('')
+
+const rules = {
+  username: [
+    { required: true, message: '请输入用户名' },
+    { min: 3, max: 16, message: '长度在 3 到 16 个字符' },
+  ],
+  email: [
+    { required: true, message: '请输入邮箱' },
+    { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: '邮箱格式不正确' },
+  ],
+}
+
+const layoutModel = ref({ name: '林深' })
+
+async function submit() {
+  const valid = await formRef.value?.validate()
+  result.value = valid ? '校验通过，可以提交' : '存在错误，请检查'
+}
+</script>
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -41,6 +68,23 @@ async function submit(): Promise<void> {
   </SrForm>
 </template>
 ```
+
+## 交互演示
+
+直接改内容、点提交，能看到实时校验与错误文案：
+
+<div class="sr-demo is-block">
+  <SrForm ref="formRef" :model="model" :rules="rules" label-position="left" :label-width="72" style="max-width: 360px" @submit="submit">
+    <SrFormItem prop="username" label="用户名">
+      <SrInput v-model="model.username" placeholder="3 到 16 个字符" />
+    </SrFormItem>
+    <SrFormItem prop="email" label="邮箱">
+      <SrInput v-model="model.email" placeholder="name@example.com" />
+    </SrFormItem>
+    <SrButton html-type="submit" variant="primary" size="sm">提交</SrButton>
+    <span v-if="result" style="margin-left: 12px; font-size: 13px">{{ result }}</span>
+  </SrForm>
+</div>
 
 ## 校验规则
 
@@ -91,6 +135,17 @@ const rules = {
 | `right` | 两列网格，标签文字右对齐，贴着控件 |
 
 `left` / `right` 走 grid 布局，`labelWidth` 控制标签列宽度；`SrFormItem` 也能单独设 `labelWidth` 覆盖。
+
+<div class="sr-demo">
+  <div v-for="pos in ['top', 'left', 'right']" :key="pos" style="min-width: 180px">
+    <span class="sr-demo__label">labelPosition = {{ pos }}</span>
+    <SrForm :model="layoutModel" :label-position="pos" :label-width="54">
+      <SrFormItem prop="name" label="名称">
+        <SrInput v-model="layoutModel.name" size="sm" />
+      </SrFormItem>
+    </SrForm>
+  </div>
+</div>
 
 ## 调用方法
 
