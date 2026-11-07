@@ -1,0 +1,284 @@
+import type { Component } from 'vue'
+
+/**
+ * 组件演示注册表
+ *
+ * 一组件一页。新增组件时只需要：写一个 `xxx/XxxDemo.vue`，再把这一行的
+ * `demo` 指向它。路由、侧栏、Props 表都由这张表驱动。
+ *
+ * `api` 字段对应 `props.json` 里的键（由 `pnpm gen:demo-props` 从组件源码提取），
+ * 所以 API 表永远不会和代码脱节。
+ */
+export interface DemoEntry {
+  /** 路由与侧栏用的唯一标识 */
+  key: string
+  /** 组件名 */
+  name: string
+  /** 一句话说明，显示在页面顶部 */
+  description: string
+  /** props.json 里的键；与 key 相同可省略 */
+  api?: string
+  /** 演示组件，懒加载 */
+  demo: () => Promise<Component>
+}
+
+/** 侧栏分组 */
+export interface DemoGroup {
+  title: string
+  items: DemoEntry[]
+}
+
+export const demoGroups: DemoGroup[] = [
+  {
+    title: '基础',
+    items: [
+      {
+        key: 'button',
+        name: 'SrButton',
+        description: '按钮。变体只改 CSS 变量的值，结构与交互完全共用。',
+        demo: () => import('./button/ButtonDemo.vue'),
+      },
+      {
+        key: 'icon',
+        name: 'SrIcon',
+        description: '图标。编译期子集化，运行时不发请求。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'spinner',
+        name: 'SrSpinner',
+        description: '环形加载指示器。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'tag',
+        name: 'SrTag',
+        description: '状态标签。六种语义色、深浅两档。',
+        demo: () => import('./tag/TagDemo.vue'),
+      },
+    ],
+  },
+  {
+    title: '表单',
+    items: [
+      {
+        key: 'input',
+        name: 'SrInput',
+        description: '输入框。前后缀、清空、密码可见、字数统计、校验态。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'input-number',
+        name: 'SrInputNumber',
+        description: '数字输入。范围、步长、精度控制。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'select',
+        name: 'SrSelect',
+        description: '选择器。单选、多选、可搜索、可清空。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'checkbox',
+        name: 'SrCheckbox',
+        description: '多选框。单用与组用两种模式，支持半选。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'radio',
+        name: 'SrRadio',
+        description: '单选框。组内互斥，方向键切换。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'switch',
+        name: 'SrSwitch',
+        description: '开关。正常、禁用、加载三态。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'form',
+        name: 'SrForm',
+        description: '表单容器与校验。规则支持异步，三种标签布局。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+    ],
+  },
+  {
+    title: '数据',
+    items: [
+      {
+        key: 'table',
+        name: 'SrTable',
+        description: '数据表格。排序、多选、展开、固定列、分页、懒加载。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'pagination',
+        name: 'SrPagination',
+        description: '分页。页码收敛、每页条数、跳页。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'load-more',
+        name: 'SrLoadMore',
+        description: '加载更多。三态枚举，可自动触发。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+    ],
+  },
+  {
+    title: '展示',
+    items: [
+      {
+        key: 'card',
+        name: 'SrCard',
+        description: '卡片。头部 / 主体 / 底部三段，内边距可调。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'panel',
+        name: 'SrPanel',
+        description: '分区面板。轻量容器，可折叠。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'carousel',
+        name: 'SrCarousel',
+        description: '轮播。滑动与淡入淡出、自动播放、触摸滑动。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'badge',
+        name: 'SrBadge',
+        description: '徽标。数字角标与状态点。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'avatar',
+        name: 'SrAvatar',
+        description: '头像。图片失败回退，底色按 alt 自动取色。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'empty',
+        name: 'SrEmpty',
+        description: '空状态。图标 / 插图 / 虚线框 / 操作区。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+    ],
+  },
+  {
+    title: '导航',
+    items: [
+      {
+        key: 'nav',
+        name: 'SrNav',
+        description: '导航。水平与垂直、分组、子菜单、收起态浮层。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'tabs',
+        name: 'SrTabs',
+        description: '标签页。四种外观、垂直方向、懒加载。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'breadcrumb',
+        name: 'SrBreadcrumb',
+        description: '面包屑。图标分隔符、超长折叠、禁用项。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'dropdown',
+        name: 'SrDropdown',
+        description: '下拉菜单。内置菜单与自定义面板。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+    ],
+  },
+  {
+    title: '反馈',
+    items: [
+      {
+        key: 'modal',
+        name: 'SrModal',
+        description: '弹窗。遮罩、焦点陷阱、嵌套、全屏。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'drawer',
+        name: 'SrDrawer',
+        description: '抽屉。四方向、尺寸预设、圆角形态。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'tooltip',
+        name: 'SrTooltip',
+        description: '文字提示。12 方向、自动翻转。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'confirm',
+        name: 'SrConfirm',
+        description: '确认框。命令式调用，Promise 化。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'toast',
+        name: 'SrToast',
+        description: '轻提示。命令式，六种位置。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'message',
+        name: 'SrMessage',
+        description: '全局消息。顶部居中，比 Toast 更安静。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'notification',
+        name: 'SrNotification',
+        description: '通知。带标题与详情的角落卡片。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+    ],
+  },
+  {
+    title: '布局与配置',
+    items: [
+      {
+        key: 'row',
+        name: 'SrRow / SrCol',
+        api: 'row',
+        description: '24 栅格。响应式 span 全部由 CSS 媒体查询完成。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'config-provider',
+        name: 'SrConfigProvider',
+        description: '全局配置。尺寸与弹层层级下发。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+      {
+        key: 'transition',
+        name: 'SrTransition',
+        description: '过渡。五套预设，统一处理 reduced-motion。',
+        demo: () => import('./_placeholder/PlaceholderDemo.vue'),
+      },
+    ],
+  },
+]
+
+/** 扁平化后的清单，供路由查找 */
+export const demoEntries: DemoEntry[] = demoGroups.flatMap((group) => group.items)
+
+/**
+ * 按 key 找组件条目
+ * @param key 路由参数
+ * @returns 条目或 undefined
+ */
+export function findDemo(key: string): DemoEntry | undefined {
+  return demoEntries.find((entry) => entry.key === key)
+}

@@ -32,7 +32,8 @@
     "check:hydration": "pnpm --filter playground-nuxt4 build && node scripts/check-hydration.mjs",
     "lint:smoke": "node scripts/check-smoke-coverage.mjs",
     "lint:tokens": "node scripts/check-tokens.mjs",
-    "docs:api": "node scripts/extract-api.mjs"
+    "docs:api": "node scripts/extract-api.mjs",
+    "gen:demo-props": "node scripts/extract-api.mjs > playground-vue3/src/demos/props.json"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",

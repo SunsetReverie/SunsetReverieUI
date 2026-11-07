@@ -16,7 +16,8 @@ import {
 } from '@sunset-reverie/ui'
 
 import { applyMotion, MOTION_MODES, readMotion, type SrMotionMode } from './motion'
-import { navItems } from './router'
+import { demoEntries, demoGroups } from './demos/registry'
+import { navItems, navKeyToRoute, routeToNavKey } from './router'
 
 defineOptions({ name: 'PlaygroundApp' })
 
@@ -44,12 +45,24 @@ function setMotion(mode: SrMotionMode): void {
   applyMotion(mode)
 }
 
-/** 当前菜单项，直接来自路由名 */
-const activeKey = computed(() => String(route.name ?? 'overview'))
+/** 当前菜单项：组件演示页要拼上参数 */
+const activeKey = computed(() => routeToNavKey(String(route.name ?? 'overview'), route.params.key as string))
 
 /** 面包屑：分类 + 当前页 */
 const crumbs = computed(() => {
   const group = route.meta?.group as string | undefined
+
+  if (route.name === 'component') {
+    const key = String(route.params.key ?? '')
+    const entry = demoEntries.find((item) => item.key === key)
+    const parent = demoGroups.find((g) => g.items.some((item) => item.key === key))
+    return [
+      { label: '夕梦 UI', href: '#/' },
+      ...(parent ? [{ label: parent.title }] : []),
+      { label: entry?.name ?? key },
+    ]
+  }
+
   const title = route.meta?.title as string | undefined
   return [
     { label: '夕梦 UI', href: '#/' },
@@ -60,10 +73,10 @@ const crumbs = computed(() => {
 
 /**
  * 点击菜单时跳路由，URL 跟着变，刷新也能回来
- * @param key 路由名
+ * @param key 侧栏 key（组件演示带 c- 前缀）
  */
 function onSelect(key: string): void {
-  void router.push({ name: key })
+  void router.push(navKeyToRoute(key))
 }
 
 /** 主题选项 */
