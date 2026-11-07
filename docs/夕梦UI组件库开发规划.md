@@ -1,5 +1,7 @@
 # SunsetReverie-UI（夕梦 UI）开发规划文档
 
+> 本文是唯一权威来源。同目录下的 `夕梦UI组件库开发规划.html` 是早前导出的静态快照，内容已过期，仅作留档，不再维护。
+
 > 品牌：SunsetReverie-UI ／ 中文名：夕梦 UI ／ 缩写：**SR**
 > 版本：v0.1（规划稿）　编写日期：2026-11-05　适用周期：第 1 ~ 14 周
 > 技术栈：Vue 3 + Nuxt 4 + TypeScript + Less + Vite（库模式）+ pnpm monorepo
@@ -3063,6 +3065,17 @@ graph LR
 | `SrTabs` | 顺延到 W12 | 在 P1 阶段完成，后续扩展到 4 种外观 + 垂直方向 |
 | `SrDrawer` 与 Modal | 规划抽取 `useSrOverlay` 复用 | 未抽公共 hook，两者各自实现，共用 `utils` 里的滚动锁与焦点陷阱 |
 | P2 排期 | 分散在 W12 / W13 | 除 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload` 外均已完成 |
+
+#### 文档缺口（W11 待补）
+
+`docs/components/` 目前只有 `button`、`input`、`modal` 三篇。其余 30 个组件的用法说明散落在演示站的 Props 速查表里，没有独立文档。
+
+W11 需要补的是：
+
+- 每个组件一篇 `.md`（Props / 事件 / 插槽 / 2 个以上示例），共 30 篇
+- `SrTable`、`SrForm`、`SrNav`、`SrSelect` 这四个复杂度高的优先写
+- 主题、响应式、图标三篇指南的校对（内容已存在，需要对照当前实现更新）
+- CHANGELOG 首条与 `v1.0.0` 发布说明
 
 ---
 
