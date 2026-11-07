@@ -196,6 +196,50 @@ function parseSlots(code) {
 }
 
 /**
+ * 解析命令式组件的选项接口（如 SrToastOptions）
+ *
+ * 这类组件的 API 不在 props 里，而是函数参数，只能从 interface 里读。
+ * @param code 源码
+ * @returns 选项列表
+ */
+function parseOptionsInterface(code) {
+  const block = /export interface Sr\w+Options \{([\s\S]*?)\n\}/.exec(code)
+  if (!block) return []
+
+  const options = []
+  const lines = block[1].split('\n')
+  let doc = []
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    if (trimmed.startsWith('/**') || trimmed.startsWith('*')) {
+      const text = trimmed
+        .replace(/^\/\*\*?/, '')
+        .replace(/\*\/$/, '')
+        .replace(/^\*/, '')
+        .trim()
+      if (text) doc.push(text)
+      continue
+    }
+
+    const match = /^([a-zA-Z]\w*)\??:\s*(.+?)$/.exec(trimmed)
+    if (!match) continue
+
+    options.push({
+      from: 'options',
+      name: match[1],
+      type: match[2].replace(/;$/, ''),
+      default: '',
+      description: doc.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim(),
+    })
+    doc = []
+  }
+
+  return options
+}
+
+/**
  * 提取单个组件
  * @param name 组件目录名
  * @returns API 数据
@@ -210,6 +254,20 @@ function extract(name) {
   for (const match of all.matchAll(/export const (\w*Props) = \{/g)) {
     props.push(...parseProps(all, match[1]))
     sourceNames.push(match[1].replace(/Props$/, ''))
+  }
+
+  // 命令式组件（toast / message / notification）没有 props，回退到函数选项接口
+  if (props.length === 0) {
+    const fromOptions = parseOptionsInterface(all)
+    if (fromOptions.length > 0) {
+      return {
+        name,
+        options: fromOptions,
+        sources: ['options'],
+        emits: [],
+        slots: [],
+      }
+    }
   }
 
   return {

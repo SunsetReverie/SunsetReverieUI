@@ -1344,8 +1344,30 @@
   },
   "message": {
     "name": "message",
-    "options": [],
-    "sources": [],
+    "options": [
+      {
+        "from": "options",
+        "name": "type",
+        "type": "SrMessageType",
+        "default": "",
+        "description": "类型 @default 'info'"
+      },
+      {
+        "from": "options",
+        "name": "duration",
+        "type": "number",
+        "default": "",
+        "description": "停留毫秒，0 表示不自动关闭 @default 2000"
+      },
+      {
+        "from": "options",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底"
+      }
+    ],
+    "sources": ["options"],
     "emits": [],
     "slots": []
   },
@@ -1569,8 +1591,58 @@
   },
   "notification": {
     "name": "notification",
-    "options": [],
-    "sources": [],
+    "options": [
+      {
+        "from": "options",
+        "name": "type",
+        "type": "SrNotificationType",
+        "default": "",
+        "description": "类型 @default 'info'"
+      },
+      {
+        "from": "options",
+        "name": "title",
+        "type": "string",
+        "default": "",
+        "description": "标题"
+      },
+      {
+        "from": "options",
+        "name": "message",
+        "type": "string",
+        "default": "",
+        "description": "描述内容"
+      },
+      {
+        "from": "options",
+        "name": "duration",
+        "type": "number",
+        "default": "",
+        "description": "停留毫秒，0 表示不自动关闭 @default 4500"
+      },
+      {
+        "from": "options",
+        "name": "position",
+        "type": "SrNotificationPosition",
+        "default": "",
+        "description": "出现位置 @default 'top-right'"
+      },
+      {
+        "from": "options",
+        "name": "closable",
+        "type": "boolean",
+        "default": "",
+        "description": "是否显示关闭按钮 @default true"
+      },
+      {
+        "from": "options",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底"
+      }
+    ],
+    "sources": ["options"],
     "emits": [],
     "slots": []
   },
@@ -2409,8 +2481,44 @@
   },
   "toast": {
     "name": "toast",
-    "options": [],
-    "sources": [],
+    "options": [
+      {
+        "from": "options",
+        "name": "type",
+        "type": "SrToastType",
+        "default": "",
+        "description": "类型 @default 'info'"
+      },
+      {
+        "from": "options",
+        "name": "duration",
+        "type": "number",
+        "default": "",
+        "description": "停留毫秒，0 表示不自动关闭 @default 3000"
+      },
+      {
+        "from": "options",
+        "name": "position",
+        "type": "SrToastPosition",
+        "default": "",
+        "description": "出现位置 @default 'top'"
+      },
+      {
+        "from": "options",
+        "name": "closable",
+        "type": "boolean",
+        "default": "",
+        "description": "是否显示关闭按钮 @default false"
+      },
+      {
+        "from": "options",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底"
+      }
+    ],
+    "sources": ["options"],
     "emits": [],
     "slots": []
   },
