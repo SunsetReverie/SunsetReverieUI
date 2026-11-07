@@ -317,6 +317,13 @@
       },
       {
         "from": "carouselProps",
+        "name": "direction",
+        "type": "SrCarouselDirection",
+        "default": "'horizontal'",
+        "description": "排列方向 @default 'horizontal' vertical 时滑动方向、拖动轴、指示器位置都会跟着转。"
+      },
+      {
+        "from": "carouselProps",
         "name": "autoplay",
         "type": "boolean",
         "default": "false",
@@ -341,7 +348,7 @@
         "name": "loop",
         "type": "boolean",
         "default": "true",
-        "description": "循环播放 @default true"
+        "description": "循环播放，末张之后回到第一张 @default true"
       },
       {
         "from": "carouselProps",
@@ -373,10 +380,24 @@
       },
       {
         "from": "carouselProps",
+        "name": "draggable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许鼠标拖动切换 @default true"
+      },
+      {
+        "from": "carouselProps",
         "name": "touchable",
         "type": "boolean",
         "default": "true",
-        "description": "允许触摸滑动 @default true"
+        "description": "允许触摸滑动切换 @default true"
+      },
+      {
+        "from": "carouselProps",
+        "name": "dragThreshold",
+        "type": "number",
+        "default": "0.15",
+        "description": "拖动多少比例后算翻页 @default 0.15 太小容易误触，太大会让用户觉得「拖了没反应」。"
       },
       {
         "from": "carouselProps",
@@ -397,7 +418,7 @@
         "params": ["index", "prevIndex"]
       }
     ],
-    "slots": ["item"]
+    "slots": ["item", "overlay"]
   },
   "checkbox": {
     "name": "checkbox",
@@ -2649,5 +2670,125 @@
     "sources": ["transition"],
     "emits": [],
     "slots": ["default"]
+  },
+  "upload": {
+    "name": "upload",
+    "options": [
+      {
+        "from": "uploadProps",
+        "name": "accept",
+        "type": "string",
+        "default": "''",
+        "description": "接受的文件类型，写法同原生 input 的 accept"
+      },
+      {
+        "from": "uploadProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "false",
+        "description": "允许选择多个文件 @default false"
+      },
+      {
+        "from": "uploadProps",
+        "name": "maxCount",
+        "type": "number",
+        "default": "0",
+        "description": "最多保留几个文件，0 表示不限 @default 0"
+      },
+      {
+        "from": "uploadProps",
+        "name": "maxSize",
+        "type": "number",
+        "default": "0",
+        "description": "单文件大小上限（MB），0 表示不限 @default 0"
+      },
+      {
+        "from": "uploadProps",
+        "name": "listType",
+        "type": "SrUploadListType",
+        "default": "'list'",
+        "description": "列表形态 @default 'list'"
+      },
+      {
+        "from": "uploadProps",
+        "name": "draggable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许拖拽到区域上传 @default true"
+      },
+      {
+        "from": "uploadProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "uploadProps",
+        "name": "autoUpload",
+        "type": "boolean",
+        "default": "true",
+        "description": "选择后立即调用 httpRequest @default true 关掉后组件只收集文件，由调用方在合适的时机批量提交。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "showFileList",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示文件列表 @default true"
+      },
+      {
+        "from": "uploadProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "uploadProps",
+        "name": "dragText",
+        "type": "string",
+        "default": "'点击或拖拽文件到这里'",
+        "description": "拖拽区主文案 @default '点击或拖拽文件到这里'"
+      },
+      {
+        "from": "uploadProps",
+        "name": "tip",
+        "type": "string",
+        "default": "''",
+        "description": "拖拽区下方的提示文案"
+      },
+      {
+        "from": "uploadProps",
+        "name": "httpRequest",
+        "type": "SrUploadRequest",
+        "default": "undefined",
+        "description": "自定义上传函数；不传则只收集文件"
+      }
+    ],
+    "sources": ["upload"],
+    "emits": [
+      {
+        "name": "update:files",
+        "params": ["files"]
+      },
+      {
+        "name": "change",
+        "params": ["files"]
+      },
+      {
+        "name": "success",
+        "params": ["file", "url?"]
+      },
+      {
+        "name": "error",
+        "params": ["file", "reason"]
+      },
+      {
+        "name": "exceed",
+        "params": ["maxCount"]
+      }
+    ],
+    "slots": ["trigger"]
   }
 }

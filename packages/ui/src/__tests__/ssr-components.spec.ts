@@ -34,6 +34,7 @@ import {
   SrTabs,
   SrTag,
   SrTooltip,
+  SrUpload,
 } from '..'
 
 /**
@@ -162,6 +163,10 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     // 服务端必须渲染出全部幻灯片，否则客户端接管时会整块重建
     expect(html.match(/sr-carousel__slide/g)?.length).toBe(2)
+  })
+
+  it('SrUpload 服务端只渲染入口，不碰 objectURL', async () => {
+    await expectRenderable(SrUpload, { multiple: true })
   })
 
   it('SrPagination', async () => {

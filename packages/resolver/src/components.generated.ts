@@ -42,6 +42,7 @@ export const SR_COMPONENT_NAMES = [
   'Tag',
   'Tooltip',
   'Transition',
+  'Upload',
 ] as const
 
 /** 组件名联合类型，供类型体操与文档生成使用 */

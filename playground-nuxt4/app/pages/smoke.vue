@@ -235,6 +235,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Upload</span>
+        <div class="cell__body cell__body--column">
+          <sr-upload :show-file-list="false" tip="支持拖拽" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Carousel</span>
         <div class="cell__body cell__body--column">
           <sr-carousel :items="slides" :model-value="1" :height="120" :arrows="false">

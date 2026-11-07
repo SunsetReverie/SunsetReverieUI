@@ -126,6 +126,12 @@ export const demoGroups: DemoGroup[] = [
         description: '加载更多。三态枚举，可自动触发。',
         demo: () => import('./load-more/LoadMoreDemo.vue'),
       },
+      {
+        key: 'upload',
+        name: 'SrUpload',
+        description: '文件上传。点击或拖拽、进度、多文件、图片预览与各种限制。',
+        demo: () => import('./upload/UploadDemo.vue'),
+      },
     ],
   },
   {
