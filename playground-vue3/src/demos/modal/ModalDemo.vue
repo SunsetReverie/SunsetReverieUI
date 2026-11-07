@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrButton, SrInput, SrModal } from '@sunset-reverie/ui'
+import { SrButton, SrInput, SrModal, SrIcon } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ModalDemo' })
 

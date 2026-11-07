@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrButton, SrEmpty, SrInput } from '@sunset-reverie/ui'
+import { SrButton, SrEmpty, SrInput, SrDrawer } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'DrawerDemo' })
 

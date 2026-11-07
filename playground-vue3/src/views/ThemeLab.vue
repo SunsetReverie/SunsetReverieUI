@@ -7,6 +7,7 @@ import {
   SR_THEME_PRESETS,
   SR_STYLE_STORAGE_KEY,
   SR_THEME_STORAGE_KEY,
+  SrPanel,
   useSrTheme,
 } from '@sunset-reverie/ui'
 

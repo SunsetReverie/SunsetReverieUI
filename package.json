@@ -18,7 +18,7 @@
     "build": "pnpm run build:ui && pnpm --filter @sunset-reverie/resolver build && pnpm --filter @sunset-reverie/nuxt build",
     "typecheck": "pnpm run build:tokens && pnpm -r --filter \"./packages/*\" typecheck",
     "test": "pnpm run build:tokens && pnpm -r --filter \"./packages/*\" test",
-    "lint": "eslint . --max-warnings=0 && stylelint \"packages/**/*.less\" --allow-empty-input",
+    "lint": "eslint . --max-warnings=0 && stylelint \"packages/**/*.less\" --allow-empty-input && node scripts/check-template-tags.mjs",
     "lint:naming": "node scripts/check-naming.mjs",
     "lint:icons": "node scripts/check-icons.mjs",
     "gen:icons": "node packages/icons/scripts/gen-offline-icons.mjs",
@@ -33,7 +33,8 @@
     "lint:smoke": "node scripts/check-smoke-coverage.mjs",
     "lint:tokens": "node scripts/check-tokens.mjs",
     "docs:api": "node scripts/extract-api.mjs",
-    "gen:demo-props": "node scripts/extract-api.mjs > playground-vue3/src/demos/props.json"
+    "gen:demo-props": "node scripts/extract-api.mjs > playground-vue3/src/demos/props.json",
+    "lint:tags": "node scripts/check-template-tags.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
