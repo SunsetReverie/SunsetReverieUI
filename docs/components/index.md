@@ -18,8 +18,8 @@
 
 | 状态 | 组件 |
 | --- | --- |
-| 已写文档 | `SrButton`、`SrInput`、`SrForm`、`SrSelect`、`SrTable`、`SrNav`、`SrTabs`、`SrDropdown`、`SrModal`、`SrDrawer` |
-| 待补文档 | 其余 24 个 |
+| 已写文档 | 15 篇：`SrButton`、`SrInput`、`SrForm`、`SrSelect`、`SrTable`、`SrPagination`、`SrLoadMore`、`SrBadge`、`SrAvatar`、`SrEmpty`、`SrNav`、`SrTabs`、`SrDropdown`、`SrModal`、`SrDrawer` |
+| 待补文档 | 其余 19 个 |
 
 > 文档按「每篇对照组件源码的 props / emits / slots 声明」来写，不依赖演示站的速查表。API 事实由 `pnpm docs:api`（`scripts/extract-api.mjs`）从源码提取，保证不遗漏。
 

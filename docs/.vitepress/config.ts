@@ -102,7 +102,19 @@ export default defineConfig({
         },
         {
           text: '数据展示',
-          items: [{ text: 'SrTable', link: '/components/table' }],
+          items: [
+            { text: 'SrTable', link: '/components/table' },
+            { text: 'SrPagination', link: '/components/pagination' },
+            { text: 'SrLoadMore', link: '/components/load-more' },
+          ],
+        },
+        {
+          text: '展示元素',
+          items: [
+            { text: 'SrBadge', link: '/components/badge' },
+            { text: 'SrAvatar', link: '/components/avatar' },
+            { text: 'SrEmpty', link: '/components/empty' },
+          ],
         },
         {
           text: '导航',
