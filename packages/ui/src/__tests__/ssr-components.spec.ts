@@ -11,6 +11,7 @@ import {
   SrCard,
   SrCheckbox,
   SrCheckboxGroup,
+  SrDatePicker,
   SrDrawer,
   SrDropdown,
   SrEmpty,
@@ -173,6 +174,12 @@ describe('导航与数据组件的 SSR 渲染', () => {
   it('SrProgress 服务端输出稳定的百分比', async () => {
     const html = await render(SrProgress, { percent: 62 })
     expect(html).toContain('62%')
+  })
+
+  it('SrDatePicker 服务端只渲染触发器，不碰 window', async () => {
+    const html = await render(SrDatePicker, { modelValue: new Date(2026, 10, 8) })
+    // 面板是 Teleport + 交互后才挂载，服务端不应出现
+    expect(html).not.toContain('sr-date-picker__panel')
   })
 
   it('SrPagination', async () => {

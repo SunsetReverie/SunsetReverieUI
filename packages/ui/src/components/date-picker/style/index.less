@@ -1,0 +1,344 @@
+/**
+ * 日期选择器
+ *
+ * 触发器复用 .sr-input 的外观（边框、圆角、尺寸、焦点环都继承），
+ * 面板是浮层，定位由 JS 计算后内联 top/left。
+ *
+ * 规则按「低特异性在前」排列，避免 no-descending-specificity。
+ */
+
+@import '../../../styles/mixins/index.less';
+@import '../../input/style/index.less';
+
+.sr-date-picker {
+  display: inline-flex;
+  width: 100%;
+
+  // ---------- 触发器 ----------
+  &__trigger {
+    flex: 1 1 auto;
+    gap: 6px;
+    cursor: pointer;
+
+    &.is-readonly {
+      cursor: default;
+    }
+
+    &.is-disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  &__placeholder {
+    flex: 1 1 auto;
+    overflow: hidden;
+    color: var(--sr-color-text-tertiary);
+    font-size: 13px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__value {
+    flex: 1 1 auto;
+    overflow: hidden;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-border-subtle);
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sr-color-text-tertiary);
+      color: var(--sr-color-bg-container);
+    }
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  // ---------- 面板 ----------
+  &__panel {
+    position: fixed;
+    z-index: var(--sr-z-popover, 2200);
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    padding: 6px;
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    border-radius: var(--sr-radius-lg);
+    background: var(--sr-color-bg-container);
+    box-shadow: var(--sr-shadow-lg);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+  }
+
+  // ---------- 快捷区 ----------
+  &__shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 4px 8px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__shortcut {
+    padding: 3px 9px;
+    border: 1px solid transparent;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-primary-alpha-08);
+    color: var(--sr-color-primary-text);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      background: var(--sr-color-primary-alpha-12);
+    }
+  }
+
+  // ---------- 主体 ----------
+  &__main {
+    display: flex;
+    gap: 6px;
+    padding: 6px 0;
+  }
+
+  &__calendars {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__calendar {
+    width: 210px;
+  }
+
+  // ---------- 月份头 ----------
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0 2px 6px;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    font-weight: var(--sr-font-weight-medium);
+    text-align: center;
+  }
+
+  &__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sr-color-primary-alpha-08);
+      color: var(--sr-color-primary-text);
+    }
+  }
+
+  // ---------- 星期与日期 ----------
+  &__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 2px;
+
+    > span {
+      color: var(--sr-color-text-tertiary);
+      font-size: 11px;
+      text-align: center;
+    }
+  }
+
+  &__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+  }
+
+  &__day {
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &.is-out {
+      color: var(--sr-color-text-disabled);
+    }
+
+    &.is-in-range {
+      background: var(--sr-color-primary-alpha-08);
+      color: var(--sr-color-primary-text);
+    }
+
+    &.is-today {
+      color: var(--sr-color-primary-text);
+      font-weight: var(--sr-font-weight-medium);
+    }
+
+    &.is-selected {
+      background: var(--sr-color-primary);
+      color: #fff;
+      font-weight: var(--sr-font-weight-medium);
+    }
+
+    &.is-disabled {
+      color: var(--sr-color-text-disabled);
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    &:hover:not(:disabled, .is-selected) {
+      background: var(--sr-color-primary-alpha-12);
+    }
+  }
+
+  // ---------- 时间 ----------
+  &__time {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 108px;
+    padding: 4px 8px;
+    border-left: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__time-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  &__time-tab {
+    flex: 1 1 0;
+    padding: 3px 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+    cursor: pointer;
+
+    &.is-active {
+      background: var(--sr-color-primary-alpha-12);
+      color: var(--sr-color-primary-text);
+    }
+  }
+
+  &__time-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__time-label {
+    flex: 0 0 16px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+  }
+
+  &__time-value {
+    flex: 1 1 auto;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  &__step {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sr-color-primary-alpha-12);
+      color: var(--sr-color-primary-text);
+    }
+  }
+
+  // ---------- 底部 ----------
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px 2px;
+    border-top: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__link {
+    padding: 3px 8px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--sr-color-primary-text);
+    }
+  }
+
+  &__hint {
+    color: var(--sr-color-warning);
+    font-size: 11px;
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__confirm {
+    padding: 4px 12px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-primary);
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sr-color-primary-hover);
+    }
+  }
+}

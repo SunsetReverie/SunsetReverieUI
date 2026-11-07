@@ -104,6 +104,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./switch/SwitchDemo.vue'),
       },
       {
+        key: 'date-picker',
+        name: 'SrDatePicker',
+        description: '日期选择。单日、区间、带时间、范围限制与快捷选项。',
+        demo: () => import('./date-picker/DatePickerDemo.vue'),
+      },
+      {
         key: 'form',
         name: 'SrForm',
         description: '表单容器与校验。规则支持异步，三种标签布局。',

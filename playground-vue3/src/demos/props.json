@@ -674,6 +674,146 @@
     ],
     "slots": ["default"]
   },
+  "date-picker": {
+    "name": "date-picker",
+    "options": [
+      {
+        "from": "datePickerProps",
+        "name": "modelValue",
+        "type": "SrDatePickerValue",
+        "default": "null",
+        "description": "选中值，支持 v-model"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "type",
+        "type": "SrDatePickerType",
+        "default": "'date'",
+        "description": "选择模式 @default 'date'"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "min",
+        "type": "Date | string | number",
+        "default": "undefined",
+        "description": "最小可选日期"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "max",
+        "type": "Date | string | number",
+        "default": "undefined",
+        "description": "最大可选日期"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "disabledDate",
+        "type": "(date: Date) =",
+        "default": "undefined",
+        "description": "自定义禁用规则，返回 true 表示不可选"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "format",
+        "type": "string",
+        "default": "''",
+        "description": "输入框显示格式 不传时按 type 取默认：date 为 YYYY-MM-DD，datetime 为 YYYY-MM-DD HH:mm:ss。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "valueFormat",
+        "type": "string",
+        "default": "''",
+        "description": "输出格式 传了就按该模板输出字符串，否则输出 Date / [Date, Date]。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "placeholder",
+        "type": "string | string[]",
+        "default": "''",
+        "description": "占位文案，区间模式可传两个"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "true",
+        "description": "可清空 @default true"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读：可聚焦复制，不能改值 @default false"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "status",
+        "type": "SrDatePickerStatus",
+        "default": "'default'",
+        "description": "校验态 @default 'default'"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "shortcuts",
+        "type": "SrDatePickerShortcut[]",
+        "default": "undefined",
+        "description": "快捷选项 不传时使用内置的「今天 / 近 7 天 / 本月」；传空数组则完全不显示。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "showShortcuts",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示快捷区 @default true"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "firstDayOfWeek",
+        "type": "number",
+        "default": "1",
+        "description": "一周从周几开始，0 为周日 @default 1"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "editable",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否可编辑输入（允许打字），默认只能通过面板选 @default false"
+      }
+    ],
+    "sources": ["datePicker"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": []
+  },
   "drawer": {
     "name": "drawer",
     "options": [

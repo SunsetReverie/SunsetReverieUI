@@ -117,6 +117,7 @@ export default defineConfig({
             { text: 'SrCheckbox', link: '/components/checkbox' },
             { text: 'SrRadio', link: '/components/radio' },
             { text: 'SrSwitch', link: '/components/switch' },
+            { text: 'SrDatePicker', link: '/components/date-picker' },
           ],
         },
         {

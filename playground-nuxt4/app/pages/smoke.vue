@@ -60,6 +60,9 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 日期选择器的初始值 */
+const pickDate = new Date(2026, 10, 8)
+
 /** 轮播数据 */
 const slides = [{ t: '一' }, { t: '二' }, { t: '三' }]
 
@@ -231,6 +234,14 @@ const warningCount = computed(() => hydrationWarnings.length)
               <sr-input :model-value="'x'" />
             </sr-form-item>
           </sr-form>
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">DatePicker</span>
+        <div class="cell__body cell__body--column">
+          <sr-date-picker :model-value="pickDate" />
+          <sr-date-picker type="daterange" />
         </div>
       </div>
 

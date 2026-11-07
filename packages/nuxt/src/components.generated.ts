@@ -18,6 +18,7 @@ export const SR_COMPONENT_NAMES = [
   'Col',
   'ConfigProvider',
   'Confirm',
+  'DatePicker',
   'Drawer',
   'Dropdown',
   'Empty',
