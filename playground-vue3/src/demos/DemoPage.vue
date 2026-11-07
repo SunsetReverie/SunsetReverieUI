@@ -154,6 +154,11 @@ const propGroups = computed(() => {
   line-height: 1.7;
 }
 
+/* API 区块与上方演示之间留出一点额外呼吸 */
+.demo-page__api {
+  padding-top: 4px;
+}
+
 .demo-page__section {
   margin: 0 0 10px;
   color: var(--sr-color-text-secondary);
@@ -216,6 +221,11 @@ const propGroups = computed(() => {
 .api-table__default {
   color: var(--sr-color-text-tertiary);
   font-family: var(--sr-font-family-mono);
+}
+
+.api-table__desc {
+  color: var(--sr-color-text-secondary);
+  line-height: 1.65;
 }
 
 .demo-page__slots {
