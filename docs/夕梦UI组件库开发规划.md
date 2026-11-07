@@ -3066,16 +3066,37 @@ graph LR
 | `SrDrawer` 与 Modal | 规划抽取 `useSrOverlay` 复用 | 未抽公共 hook，两者各自实现，共用 `utils` 里的滚动锁与焦点陷阱 |
 | P2 排期 | 分散在 W12 / W13 | 除 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload` 外均已完成 |
 
-#### 文档缺口（W11 待补）
+#### 文档现状（已完成）
 
-`docs/components/` 目前只有 `button`、`input`、`modal` 三篇。其余 30 个组件的用法说明散落在演示站的 Props 速查表里，没有独立文档。
+`docs/components/` 已覆盖全部 34 个组件，共 34 篇。
 
-W11 需要补的是：
+**做法**：不靠人工记忆抄写，先写了 `scripts/extract-api.mjs`（`pnpm docs:api`）从组件源码解析真实的 props / emits / slots，再逐篇对照补行为说明。过程中纠正了十余处「记忆与实现不符」的地方，例如：
 
-- 每个组件一篇 `.md`（Props / 事件 / 插槽 / 2 个以上示例），共 30 篇
-- `SrTable`、`SrForm`、`SrNav`、`SrSelect` 这四个复杂度高的优先写
-- 主题、响应式、图标三篇指南的校对（内容已存在，需要对照当前实现更新）
-- CHANGELOG 首条与 `v1.0.0` 发布说明
+- `SrDrawer` 的关闭原因是 `'close'` 而不是 `'close-button'`
+- 尺寸预设只有一组像素值（320 / 440 / 600），左右当宽、上下当高，不是两套独立数值
+- `SrDropdown` 没有 `modelValue`，开合只能靠 `visible-change` 观察
+
+**呈现方式**：文档站直接渲染真实组件（markdown 里写 `<SrButton>`），演示统一蓝色主色 + 毛玻璃 + 渐变背景，避免「示例代码能跑、页面里是截图」的脱节。
+
+仍未做的是：主题、响应式、图标三篇指南的校对（内容已有，需对照当前实现更新）。
+
+#### 版本路线：从 0.x 起步
+
+**当前不直接发 `1.0.0`。** 组件范围尚未冻结，后面还要加 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload`，新组件往往会反过来调整公共类型；已有组件的语义也还在动（例如 `SrDrawer.inset` 从「不贴边」改成「贴边 + 圆角」、`SrTabs.type="card"` 从「背板」改成「连接式卡片」）。此时宣布 `1.0.0`，等于给自己套上兼容承诺的枷锁。
+
+| 阶段 | 版本 | 触发条件 |
+| --- | --- | --- |
+| 开发预览 | `v0.1.0` ~ `v0.8.0` | 按批次交付，API 可变 |
+| 候选 | `v0.9.0` | 组件范围冻结，只修 bug 与补文档 |
+| 正式 | `v1.0.0` | 有至少一个真实项目稳定使用一段时间，API 不再变动 |
+
+`0.x` 的约定：
+
+- **破坏性变更只进 minor**（`0.1` → `0.2`），patch 只放修复
+- CHANGELOG 里用 `**BREAKING**` 明确标注，并给出迁移方式
+- SemVer 规定 `0.x` 的 minor 可以随时破坏兼容，这既是自由也是提醒：**下游接入 0.x 就要准备好跟着改**
+
+这个项目是私有仓库 + tag 分发，不需要靠版本号对外证明稳定性，`0.x` 完全够用。等到组件补齐、API 稳定、有实际项目验证过，再发 `1.0.0` 才有实际意义。
 
 ---
 
@@ -3304,6 +3325,8 @@ export async function buildStyles(): Promise<void> {
 ### 11.5 版本策略与 Git tag
 
 **语义化版本（SemVer）**，`MAJOR.MINOR.PATCH`：
+
+> **当前处于 `0.x` 阶段**，规则与上表不同：破坏性变更进 MINOR（`0.1` → `0.2`），补丁进 PATCH，`1.0.0` 留到组件范围冻结之后。详见 10.8「版本路线」。
 
 | 版本位 | 触发条件 | 示例 |
 | --- | --- | --- |
@@ -4793,7 +4816,7 @@ jobs:
 | W8 | P1（上） | `SrSpinner`、`SrCheckbox`/`SrCheckboxGroup`、`SrRadio`/`SrRadioGroup`、`SrSwitch`、`SrTooltip`（含浮层定位内核 `srComputeFloating`） | 交互与 A11y 断言通过；单测 185 个 |
 | W9 | P1（中）+ E2E | `SrSelect`（单选/多选/搜索/键盘）、`SrForm`/`SrFormItem`（规则校验 + 校验态下发）、Playwright 水合测试 5 条 | 表单校验闭环可用；真实浏览器下水合 0 告警 |
 | W10 | `SrTable` | 列配置 / 双模式排序 / 多选 / 展开行 / 吸顶表头 / 空状态 / 窄屏卡片视图；`SrTabs` 顺延到 W12 | 1000 行可渲染并可滚动；排序、选择、展开全部有单测覆盖 |
-| W11 | 文档完善 + 发布 v1.0.0 | 全部 P0/P1 组件文档、主题/响应式/图标指南、CHANGELOG、首个 tag | 文档站上线；`v1.0.0` tag 可被下游安装 |
+| W11 | 文档完善 + 发布 v0.1.0 | 全部 34 个组件文档、主题/响应式/图标指南、CHANGELOG、首个 tag | 文档站上线；`v0.1.0` tag 可被下游安装 |
 | W12 | P2 批次一 | `SrDrawer`、`SrPagination`、`SrCard`/`SrTag`/`SrBadge`/`SrAvatar` | 验收清单全过 |
 | W13 | P2 批次二 | `SrDatePicker`、`SrUpload`、`SrDropdown`、`SrBreadcrumb` | — |
 | W14 | 缓冲与复盘 | 遗留 bug 修复、性能审计（bundle 分析、毛玻璃性能）、文档补全、`v1.1.0` | 产物体积达标；无 P0/P1 缺陷 |
