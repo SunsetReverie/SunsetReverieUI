@@ -1,0 +1,763 @@
+/**
+ * 夕梦文档主题
+ *
+ * 配色取自 logo 的四个纯色：
+ *   #3E3EDC 靛蓝（主色）· #9078FF 紫 · #92ABFF 浅蓝 · #FF88A3 粉
+ *
+ * 不使用任何渐变。标题、按钮、滚动条全部是纯色。
+ * 毛玻璃保留（模糊不是渐变），但背景是纯色而非径向渐变。
+ */
+
+/* ══════════════════════════════════════════════════════════
+   调色板
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  /* 靛蓝：主色，取自 logo 的线条（19 处，绝对主导） */
+  --sr-indigo: #3e3edc;
+  --sr-indigo-dark: #2a2ab8;
+  --sr-indigo-light: #6b6bee;
+  --sr-purple: #9078ff;
+  --sr-blue: #92abff;
+
+  --sr-pink: #ff88a3;
+
+  /*
+   * 毛玻璃参数。
+   *
+   * 分工：不透明度决定「透不透」，blur 决定「糊不糊」。
+   *
+   * - 0.62 不透明度：背后内容能透上来一点，但整体还是浅色
+   * - 12px 模糊：糊掉细节但保留色块轮廓——再大就成了一片灰白
+   *
+   * 之前 22px 太强，滚动时像蒙了层雾，文字轮廓全没了。
+   */
+  --sr-glass-bg: rgba(255, 255, 255, 0.62);
+  --sr-glass-border: rgba(62, 62, 220, 0.14);
+  --sr-glass-blur: 12px;
+  --sr-glass-shadow: 0 1px 3px rgba(28, 28, 46, 0.06);
+
+  /* ── 品牌色映射 ── */
+  --vp-c-brand-1: var(--sr-indigo);
+  --vp-c-brand-2: var(--sr-indigo-dark);
+  --vp-c-brand-3: var(--sr-indigo-light);
+  --vp-c-brand-soft: rgba(62, 62, 220, 0.1);
+
+  /* ── 背景：纯白与极浅灰 ── */
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #fafafb;
+  --vp-c-bg-elv: #ffffff;
+  --vp-c-bg-soft: #f5f5f8;
+
+  /* ── 文字 ── */
+  --vp-c-text-1: #1c1c2e;
+  --vp-c-text-2: #4a4a63;
+  --vp-c-text-3: #7a7a94;
+
+  /* ── 边框 ── */
+  --vp-c-divider: #e8e8ef;
+  --vp-c-border: #dcdce6;
+  --vp-c-gutter: #f0f0f4;
+
+  /* ── 代码 ── */
+  --vp-code-block-bg: #f7f7fa;
+  --vp-code-bg: rgba(62, 62, 220, 0.08);
+  --vp-code-color: var(--sr-indigo-dark);
+  --vp-code-line-highlight-color: rgba(62, 62, 220, 0.06);
+
+  /* ── 圆角 ── */
+  --vp-border-radius: 8px;
+
+  /* ── 按钮：纯色 ── */
+  --vp-button-brand-bg: var(--sr-indigo);
+  --vp-button-brand-hover-bg: var(--sr-indigo-dark);
+  --vp-button-brand-active-bg: #1e1e96;
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-active-border: transparent;
+}
+
+/* ══════════════════════════════════════════════════════════
+   暗色
+   ══════════════════════════════════════════════════════════ */
+
+.dark {
+  --sr-glass-bg: rgba(20, 20, 38, 0.62);
+  --sr-glass-border: rgba(146, 171, 255, 0.1);
+  --sr-glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  --vp-c-brand-1: var(--sr-blue);
+  --vp-c-brand-2: var(--sr-purple);
+  --vp-c-brand-3: #b0c4ff;
+  --vp-c-brand-soft: rgba(146, 171, 255, 0.12);
+
+  --vp-c-bg: #0e0e1a;
+  --vp-c-bg-alt: #141422;
+  --vp-c-bg-elv: #1a1a2c;
+  --vp-c-bg-soft: #16162a;
+
+  --vp-c-text-1: #e8e8f2;
+  --vp-c-text-2: #a0a0bd;
+  --vp-c-text-3: #70708c;
+
+  --vp-c-divider: #26263c;
+  --vp-c-border: #31314c;
+  --vp-c-gutter: #17172a;
+
+  --vp-code-block-bg: #13131f;
+  --vp-code-bg: rgba(146, 171, 255, 0.12);
+  --vp-code-color: var(--sr-blue);
+  --vp-code-line-highlight-color: rgba(146, 171, 255, 0.08);
+
+  --vp-button-brand-bg: var(--sr-indigo);
+  --vp-button-brand-hover-bg: var(--sr-purple);
+  --vp-button-brand-active-bg: var(--sr-indigo-dark);
+}
+
+/* ══════════════════════════════════════════════════════════
+   导航栏：通栏 + 毛玻璃
+   ══════════════════════════════════════════════════════════ */
+
+.VPNav {
+  background: transparent !important;
+}
+
+/* 整条导航栏铺满宽度，不做胶囊 */
+/*
+ * 毛玻璃和边框都挂在 .VPNavBar 上，不是 .content-body。
+ *
+ * 两个原因：
+ *
+ * 1. .content-body 在 .container 里，container 有 padding: 0 24px，
+ *    边框挂它身上左右各缺 24px，看着像断线。
+ *
+ * 2. .VPNavBar 的高度是 var(--vp-nav-height) = 64px，
+ *    而 .content-body 之前硬编码成 56px——差的 8px 没有毛玻璃，
+ *    滚动时内容会从那条缝里清晰地透出来。
+ *
+ * 挂到全高的父级上，这两个问题一起消失。
+ */
+.VPNavBar,
+.VPNavBar:not(.home),
+.VPNavBar:not(.home):not(.has-sidebar) {
+  /*
+   * 必须 !important。
+   *
+   * VitePress 默认：
+   *   .VPNavBar:not(.home) { background-color: var(--vp-nav-bg-color) }
+   *   而 --vp-nav-bg-color = var(--vp-c-bg)（不透明）
+   *
+   * 它的优先级是 (0,2,0)，比单个 .VPNavBar (0,1,0) 高——
+   * 不加 !important 的话背景被换成不透明色，backdrop-filter 白设。
+   */
+  background: var(--sr-glass-bg) !important;
+  backdrop-filter: blur(var(--sr-glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--sr-glass-blur)) saturate(180%);
+  border-bottom: 1px solid var(--sr-glass-border);
+}
+
+/*
+ * .content-body 必须强制透明，否则毛玻璃只在首页有效。
+ *
+ * VitePress 默认：
+ *   .VPNavBar:not(.home.top) .content-body[data-v-xxx] {
+ *     background-color: var(--vp-nav-bg-color);   ← 不透明
+ *   }
+ *
+ * 优先级 (0,4,0)，比 `.VPNavBar .content-body` 的 (0,2,0) 高——
+ * 不加 !important 的话文档页的背景被涂成实色，backdrop-filter 白做。
+ *
+ * 首页有 .home.top，不匹配那条规则，所以首页看起来是正常的。
+ * 这就是「只有首页有毛玻璃」的原因。
+ */
+.VPNavBar .content-body,
+.VPNavBar:not(.home.top) .content-body {
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+  border-radius: 0;
+  box-shadow: none;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/*
+ * VitePress 还有一条 1px 的分隔线元素（.divider-line / .divider），
+ * 它和 .VPNavBar 的 border-bottom 叠在一起就是「两条线」。
+ * 边框已经挂在 .VPNavBar 上了，这里全部去掉。
+ */
+.VPNavBar .divider-line,
+.VPNavBar .divider {
+  background-color: transparent !important;
+}
+
+.VPNavBar .container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/*
+ * 去掉 logo 区的下边框。
+ *
+ * VitePress 默认：
+ *   .title { border-bottom: 1px solid transparent }
+ *   .VPNavBarTitle.has-sidebar .title { border-bottom-color: var(--vp-c-divider) }
+ *
+ * 有侧边栏时它变成可见，而 .content-body 已经有一条整宽的边框，
+ * 于是 header 下方出现两条线：短的一条（logo 宽度）+ 长的一条（内容区）。
+ */
+.VPNavBarTitle.has-sidebar .title {
+  border-bottom-color: transparent !important;
+}
+
+/*
+ * 侧边栏也用玻璃。
+ *
+ * 之前设为不透明，理由是「避免和通栏导航叠加出脏色」——
+ * 那是纯色背景时的判断。现在背景有柔和光斑，
+ * 半透明反而让光斑从侧边栏透上来，和 header 形成一体。
+ */
+.VPSidebar {
+  background: var(--sr-glass-bg) !important;
+  backdrop-filter: blur(var(--sr-glass-blur));
+  -webkit-backdrop-filter: blur(var(--sr-glass-blur));
+  border-right: 1px solid var(--sr-glass-border);
+
+  /* 隐藏滚动条，但保留滚动能力 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.VPSidebar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/*
+ * 右侧目录同理。
+ *
+ * 两处都隐藏是为了统一——只隐藏左边会显得不对称。
+ * 滚动能力不受影响：滚轮、触控板、键盘都照常工作。
+ */
+.VPDocAside {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.VPDocAside::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/*
+ * 导航栏布局：logo | 主题切换 GitHub | ……留白…… | 搜索 指南 升级 版本号
+ *
+ * .content-body 里的真实 DOM 顺序是：
+ *   VPNavBarSearch → VPNavBarMenu → VPNavBarAppearance
+ *
+ * 默认主题给 .VPNavBarSearch 设了 flex-grow: 1（吃满剩余空间），
+ * 所以搜索框被撑到最左，菜单跟在它后面 —— 看起来是「搜索在最左、菜单也在左」。
+ *
+ * 想达到「搜索在菜单前面、整组靠右」，只需要：
+ *   - search 不再吃满空间（flex-grow: 0）
+ *   - 用 margin-left: auto 把 search 及它后面的元素一起推到右侧
+ *
+ * 不要用 order！之前试过给 search/menu 设 order:1/2，
+ * 结果 appearance（order 默认 0）被排到最前面，主题切换和 GitHub 跑到了 logo 旁边。
+ */
+@media (min-width: 768px) {
+  .VPNavBarSearch {
+    flex-grow: 0;
+    margin-left: auto;
+    padding-left: 24px;
+    padding-right: 12px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   页面背景：柔和光斑
+   ══════════════════════════════════════════════════════════ */
+
+/*
+ * 为什么不是「纯色」：
+ *
+ * 纯色背景和毛玻璃是矛盾的——backdrop-filter 模糊的是背后内容，
+ * 背后是纯白时，模糊纯白还是纯白，数学上没有任何变化。
+ *
+ * 这几团光斑的作用不是装饰，是**给模糊提供素材**：
+ * 透明度 4%～7%，近看几乎察觉不到，但玻璃掠过时能看出层次。
+ *
+ * background-attachment: fixed —— 光斑固定在视口，不随滚动移动。
+ * 否则滚动时光斑跟着走，玻璃反而看不出「背后有东西经过」。
+ */
+body {
+  background-color: var(--vp-c-bg);
+  background-image:
+    radial-gradient(900px 620px at 12% -8%, rgba(62, 62, 220, 0.07), transparent 68%),
+    radial-gradient(760px 520px at 88% 12%, rgba(144, 120, 255, 0.06), transparent 70%),
+    radial-gradient(820px 560px at 48% 108%, rgba(146, 171, 255, 0.05), transparent 72%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(900px 620px at 12% -8%, rgba(146, 171, 255, 0.10), transparent 68%),
+    radial-gradient(760px 520px at 88% 12%, rgba(144, 120, 255, 0.09), transparent 70%),
+    radial-gradient(820px 560px at 48% 108%, rgba(62, 62, 220, 0.12), transparent 72%);
+}
+
+/* 搜索按钮 */
+.VPNavBarSearch button,
+.DocSearch-Button {
+  background: var(--vp-c-bg-soft) !important;
+  border: 1px solid var(--vp-c-divider) !important;
+  border-radius: 6px !important;
+}
+
+.VPNavBarSearch button:hover {
+  border-color: var(--vp-c-brand-1) !important;
+}
+
+/* 搜索弹窗 */
+.VPLocalSearchBox .shell {
+  background: var(--vp-c-bg-elv) !important;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(28, 28, 46, 0.16);
+}
+
+.VPLocalSearchBox .search-bar {
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.VPLocalSearchBox .result.selected {
+  background: var(--vp-c-brand-soft);
+}
+
+/* ══════════════════════════════════════════════════════════
+   首页 Hero
+   ══════════════════════════════════════════════════════════ */
+
+.VPHero .name,
+.VPHero .text {
+  /* 纯色，不用渐变文字 */
+  color: var(--vp-c-text-1);
+  -webkit-text-fill-color: currentColor;
+  background: none;
+  letter-spacing: -0.02em;
+}
+
+.VPHero .name {
+  color: var(--sr-indigo);
+}
+
+.dark .VPHero .name {
+  color: var(--sr-blue);
+}
+
+.VPHero .text {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.VPHero .tagline {
+  color: var(--vp-c-text-2);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* Hero 按钮 */
+.VPHero .VButton.brand {
+  background: var(--vp-button-brand-bg);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: background 0.2s;
+}
+
+.VPHero .VButton.brand:hover {
+  background: var(--vp-button-brand-hover-bg);
+}
+
+.VPHero .VButton.alt {
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+}
+
+.VPHero .VButton.alt:hover {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+}
+
+/* Hero 图片 */
+.VPHero .image-src {
+  max-width: 220px;
+  max-height: 220px;
+  filter: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   特性卡片：毛玻璃 + 细边框
+   ══════════════════════════════════════════════════════════ */
+
+.VPFeature {
+  background: var(--sr-glass-bg) !important;
+  border: 1px solid var(--vp-c-divider) !important;
+  border-radius: 10px !important;
+  backdrop-filter: blur(var(--sr-glass-blur));
+  -webkit-backdrop-filter: blur(var(--sr-glass-blur));
+  box-shadow: var(--sr-glass-shadow);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-1) !important;
+  transform: translateY(-2px);
+}
+
+.VPFeature .icon {
+  background: none;
+  -webkit-text-fill-color: initial;
+  font-size: 1.4rem;
+}
+
+.VPFeature .title {
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.VPFeature .details {
+  color: var(--vp-c-text-2);
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
+/* ══════════════════════════════════════════════════════════
+   正文
+   ══════════════════════════════════════════════════════════ */
+
+.vp-doc h1 {
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.vp-doc h2 {
+  margin-top: 2.8rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--vp-c-divider);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+.vp-doc h3 {
+  margin-top: 1.8rem;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+/* 行内代码 */
+.vp-doc :not(pre) > code {
+  background: var(--vp-code-bg);
+  color: var(--vp-code-color);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+/* 代码块 */
+.vp-doc div[class*='language-'] {
+  border-radius: 8px;
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: none;
+  margin: 1.3rem 0;
+}
+
+.vp-doc div[class*='language-'] > span.lang {
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+/* 表格 */
+.vp-doc table {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  font-size: 0.9rem;
+}
+
+.vp-doc tr:nth-child(2n) {
+  background: var(--vp-c-bg-alt);
+}
+
+.vp-doc th {
+  background: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+
+/* 引用块：左侧纯色条 */
+.vp-doc blockquote {
+  border-left: 3px solid var(--sr-indigo);
+  background: var(--vp-c-bg-soft);
+  border-radius: 0 6px 6px 0;
+  padding: 0.85rem 1.15rem;
+  color: var(--vp-c-text-2);
+}
+
+.dark .vp-doc blockquote {
+  border-left-color: var(--sr-blue);
+}
+
+.vp-doc blockquote > p {
+  margin: 0;
+}
+
+/* 提示容器 */
+.vp-doc .custom-block {
+  border-radius: 8px;
+  border-width: 1px;
+}
+
+/* 链接 */
+.vp-doc a {
+  font-weight: 500;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+/* ══════════════════════════════════════════════════════════
+   侧边栏与目录
+   ══════════════════════════════════════════════════════════ */
+
+.VPSidebarItem.level-0 > .item > .text {
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--vp-c-text-3);
+  text-transform: uppercase;
+}
+
+.VPSidebarItem.is-active > .item .link > .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+
+.VPDocAsideOutline .outline-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  font-weight: 600;
+}
+
+.VPDocAsideOutline .outline-link.active {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════
+   图标（Tabler · 通过 CSS mask 着色）
+
+   为什么不用 <img>：外部 SVG 里的 currentColor 拿不到父级的 color，
+   图标会渲染成黑色。用 mask + background-color 才能跟随主题色。
+   ══════════════════════════════════════════════════════════ */
+
+.sr-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: var(--vp-c-brand-1);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+  vertical-align: middle;
+}
+
+/* ══════════════════════════════════════════════════════════
+   首页特性卡片（替代 VitePress 的 features 字段）
+
+   官方 features 的 icon 只接受 emoji 文本，无法放 SVG。
+   ══════════════════════════════════════════════════════════ */
+
+.sr-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 2.5rem 0 3rem;
+}
+
+.sr-feature {
+  padding: 22px 20px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background: var(--sr-glass-bg);
+  backdrop-filter: blur(var(--sr-glass-blur));
+  -webkit-backdrop-filter: blur(var(--sr-glass-blur));
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.sr-feature:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+.sr-feature .sr-icon {
+  width: 26px;
+  height: 26px;
+  opacity: 0.9;
+}
+
+.sr-feature h3 {
+  margin: 12px 0 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: none;
+  padding: 0;
+}
+
+.sr-feature p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--vp-c-text-2);
+}
+
+/* ══════════════════════════════════════════════════════════
+   首页「下一步」引导链接
+   ══════════════════════════════════════════════════════════ */
+
+.sr-links {
+  display: grid;
+  gap: 10px;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.sr-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  text-decoration: none !important;
+  color: var(--vp-c-text-1) !important;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.sr-link:hover {
+  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+}
+
+.sr-link .sr-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
+}
+
+.sr-link strong {
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════════════
+   提示框图标（覆盖 VitePress 默认的 emoji）
+   ══════════════════════════════════════════════════════════ */
+
+.vp-doc .custom-block .custom-block-title::before {
+  content: '';
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.vp-doc .custom-block.tip .custom-block-title::before {
+  --icon: url(/icons/bulb.svg);
+}
+
+.vp-doc .custom-block.info .custom-block-title::before {
+  --icon: url(/icons/info-circle.svg);
+}
+
+.vp-doc .custom-block.warning .custom-block-title::before {
+  --icon: url(/icons/alert-triangle.svg);
+}
+
+.vp-doc .custom-block.danger .custom-block-title::before {
+  --icon: url(/icons/alert-triangle.svg);
+}
+
+/* ══════════════════════════════════════════════════════════
+   滚动条：纯色
+   ══════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vp-c-border);
+  border-radius: 5px;
+  border: 2px solid var(--vp-c-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-text-3);
+}
+
+/* ══════════════════════════════════════════════════════════
+   动效：尊重 reduced-motion
+   ══════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 小屏：导航栏内边距收窄 */
+@media (max-width: 768px) {
+  .VPNavBar .container {
+    padding: 0 16px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   打印
+   ══════════════════════════════════════════════════════════ */
+
+@media print {
+  .VPNav,
+  .VPSidebar,
+  .VPDocAside {
+    display: none;
+  }
+}
