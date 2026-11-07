@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { SrButton, SrIcon, SrInput, SrModal, srToast } from '@sunset-reverie/ui'
+import { SrButton, SrIcon, SrInput, SrModal, srToast, SrPanel } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'AuditView' })
 
@@ -52,7 +52,7 @@ function show(key: string): boolean {
 
 <template>
   <div>
-    <section v-if="show('button')" class="panel">
+    <SrPanel v-if="show('button')">
       <h2 class="panel__title">按钮 · 四组合对照</h2>
       <p class="panel__desc">
         左侧四列分别是「亮/暗 × 扁平/玻璃」。格子内的所有组件都读取该格的 CSS 变量，
@@ -92,9 +92,9 @@ function show(key: string): boolean {
           </div>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section v-if="show('input')" class="panel">
+    <SrPanel v-if="show('input')">
       <h2 class="panel__title">输入框 · 四组合对照</h2>
       <p class="panel__desc">重点看边框、占位符、字数统计与三种校验态在暗色下的可辨识度。</p>
 
@@ -120,9 +120,9 @@ function show(key: string): boolean {
           </div>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section v-if="show('icon')" class="panel">
+    <SrPanel v-if="show('icon')">
       <h2 class="panel__title">图标 · 四组合对照</h2>
       <p class="panel__desc">图标继承 currentColor，主要看与文字的视觉重量是否匹配。</p>
 
@@ -164,9 +164,9 @@ function show(key: string): boolean {
           </div>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section v-if="show('feedback')" class="panel">
+    <SrPanel v-if="show('feedback')">
       <h2 class="panel__title">弹窗与轻提示</h2>
       <p class="panel__desc">
         这两个组件用 Teleport 挂到 body，脱离局部主题作用域，只能跟当前全局主题走。
@@ -182,7 +182,7 @@ function show(key: string): boolean {
           错误提示
         </sr-button>
       </div>
-    </section>
+    </SrPanel>
 
     <sr-modal v-model="modalOpen" title="弹窗对照" :width="440">
       <div style="display: grid; gap: 12px">

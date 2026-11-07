@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { SrButton, SrIcon, SrLoadMore, SrPagination, SrTag } from '@sunset-reverie/ui'
+import { SrButton, SrIcon, SrLoadMore, SrPagination, SrTag, SrPanel } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ComponentsView' })
 
@@ -108,7 +108,7 @@ function triggerLoading(): void {
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">按钮变体</h2>
       <p class="panel__desc">
         变体只改 CSS 变量的值，基础结构与交互逻辑完全共用。切到暗色 / 玻璃风格后颜色自动适配。
@@ -119,9 +119,9 @@ function triggerLoading(): void {
           {{ variant }}
         </sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">尺寸</h2>
       <p class="panel__desc">
         尺寸走内联 CSS 变量，支持按断点分档。下方最后一个按钮的 size 是
@@ -135,9 +135,9 @@ function triggerLoading(): void {
         </sr-button>
         <sr-button :size="{ xs: 'sm', md: 'lg' }" variant="outline">响应式尺寸</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">状态</h2>
       <p class="panel__desc">
         加载态用 <code style="font-family: var(--sr-font-family-mono)">opacity: 0</code>
@@ -153,9 +153,9 @@ function triggerLoading(): void {
       <div style="margin-top: 12px">
         <sr-button variant="secondary" block>占满整行的按钮</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">自定义外观</h2>
       <p class="panel__desc">
         <code style="font-family: var(--sr-font-family-mono)">radius</code> 控制圆角（数字按
@@ -185,9 +185,9 @@ function triggerLoading(): void {
         <sr-button variant="outline" bg="#F5456B">variant 被 bg 覆盖</sr-button>
         <sr-button variant="secondary" color="var(--sr-color-danger)">只改文字色</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">标签</h2>
       <p class="panel__desc">
         用于状态、分类、多选值这类短文本标记。一个基色同时驱动浅色与深色两档：
@@ -305,9 +305,9 @@ function triggerLoading(): void {
           </tr>
         </tbody>
       </table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">分页</h2>
       <p class="panel__desc">
         页码 / 每页条数 / 跳转。当前第 <strong>{{ page }}</strong> 页，每页
@@ -420,9 +420,9 @@ function triggerLoading(): void {
           </tr>
         </tbody>
       </table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">加载更多</h2>
       <p class="panel__desc">
         分页的另一种呈现：只能顺序前进，适合信息流、日志这类不需要回看的场景。 已加载
@@ -519,9 +519,9 @@ function triggerLoading(): void {
         事件：<code style="font-family: var(--sr-font-family-mono)">load</code> —— 需要加载下一批。
         组件只负责呈现与触发，数据怎么取由调用方决定。
       </p>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">SrButton Props 速查</h2>
       <p class="panel__desc">当前组件的全部 props。带「新增」标记的是本轮加入的自定义外观能力。</p>
 
@@ -618,9 +618,9 @@ function triggerLoading(): void {
         <code style="font-family: var(--sr-font-family-mono)">name</code>、
         <code style="font-family: var(--sr-font-family-mono)">form</code> 等属性。
       </p>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">图标清单</h2>
       <p class="panel__desc">
         图标走 Iconify 离线集合，<code style="font-family: var(--sr-font-family-mono)">name</code>
@@ -635,9 +635,9 @@ function triggerLoading(): void {
           <code class="icon-card__name">{{ item.name }}</code>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">颜色（color）与继承</h2>
       <p class="panel__desc">
         不传 <code style="font-family: var(--sr-font-family-mono)">color</code> 时继承父级
@@ -664,9 +664,9 @@ function triggerLoading(): void {
         <sr-icon name="lucide:sun" :size="22" color="var(--sr-color-primary)" label="指定主色" />
         <sr-icon name="lucide:heart" :size="22" color="var(--sr-color-danger)" label="指定危险色" />
       </p>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">动态图标与变换</h2>
       <p class="panel__desc">
         <code style="font-family: var(--sr-font-family-mono)">spin</code> 是持续旋转动画（加载场景）；
@@ -681,9 +681,9 @@ function triggerLoading(): void {
           <span class="icon-demo__label">{{ demo.label }}</span>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">在按钮中使用</h2>
       <p class="panel__desc">
         按钮的 <code style="font-family: var(--sr-font-family-mono)">icon</code> prop 会自动计算尺寸， 也可用
@@ -702,7 +702,7 @@ function triggerLoading(): void {
           自定义加载指示器
         </sr-button>
       </div>
-    </section>
+    </SrPanel>
   </div>
 </template>
 

@@ -17,223 +17,161 @@ body {
 }
 
 .pg {
-  min-height: 100vh;
-  // 让 body 的光晕透上来
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
   background: transparent;
   color: var(--sr-color-text);
   font-family: var(--sr-font-family-base);
 
-  &__bar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  &__side {
+    flex: 0 0 auto;
+    padding: 12px;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // header 固定，只有内容区滚动
+  &__header {
     display: flex;
     align-items: center;
-    gap: var(--sr-space-4);
-    flex-wrap: wrap;
-    padding: var(--sr-space-3) var(--sr-space-5);
-    background: var(--sr-color-bg-container);
-    border-bottom: 1px solid var(--sr-color-border);
+    gap: 14px;
+    flex: 0 0 auto;
+    height: 56px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+    background: color-mix(in srgb, var(--sr-color-bg-container) 62%, transparent);
     backdrop-filter: var(--sr-glass-filter);
+    -webkit-backdrop-filter: var(--sr-glass-filter);
   }
 
-  &__brand {
+  &__header-actions {
     display: flex;
     align-items: center;
-    gap: var(--sr-space-2);
-    font-size: var(--sr-font-size-md);
-    font-weight: var(--sr-font-weight-semibold);
+    gap: 8px;
+    margin-left: auto;
   }
 
-  &__sun {
-    width: 18px;
-    height: 18px;
-    border-radius: var(--sr-radius-full);
-    background: linear-gradient(160deg, var(--sr-sunset-300), var(--sr-ember-500));
-    box-shadow: 0 0 12px var(--sr-color-primary-alpha-25);
-  }
+  &__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
-  &__status {
-    display: flex;
-    gap: var(--sr-space-2);
-    margin-inline-start: auto;
+    &:hover {
+      background: var(--sr-color-primary-alpha-08);
+      color: var(--sr-color-primary-text);
+    }
   }
 
   &__pill {
-    padding: 2px var(--sr-space-2);
-    border-radius: var(--sr-radius-full);
-    border: 1px solid var(--sr-color-border);
-    background: var(--sr-color-bg-sunken);
-    font-family: var(--sr-font-family-mono);
-    font-size: var(--sr-font-size-xs);
-    color: var(--sr-color-text-secondary);
-    white-space: nowrap;
-  }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: var(--sr-space-2);
-  }
-
-  // 动效模式分段控件：三档切换直接演示库的动效参数化能力
-  &__motion {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    padding: 2px;
+    padding: 2px 9px;
     border: 1px solid var(--sr-color-border);
     border-radius: var(--sr-radius-full);
-    background: var(--sr-color-bg-sunken);
-  }
-
-  &__motion-label {
-    padding: 0 4px 0 8px;
-    color: var(--sr-color-text-secondary);
+    color: var(--sr-color-text-tertiary);
     font-size: 12px;
     white-space: nowrap;
   }
 
-  &__motion-btn {
-    min-width: 26px;
-    padding: 3px 7px;
-    border: 0;
-    border-radius: var(--sr-radius-full);
-    background: transparent;
-    color: var(--sr-color-text-secondary);
-    font-size: 12px;
-    cursor: pointer;
-    transition:
-      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  &__body {
+    flex: 1 1 auto;
+    padding: var(--sr-space-5);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--sr-color-text) 18%, transparent) transparent;
 
-    &:hover {
-      color: var(--sr-color-text);
-    }
-
-    &.is-active {
-      background: var(--sr-color-bg-container);
-      color: var(--sr-color-primary-text);
-      box-shadow: var(--sr-shadow-sm);
+    // 视图根节点改成纵向流，面板之间的节奏统一由这里给
+    > * {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sr-space-4);
+      max-width: 1080px;
+      margin-inline: auto;
     }
   }
+}
 
-  // 预设主题色：直接摆在顶栏，避免入口藏在二级页面里
+// ---------- 外观设置抽屉 ----------
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__label {
+    color: var(--sr-color-text-secondary);
+    font-size: 13px;
+  }
+
   &__swatches {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    padding-inline-end: var(--sr-space-2);
-    margin-inline-end: var(--sr-space-1);
-    border-inline-end: 1px solid var(--sr-color-border);
+    gap: 10px;
   }
 
   &__swatch {
-    width: 16px;
-    height: 16px;
+    width: 26px;
+    height: 26px;
     padding: 0;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     border-radius: var(--sr-radius-full);
     cursor: pointer;
     transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
     &:hover {
-      transform: scale(1.15);
+      transform: scale(1.08);
     }
 
     &.is-active {
-      // 用外圈阴影而非 outline：紧凑，且不挤占布局
-      box-shadow:
-        0 0 0 2px var(--sr-color-bg-container),
-        0 0 0 3px var(--sr-color-text-secondary);
+      border-color: var(--sr-color-text);
+      box-shadow: 0 0 0 2px var(--sr-color-bg-container) inset;
     }
   }
 
-  // 预设主题色：直接摆在顶栏，避免入口藏在二级页面里
-  &__swatches {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding-inline-end: var(--sr-space-2);
-    margin-inline-end: var(--sr-space-1);
-    border-inline-end: 1px solid var(--sr-color-border);
-  }
-
-  &__swatch {
-    width: 16px;
-    height: 16px;
-    padding: 0;
-    border: 1px solid transparent;
-    border-radius: var(--sr-radius-full);
-    cursor: pointer;
-    transition:
-      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-
-    &:hover {
-      transform: scale(1.15);
-    }
-
-    &.is-active {
-      // 用外圈阴影而非 outline，紧凑且不挤占布局
-      box-shadow:
-        0 0 0 2px var(--sr-color-bg-container),
-        0 0 0 3px currentcolor;
-    }
-  }
-
-  &__btn {
-    padding: 5px var(--sr-space-3);
-    border-radius: var(--sr-radius-base);
-    border: 1px solid var(--sr-color-border);
-    background: var(--sr-color-bg-container);
-    color: var(--sr-color-text);
-    font-size: var(--sr-font-size-sm);
-    cursor: pointer;
-    transition:
-      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-
-    &:hover {
-      border-color: var(--sr-color-primary);
-      color: var(--sr-color-primary);
-    }
-  }
-
-  &__tabs {
-    display: flex;
-    gap: var(--sr-space-1);
-    padding: var(--sr-space-3) var(--sr-space-5) 0;
-    max-width: 1080px;
-    margin: 0 auto;
-  }
-
-  &__tab {
-    padding: 6px var(--sr-space-3);
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: none;
-    color: var(--sr-color-text-secondary);
-    font-size: var(--sr-font-size-sm);
-    cursor: pointer;
-
-    &.is-active {
-      color: var(--sr-color-primary);
-      border-bottom-color: var(--sr-color-primary);
-      font-weight: var(--sr-font-weight-semibold);
-    }
-  }
-
-  &__body {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: var(--sr-space-5);
+  &__hint {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    line-height: 1.7;
   }
 }
 
 // ---------- 通用卡片 ----------
-.panel {
+// ---------- 面板内的标题与描述 ----------
+// 容器本身改用组件库的 SrPanel，这里只保留排版
+
+.panel__title {
+  margin: 0;
+  color: var(--sr-color-text);
+  font-size: 15px;
+  font-weight: var(--sr-font-weight-semibold);
+}
+
+.panel__desc {
+  margin: 6px 0 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 13px;
+  line-height: 1.7;
+}
+panel {
   background: var(--sr-color-bg-container);
   border: 1px solid var(--sr-color-border);
   border-radius: var(--sr-radius-base);

@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 
-import { SrButton, SrForm, SrFormItem, SrInput, SrInputNumber, SrSelect, srToast } from '@sunset-reverie/ui'
+import {
+  SrButton,
+  SrForm,
+  SrFormItem,
+  SrInput,
+  SrInputNumber,
+  SrSelect,
+  srToast,
+  SrPanel,
+} from '@sunset-reverie/ui'
 
 defineOptions({ name: 'FormsView' })
 
@@ -113,7 +122,7 @@ function resetForm(): void {
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">基础用法</h2>
       <p class="panel__desc">
         v-model 双向绑定，尺寸默认继承全局配置（未配置时为 md）。右下角实时显示绑定值。
@@ -123,9 +132,9 @@ function resetForm(): void {
         <sr-input v-model="basic" placeholder="请输入内容" clearable />
         <code style="font-size: 12px; color: var(--sr-color-text-secondary)"> v-model = "{{ basic }}" </code>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">尺寸</h2>
       <p class="panel__desc">
         四档尺寸，最后一个按钮用的是响应式对象
@@ -137,9 +146,9 @@ function resetForm(): void {
         <sr-input v-for="size in sizes" :key="size" :size="size" :placeholder="`尺寸 ${size}`" />
         <sr-input :size="{ xs: 'sm', md: 'lg' }" placeholder="响应式尺寸" />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">前后缀与按钮</h2>
       <p class="panel__desc">前缀用于协议、货币等固定文本，后缀可放单位或校验提示。前后缀不参与输入。</p>
 
@@ -162,9 +171,9 @@ function resetForm(): void {
           </template>
         </sr-input>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">清空与密码</h2>
       <p class="panel__desc">
         清空按钮点击后自动回焦；密码切换会保留光标位置。这两个按钮
@@ -175,9 +184,9 @@ function resetForm(): void {
         <sr-input v-model="basic" placeholder="有值时出现清空按钮" clearable />
         <sr-input v-model="password" type="password" show-password placeholder="请输入密码" />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">字数统计与校验态</h2>
       <p class="panel__desc">
         校验态只改变边框与焦点环颜色，不内置提示文案 —— 文案与布局交给 SrFormItem（W9）。
@@ -189,9 +198,9 @@ function resetForm(): void {
         <sr-input v-model="warningValue" status="warning" />
         <sr-input v-model="successValue" status="success" />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">多行文本</h2>
       <p class="panel__desc">type="textarea" 走独立分支；开启 autosize 后高度随内容增长，省掉手动拖拽。</p>
 
@@ -206,9 +215,9 @@ function resetForm(): void {
         />
         <sr-input v-model="autosizeValue" type="textarea" autosize placeholder="高度自适应" />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">禁用与只读</h2>
       <p class="panel__desc">禁用态整体降低对比度并禁止交互；只读态保留文本可选中复制。</p>
 
@@ -216,9 +225,9 @@ function resetForm(): void {
         <sr-input model-value="禁用状态" disabled />
         <sr-input model-value="只读状态，可以选中复制" readonly />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">下拉选择</h2>
       <p class="panel__desc">
         面板位置由 <code style="font-family: var(--sr-font-family-mono)">srComputeFloating</code> 计算，
@@ -271,9 +280,9 @@ function resetForm(): void {
           </div>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">数字输入</h2>
       <p class="panel__desc">
         <code style="font-family: var(--sr-font-family-mono)">SrInputNumber</code>
@@ -341,8 +350,8 @@ function resetForm(): void {
           </div>
         </div>
       </div>
-    </section>
-    <section class="panel">
+    </SrPanel>
+    <SrPanel>
       <h2 class="panel__title">表单校验</h2>
       <p class="panel__desc">
         规则分「失焦」与「输入」两种时机；一旦出现错误会转为实时校验，改对即消失。 错误文案通过
@@ -407,10 +416,10 @@ function resetForm(): void {
           </span>
         </div>
       </sr-form>
-    </section>
+    </SrPanel>
   </div>
 
-  <section class="panel">
+  <SrPanel>
     <h2 class="panel__title">表单组件 Props 速查</h2>
     <p class="panel__desc">
       本页三个输入类组件的全部 props。尺寸不传时继承
@@ -686,7 +695,7 @@ function resetForm(): void {
       事件：<code>update:modelValue</code> / <code>change</code> / <code>focus</code> / <code>blur</code> /
       <code>step(value, type)</code>；键盘：↑ / ↓ 步进，Enter 立即规范化，失焦自动钳制到边界。
     </p>
-  </section>
+  </SrPanel>
 </template>
 
 <style scoped>

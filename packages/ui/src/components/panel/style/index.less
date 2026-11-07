@@ -80,7 +80,12 @@
   }
 
   &__body {
-    padding: 0 var(--sr-space-5) var(--sr-space-5);
+    padding: var(--sr-space-5);
+  }
+
+  // 有头部时顶部留白由头部承担，避免双份
+  &:has(&__header) &__body {
+    padding-top: 0;
   }
 
   &.is-flush &__body {

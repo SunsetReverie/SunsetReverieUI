@@ -189,7 +189,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">轻提示（命令式）</h2>
       <p class="panel__desc">
         不经过组件树，直接调用
@@ -209,9 +209,9 @@ onMounted(() => {
         <sr-button size="sm" variant="outline" @click="showSticky">常驻提示</sr-button>
         <sr-button size="sm" variant="text" @click="srToast.closeAll()">全部关闭</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">提示位置</h2>
       <p class="panel__desc">同一位置的多条提示纵向堆叠，不同位置各自独立分组。</p>
 
@@ -226,9 +226,9 @@ onMounted(() => {
           {{ item.label }}
         </sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">弹窗</h2>
       <p class="panel__desc">
         打开时锁定页面滚动、焦点移入内部并循环；Esc
@@ -244,7 +244,7 @@ onMounted(() => {
         <sr-button variant="outline" @click="forceChoiceOpen = true">必须做选择</sr-button>
         <sr-button variant="outline" @click="headlessOpen = true">无头部</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
     <sr-modal v-model="basicOpen" title="基础弹窗" :width="440">
       <p style="margin: 0; line-height: 1.7">
@@ -318,7 +318,7 @@ onMounted(() => {
         <p style="margin: 0">我是内层弹窗。Esc 只关闭我，外层保持打开。</p>
       </sr-modal>
     </sr-modal>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">全局消息（命令式）</h2>
       <p class="panel__desc">
         <code style="font-family: var(--sr-font-family-mono)">srMessage</code>
@@ -338,9 +338,9 @@ onMounted(() => {
         </sr-button>
         <sr-button size="sm" variant="text" @click="srMessage.closeAll()">全部关闭</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">通知提醒（命令式）</h2>
       <p class="panel__desc">
         <code style="font-family: var(--sr-font-family-mono)">srNotification</code>
@@ -384,9 +384,9 @@ onMounted(() => {
         </sr-button>
         <sr-button size="sm" variant="text" @click="srNotification.closeAll()">全部关闭</sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">确认框</h2>
       <p class="panel__desc">
         确认框不显示头部与右上角关闭按钮，焦点集中在「做选择」上。图标底色、图标与确认按钮始终同色，
@@ -493,7 +493,7 @@ onMounted(() => {
         <code style="font-family: var(--sr-font-family-mono)">srConfirm.primary / .warning / .danger</code>
         快捷方法；同一时刻只保留一个确认框。
       </p>
-    </section>
+    </SrPanel>
 
     <SrConfirm
       v-model="confirmOpen"
@@ -504,7 +504,7 @@ onMounted(() => {
       @confirm="confirmOpen = false"
     />
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">反馈组件 Options 速查</h2>
       <p class="panel__desc">
         三个命令式 API 的第二个参数 / 对象参数。三者都提供
@@ -645,6 +645,6 @@ onMounted(() => {
           </tr>
         </tbody>
       </table>
-    </section>
+    </SrPanel>
   </div>
 </template>

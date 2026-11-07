@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { SR_BREAKPOINTS, SrCol, SrRow, useSrBreakpoint } from '@sunset-reverie/ui'
+import { SR_BREAKPOINTS, SrCol, SrRow, useSrBreakpoint, SrPanel } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ResponsiveLab' })
 
@@ -41,7 +41,7 @@ const matrix = computed(() =>
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">当前断点</h2>
       <p class="panel__desc">
         useSrBreakpoint 基于 resize + rAF 读取真实视口宽度，断点数值与 CSS 媒体查询共用同一份 token。
@@ -107,9 +107,9 @@ const matrix = computed(() =>
           {{ bp.name }}
         </span>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">判断矩阵</h2>
       <p class="panel__desc">isUp / isDown 在模板中调用会自动建立响应式依赖，无需额外监听。</p>
 
@@ -119,9 +119,9 @@ const matrix = computed(() =>
           isUp: {{ row.isUp }} / isDown: {{ row.isDown }} / current: {{ row.isCurrent }}
         </span>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">栅格随断点变化</h2>
       <p class="panel__desc">
         下面 6 张卡片：xs 占满、sm 两列、lg 三列。改成 4 列只需改一个对象，不需要写媒体查询。
@@ -132,6 +132,6 @@ const matrix = computed(() =>
           <div class="cell">卡片 {{ n }}</div>
         </sr-col>
       </sr-row>
-    </section>
+    </SrPanel>
   </div>
 </template>

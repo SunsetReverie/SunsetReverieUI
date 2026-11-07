@@ -1,25 +1,35 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-import { SR_THEME_PRESETS, useSrBreakpoint, useSrTheme } from '@sunset-reverie/ui'
+import {
+  SR_THEME_PRESETS,
+  SrBreadcrumb,
+  SrButton,
+  SrDrawer,
+  SrIcon,
+  SrNav,
+  SrTabs,
+  useSrBreakpoint,
+  useSrTheme,
+} from '@sunset-reverie/ui'
 
 import { applyMotion, MOTION_MODES, readMotion, type SrMotionMode } from './motion'
-
-import AdminView from './views/AdminView.vue'
-import AuditView from './views/AuditView.vue'
-import ComponentsView from './views/ComponentsView.vue'
-import ControlsView from './views/ControlsView.vue'
-import FeedbackView from './views/FeedbackView.vue'
-import FormsView from './views/FormsView.vue'
-import OverviewView from './views/OverviewView.vue'
-import ResponsiveLab from './views/ResponsiveLab.vue'
-import DisplayView from './views/DisplayView.vue'
-import TableView from './views/TableView.vue'
-import ThemeLab from './views/ThemeLab.vue'
+import { navItems } from './router'
 
 defineOptions({ name: 'PlaygroundApp' })
 
-const { resolved, style, preset, toggleTheme, toggleStyle, setPreset } = useSrTheme()
+const route = useRoute()
+const router = useRouter()
+
+const { mode, resolved, style, preset, setTheme, setStyle, setPreset, resetPrimaryColor } = useSrTheme()
+const { current: breakpoint, width } = useSrBreakpoint()
+
+/** 侧栏是否收起 */
+const collapsed = ref(false)
+
+/** 外观设置抽屉 */
+const settingOpen = ref(false)
 
 /** 当前动效模式 */
 const motionMode = ref<SrMotionMode>(readMotion())
@@ -32,108 +42,163 @@ function setMotion(mode: SrMotionMode): void {
   motionMode.value = mode
   applyMotion(mode)
 }
-const { current: breakpoint, width } = useSrBreakpoint()
 
-/** 视图定义 */
-const views = [
-  { key: 'overview', label: '栅格概览', component: OverviewView },
-  { key: 'components', label: '基础组件', component: ComponentsView },
-  { key: 'forms', label: '表单', component: FormsView },
-  { key: 'controls', label: '选择控件', component: ControlsView },
-  { key: 'feedback', label: '反馈', component: FeedbackView },
-  { key: 'table', label: '表格', component: TableView },
-  { key: 'display', label: '容器与展示', component: DisplayView },
-  { key: 'admin', label: '后台布局', component: AdminView },
-  { key: 'theme', label: '主题实验室', component: ThemeLab },
-  { key: 'responsive', label: '断点实验室', component: ResponsiveLab },
-  { key: 'audit', label: '视觉审计', component: AuditView },
-] as const
+/** 当前菜单项，直接来自路由名 */
+const activeKey = computed(() => String(route.name ?? 'overview'))
 
-// 支持 ?tab=theme 直达某个视图，方便截图与分享复现链接
-const tabParam = new URLSearchParams(window.location.search).get('tab')
-const activeKey = ref<string>(tabParam && views.some((v) => v.key === tabParam) ? tabParam : 'overview')
+/** 面包屑：分类 + 当前页 */
+const crumbs = computed(() => {
+  const group = route.meta?.group as string | undefined
+  const title = route.meta?.title as string | undefined
+  return [
+    { label: '夕梦 UI', href: '#/' },
+    ...(group ? [{ label: group }] : []),
+    ...(title ? [{ label: title }] : []),
+  ]
+})
 
-/** 当前视图组件 */
-const activeView = computed(() => views.find((v) => v.key === activeKey.value)?.component ?? OverviewView)
+/**
+ * 点击菜单时跳路由，URL 跟着变，刷新也能回来
+ * @param key 路由名
+ */
+function onSelect(key: string): void {
+  void router.push({ name: key })
+}
+
+/** 主题选项 */
+const themeItems = [
+  { key: 'light', label: '亮色' },
+  { key: 'dark', label: '暗色' },
+  { key: 'auto', label: '跟随' },
+]
+
+/** 风格选项 */
+const styleItems = [
+  { key: 'glass', label: '玻璃' },
+  { key: 'flat', label: '扁平' },
+]
 </script>
 
 <template>
-  <div class="pg">
-    <header class="pg__bar">
-      <div class="pg__brand">
-        <span class="pg__sun" />
-        <span>夕梦 UI · Playground</span>
-      </div>
+  <div class="pg" :class="{ 'is-collapsed': collapsed }">
+    <!-- 侧栏：用组件库自己的 SrNav -->
+    <aside class="pg__side">
+      <SrNav
+        :items="navItems"
+        :model-value="activeKey"
+        logo="lucide:moon-star"
+        title="夕梦 UI"
+        mode="vertical"
+        active-style="bar"
+        :collapsed="collapsed"
+        :width="216"
+        @select="onSelect"
+      />
+    </aside>
 
-      <div class="pg__status">
-        <span class="pg__pill">{{ breakpoint }} · {{ width }}px</span>
-        <span class="pg__pill">{{ resolved }}</span>
-        <span class="pg__pill">{{ style }}</span>
-      </div>
+    <div class="pg__main">
+      <header class="pg__header">
+        <button
+          class="pg__icon-btn"
+          type="button"
+          :title="collapsed ? '展开侧栏' : '收起侧栏'"
+          @click="collapsed = !collapsed"
+        >
+          <SrIcon name="lucide:menu" :size="16" />
+        </button>
 
-      <div class="pg__actions">
-        <div class="pg__swatches">
+        <SrBreadcrumb :items="crumbs" separator-icon="lucide:chevron-right" />
+
+        <div class="pg__header-actions">
+          <span class="pg__pill">{{ breakpoint }} · {{ width }}px</span>
+
           <button
-            v-for="item in SR_THEME_PRESETS"
-            :key="item.key"
-            class="pg__swatch"
-            :class="{ 'is-active': preset === item.key }"
-            :style="{ background: item.primary }"
-            :title="item.label"
-            :aria-label="`切换到${item.label}`"
+            class="pg__icon-btn"
             type="button"
-            @click="setPreset(item.key)"
+            :title="resolved === 'dark' ? '切到浅色' : '切到暗色'"
+            @click="setTheme(resolved === 'dark' ? 'light' : 'dark')"
+          >
+            <SrIcon :name="resolved === 'dark' ? 'lucide:sun' : 'lucide:moon-star'" :size="16" />
+          </button>
+
+          <button class="pg__icon-btn" type="button" title="外观设置" @click="settingOpen = true">
+            <SrIcon name="lucide:settings" :size="16" />
+          </button>
+        </div>
+      </header>
+
+      <main class="pg__body">
+        <RouterView v-slot="{ Component }">
+          <Transition name="pg-view" mode="out-in">
+            <component :is="Component" :key="route.name" />
+          </Transition>
+        </RouterView>
+      </main>
+    </div>
+
+    <!-- 外观设置：把原来堆在顶栏的一排操作收进来 -->
+    <SrDrawer v-model="settingOpen" title="外观设置" :size="360">
+      <div class="setting">
+        <div class="setting__row">
+          <span class="setting__label">主题</span>
+          <SrTabs
+            :items="themeItems"
+            :model-value="String(mode)"
+            type="pill"
+            size="sm"
+            @update:model-value="(key: string) => setTheme(key as 'light')"
           />
         </div>
 
-        <div class="pg__motion" role="group" aria-label="动效模式">
-          <span class="pg__motion-label">动效</span>
-
-          <button
-            v-for="mode in MOTION_MODES"
-            :key="mode.key"
-            class="pg__motion-btn"
-            :class="{ 'is-active': motionMode === mode.key }"
-            :title="mode.hint"
-            :aria-pressed="motionMode === mode.key"
-            type="button"
-            @click="setMotion(mode.key)"
-          >
-            {{ mode.label }}
-          </button>
+        <div class="setting__row">
+          <span class="setting__label">品牌色</span>
+          <div class="setting__swatches">
+            <button
+              v-for="item in SR_THEME_PRESETS"
+              :key="item.key"
+              class="setting__swatch"
+              :class="{ 'is-active': preset === item.key }"
+              :style="{ background: item.primary }"
+              :title="item.label"
+              :aria-label="`切换到${item.label}`"
+              type="button"
+              @click="setPreset(item.key)"
+            />
+          </div>
         </div>
 
-        <button class="pg__btn" type="button" @click="toggleTheme">
-          {{ resolved === 'dark' ? '切到浅色' : '切到暗色' }}
-        </button>
-        <button class="pg__btn" type="button" @click="toggleStyle">
-          {{ style === 'glass' ? '切到扁平' : '切到玻璃' }}
-        </button>
+        <div class="setting__row">
+          <span class="setting__label">质感</span>
+          <SrTabs
+            :items="styleItems"
+            :model-value="style"
+            type="pill"
+            size="sm"
+            @update:model-value="(key: string) => setStyle(key as 'glass')"
+          />
+        </div>
+
+        <div class="setting__row">
+          <span class="setting__label">动效</span>
+          <SrTabs
+            :items="MOTION_MODES.map((item) => ({ key: item.key, label: item.label }))"
+            :model-value="motionMode"
+            type="pill"
+            size="sm"
+            @update:model-value="(key: string) => setMotion(key as SrMotionMode)"
+          />
+        </div>
+
+        <div class="setting__row">
+          <span class="setting__label">其他</span>
+          <SrButton size="sm" variant="outline" @click="resetPrimaryColor()">恢复默认配色</SrButton>
+        </div>
+
+        <p class="setting__hint">
+          以上设置都会写进本机 localStorage；「动效 · 无」会同时关掉过渡与循环动画，适合低端设备。
+        </p>
       </div>
-    </header>
-
-    <nav class="pg__tabs">
-      <button
-        v-for="view in views"
-        :key="view.key"
-        class="pg__tab"
-        :class="{ 'is-active': activeKey === view.key }"
-        type="button"
-        @click="activeKey = view.key"
-      >
-        {{ view.label }}
-      </button>
-    </nav>
-
-    <main class="pg__body">
-      <!--
-        视图切换过渡：:key 必须给，否则 Vue 复用同一节点、过渡不会触发。
-        out-in 让旧视图先退场，避免两屏内容同时存在造成的布局跳动。
-      -->
-      <Transition name="pg-view" mode="out-in">
-        <component :is="activeView" :key="activeKey" />
-      </Transition>
-    </main>
+    </SrDrawer>
   </div>
 </template>
 

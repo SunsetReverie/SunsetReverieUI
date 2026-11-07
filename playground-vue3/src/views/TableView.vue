@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { SrButton, SrTable, SrTag, srToast, type SrTableColumn, type SrTableRow } from '@sunset-reverie/ui'
+import {
+  SrButton,
+  SrTable,
+  SrTag,
+  srToast,
+  type SrTableColumn,
+  type SrTableRow,
+  SrPanel,
+} from '@sunset-reverie/ui'
 
 defineOptions({ name: 'TableView' })
 
@@ -153,7 +161,7 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">基础表格</h2>
       <p class="panel__desc">
         列配置驱动，单元格用 <code style="font-family: var(--sr-font-family-mono)">#cell-&lt;key&gt;</code>
@@ -169,9 +177,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
 
         <template #cell-size="{ value }">{{ Number(value).toFixed(1) }} KB</template>
       </sr-table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">固定列</h2>
       <p class="panel__desc">
         给列配置 <code style="font-family: var(--sr-font-family-mono)">fixed: 'left' | 'right'</code>
@@ -192,9 +200,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </div>
         </template>
       </sr-table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">分页</h2>
       <p class="panel__desc">
         传 <code style="font-family: var(--sr-font-family-mono)">pagination</code> 开启前端分页， 配合
@@ -209,9 +217,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </SrTag>
         </template>
       </sr-table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">懒加载</h2>
       <p class="panel__desc">
         开启 <code style="font-family: var(--sr-font-family-mono)">lazy</code> 后，滚动到底部自动派发
@@ -228,9 +236,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
         :max-height="260"
         @load-more="loadMore"
       />
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">选择与批量操作</h2>
       <p class="panel__desc">
         表头复选框支持半选；点击选择列不会触发行点击事件。 当前已选
@@ -251,9 +259,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </SrTag>
         </template>
       </sr-table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">固定表头与展开行</h2>
       <p class="panel__desc">
         设置 <code style="font-family: var(--sr-font-family-mono)">max-height</code> 后表头自动吸顶，
@@ -285,9 +293,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </SrTag>
         </template>
       </sr-table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">加载与空状态</h2>
       <p class="panel__desc">加载遮罩盖在内容上而不是替换内容，表格高度不会跳动。</p>
 
@@ -301,9 +309,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
         <div style="margin-bottom: 8px; font-size: 12px; color: var(--sr-color-text-secondary)">空数据</div>
         <sr-table :columns="columns" :data="[]" empty-text="这个筛选条件下没有组件" />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">大数据量</h2>
       <p class="panel__desc">
         一期不做虚拟滚动（规划文档 D-07 放在 P2 评估）。1000 行直接渲染 + 吸顶表头，
@@ -320,9 +328,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
       <sr-table :columns="bigColumns" :data="bigData" :max-height="320" bordered>
         <template #empty>点击上方按钮生成数据</template>
       </sr-table>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">窄屏卡片视图</h2>
       <p class="panel__desc">
         开启 <code style="font-family: var(--sr-font-family-mono)">responsive</code> 后， 视口进入 xs
@@ -330,9 +338,9 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
       </p>
 
       <sr-table :columns="columns" :data="rows.slice(0, 3)" responsive />
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">SrTable Props 速查</h2>
       <p class="panel__desc">
         列级配置见 <code style="font-family: var(--sr-font-family-mono)">SrTableColumn</code>： key / title /
@@ -544,7 +552,7 @@ function onSortChange(payload: { key: string; order: 'asc' | 'desc' | null }): v
           </tr>
         </tbody>
       </table>
-    </section>
+    </SrPanel>
   </div>
 </template>
 

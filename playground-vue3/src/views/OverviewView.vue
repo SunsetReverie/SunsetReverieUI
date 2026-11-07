@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SrCol, SrRow } from '@sunset-reverie/ui'
+import { SrCol, SrRow, SrPanel } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'OverviewView' })
 
@@ -14,7 +14,7 @@ const equalSplits = [
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">等分栅格</h2>
       <p class="panel__desc">24 栅格的优势：能被 3、4、6、8 整除，中后台常见的五等分、六等分都能落成整数。</p>
 
@@ -25,9 +25,9 @@ const equalSplits = [
           </sr-col>
         </sr-row>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">响应式 span</h2>
       <p class="panel__desc">
         小屏占满、中屏两列、大屏三列。拖动浏览器宽度即可看到实时切换 —— 全部由 CSS 媒体查询完成，JS
@@ -39,9 +39,9 @@ const equalSplits = [
           <div class="cell">xs:24 / sm:12 / lg:8</div>
         </sr-col>
       </sr-row>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">栅格间隔</h2>
       <p class="panel__desc">
         gutter 支持单值、[水平, 垂直]、以及按断点分档。水平间距由列的 padding 实现，行用负 margin
@@ -63,9 +63,9 @@ const equalSplits = [
           <sr-col v-for="n in 4" :key="n" :span="6"><div class="cell">响应式 gutter</div></sr-col>
         </sr-row>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">偏移与位移</h2>
       <p class="panel__desc">
         offset 用 margin 占位（影响后续元素），push / pull 用相对位移（不影响文档流）。
@@ -83,6 +83,6 @@ const equalSplits = [
           <sr-col :span="8" :push="8"><div class="cell">push 8（视觉右移）</div></sr-col>
         </sr-row>
       </div>
-    </section>
+    </SrPanel>
   </div>
 </template>

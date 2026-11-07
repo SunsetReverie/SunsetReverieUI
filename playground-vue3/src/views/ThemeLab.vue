@@ -58,7 +58,7 @@ function applyCustom(): void {
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">当前状态</h2>
       <p class="panel__desc">
         三个根属性 + 一份模块级状态共同驱动视觉效果。这里展示的是 useSrTheme 暴露的实时值。
@@ -68,9 +68,9 @@ function applyCustom(): void {
         <span class="kv__key">{{ row.key }}</span>
         <span class="kv__val">{{ row.value }}</span>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">明暗模式</h2>
       <p class="panel__desc">
         auto 跟随系统；选择具体值后会写入 localStorage，刷新后由内联脚本在首帧恢复，不会白闪。
@@ -92,9 +92,9 @@ function applyCustom(): void {
           {{ item }}
         </button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">质感风格</h2>
       <p class="panel__desc">
         flat 与 glass 共享同一批变量名，只覆写值。下面的示例卡片通过 .sr-surface mixin
@@ -139,9 +139,9 @@ function applyCustom(): void {
       <div style="margin-top: 16px">
         <GlassTuner />
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">主题色</h2>
       <p class="panel__desc">
         只覆写主色，hover / active / 透明派生全部自动计算。支持 color-mix 时交给浏览器算，否则退化为 HSL
@@ -214,6 +214,6 @@ function applyCustom(): void {
           :title="token"
         />
       </div>
-    </section>
+    </SrPanel>
   </div>
 </template>

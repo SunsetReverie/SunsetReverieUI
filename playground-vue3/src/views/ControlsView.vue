@@ -10,6 +10,7 @@ import {
   SrSpinner,
   SrSwitch,
   SrTooltip,
+  SrPanel,
 } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'ControlsView' })
@@ -62,7 +63,7 @@ function mockSubmit(): void {
 
 <template>
   <div>
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">复选框</h2>
       <p class="panel__desc">
         半选状态写入的是 DOM 属性 <code style="font-family: var(--sr-font-family-mono)">indeterminate</code>，
@@ -99,9 +100,9 @@ function mockSubmit(): void {
           </sr-checkbox-group>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">单选框</h2>
       <p class="panel__desc">
         同组内的原生 radio 共享 name，保证浏览器层面的互斥；换组不会互相干扰（未指定 name 时自动生成）。
@@ -121,9 +122,9 @@ function mockSubmit(): void {
 
         <code style="font-size: 12px; color: var(--sr-color-text-secondary)">plan = "{{ plan }}"</code>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">开关</h2>
       <p class="panel__desc">
         用 <code style="font-family: var(--sr-font-family-mono)">&lt;button role="switch"&gt;</code> 承载，
@@ -144,9 +145,9 @@ function mockSubmit(): void {
           <span style="font-size: 12px; color: var(--sr-color-text-secondary)">四档尺寸</span>
         </div>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">加载指示器</h2>
       <p class="panel__desc">
         两段圆环（底轨 + 1/4 弧），比单段弧更有「在轨道上跑」的观感。 减少动效偏好下降速而非停止 ——
@@ -165,9 +166,9 @@ function mockSubmit(): void {
         </sr-button>
         <sr-button variant="secondary" :disabled="busy"> 同组按钮 </sr-button>
       </div>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">文字提示</h2>
       <p class="panel__desc">
         位置由 <code style="font-family: var(--sr-font-family-mono)">srComputeFloating</code> 计算：
@@ -227,9 +228,9 @@ function mockSubmit(): void {
         气泡与触发元素通过
         <code style="font-family: var(--sr-font-family-mono)">aria-describedby</code> 关联。
       </p>
-    </section>
+    </SrPanel>
 
-    <section class="panel">
+    <SrPanel>
       <h2 class="panel__title">选择控件 Props 速查</h2>
       <p class="panel__desc">
         本页四个组件的常用 props。<code style="font-family: var(--sr-font-family-mono)">size</code> 不传时继承
@@ -502,6 +503,6 @@ function mockSubmit(): void {
           </tr>
         </tbody>
       </table>
-    </section>
+    </SrPanel>
   </div>
 </template>

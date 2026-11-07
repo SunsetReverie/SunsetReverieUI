@@ -4,6 +4,7 @@ import { useSrTheme } from '@sunset-reverie/ui'
 import '@sunset-reverie/ui/style.css'
 
 import App from './App.vue'
+import { router } from './router'
 import { applyMotion, readMotion } from './motion'
 
 // 读取 localStorage、绑定系统主题监听、同步 DOM 属性。
@@ -38,4 +39,4 @@ if (primaryParam) {
   theme.setPrimaryColor(primaryParam.startsWith('#') ? primaryParam : `#${primaryParam}`)
 }
 
-createApp(App).mount('#app')
+createApp(App).use(router).mount('#app')
