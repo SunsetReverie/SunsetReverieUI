@@ -84,9 +84,14 @@
 | `loading` | `boolean` | `false` | 加载中 |
 | `block` | `boolean` | `false` | 占满父容器 |
 | `round` | `boolean` | `false` | 胶囊圆角 |
+| `radius` | `number \| string` | 跟随质感层 | 圆角，不传时 flat 6px / glass 10px |
+| `bg` | `string` | `''` | 自定义背景色，hover/active 与辉光由 `color-mix` 自动派生 |
+| `color` | `string` | `''` | 自定义文字色；配合 `bg` 时默认白色 |
 | `htmlType` | `'button' \| 'submit' \| 'reset'` | `'button'` | 原生 type（避免与组件 type 冲突，故改名） |
 | `icon` | `string` | `''` | 图标名 |
 | `iconPosition` | `'left' \| 'right'` | `'left'` | 图标位置 |
+
+响应式尺寸除了给 `size` 传对象，也可以直接用具名 prop：`<sr-button xs="sm" md="lg">`，与 `size` 对象等价。
 
 | 插槽 | 说明 |
 | --- | --- |

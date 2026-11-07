@@ -24,6 +24,10 @@ features:
     details: 能被 3/4/6/8 整除，响应式 span 与 gutter 全部由 CSS 媒体查询完成，JS 不参与布局。
   - title: 按需引入
     details: 每个组件有独立入口与独立 CSS，配 resolver 或子路径导入都能只打包用到的部分。
+  - title: 34 个组件
+    details: 覆盖 P0/P1 全部能力与大部分 P2，含表格固定列与分页、侧边栏导航、标签页四种外观、确认框与加载更多。
+  - title: 水合可验证
+    details: 30 个组件的 SSR 冒烟测试 + Nuxt 水合 e2e，断言告警数为 0；新组件漏测会被 lint:smoke 拦下。
   - title: 类型友好
     details: 组件 props 全部由 TS 推导，插槽用 defineSlots 声明，Volar 下模板内即可获得补全。
 ---

@@ -8,7 +8,7 @@
 
 ---
 
-## 当前进度：W10（SrTable）已完成
+## 当前进度：W10 已完成，并提前交付了一批 P2 组件
 
 ### W1 · 立项与基建
 
@@ -125,7 +125,45 @@
 | 窄屏卡片视图（挂载后切换，避免水合不匹配） | ✅ |
 | 单元测试 236 个（新增 21 个） | ✅ |
 
-W11 将补齐全部组件文档、完善文档站并发布 v0.1.0。
+### W10 之后 · 组件补齐与演示站重构
+
+W10 完成后按业务需要提前交付了一批 P2 组件，并对已有的交互与视觉做了系统打磨。组件总数来到 **34 个**。
+
+#### 新增组件
+
+| 组件 | 关键能力 |
+| --- | --- |
+| `SrNav` | 水平/垂直、分组折叠、两级子菜单、收起态浮层、品牌区、`#footer`、`bare` 去壳模式、`activeStyle` 双激活语言 |
+| `SrTag` | 六种语义色、`light`/`dark` 两档、`color` 自定义基色、四档尺寸、可关闭 |
+| `SrPagination` | 页码超 7 页自动收敛、每页条数、跳页、`simple` 精简模式 |
+| `SrLoadMore` | 三态（idle/loading/done）、`auto` 自动加载、自动探测最近滚动祖先 |
+| `SrConfirm` | 声明式 `SrConfirm` + 命令式 `srConfirm.danger()`，`Promise<boolean>`、异步 loading |
+
+#### 已有组件增强
+
+| 组件 | 增强 |
+| --- | --- |
+| `SrTable` | 固定列（左右 sticky + 边缘投影）、空态图标、前端分页、懒加载（复用 `SrLoadMore`） |
+| `SrCard` | `padding` 独立档位（含 `none`）、`extra` 插槽、无描边时用阴影、悬停高亮描边 |
+| `SrTabs` | 外观扩到 `line`/`card`/`segment`/`pill`、`direction="vertical"`、`bordered=false` 透明模式 |
+| `SrBadge` | 状态点模式（`status` + 呼吸脉冲） |
+| `SrAvatar` | 按 `alt` 散列自动取色，同一人始终同色 |
+| `SrEmpty` | `bordered` 虚线占位、`image` 插图 |
+| `SrBreadcrumb` | `separatorIcon`、`items[].disabled` |
+| `SrDropdown` | `size`、`items[].danger` / `.selected`、`flush`、`role`、`#menu` 自定义面板、悬停延迟关闭、视口变化重定位 |
+| `SrDrawer` | 四方向、预设尺寸、`zIndex`、四角圆角变体（`inset`）、磨砂加强 |
+| `SrModal` | 内容区隐藏滚动条 |
+
+#### 工程与演示
+
+| 项 | 说明 |
+| --- | --- |
+| 演示站重构 | `vue-router`（hash 模式）+ `SrNav` 侧栏 + header + 外观设置抽屉，页面分类为开始/设计系统/组件/示例 |
+| SSR 冒烟测试 | `ssr-components.spec.ts` 覆盖 30 个组件，在 node 环境下渲染，抓出过 `SrDrawer` 的服务端崩溃 |
+| 水合 e2e | `pnpm check:hydration` 构建 Nuxt 站并断言水合告警为 0，另有 `lint:smoke` 保证新组件不会漏测 |
+| Token 校验 | `pnpm lint:tokens` 对齐变量定义与引用，防住「变量拼错导致整条声明静默失效」 |
+
+> W11 的重点是补齐组件文档与文档站，并把版本范围收敛为「P0 + P1 + 已完成的 P2」，不追求把所有 P2 都塞进首个正式版本。
 
 ---
 
@@ -141,9 +179,9 @@ sunsetreverie-ui/
 ├── internal/
 │   ├── tokens/              # Token 唯一手写源 + 代码生成
 │   └── examples/            # 三处共用的示例源码
-├── playground-vue3/         # Vite + Vue 3 调试站（直连源码）
-├── playground-nuxt4/        # Nuxt 4 调试站（SSR / 水合验证）
-├── scripts/                 # 命名 / 图标 / 产物校验
+├── playground-vue3/         # Vite + Vue 3 调试站（直连源码，侧栏 + 路由布局）
+├── playground-nuxt4/        # Nuxt 4 调试站（SSR / 水合验证，含 smoke 冒烟页）
+├── scripts/                 # 命名 / 图标 / 产物 / 变量 / 水合覆盖校验
 ├── docs/                    # 规划文档与 Token 验证页
 ├── .changeset/              # 变更说明（发版用）
 └── pnpm-workspace.yaml
@@ -194,6 +232,9 @@ pnpm build
 | `pnpm lint` | ESLint + Stylelint |
 | `pnpm lint:naming` | 命名规范校验（组件目录、组件名、CSS 变量与类名前缀） |
 | `pnpm lint:icons` | 图标离线集合校验 |
+| `pnpm lint:tokens` | CSS 变量引用校验（引用与定义是否对齐，防拼错后静默失效） |
+| `pnpm lint:smoke` | 水合冒烟覆盖校验（新组件是否已进入 Nuxt smoke 页） |
+| `pnpm check:hydration` | 构建 Nuxt 站并跑水合校验，断言告警数为 0 |
 | `pnpm typecheck` | 类型检查（会先生成 Token） |
 | `pnpm test` | 单元测试（Vitest） |
 | `pnpm verify:dist` | 产物校验（exports 指向的文件是否都存在） |

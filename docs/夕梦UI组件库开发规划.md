@@ -645,7 +645,20 @@ resolver    nuxt        （nuxt 依赖 ui 的产物 + resolver 的类型，故�
 | `--sr-glass-border-width` | `1px` | `1px` | 边框宽度（glass 用高光边框） |
 | `--sr-glass-border-color` | `var(--sr-color-border)` | `rgba(255,255,255,.55)` | 顶部高光边 |
 | `--sr-glass-highlight` | `0 0 0 0 transparent` | `inset 0 1px 0 rgba(255,255,255,.55)` | 内高光（flat 用零尺寸透明阴影占位，不能写 `none`） |
+| `--sr-glass-filter-strong` | `none` | `blur(28px) saturate(200%)` | 强模糊档，用于浮层、抽屉等需要彻底糊住背后内容的面板 |
 | `--sr-shadow-glow-blur` | `0px` | `22px` | 彩色辉光半径，flat 下为 0 自然消失 |
+
+#### 反馈组件表面 Token
+
+Toast / Message / Notification / Confirm 共用一组表面变量，避免四处各写一套：
+
+| Token | `flat` 值 | `glass` 值 | 说明 |
+| --- | --- | --- | --- |
+| `--sr-feedback-bg` | `var(--sr-color-bg-elevated)` | `rgba(255,255,255,.6)` | 反馈面板底色 |
+| `--sr-feedback-radius` | `8px` | `8px` | 反馈面板圆角，比表单的 6px 略大 |
+| `--sr-feedback-sheen` | `none` | 155° 白色渐变 | 顶部柔光层，flat 下为 `none` |
+
+> 这三个变量曾因为只加在 `flat` 分支、漏了 `glass` 而让圆角掉成 0，排查时很难定位。现在 `lint:tokens` 会对「引用了但没定义」的变量直接报错。
 
 #### 彩色辉光（glow）
 
@@ -2970,18 +2983,19 @@ P1 需补充的原子组件：`SrCheckbox`、`SrRadio`、`SrSwitch`、`SrSpinner
 
 ### 10.4 P2（第 10 ~ 12 周，按业务需要取舍）
 
-| 组件 | 说明 | 备注 |
-| --- | --- | --- |
-| `SrDatePicker` | 日期 / 日期范围 / 快捷选项 | 自研日历逻辑成本高，评估是否用 `dayjs` + 自研面板 |
-| `SrTree` | 虚拟滚动 / 半选 / 拖拽排序 | 拖拽需引入 `sortablejs`（⏳ 待决策） |
-| `SrCarousel` | 自动播放 / 循环 / 指示器 | 触碰滑动支持 |
-| `SrUpload` | 拖拽 / 进度 / 多文件 / 图片预览 | — |
-| `SrDrawer` | 四方向 / 尺寸 / 与 Modal 共用逻辑 | 抽取 `useSrOverlay` 复用 |
-| `SrPagination` | 页码 / 每页条数 / 跳转 | — |
-| `SrDropdown` | 触发 / 菜单 / 分组 / 分割线 | 依赖 `SrTooltip` 的定位引擎 |
-| `SrBreadcrumb` | 分隔符 / 折叠 | — |
-| `SrMenu` | 垂直 / 水平 / 折叠 / 多级 | 成本较高 |
-| `SrCard` / `SrDivider` / `SrTag` / `SrBadge` / `SrAvatar` | 展示型 | 可与 P1 并行穿插 |
+| 组件 | 说明 | 备注 | 状态 |
+| --- | --- | --- | --- |
+| `SrDatePicker` | 日期 / 日期范围 / 快捷选项 | 自研日历逻辑成本高，评估是否用 `dayjs` + 自研面板 | ⏳ 待做 |
+| `SrTree` | 虚拟滚动 / 半选 / 拖拽排序 | 拖拽需引入 `sortablejs`（⏳ 待决策） | ⏳ 待做 |
+| `SrCarousel` | 自动播放 / 循环 / 指示器 | 触碰滑动支持 | ⏳ 待做 |
+| `SrUpload` | 拖拽 / 进度 / 多文件 / 图片预览 | — | ⏳ 待做 |
+| `SrDrawer` | 四方向 / 尺寸 / 与 Modal 共用逻辑 | 抽出独立的遮罩 + 焦点陷阱，未共用 Modal | ✅ 已完成 |
+| `SrPagination` | 页码 / 每页条数 / 跳转 | 顺带替换了 `SrTable` 内联的分页器 | ✅ 已完成 |
+| `SrDropdown` | 触发 / 菜单 / 分组 / 分割线 | 复用 `utils/floating` 定位引擎 | ✅ 已完成 |
+| `SrBreadcrumb` | 分隔符 / 折叠 | 补了图标分隔符与禁用项 | ✅ 已完成 |
+| `SrMenu` | 垂直 / 水平 / 折叠 / 多级 | 以 `SrNav` 落地，含收起态浮层 | ✅ 已完成 |
+| `SrCard` / `SrDivider` / `SrTag` / `SrBadge` / `SrAvatar` | 展示型 | `SrDivider` 未单独抽出，仍由 CSS 承担 | ✅ 已完成 |
+| `SrTabs` / `SrPanel` / `SrEmpty` | 导航与容器 | 原计划 P3 的 `SrEmpty` 提前落地 | ✅ 已完成 |
 
 ### 10.5 P3（远期）
 
@@ -3021,6 +3035,34 @@ graph LR
 - [ ] SSR 渲染一次无 hydration warning（`playground-nuxt4` 验证）
 - [ ] 文档站有 2 个以上示例（基础 + 进阶）
 - [ ] CHANGELOG 有对应条目
+
+### 10.8 实际完成情况（截至 W10 结束）
+
+规划里 P0/P1 全部完成，P2 提前交付了 8 个，另有若干规划外的组件因演示站需要而落地。当前 **34 个组件目录**（含 `SrTransition`、`SrConfigProvider` 两个基建件）。
+
+| 批次 | 组件 | 规划外 |
+| --- | --- | --- |
+| P0 | `SrButton`、`SrIcon`、`SrRow`、`SrCol`、`SrInput`、`SrModal`、`SrToast`、`SrTransition`、`SrConfigProvider` | — |
+| P1 | `SrTable`、`SrForm`、`SrFormItem`、`SrSelect`、`SrTooltip`、`SrTabs`、`SrCheckbox`、`SrCheckboxGroup`、`SrRadio`、`SrRadioGroup`、`SrSwitch`、`SrSpinner` | — |
+| P2 | `SrDrawer`、`SrPagination`、`SrDropdown`、`SrBreadcrumb`、`SrCard`、`SrPanel`、`SrTag`、`SrBadge`、`SrAvatar`、`SrEmpty`、`SrNav`（对应规划里的 `SrMenu`） | — |
+| 规划外 | `SrInputNumber`、`SrMessage`、`SrNotification`、`SrConfirm`、`SrLoadMore` | ✅ |
+
+#### 规划外的五个组件
+
+- **`SrInputNumber`**：`SrInput` 承担不了数值增减与步进约束
+- **`SrMessage` / `SrNotification`**：`SrToast` 只覆盖轻提示，页面级与系统级反馈是不同场景
+- **`SrConfirm`**：由 `srModal` + 按钮拼装在每个业务里重复，且缺少 Promise 化的命令式用法
+- **`SrLoadMore`**：与 `SrPagination` 共享「分页取数」语义，但交互模型完全不同（顺序推进 vs 随机访问），`SrTable` 的懒加载需要它
+
+#### 与原规划的偏差
+
+| 项 | 规划 | 实际 |
+| --- | --- | --- |
+| `SrMenu` | 独立的垂直/水平菜单组件 | 以 `SrNav` 落地，额外支撑了侧边栏形态（品牌区、`#footer`、去壳模式） |
+| `SrDivider` | P2 展示型 | 未单独抽出，仍由 CSS 承担 |
+| `SrTabs` | 顺延到 W12 | 在 P1 阶段完成，后续扩展到 4 种外观 + 垂直方向 |
+| `SrDrawer` 与 Modal | 规划抽取 `useSrOverlay` 复用 | 未抽公共 hook，两者各自实现，共用 `utils` 里的滚动锁与焦点陷阱 |
+| P2 排期 | 分散在 W12 / W13 | 除 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload` 外均已完成 |
 
 ---
 
@@ -4742,6 +4784,21 @@ jobs:
 | W12 | P2 批次一 | `SrDrawer`、`SrPagination`、`SrCard`/`SrTag`/`SrBadge`/`SrAvatar` | 验收清单全过 |
 | W13 | P2 批次二 | `SrDatePicker`、`SrUpload`、`SrDropdown`、`SrBreadcrumb` | — |
 | W14 | 缓冲与复盘 | 遗留 bug 修复、性能审计（bundle 分析、毛玻璃性能）、文档补全、`v1.1.0` | 产物体积达标；无 P0/P1 缺陷 |
+
+**实际执行情况（截至 W10 结束）**
+
+P2 中除 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload` 外均已提前完成，并额外落地了 `SrInputNumber`、`SrMessage`、`SrNotification`、`SrConfirm`、`SrLoadMore` 五个规划外组件。W12 / W13 的组件交付目标实际已达成。
+
+进入 W11 之前先补了一轮工程质量与演示站：
+
+| 项 | 说明 |
+| --- | --- |
+| 演示站重构 | `vue-router`（hash）+ `SrNav` 侧栏 + header + 外观设置抽屉，替代原来的顶部 tab；刷新可保持当前页 |
+| SSR 冒烟测试 | 30 个组件在 node 环境渲染，抓出 `SrDrawer` 的服务端崩溃（`document is not defined`） |
+| 水合 e2e | `pnpm check:hydration` 断言 Nuxt 站水合告警为 0；`lint:smoke` 保证新组件不会漏测 |
+| Token 校验 | `pnpm lint:tokens` 对齐变量定义与引用，防住「变量拼错导致整条声明静默失效」 |
+
+因此 W11 的范围收敛为：组件文档 + 文档站 + 首个 tag。版本承诺范围定为「P0 + P1 + 已完成的 P2」，不追求把全部 P2 纳入 `v1.0.0`。
 
 **关键路径**（不可压缩）：
 
