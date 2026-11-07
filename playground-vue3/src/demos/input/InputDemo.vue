@@ -170,10 +170,16 @@ h3 {
   gap: 8px;
 }
 
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .size-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .size-row__label {
@@ -185,7 +191,7 @@ h3 {
 .size-row__group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
