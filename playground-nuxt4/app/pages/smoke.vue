@@ -101,6 +101,17 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Row / Col / Spinner</span>
+        <div class="cell__body cell__body--column">
+          <sr-row :gutter="[8, 8]">
+            <sr-col :span="12"><div class="chip">A</div></sr-col>
+            <sr-col :span="12"><div class="chip">B</div></sr-col>
+          </sr-row>
+          <sr-spinner size="md" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Tag / Badge</span>
         <div class="cell__body">
           <sr-tag v-if="!tagClosed" type="success" closable @close="tagClosed = true">稳定</sr-tag>
