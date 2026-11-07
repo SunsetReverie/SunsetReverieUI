@@ -114,11 +114,6 @@
     border-radius: 10px;
   }
 
-  &.is-collapsed &__item {
-    justify-content: center;
-    padding: 0;
-  }
-
   // 子项缩进，并用左侧竖线表达层级
   &__children {
     display: flex;
@@ -131,7 +126,8 @@
 
   &__item--child {
     height: calc(var(--sr-nav-height) - 4px);
-    padding: 0 10px;
+    // 12px 与浮层标题的左内边距一致，三段文字左缘才对得上
+    padding: 0 12px;
     font-size: calc(var(--sr-nav-font) - 1px);
   }
 
@@ -259,9 +255,12 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    // 从侧栏方向轻轻滑入，纯淡入在这么小的面板上几乎看不出来
+    transform: translateX(-6px);
     transition:
-      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      visibility 0s linear var(--sr-motion-duration-fast);
+      opacity var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+      visibility 0s linear var(--sr-motion-duration-base);
     .sr-glass-layer(var(--sr-glass-filter-strong));
   }
 
@@ -282,14 +281,16 @@
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    transform: translateX(0);
     transition:
-      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      opacity var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
       visibility 0s;
   }
 
   &__flyout-title {
     // 与子项左内边距一致，标题和子菜单首字对齐
-    padding: 4px 10px 6px;
+    padding: 4px 12px 6px;
     color: var(--sr-color-text-tertiary);
     font-size: 11px;
   }
@@ -298,6 +299,12 @@
   &__item:hover:not(:disabled, .is-active) {
     background: color-mix(in srgb, var(--sr-color-primary) 10%, transparent);
     color: var(--sr-color-primary-text);
+  }
+
+  // 只作用于栏内的图标项；浮层里的子项有自己的内边距，不能被一起清零
+  &.is-collapsed &__item:not(.sr-nav__item--child) {
+    justify-content: center;
+    padding: 0;
   }
 
   // ---------- 激活：pill ----------
