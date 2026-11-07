@@ -146,101 +146,103 @@ function pick(item: SrNavItem): void {
       </slot>
     </div>
 
-    <template v-for="(item, index) in items" :key="item.key ?? index">
-      <div v-if="item.divider" class="sr-nav__divider" role="separator" />
+    <div class="sr-nav__menu">
+      <template v-for="(item, index) in items" :key="item.key ?? index">
+        <div v-if="item.divider" class="sr-nav__divider" role="separator" />
 
-      <!--
-        收起态不渲染分组标题：文字被隐藏后只剩一个空按钮，
-        既占高度又能点（点了会折叠整组），看起来就是"可点的空白"
-      -->
-      <button
-        v-if="!collapsed && item.group && item.group !== items[index - 1]?.group"
-        class="sr-nav__group"
-        :class="{ 'is-toggle': isGroupCollapsible(item) }"
-        type="button"
-        :disabled="!isGroupCollapsible(item) || disabled"
-        @click="toggleGroup(item.group)"
-      >
-        <span v-if="!collapsed" class="sr-nav__group-text">{{ item.group }}</span>
-        <sr-icon
-          v-if="isGroupCollapsible(item) && !collapsed"
-          class="sr-nav__group-arrow"
-          :class="{ 'is-open': !closedGroups.has(item.group) }"
-          name="lucide:chevron-down"
-          :size="14"
-        />
-      </button>
-
-      <div v-if="!isGroupHidden(item)" class="sr-nav__entry">
+        <!--
+          收起态不渲染分组标题：文字被隐藏后只剩一个空按钮，
+          既占高度又能点（点了会折叠整组），看起来就是"可点的空白"
+        -->
         <button
-          class="sr-nav__item"
-          :class="{
-            'is-active': item.key === modelValue,
-            'is-disabled': item.disabled || disabled,
-            'is-parent': Boolean(item.children?.length),
-          }"
+          v-if="!collapsed && item.group && item.group !== items[index - 1]?.group"
+          class="sr-nav__group"
+          :class="{ 'is-toggle': isGroupCollapsible(item) }"
           type="button"
-          :aria-current="item.key === modelValue ? 'page' : undefined"
-          :aria-expanded="item.children?.length ? openKeys.has(item.key ?? '') : undefined"
-          :disabled="item.disabled || disabled"
-          @click="pick(item)"
+          :disabled="!isGroupCollapsible(item) || disabled"
+          @click="toggleGroup(item.group)"
         >
-          <span v-if="collapsed && hasBadge(item)" class="sr-nav__dot" />
-          <sr-icon v-else-if="item.icon" class="sr-nav__icon" :name="item.icon" :size="16" />
-          <span v-if="!collapsed" class="sr-nav__label">{{ item.label }}</span>
-          <span v-if="!collapsed && hasBadge(item)" class="sr-nav__badge">{{ item.badge }}</span>
+          <span v-if="!collapsed" class="sr-nav__group-text">{{ item.group }}</span>
           <sr-icon
-            v-if="!collapsed && item.children?.length"
-            class="sr-nav__arrow"
-            :class="{ 'is-open': openKeys.has(item.key ?? '') }"
-            name="lucide:chevron-right"
+            v-if="isGroupCollapsible(item) && !collapsed"
+            class="sr-nav__group-arrow"
+            :class="{ 'is-open': !closedGroups.has(item.group) }"
+            name="lucide:chevron-down"
             :size="14"
           />
         </button>
 
-        <!-- 展开态：子项就地展开 -->
-        <Transition name="sr-nav-sub">
-          <div
-            v-if="!collapsed && item.children?.length && openKeys.has(item.key ?? '')"
-            class="sr-nav__children"
+        <div v-if="!isGroupHidden(item)" class="sr-nav__entry">
+          <button
+            class="sr-nav__item"
+            :class="{
+              'is-active': item.key === modelValue,
+              'is-disabled': item.disabled || disabled,
+              'is-parent': Boolean(item.children?.length),
+            }"
+            type="button"
+            :aria-current="item.key === modelValue ? 'page' : undefined"
+            :aria-expanded="item.children?.length ? openKeys.has(item.key ?? '') : undefined"
+            :disabled="item.disabled || disabled"
+            @click="pick(item)"
           >
+            <span v-if="collapsed && hasBadge(item)" class="sr-nav__dot" />
+            <sr-icon v-else-if="item.icon" class="sr-nav__icon" :name="item.icon" :size="16" />
+            <span v-if="!collapsed" class="sr-nav__label">{{ item.label }}</span>
+            <span v-if="!collapsed && hasBadge(item)" class="sr-nav__badge">{{ item.badge }}</span>
+            <sr-icon
+              v-if="!collapsed && item.children?.length"
+              class="sr-nav__arrow"
+              :class="{ 'is-open': openKeys.has(item.key ?? '') }"
+              name="lucide:chevron-right"
+              :size="14"
+            />
+          </button>
+
+          <!-- 展开态：子项就地展开 -->
+          <Transition name="sr-nav-sub">
+            <div
+              v-if="!collapsed && item.children?.length && openKeys.has(item.key ?? '')"
+              class="sr-nav__children"
+            >
+              <button
+                v-for="child in item.children"
+                :key="child.key"
+                class="sr-nav__item sr-nav__item--child"
+                :class="{ 'is-active': child.key === modelValue, 'is-disabled': child.disabled }"
+                type="button"
+                :disabled="child.disabled || disabled"
+                @click="pick(child)"
+              >
+                <sr-icon v-if="child.icon" class="sr-nav__icon" :name="child.icon" :size="15" />
+                <span class="sr-nav__label">{{ child.label }}</span>
+                <span v-if="hasBadge(child)" class="sr-nav__badge">{{ child.badge }}</span>
+              </button>
+            </div>
+          </Transition>
+
+          <!-- 收起态：悬停浮层 -->
+          <!--
+            收起态浮层：常驻 DOM，显示与否完全交给 CSS 的 :hover。
+            用 JS 的 enter/leave 控制会在穿越图标与浮层的间隙时误关，纯 CSS 没有时序问题。
+          -->
+          <div v-if="collapsed && item.children?.length" class="sr-nav__flyout">
+            <span class="sr-nav__flyout-title">{{ item.label }}</span>
             <button
               v-for="child in item.children"
               :key="child.key"
-              class="sr-nav__item sr-nav__item--child"
+              class="sr-nav__item sr-nav__item--child sr-nav__item--plain"
               :class="{ 'is-active': child.key === modelValue, 'is-disabled': child.disabled }"
               type="button"
               :disabled="child.disabled || disabled"
               @click="pick(child)"
             >
-              <sr-icon v-if="child.icon" class="sr-nav__icon" :name="child.icon" :size="15" />
               <span class="sr-nav__label">{{ child.label }}</span>
-              <span v-if="hasBadge(child)" class="sr-nav__badge">{{ child.badge }}</span>
             </button>
           </div>
-        </Transition>
-
-        <!-- 收起态：悬停浮层 -->
-        <!--
-          收起态浮层：常驻 DOM，显示与否完全交给 CSS 的 :hover。
-          用 JS 的 enter/leave 控制会在穿越图标与浮层的间隙时误关，纯 CSS 没有时序问题。
-        -->
-        <div v-if="collapsed && item.children?.length" class="sr-nav__flyout">
-          <span class="sr-nav__flyout-title">{{ item.label }}</span>
-          <button
-            v-for="child in item.children"
-            :key="child.key"
-            class="sr-nav__item sr-nav__item--child sr-nav__item--plain"
-            :class="{ 'is-active': child.key === modelValue, 'is-disabled': child.disabled }"
-            type="button"
-            :disabled="child.disabled || disabled"
-            @click="pick(child)"
-          >
-            <span class="sr-nav__label">{{ child.label }}</span>
-          </button>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
 
     <!-- 底部固定区：用户信息、版本号之类，和菜单之间用一条线隔开 -->
     <div v-if="$slots.footer" class="sr-nav__footer">

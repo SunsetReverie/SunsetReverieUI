@@ -58,7 +58,15 @@
     --sr-nav-radius: 16px;
     --sr-nav-gap: 2px;
     --sr-nav-padding: 10px;
+  }
 
+  // 只有一个滚动区：品牌区与底部区固定在两端
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sr-nav-gap);
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     // 侧边栏常配滚动，但不该露出滚动条
     scrollbar-width: none;
@@ -68,9 +76,18 @@
     }
   }
 
+  &--horizontal &__menu {
+    flex-direction: row;
+    align-items: center;
+    overflow: visible;
+  }
+
   &.is-collapsed {
     align-items: stretch;
-    // 收起态条目少，允许浮层溢出
+  }
+
+  // 浮层是绝对定位的，滚动容器不能把它裁掉
+  &.is-collapsed &__menu {
     overflow: visible;
   }
 
