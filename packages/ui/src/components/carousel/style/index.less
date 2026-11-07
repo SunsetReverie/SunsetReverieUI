@@ -45,6 +45,8 @@
   }
 
   &__slide {
+    // overlay 是 absolute + inset:0，定位基准必须是 slide 本身，否则会跑到框外
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,6 +67,22 @@
   }
 
   // ---------- 覆盖层 ----------
+  // 叠在内容之上的信息层：标题、作者、时间这类。
+  // 绝对定位铺满 slide，底部压暗保证浅色图片上的白字也能读清。
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    background: linear-gradient(to top, rgb(0 0 0 / 55%), transparent 55%);
+    color: #fff;
+    // 不拦截拖动
+    pointer-events: none;
+  }
+
+  // ---------- 淡入淡出 ----------
   &--fade &__track {
     position: relative;
     display: block;
