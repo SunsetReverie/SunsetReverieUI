@@ -95,7 +95,10 @@ export default defineConfig({
         },
         {
           text: '数据录入',
-          items: [{ text: 'SrForm', link: '/components/form' }],
+          items: [
+            { text: 'SrForm', link: '/components/form' },
+            { text: 'SrSelect', link: '/components/select' },
+          ],
         },
         {
           text: '数据展示',
@@ -103,11 +106,18 @@ export default defineConfig({
         },
         {
           text: '导航',
-          items: [{ text: 'SrNav', link: '/components/nav' }],
+          items: [
+            { text: 'SrNav', link: '/components/nav' },
+            { text: 'SrTabs', link: '/components/tabs' },
+            { text: 'SrDropdown', link: '/components/dropdown' },
+          ],
         },
         {
           text: '反馈',
-          items: [{ text: 'SrModal', link: '/components/modal' }],
+          items: [
+            { text: 'SrModal', link: '/components/modal' },
+            { text: 'SrDrawer', link: '/components/drawer' },
+          ],
         },
       ],
     },
