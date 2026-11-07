@@ -22,7 +22,11 @@ export default {
 
   enhanceApp({ app }: { app: App }) {
     // 读取 localStorage、绑定系统主题监听、把状态同步到根属性
-    SunsetReverie.useSrTheme().init()
+    const theme = SunsetReverie.useSrTheme()
+    theme.init()
+
+    // 文档里的演示统一跑毛玻璃：纯色底上看不出模糊，也更有辨识度
+    theme.setStyle('glass')
 
     for (const [name, value] of Object.entries(SunsetReverie)) {
       // srWithInstall 会给每个组件挂上 install，用它把组件和工具函数区分开

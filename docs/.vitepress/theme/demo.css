@@ -1,9 +1,42 @@
 /**
  * 文档内演示容器
  *
- * Markdown 里直接写组件标签，外面套一层 .sr-demo 提供留白与分隔。
- * 代码块单独放在下面（用 ::: details 折叠），保证「看到效果」和「看到代码」分离。
+ * 三个约定：
+ * 1. 主色换成文档站的靛蓝，和整站视觉统一（组件库默认的落日橙留在产品里用）
+ * 2. 演示统一跑毛玻璃风格 —— 纯色底上看不出模糊，所以配一块渐变背景
+ * 3. 背景用「白 → 淡蓝灰」的斜向渐变，透出内容时才有层次
  */
+
+/* ══════════════════════════════════════════════════════════
+   主色：覆盖组件库的默认橙，改为文档站靛蓝
+   变量是成对派生的（hover / active / text / 三档透明度），要一起换
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  --sr-color-primary: #3e3edc;
+  --sr-color-primary-hover: #5b5be8;
+  --sr-color-primary-active: #2f2fc0;
+  --sr-color-primary-text: #3a3ad0;
+  --sr-color-primary-disabled: #c7c7f0;
+  --sr-color-primary-alpha-08: rgba(62, 62, 220, 0.08);
+  --sr-color-primary-alpha-12: rgba(62, 62, 220, 0.12);
+  --sr-color-primary-alpha-25: rgba(62, 62, 220, 0.25);
+}
+
+.dark {
+  --sr-color-primary: #6b6bee;
+  --sr-color-primary-hover: #8282f2;
+  --sr-color-primary-active: #5a5ae0;
+  --sr-color-primary-text: #9a9af5;
+  --sr-color-primary-disabled: #3a3a6a;
+  --sr-color-primary-alpha-08: rgba(107, 107, 238, 0.1);
+  --sr-color-primary-alpha-12: rgba(107, 107, 238, 0.16);
+  --sr-color-primary-alpha-25: rgba(107, 107, 238, 0.3);
+}
+
+/* ══════════════════════════════════════════════════════════
+   演示容器
+   ══════════════════════════════════════════════════════════ */
 
 .sr-demo {
   display: flex;
@@ -14,7 +47,21 @@
   padding: 20px;
   border: 1px solid var(--vp-c-divider);
   border-radius: 10px;
-  background: var(--vp-c-bg-alt);
+  /*
+   * 渐变背景：纯白在上，向下逐渐泛蓝。
+   * 毛玻璃元素压在它上面时，透过来的色块明暗不同，模糊感才看得出来。
+   */
+  background:
+    radial-gradient(ellipse 60% 50% at 8% 0%, rgba(62, 62, 220, 0.12), transparent 60%),
+    radial-gradient(ellipse 50% 60% at 100% 100%, rgba(144, 120, 255, 0.1), transparent 62%),
+    linear-gradient(168deg, #ffffff 0%, #f4f6fd 45%, #e6ebf8 100%);
+}
+
+.dark .sr-demo {
+  border-color: var(--vp-c-border);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(107, 107, 238, 0.14), transparent 48%),
+    linear-gradient(168deg, #17172a 0%, #141426 55%, #101020 100%);
 }
 
 /* 需要纵向排列或整行占满的演示 */
@@ -30,16 +77,16 @@
 /* 演示里的分组标签 */
 .sr-demo__label {
   flex: 0 0 auto;
+  display: block;
   min-width: 52px;
+  margin-bottom: 8px;
   color: var(--vp-c-text-3);
   font-size: 12px;
 }
 
-/* 演示容器里出现深色舞台时用 */
+/* 深色舞台：演示暗色主题下的效果 */
 .sr-demo.is-dark {
-  background: var(--vp-c-bg-elv);
-}
-
-.dark .sr-demo {
-  border-color: var(--vp-c-border);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(107, 107, 238, 0.18), transparent 50%),
+    linear-gradient(168deg, #1a1a2e 0%, #141424 100%);
 }
