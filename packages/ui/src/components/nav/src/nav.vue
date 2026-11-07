@@ -152,8 +152,12 @@ function onHover(item: SrNavItem): void {
     <template v-for="(item, index) in items" :key="item.key ?? index">
       <div v-if="item.divider" class="sr-nav__divider" role="separator" />
 
+      <!--
+        收起态不渲染分组标题：文字被隐藏后只剩一个空按钮，
+        既占高度又能点（点了会折叠整组），看起来就是"可点的空白"
+      -->
       <button
-        v-if="item.group && item.group !== items[index - 1]?.group"
+        v-if="!collapsed && item.group && item.group !== items[index - 1]?.group"
         class="sr-nav__group"
         :class="{ 'is-toggle': isGroupCollapsible(item) }"
         type="button"

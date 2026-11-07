@@ -142,4 +142,21 @@ describe('SrNav', () => {
     expect(groups[1]?.classes()).not.toContain('is-toggle')
     wrapper.unmount()
   })
+  it('收起态不渲染分组标题，避免留下可点的空白', () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        collapsed: true,
+        items: [
+          { group: '工作台', key: 'a', label: 'A' },
+          { group: '系统', key: 'b', label: 'B' },
+        ],
+      },
+    })
+
+    // 分组标题按钮在收起态既是空按钮又会占高度，必须整块不渲染
+    expect(wrapper.findAll('.sr-nav__group')).toHaveLength(0)
+    expect(wrapper.findAll('.sr-nav__item')).toHaveLength(2)
+    wrapper.unmount()
+  })
 })
