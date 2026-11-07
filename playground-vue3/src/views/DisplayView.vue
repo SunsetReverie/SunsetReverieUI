@@ -8,6 +8,7 @@ import {
   SrBreadcrumb,
   SrButton,
   SrCard,
+  SrCarousel,
   SrDrawer,
   SrDropdown,
   SrEmpty,
@@ -206,6 +207,17 @@ const horizNav = [
   { key: 'message', label: '消息', icon: 'lucide:inbox', badge: 6 },
   { key: 'favorite', label: '收藏', icon: 'lucide:heart' },
   { key: 'setting', label: '设置', icon: 'lucide:settings', disabled: true },
+]
+
+/** 轮播当前索引 */
+const slideA = ref(0)
+const slideB = ref(0)
+
+/** 轮播数据 */
+const banners = [
+  { title: '落日橙', bg: 'linear-gradient(135deg, #ff7a45, #ff9a6b)' },
+  { title: '霞紫', bg: 'linear-gradient(135deg, #7a64b5, #9a86cc)' },
+  { title: '暮蓝', bg: 'linear-gradient(135deg, #4a6fd4, #6b8fe8)' },
 ]
 
 /** 纯文字菜单：全部不带图标，最简洁 */
@@ -771,6 +783,44 @@ function onMenuSelect(key: string): void {
       </p>
     </SrPanel>
 
+    <SrPanel
+      title="轮播"
+      description="数据驱动，内容通过 #item 作用域插槽渲染；支持自动播放、循环、淡入淡出与触摸滑动。"
+    >
+      <div class="carousel-demo">
+        <div>
+          <h3 class="sub-title">slide + 自动播放</h3>
+          <SrCarousel v-model="slideA" :items="banners" :height="170" autoplay :interval="3000">
+            <template #item="{ item, index }">
+              <div class="carousel-slide" :style="{ background: item.bg }">
+                <strong>{{ item.title }}</strong>
+                <span>{{ index + 1 }} / {{ banners.length }}</span>
+              </div>
+            </template>
+          </SrCarousel>
+        </div>
+
+        <div>
+          <h3 class="sub-title">fade + 指示器在外侧</h3>
+          <SrCarousel
+            v-model="slideB"
+            :items="banners"
+            effect="fade"
+            :height="170"
+            indicator-position="outside"
+            :loop="false"
+          >
+            <template #item="{ item, index }">
+              <div class="carousel-slide" :style="{ background: item.bg }">
+                <strong>{{ item.title }}</strong>
+                <span>{{ index + 1 }} / {{ banners.length }}（到末张停止）</span>
+              </div>
+            </template>
+          </SrCarousel>
+        </div>
+      </div>
+    </SrPanel>
+
     <SrPanel title="抽屉" description="四个方向滑出，打开时锁定页面滚动，支持 Esc 与遮罩关闭。">
       <div style="display: flex; gap: 10px; flex-wrap: wrap">
         <SrButton size="sm" variant="primary" @click="drawerRight = true">右侧</SrButton>
@@ -1299,6 +1349,29 @@ function onMenuSelect(key: string): void {
   padding-top: 4px;
 }
 
+.carousel-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.carousel-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  font-size: 20px;
+}
+
+.carousel-slide span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
 .nav-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1330,6 +1403,29 @@ function onMenuSelect(key: string): void {
   flex: 1 1 220px;
   min-width: 200px;
   padding-top: 4px;
+}
+
+.carousel-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.carousel-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  font-size: 20px;
+}
+
+.carousel-slide span {
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .nav-grid {

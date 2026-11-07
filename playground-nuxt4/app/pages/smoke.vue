@@ -60,6 +60,9 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 轮播数据 */
+const slides = [{ t: '一' }, { t: '二' }, { t: '三' }]
+
 /** 导航项 */
 const navItems = [
   { key: 'home', label: '首页', icon: 'lucide:house' },
@@ -228,6 +231,17 @@ const warningCount = computed(() => hydrationWarnings.length)
               <sr-input :model-value="'x'" />
             </sr-form-item>
           </sr-form>
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Carousel</span>
+        <div class="cell__body cell__body--column">
+          <sr-carousel :items="slides" :model-value="1" :height="120" :arrows="false">
+            <template #item="{ item }">
+              <div class="chip">{{ item.t }}</div>
+            </template>
+          </sr-carousel>
         </div>
       </div>
 

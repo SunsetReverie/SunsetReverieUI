@@ -20,6 +20,7 @@ import {
   SrInput,
   SrInputNumber,
   SrLoadMore,
+  SrCarousel,
   SrModal,
   SrNav,
   SrPagination,
@@ -151,6 +152,16 @@ describe('导航与数据组件的 SSR 渲染', () => {
   it('SrNav 水平与垂直', async () => {
     await expectRenderable(SrNav, { items: tabItems, modelValue: 'a' })
     await expectRenderable(SrNav, { items: tabItems, modelValue: 'a', mode: 'vertical' })
+  })
+
+  it('SrCarousel 按 items 渲染且首帧稳定', async () => {
+    const html = await render(SrCarousel, {
+      items: [{ t: 'a' }, { t: 'b' }],
+      modelValue: 1,
+    })
+
+    // 服务端必须渲染出全部幻灯片，否则客户端接管时会整块重建
+    expect(html.match(/sr-carousel__slide/g)?.length).toBe(2)
   })
 
   it('SrPagination', async () => {

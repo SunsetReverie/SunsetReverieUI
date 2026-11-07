@@ -12,6 +12,7 @@ export const SR_COMPONENT_NAMES = [
   'Breadcrumb',
   'Button',
   'Card',
+  'Carousel',
   'Checkbox',
   'CheckboxGroup',
   'Col',

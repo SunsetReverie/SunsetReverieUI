@@ -140,6 +140,7 @@ export default defineConfig({
           items: [
             { text: 'SrCard', link: '/components/card' },
             { text: 'SrPanel', link: '/components/panel' },
+            { text: 'SrCarousel', link: '/components/carousel' },
           ],
         },
         {

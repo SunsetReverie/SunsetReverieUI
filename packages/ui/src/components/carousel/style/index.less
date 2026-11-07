@@ -1,0 +1,169 @@
+/**
+ * 轮播
+ *
+ * 取舍：不做无限循环的克隆节点。常见做法是在首尾各复制一张、滑到克隆位时
+ * 瞬间跳回真实位，代价是首尾两张内容会被重复渲染（有副作用的内容会执行两遍）。
+ * 这里选择「到头折返」，视觉上少一段顺滑，但行为可预测。
+ */
+
+@import '../../../styles/mixins/index.less';
+
+.sr-carousel {
+  position: relative;
+  // 不在根上裁剪：indicatorPosition="outside" 时指示器要落到框外
+  border-radius: var(--sr-radius-lg);
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--sr-color-primary-alpha-25);
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  // 真正的裁剪层，圆角继承自根，保证内容不溢出圆角
+  &__viewport {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform var(--sr-motion-duration-base) var(--sr-motion-easing-spring);
+    will-change: transform;
+  }
+
+  &__slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // ---------- 淡入淡出 ----------
+  &--fade &__track {
+    position: relative;
+    display: block;
+    transition: none;
+  }
+
+  &--fade &__slide {
+    position: absolute;
+    inset: 0;
+    transition: opacity var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+  }
+
+  // ---------- 箭头 ----------
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    border-radius: var(--sr-radius-full);
+    background: color-mix(in srgb, var(--sr-color-bg-container) 72%, transparent);
+    color: var(--sr-color-text-secondary);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition:
+      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+    .sr-glass-layer(var(--sr-glass-filter));
+
+    &:disabled {
+      color: var(--sr-color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    // 排在 disabled 之后：它特异性更高，写前面会触发降序告警
+    .sr-carousel:hover & {
+      opacity: 1;
+    }
+
+    &--prev {
+      left: 12px;
+    }
+
+    &--next {
+      right: 12px;
+    }
+  }
+
+  // ---------- 指示器 ----------
+  &__indicators {
+    position: absolute;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transform: translateX(-50%);
+
+    &--inside {
+      bottom: 12px;
+    }
+
+    // outside 时贴到底部外侧，需要容器留出空间
+    &--outside {
+      position: static;
+      justify-content: center;
+      margin-top: 12px;
+      transform: none;
+    }
+  }
+
+  &__indicator {
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-full);
+    background: color-mix(in srgb, var(--sr-color-text) 28%, transparent);
+    cursor: pointer;
+    transition:
+      width var(--sr-motion-duration-base) var(--sr-motion-easing-spring),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      background: color-mix(in srgb, var(--sr-color-text) 46%, transparent);
+    }
+
+    &.is-active {
+      width: 18px;
+      background: var(--sr-color-primary);
+    }
+  }
+
+  // 指示器在内侧时给个浅底，压在浅色图片上也能看清
+  &__indicators--inside &__indicator {
+    background: rgb(255 255 255 / 55%);
+
+    &:hover {
+      background: rgb(255 255 255 / 80%);
+    }
+
+    &.is-active {
+      background: #fff;
+    }
+  }
+}
