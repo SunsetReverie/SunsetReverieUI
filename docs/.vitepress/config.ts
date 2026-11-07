@@ -24,15 +24,30 @@ export default defineConfig({
           items: [{ text: '快速开始', link: '/guide/getting-started' }],
         },
       ],
-      // W7 只落地 3 个组件的文档，其余在 W11 补齐（侧边栏先不列，避免死链）
+      // 只列已写好的文档，避免死链；其余组件在 W11 逐批补齐
       '/components/': [
         {
-          text: '组件',
+          text: '基础',
           items: [
             { text: 'SrButton', link: '/components/button' },
             { text: 'SrInput', link: '/components/input' },
-            { text: 'SrModal', link: '/components/modal' },
           ],
+        },
+        {
+          text: '数据录入',
+          items: [{ text: 'SrForm', link: '/components/form' }],
+        },
+        {
+          text: '数据展示',
+          items: [{ text: 'SrTable', link: '/components/table' }],
+        },
+        {
+          text: '导航',
+          items: [{ text: 'SrNav', link: '/components/nav' }],
+        },
+        {
+          text: '反馈',
+          items: [{ text: 'SrModal', link: '/components/modal' }],
         },
       ],
     },
