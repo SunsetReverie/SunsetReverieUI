@@ -144,6 +144,7 @@ function parseProps(code, name) {
       .replace(/\s*\/$/, '')
 
     props.push({
+      from: name,
       name: match[1],
       type,
       default: def,
@@ -204,13 +205,17 @@ function extract(name) {
   const all = sources.map((item) => item.code).join('\n')
 
   const props = []
+  /** 每个 props 变量的名字，用于区分同文件里的多个组件（如 Form / FormItem） */
+  const sourceNames = []
   for (const match of all.matchAll(/export const (\w*Props) = \{/g)) {
     props.push(...parseProps(all, match[1]))
+    sourceNames.push(match[1].replace(/Props$/, ''))
   }
 
   return {
     name,
     options: props,
+    sources: sourceNames,
     emits: parseEmits(all),
     slots: parseSlots(all),
   }

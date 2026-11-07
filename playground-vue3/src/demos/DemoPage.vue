@@ -28,6 +28,8 @@ const api = computed(() => {
 })
 
 interface PropRow {
+  /** 来自哪个 props 变量，如 formProps / formItemProps */
+  from: string
   name: string
   type: string
   default: string
@@ -38,6 +40,28 @@ interface EmitRow {
   name: string
   params: string[]
 }
+
+/**
+ * 把 props 变量名转成组件显示名
+ * @param from 变量名，如 formItemProps
+ * @returns 组件名，如 SrFormItem
+ */
+function sourceLabel(from: string): string {
+  const base = from.replace(/Props$/, '')
+  return 'Sr' + base.charAt(0).toUpperCase() + base.slice(1)
+}
+
+/** 按来源分组：Form 与 FormItem 会在同一页出现，混在一张表里会重名 */
+const propGroups = computed(() => {
+  const rows = api.value?.options ?? []
+  const map = new Map<string, PropRow[]>()
+  for (const row of rows) {
+    const list = map.get(row.from) ?? []
+    list.push(row)
+    map.set(row.from, list)
+  }
+  return [...map.entries()].map(([from, options]) => ({ from, options }))
+})
 </script>
 
 <template>
@@ -49,20 +73,23 @@ interface EmitRow {
 
     <component :is="demo" v-if="demo" />
 
-    <section v-if="api && api.options.length" class="demo-page__api">
+    <section v-if="propGroups.length" class="demo-page__api">
       <h2 class="demo-page__section">Props</h2>
-      <div class="api-table">
-        <div class="api-table__row api-table__row--head">
-          <span>名称</span>
-          <span>类型</span>
-          <span>默认值</span>
-          <span>说明</span>
-        </div>
-        <div v-for="option in api.options" :key="option.name" class="api-table__row">
-          <code class="api-table__name">{{ option.name }}</code>
-          <code class="api-table__type">{{ option.type }}</code>
-          <code class="api-table__default">{{ option.default || '—' }}</code>
-          <span class="api-table__desc">{{ option.description }}</span>
+      <div v-for="group in propGroups" :key="group.from" class="api-group">
+        <h3 v-if="propGroups.length > 1" class="api-group__title">{{ sourceLabel(group.from) }}</h3>
+        <div class="api-table">
+          <div class="api-table__row api-table__row--head">
+            <span>名称</span>
+            <span>类型</span>
+            <span>默认值</span>
+            <span>说明</span>
+          </div>
+          <div v-for="option in group.options" :key="option.name" class="api-table__row">
+            <code class="api-table__name">{{ option.name }}</code>
+            <code class="api-table__type">{{ option.type }}</code>
+            <code class="api-table__default">{{ option.default || '—' }}</code>
+            <span class="api-table__desc">{{ option.description }}</span>
+          </div>
         </div>
       </div>
     </section>
@@ -132,6 +159,18 @@ interface EmitRow {
   color: var(--sr-color-text-secondary);
   font-size: 13px;
   font-weight: var(--sr-font-weight-semibold);
+}
+
+/* 多组 Props（如 Form 与 FormItem）之间留出间隔 */
+.api-group + .api-group {
+  margin-top: 16px;
+}
+
+.api-group__title {
+  margin: 0 0 8px;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* API 表：四列网格，窄屏自动折行 */
