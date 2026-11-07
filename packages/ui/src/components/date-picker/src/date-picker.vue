@@ -424,6 +424,17 @@ function clear(): void {
   emit('change', null)
 }
 
+/**
+ * 清空并关闭
+ *
+ * 模板里不能写 `clear(); close()` 这样的多语句表达式，
+ * 所以把组合动作收成一个方法。
+ */
+function clearAndClose(): void {
+  clear()
+  close()
+}
+
 /** 点外部关闭 */
 function onDocumentPointerDown(event: PointerEvent): void {
   const target = event.target as Node | null
@@ -653,16 +664,7 @@ defineExpose({ open, close, toggle })
 
           <span class="sr-date-picker__spacer" />
 
-          <button
-            class="sr-date-picker__link"
-            type="button"
-            @click="
-              clear()
-              close()
-            "
-          >
-            清空
-          </button>
+          <button class="sr-date-picker__link" type="button" @click="clearAndClose">清空</button>
           <button class="sr-date-picker__confirm" type="button" @click="confirm">确定</button>
         </div>
       </div>
