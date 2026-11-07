@@ -5,6 +5,7 @@ import { SR_THEME_PRESETS, useSrBreakpoint, useSrTheme } from '@sunset-reverie/u
 
 import { applyMotion, MOTION_MODES, readMotion, type SrMotionMode } from './motion'
 
+import AdminView from './views/AdminView.vue'
 import AuditView from './views/AuditView.vue'
 import ComponentsView from './views/ComponentsView.vue'
 import ControlsView from './views/ControlsView.vue'
@@ -42,6 +43,7 @@ const views = [
   { key: 'feedback', label: '反馈', component: FeedbackView },
   { key: 'table', label: '表格', component: TableView },
   { key: 'display', label: '容器与展示', component: DisplayView },
+  { key: 'admin', label: '后台布局', component: AdminView },
   { key: 'theme', label: '主题实验室', component: ThemeLab },
   { key: 'responsive', label: '断点实验室', component: ResponsiveLab },
   { key: 'audit', label: '视觉审计', component: AuditView },
