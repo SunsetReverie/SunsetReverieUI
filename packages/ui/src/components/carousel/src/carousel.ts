@@ -3,6 +3,9 @@ import type { ExtractPropTypes, PropType } from 'vue'
 /** 切换效果 */
 export type SrCarouselEffect = 'slide' | 'fade'
 
+/** 排列方向 */
+export type SrCarouselDirection = 'horizontal' | 'vertical'
+
 /** 指示器位置 */
 export type SrCarouselIndicatorPosition = 'inside' | 'outside'
 
@@ -27,6 +30,15 @@ export const carouselProps = {
     type: String as PropType<SrCarouselEffect>,
     default: 'slide',
   },
+  /**
+   * 排列方向 @default 'horizontal'
+   *
+   * vertical 时滑动方向、拖动轴、指示器位置都会跟着转。
+   */
+  direction: {
+    type: String as PropType<SrCarouselDirection>,
+    default: 'horizontal',
+  },
   /** 自动播放 @default false */
   autoplay: {
     type: Boolean,
@@ -46,7 +58,7 @@ export const carouselProps = {
     type: Boolean,
     default: true,
   },
-  /** 循环播放 @default true */
+  /** 循环播放，末张之后回到第一张 @default true */
   loop: {
     type: Boolean,
     default: true,
@@ -71,10 +83,24 @@ export const carouselProps = {
     type: [String, Number] as PropType<number | string>,
     default: 240,
   },
-  /** 允许触摸滑动 @default true */
+  /** 允许鼠标拖动切换 @default true */
+  draggable: {
+    type: Boolean,
+    default: true,
+  },
+  /** 允许触摸滑动切换 @default true */
   touchable: {
     type: Boolean,
     default: true,
+  },
+  /**
+   * 拖动多少比例后算翻页 @default 0.15
+   *
+   * 太小容易误触，太大会让用户觉得「拖了没反应」。
+   */
+  dragThreshold: {
+    type: Number,
+    default: 0.15,
   },
   /** 禁用全部交互 @default false */
   disabled: {

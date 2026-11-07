@@ -18,21 +18,49 @@ const emit = defineEmits<{
 /** 总页数 */
 const count = computed(() => props.items.length)
 
+/** 是否纵向 */
+const isVertical = computed(() => props.direction === 'vertical')
+
 /** 当前索引，越界时夹到合法范围（items 变短时不会停在不存在的页） */
 const current = computed(() => {
   if (count.value === 0) return 0
   return Math.min(Math.max(props.modelValue, 0), count.value - 1)
 })
 
-/** 高度样式 */
-const rootStyle = computed(() => ({
-  height: typeof props.height === 'number' ? `${props.height}px` : props.height,
-}))
+/** 根节点 */
+const rootRef = ref<HTMLElement>()
 
-/** 轨道位移（slide 效果） */
-const trackStyle = computed(() => ({
-  transform: `translate3d(-${current.value * 100}%, 0, 0)`,
-}))
+/**
+ * 高度样式
+ *
+ * 纯数字字符串也补上 px：模板里写 height="180" 是很自然的事，
+ * 而 CSS 里 "180" 是无效值，会静默退化成 auto。
+ */
+const rootStyle = computed(() => {
+  const raw = props.height
+  if (typeof raw === 'number') return { height: `${raw}px` }
+  const trimmed = String(raw).trim()
+  return { height: /^\d+(\.\d+)?$/.test(trimmed) ? `${trimmed}px` : trimmed }
+})
+
+/** 拖动中的实时位移（px）；正数表示往下一页的反方向拖 */
+const dragOffset = ref(0)
+
+/** 是否正在拖动 */
+const dragging = ref(false)
+
+/** 拖动时关闭过渡，松手后恢复 */
+const trackStyle = computed(() => {
+  const base = current.value * 100
+  const shift = isVertical.value
+    ? `translate3d(0, calc(-${base}% + ${dragOffset.value}px), 0)`
+    : `translate3d(calc(-${base}% + ${dragOffset.value}px), 0, 0)`
+
+  return {
+    transform: shift,
+    transition: dragging.value ? 'none' : undefined,
+  }
+})
 
 /** 是否处于暂停状态 */
 const paused = ref(false)
@@ -113,43 +141,107 @@ function onLeave(): void {
   paused.value = false
 }
 
-/** 触摸起点 */
-let touchStartX = 0
-/** 是否正在拖动 */
-const dragging = ref(false)
+/* ---------- 拖动 ---------- */
 
-/**
- * 触摸开始
- * @param event 触摸事件
- */
-function onTouchStart(event: TouchEvent): void {
-  if (!props.touchable || props.disabled) return
-  touchStartX = event.touches[0]?.clientX ?? 0
-  dragging.value = true
+/** 拖动起点 */
+let startX = 0
+let startY = 0
+
+/** 是否已按下但还没开始拖（用于区分「点击」与「拖动」） */
+let armed = false
+
+/** 拖动方向上的容器尺寸，用于算阈值 */
+function axisSize(): number {
+  const el = rootRef.value
+  if (!el) return 0
+  return isVertical.value ? el.clientHeight : el.clientWidth
+}
+
+/** 沿旋转轴的位移 */
+function axisDelta(event: PointerEvent): number {
+  return isVertical.value ? event.clientY - startY : event.clientX - startX
 }
 
 /**
- * 触摸结束：横向滑动超过 40px 才翻页，避免误触
- * @param event 触摸事件
+ * 按下：准备拖动
+ *
+ * 用 Pointer Events 统一鼠标、触摸与手写笔，避免三套事件各写一遍。
+ * @param event 指针事件
  */
-function onTouchEnd(event: TouchEvent): void {
-  if (!dragging.value) return
+function onPointerDown(event: PointerEvent): void {
+  if (props.disabled || count.value <= 1) return
+  if (event.pointerType === 'mouse' ? !props.draggable : !props.touchable) return
+  // 只响应主键，右键与中键不参与拖动
+  if (event.pointerType === 'mouse' && event.button !== 0) return
+
+  armed = true
   dragging.value = false
+  startX = event.clientX
+  startY = event.clientY
+}
 
-  const endX = event.changedTouches[0]?.clientX ?? 0
-  const delta = endX - touchStartX
-  if (Math.abs(delta) < 40) return
+/**
+ * 移动：跟手位移
+ * @param event 指针事件
+ */
+function onPointerMove(event: PointerEvent): void {
+  if (!armed) return
 
+  const raw = axisDelta(event)
+
+  // 只有真的移动了才进入拖动并捕获指针：
+  // 在 pointerdown 就 capture 会把指针从箭头/指示器上抢走，点击事件不再触发
+  if (!dragging.value) {
+    if (Math.abs(raw) < 4) return
+    dragging.value = true
+    rootRef.value?.setPointerCapture?.(event.pointerId)
+  }
+
+  // 反向拖到边缘时不无限外移，用阻尼收窄，提示「已经到头了」
+  const atStart = !props.loop && current.value === 0 && raw > 0
+  const atEnd = !props.loop && current.value === count.value - 1 && raw < 0
+  dragOffset.value = atStart || atEnd ? raw * 0.25 : raw
+}
+
+/**
+ * 松开：超过阈值就翻页，否则回弹
+ * @param event 指针事件
+ */
+function onPointerUp(event: PointerEvent): void {
+  if (!armed) return
+  armed = false
+
+  // 没进入拖动 = 这是一次点击，交给按钮自己的 click
+  if (!dragging.value) return
+
+  const delta = axisDelta(event)
+  const threshold = axisSize() * props.dragThreshold
+
+  dragging.value = false
+  dragOffset.value = 0
+  rootRef.value?.releasePointerCapture?.(event.pointerId)
+
+  if (Math.abs(delta) < threshold) return
   if (delta < 0) next()
   else prev()
 }
 
-/** 键盘：左右方向键切换 */
+/** 拖动被系统打断（来电、手势返回等）时复位 */
+function onPointerCancel(): void {
+  armed = false
+  dragging.value = false
+  dragOffset.value = 0
+}
+
+/** 键盘：左右 / 上下方向键切换 */
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === 'ArrowLeft') {
+  const back = isVertical.value ? 'ArrowUp' : 'ArrowLeft'
+  const forward = isVertical.value ? 'ArrowDown' : 'ArrowRight'
+
+  if (event.key === back) {
     event.preventDefault()
     prev()
-  } else if (event.key === 'ArrowRight') {
+  } else if (event.key === forward) {
     event.preventDefault()
     next()
   }
@@ -158,8 +250,13 @@ function onKeydown(event: KeyboardEvent): void {
 
 <template>
   <div
+    ref="rootRef"
     class="sr-carousel"
-    :class="[`sr-carousel--${effect}`, { 'is-disabled': disabled }]"
+    :class="[
+      `sr-carousel--${effect}`,
+      `sr-carousel--${direction}`,
+      { 'is-disabled': disabled, 'is-dragging': dragging },
+    ]"
     :style="rootStyle"
     role="region"
     aria-roledescription="carousel"
@@ -167,8 +264,10 @@ function onKeydown(event: KeyboardEvent): void {
     @mouseenter="onEnter"
     @mouseleave="onLeave"
     @keydown="onKeydown"
-    @touchstart.passive="onTouchStart"
-    @touchend="onTouchEnd"
+    @pointerdown="onPointerDown"
+    @pointermove="onPointerMove"
+    @pointerup="onPointerUp"
+    @pointercancel="onPointerCancel"
   >
     <div class="sr-carousel__viewport">
       <div class="sr-carousel__track" :style="effect === 'slide' ? trackStyle : undefined">
@@ -183,6 +282,10 @@ function onKeydown(event: KeyboardEvent): void {
           :aria-label="`${index + 1} / ${items.length}`"
         >
           <slot name="item" :item="item" :index="index" :active="index === current" />
+
+          <div v-if="$slots.overlay" class="sr-carousel__overlay">
+            <slot name="overlay" :item="item" :index="index" :active="index === current" />
+          </div>
         </div>
       </div>
     </div>
@@ -196,7 +299,7 @@ function onKeydown(event: KeyboardEvent): void {
         :disabled="disabled || (!loop && current === 0)"
         @click="prev"
       >
-        <SrIcon name="lucide:chevron-left" :size="18" />
+        <SrIcon :name="isVertical ? 'lucide:chevron-up' : 'lucide:chevron-left'" :size="18" />
       </button>
 
       <button
@@ -207,13 +310,16 @@ function onKeydown(event: KeyboardEvent): void {
         :disabled="disabled || (!loop && current === count - 1)"
         @click="next"
       >
-        <SrIcon name="lucide:chevron-right" :size="18" />
+        <SrIcon :name="isVertical ? 'lucide:chevron-down' : 'lucide:chevron-right'" :size="18" />
       </button>
 
       <div
         v-if="indicators"
         class="sr-carousel__indicators"
-        :class="`sr-carousel__indicators--${indicatorPosition}`"
+        :class="[
+          `sr-carousel__indicators--${indicatorPosition}`,
+          { 'sr-carousel__indicators--vertical': isVertical },
+        ]"
         role="tablist"
       >
         <button

@@ -117,6 +117,110 @@ describe('SrCarousel', () => {
     wrapper.unmount()
   })
 
+  it('纵向模式生成对应类名', () => {
+    const wrapper = mountCarousel({ direction: 'vertical' })
+
+    expect(wrapper.classes()).toContain('sr-carousel--vertical')
+    wrapper.unmount()
+  })
+
+  it('overlay 插槽渲染在 slide 内部', () => {
+    const wrapper = mount(SrCarousel, {
+      props: { items, modelValue: 0 },
+      slots: {
+        item: '<div class="body" />',
+        overlay: '<span class="cap">{{ params.item.text }}</span>',
+      },
+      global: { stubs: { SrIcon: true } },
+    })
+
+    const slides = wrapper.findAll('.sr-carousel__slide')
+    expect(slides[0]?.find('.sr-carousel__overlay').exists()).toBe(true)
+    expect(slides[0]?.find('.cap').text()).toBe('A')
+    wrapper.unmount()
+  })
+
+  it('鼠标拖过阈值后翻页', async () => {
+    const wrapper = mountCarousel()
+    // jsdom 里没有真实布局，手动给个宽度让阈值计算有意义
+    Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true })
+
+    await wrapper.trigger('pointerdown', { clientX: 300, pointerType: 'mouse', button: 0 })
+    await wrapper.trigger('pointermove', { clientX: 200 })
+    await wrapper.trigger('pointerup', { clientX: 200 })
+
+    // 位移 100px > 400 * 0.15 = 60px
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([1])
+    wrapper.unmount()
+  })
+
+  it('拖动不足阈值时回弹，不翻页', async () => {
+    const wrapper = mountCarousel()
+    Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true })
+
+    await wrapper.trigger('pointerdown', { clientX: 300, pointerType: 'mouse', button: 0 })
+    await wrapper.trigger('pointermove', { clientX: 280 })
+    await wrapper.trigger('pointerup', { clientX: 280 })
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('关闭 draggable 时鼠标拖不动', async () => {
+    const wrapper = mountCarousel({ draggable: false })
+    Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true })
+
+    await wrapper.trigger('pointerdown', { clientX: 300, pointerType: 'mouse', button: 0 })
+    await wrapper.trigger('pointerup', { clientX: 100 })
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('触摸拖动受 touchable 控制', async () => {
+    const wrapper = mountCarousel({ touchable: false })
+    Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true })
+
+    await wrapper.trigger('pointerdown', { clientX: 300, pointerType: 'touch' })
+    await wrapper.trigger('pointerup', { clientX: 100 })
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('点击箭头能翻页（pointerdown 不抢走点击）', async () => {
+    const wrapper = mountCarousel()
+    Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true })
+
+    // 模拟真实点击：按下与抬起位置一致，没有位移就不该进入拖动
+    await wrapper.trigger('pointerdown', { clientX: 100, pointerType: 'mouse', button: 0 })
+    await wrapper.trigger('pointerup', { clientX: 100 })
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+
+    await wrapper.find('.sr-carousel__arrow--next').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([1])
+    wrapper.unmount()
+  })
+
+  it('拖动阈值可按比例调整', async () => {
+    const wrapper = mountCarousel({ dragThreshold: 0.5 })
+    Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true })
+
+    // 位移 100px，阈值 400 * 0.5 = 200px，不应翻页
+    await wrapper.trigger('pointerdown', { clientX: 300, pointerType: 'mouse', button: 0 })
+    await wrapper.trigger('pointermove', { clientX: 200 })
+    await wrapper.trigger('pointerup', { clientX: 200 })
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('height 传纯数字字符串时补上 px', () => {
+    const wrapper = mountCarousel({ height: '180' })
+    expect((wrapper.element as HTMLElement).style.height).toBe('180px')
+    wrapper.unmount()
+  })
+
   it('关闭指示器与箭头', () => {
     const wrapper = mountCarousel({ indicators: false, arrows: false })
 

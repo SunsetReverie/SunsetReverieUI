@@ -10,6 +10,10 @@
 
 .sr-carousel {
   position: relative;
+  // 拖动切换时不要触发文字选中与图片原生拖拽
+  user-select: none;
+  touch-action: pan-y pinch-zoom;
+  cursor: grab;
   // 不在根上裁剪：indicatorPosition="outside" 时指示器要落到框外
   border-radius: var(--sr-radius-lg);
   outline: none;
@@ -56,7 +60,11 @@
     }
   }
 
-  // ---------- 淡入淡出 ----------
+  &.is-dragging {
+    cursor: grabbing;
+  }
+
+  // ---------- 覆盖层 ----------
   &--fade &__track {
     position: relative;
     display: block;
@@ -165,5 +173,42 @@
     &.is-active {
       background: #fff;
     }
+  }
+
+  // ---------- 纵向 ----------
+  // 纵向轮播时只接管纵向手势，横向留给页面滚动
+  &--vertical {
+    touch-action: pan-x pinch-zoom;
+  }
+
+  &--vertical &__track {
+    flex-direction: column;
+  }
+
+  &--vertical &__slide {
+    flex: 0 0 100%;
+    height: 100%;
+  }
+
+  // 纵向时箭头放到上下居中，指示器竖排到右侧
+  &--vertical &__arrow--prev {
+    inset: 10px auto auto 50%;
+    transform: translateX(-50%);
+  }
+
+  &--vertical &__arrow--next {
+    inset: auto auto 10px 50%;
+    transform: translateX(-50%);
+  }
+
+  &__indicators--vertical {
+    inset: 50% 12px auto auto;
+    flex-direction: column;
+    transform: translateY(-50%);
+  }
+
+  &__indicators--vertical &__indicator.is-active {
+    width: 6px;
+    height: 18px;
   }
 }
