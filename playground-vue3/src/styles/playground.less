@@ -24,9 +24,14 @@ body {
   color: var(--sr-color-text);
   font-family: var(--sr-font-family-base);
 
+  // 侧栏通栏：上下到底、无外边距，右侧一条分隔线
   &__side {
     flex: 0 0 auto;
-    padding: 12px;
+    height: 100%;
+    border-right: 1px solid var(--sr-color-border-subtle);
+    background: color-mix(in srgb, var(--sr-color-bg-container) 58%, transparent);
+    backdrop-filter: var(--sr-glass-filter);
+    -webkit-backdrop-filter: var(--sr-glass-filter);
   }
 
   &__main {

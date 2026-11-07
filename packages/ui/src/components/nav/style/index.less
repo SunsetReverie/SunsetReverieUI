@@ -74,6 +74,16 @@
     opacity: 0.6;
   }
 
+  // 去壳：交给父容器当通栏侧边栏，自身不再画玻璃外壳
+  &.is-bare {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
   // ---------- 品牌区 ----------
   &__brand {
     display: flex;

@@ -84,6 +84,7 @@ const styleItems = [
     <!-- 侧栏：用组件库自己的 SrNav -->
     <aside class="pg__side">
       <SrNav
+        bare
         :items="navItems"
         :model-value="activeKey"
         logo="lucide:moon-star"

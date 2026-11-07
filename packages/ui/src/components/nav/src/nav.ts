@@ -68,6 +68,14 @@ export const navProps = {
     type: String as PropType<SrNavActiveStyle>,
     default: 'pill',
   },
+  /**
+   * 去壳模式：去掉自身的圆角、边框、阴影与背景，
+   * 交给父容器当通栏侧边栏用（后台布局的标准形态）
+   */
+  bare: {
+    type: Boolean,
+    default: false,
+  },
   /** 整体收起，只显示图标（需有图标才有意义） */
   collapsed: {
     type: Boolean,

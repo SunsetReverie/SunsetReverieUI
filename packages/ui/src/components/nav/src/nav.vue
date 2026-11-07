@@ -128,6 +128,7 @@ function pick(item: SrNavItem): void {
       {
         'is-disabled': disabled,
         'is-collapsed': collapsed,
+        'is-bare': bare,
       },
     ]"
     :style="rootStyle"
