@@ -9,6 +9,11 @@
     "preview": "vitepress preview"
   },
   "devDependencies": {
-    "vitepress": "^1.6.3"
+    "vitepress": "^1.6.3",
+    "less": "^4.2.0"
+  },
+  "dependencies": {
+    "@sunset-reverie/ui": "workspace:*",
+    "vue": "^3.5.12"
   }
 }

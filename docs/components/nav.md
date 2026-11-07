@@ -2,6 +2,30 @@
 
 侧边栏与顶栏导航。支持分组、两级子菜单、整体收起、品牌区与底部区，激活态有两种视觉语言。
 
+<script setup>
+import { ref } from 'vue'
+
+const current = ref('overview')
+const collapsed = ref(false)
+
+const items = [
+  { group: '工作台', key: 'overview', label: '概览', icon: 'lucide:house' },
+  { group: '工作台', key: 'message', label: '消息', icon: 'lucide:inbox', badge: 12 },
+  { group: '工作台', key: 'team', label: '团队', icon: 'lucide:heart', children: [
+    { key: 'member', label: '成员' },
+    { key: 'role', label: '角色' },
+  ] },
+  { group: '系统', key: 'setting', label: '设置', icon: 'lucide:settings', divider: true },
+  { group: '系统', key: 'trash', label: '回收站', icon: 'lucide:trash' },
+]
+
+const styleItems = [
+  { key: 'a', label: '概览', icon: 'lucide:house' },
+  { key: 'b', label: '消息', icon: 'lucide:inbox', badge: 6 },
+  { key: 'c', label: '设置', icon: 'lucide:settings' },
+]
+</script>
+
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -25,7 +49,23 @@ const items: SrNavItem[] = [
 
 `mode="horizontal"`（默认）是顶栏形态，激活项用底部指示条；`mode="vertical"` 是侧边栏形态，激活项是整块。
 
+<div class="sr-demo is-column">
+  <SrNav v-model="current" :items="items" />
+</div>
+
 侧边栏通常还要配合 `bare`：去掉导航自身的玻璃外壳，由外层容器提供通栏背景。
+
+<div class="sr-demo is-block">
+  <SrNav
+    v-model="current"
+    :items="items"
+    mode="vertical"
+    bare
+    logo="lucide:moon-star"
+    title="夕梦 UI"
+    :width="200"
+  />
+</div>
 
 ```vue
 <aside class="side">
@@ -48,6 +88,17 @@ const items: SrNavItem[] = [
 | --- | --- | --- |
 | `pill`（默认） | 实色主色胶囊 + 同色柔光 | 顶栏、深色底 |
 | `bar` | 淡主色底 + 左侧 3px 竖条 | 侧边栏，色弱用户也能分辨 |
+
+<div class="sr-demo">
+  <div>
+    <span class="sr-demo__label">pill</span>
+    <SrNav :items="styleItems" model-value="a" mode="vertical" active-style="pill" :width="160" />
+  </div>
+  <div>
+    <span class="sr-demo__label">bar</span>
+    <SrNav :items="styleItems" model-value="a" mode="vertical" active-style="bar" :width="160" />
+  </div>
+</div>
 
 ## 品牌区与底部区
 
@@ -96,6 +147,23 @@ const items: SrNavItem[] = [
 ```vue
 <SrNav v-model="current" :items="items" mode="vertical" :collapsed="isCollapsed" />
 ```
+
+<div class="sr-demo is-block">
+  <p style="margin: 0 0 12px">
+    <SrButton size="sm" variant="outline" @click="collapsed = !collapsed">
+      {{ collapsed ? '展开' : '收起' }}
+    </SrButton>
+  </p>
+  <SrNav
+    v-model="current"
+    :items="items"
+    mode="vertical"
+    :collapsed="collapsed"
+    logo="lucide:moon-star"
+    title="夕梦 UI"
+    :width="200"
+  />
+</div>
 
 ## 分组
 

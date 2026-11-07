@@ -12,6 +12,16 @@
 <sr-button variant="danger">危险</sr-button>
 ```
 
+渲染效果（这一块是真的组件，不是截图）：
+
+<div class="sr-demo">
+  <SrButton variant="primary">主要</SrButton>
+  <SrButton variant="secondary">次要</SrButton>
+  <SrButton variant="outline">描边</SrButton>
+  <SrButton variant="text">文字</SrButton>
+  <SrButton variant="danger">危险</SrButton>
+</div>
+
 | 变体 | 用途 | 毛玻璃下 |
 | --- | --- | --- |
 | `primary` | 页面主操作，一屏最多一个 | 带同色辉光 |

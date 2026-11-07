@@ -570,13 +570,16 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════
-   图标（Tabler · 通过 CSS mask 着色）
+   首页图标（Tabler · 通过 CSS mask 着色）
+
+   注意类名不能叫 .sr-icon：组件库的 SrIcon 组件根节点就是这个名字，
+   mask 会把真实图标覆盖成纯色方块。
 
    为什么不用 <img>：外部 SVG 里的 currentColor 拿不到父级的 color，
    图标会渲染成黑色。用 mask + background-color 才能跟随主题色。
    ══════════════════════════════════════════════════════════ */
 
-.sr-icon {
+.doc-icon {
   display: inline-block;
   width: 24px;
   height: 24px;
@@ -615,7 +618,7 @@ body {
   transform: translateY(-2px);
 }
 
-.sr-feature .sr-icon {
+.sr-feature .doc-icon {
   width: 26px;
   height: 26px;
   opacity: 0.9;
@@ -665,7 +668,7 @@ body {
   background: var(--vp-c-bg-soft);
 }
 
-.sr-link .sr-icon {
+.sr-link .doc-icon {
   width: 18px;
   height: 18px;
   opacity: 0.8;

@@ -1,0 +1,45 @@
+/**
+ * 文档内演示容器
+ *
+ * Markdown 里直接写组件标签，外面套一层 .sr-demo 提供留白与分隔。
+ * 代码块单独放在下面（用 ::: details 折叠），保证「看到效果」和「看到代码」分离。
+ */
+
+.sr-demo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 20px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background: var(--vp-c-bg-alt);
+}
+
+/* 需要纵向排列或整行占满的演示 */
+.sr-demo.is-block {
+  display: block;
+}
+
+.sr-demo.is-column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* 演示里的分组标签 */
+.sr-demo__label {
+  flex: 0 0 auto;
+  min-width: 52px;
+  color: var(--vp-c-text-3);
+  font-size: 12px;
+}
+
+/* 演示容器里出现深色舞台时用 */
+.sr-demo.is-dark {
+  background: var(--vp-c-bg-elv);
+}
+
+.dark .sr-demo {
+  border-color: var(--vp-c-border);
+}

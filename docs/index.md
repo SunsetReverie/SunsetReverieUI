@@ -23,37 +23,37 @@ hero:
 <div class="sr-features">
 
 <div class="sr-feature">
-<span class="sr-icon" style="--icon: url(/icons/puzzle.svg)"></span>
+<span class="doc-icon" style="--icon: url(/icons/puzzle.svg)"></span>
 <h3>三层 Token</h3>
 <p>L1 原始色板 → L2 语义映射 → L3 组件级，全部由一个 TypeScript 文件生成 Less 变量、TS 常量与 CSS 变量。</p>
 </div>
 
 <div class="sr-feature">
-<span class="sr-icon" style="--icon: url(/icons/feather.svg)"></span>
+<span class="doc-icon" style="--icon: url(/icons/feather.svg)"></span>
 <h3>双风格切换</h3>
 <p>毛玻璃与扁平共享同一批变量名，只覆写值。组件样式只写一次，不需要 if 分支。</p>
 </div>
 
 <div class="sr-feature">
-<span class="sr-icon" style="--icon: url(/icons/rocket.svg)"></span>
+<span class="doc-icon" style="--icon: url(/icons/rocket.svg)"></span>
 <h3>SSR 零闪烁</h3>
 <p>内联脚本在首次绘制前决定主题，服务端输出确定的根属性，Nuxt 下无需额外配置。</p>
 </div>
 
 <div class="sr-feature">
-<span class="sr-icon" style="--icon: url(/icons/box.svg)"></span>
+<span class="doc-icon" style="--icon: url(/icons/box.svg)"></span>
 <h3>34 个组件</h3>
 <p>覆盖 P0 / P1 全部能力与大部分 P2：表格固定列与分页、侧边栏导航、标签页四种外观、确认框与加载更多。</p>
 </div>
 
 <div class="sr-feature">
-<span class="sr-icon" style="--icon: url(/icons/circle-check.svg)"></span>
+<span class="doc-icon" style="--icon: url(/icons/circle-check.svg)"></span>
 <h3>水合可验证</h3>
 <p>30 个组件的 SSR 冒烟测试 + Nuxt 水合 e2e，断言告警数为 0；新组件漏测会被 lint:smoke 拦下。</p>
 </div>
 
 <div class="sr-feature">
-<span class="sr-icon" style="--icon: url(/icons/shield-check.svg)"></span>
+<span class="doc-icon" style="--icon: url(/icons/shield-check.svg)"></span>
 <h3>类型友好</h3>
 <p>组件 props 全部由 TS 推导，插槽用 defineSlots 声明，Volar 下模板内即可获得补全。</p>
 </div>

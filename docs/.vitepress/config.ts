@@ -1,4 +1,11 @@
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitepress'
+
+const resolvePath = (path: string): string => fileURLToPath(new URL(path, import.meta.url))
+
+// 组件库的 token 挂在 [data-sr-theme] / [data-sr-style] 上，
+// 这两个属性必须在首帧前写好，否则文档里的演示会先闪一下无样式状态
+import { SR_THEME_INIT_SNIPPET } from '../../packages/ui/src/utils/theme-script'
 
 /**
  * 夕梦 UI 文档站
@@ -25,7 +32,33 @@ export default defineConfig({
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: '夕梦 UI' }],
     ['meta', { property: 'og:description', content: 'Vue 3 / Nuxt 4 组件库' }],
+    ['script', {}, SR_THEME_INIT_SNIPPET],
   ],
+
+  // 直连源码：文档里的演示渲染的就是当前代码，不需要先 build 库
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^@sunset-reverie\/ui\/base\.css$/,
+          replacement: resolvePath('../../packages/ui/src/styles/base/index.less'),
+        },
+        {
+          find: /^@sunset-reverie\/ui\/style\.css$/,
+          replacement: resolvePath('../../packages/ui/src/styles/index.less'),
+        },
+        {
+          find: /^@sunset-reverie\/ui$/,
+          replacement: resolvePath('../../packages/ui/src/index.ts'),
+        },
+      ],
+    },
+    css: {
+      preprocessorOptions: {
+        less: { javascriptEnabled: true },
+      },
+    },
+  },
 
   themeConfig: {
     logo: '/logo.svg',
