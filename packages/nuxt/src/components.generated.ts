@@ -27,6 +27,7 @@ export const SR_COMPONENT_NAMES = [
   'InputNumber',
   'LoadMore',
   'Modal',
+  'Nav',
   'Pagination',
   'Panel',
   'Radio',

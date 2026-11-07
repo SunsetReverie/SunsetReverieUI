@@ -21,6 +21,7 @@ import {
   SrInputNumber,
   SrLoadMore,
   SrModal,
+  SrNav,
   SrPagination,
   SrPanel,
   SrRadio,
@@ -145,6 +146,11 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
   it('SrTabs 垂直方向', async () => {
     await expectRenderable(SrTabs, { items: tabItems, modelValue: 'a', direction: 'vertical' })
+  })
+
+  it('SrNav 水平与垂直', async () => {
+    await expectRenderable(SrNav, { items: tabItems, modelValue: 'a' })
+    await expectRenderable(SrNav, { items: tabItems, modelValue: 'a', mode: 'vertical' })
   })
 
   it('SrPagination', async () => {

@@ -11,6 +11,7 @@ import {
   SrDrawer,
   SrDropdown,
   SrEmpty,
+  SrNav,
   SrPanel,
   SrTabs,
   SrTag,
@@ -89,6 +90,26 @@ function resetAppearance(): void {
   setStyle('glass')
   resetPrimaryColor()
 }
+
+/** 导航选中项 */
+const navKey = ref('home')
+
+/** 导航项 */
+const navItems = [
+  { key: 'home', label: '首页', icon: 'lucide:house' },
+  { key: 'list', label: '组件', icon: 'lucide:inbox', badge: 12 },
+  { key: 'fav', label: '收藏', icon: 'lucide:heart' },
+  { key: 'setting', label: '设置', icon: 'lucide:settings', disabled: true },
+]
+
+/** 带分组的垂直导航 */
+const groupedNav = [
+  { group: '主菜单', key: 'home', label: '首页', icon: 'lucide:house' },
+  { group: '主菜单', key: 'list', label: '组件', icon: 'lucide:inbox', badge: 12 },
+  { group: '主菜单', key: 'fav', label: '收藏', icon: 'lucide:heart' },
+  { group: '系统', key: 'setting', label: '设置', icon: 'lucide:settings', divider: true },
+  { group: '系统', key: 'about', label: '关于', disabled: true },
+]
 
 /** 纯文字菜单：全部不带图标，最简洁 */
 const textMenu = [
@@ -414,6 +435,33 @@ function onMenuSelect(key: string): void {
               <p class="muted">{{ item.label }} 的竖排布局，指示器改为右侧竖线。</p>
             </template>
           </SrTabs>
+        </div>
+      </div>
+    </SrPanel>
+
+    <SrPanel title="导航" description="水平与垂直两种排列，支持图标、徽标、分组与禁用。">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div>
+          <h3 class="sub-title">水平（当前选中：{{ navKey }}）</h3>
+          <SrNav v-model="navKey" :items="navItems" />
+        </div>
+
+        <div>
+          <h3 class="sub-title">垂直（含分组与分割线）</h3>
+          <SrNav v-model="navKey" :items="groupedNav" mode="vertical" style="width: 200px" />
+        </div>
+
+        <div>
+          <h3 class="sub-title">尺寸</h3>
+          <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start">
+            <SrNav
+              v-for="size in ['xs', 'sm', 'md', 'lg']"
+              :key="size"
+              :items="navItems"
+              :model-value="'home'"
+              :size="size as 'xs'"
+            />
+          </div>
         </div>
       </div>
     </SrPanel>

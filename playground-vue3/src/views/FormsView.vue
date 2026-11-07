@@ -351,6 +351,24 @@ function resetForm(): void {
         <code style="font-family: var(--sr-font-family-mono)">aria-invalid</code> 由表单项自动下发。
       </p>
 
+      <h2 class="panel__title" style="margin-top: 24px">标签布局</h2>
+      <p class="panel__desc">
+        <code style="font-family: var(--sr-font-family-mono)">labelPosition</code> 支持
+        top（默认）、left、right 三种，left/right 走两列网格，可用
+        <code style="font-family: var(--sr-font-family-mono)">labelWidth</code> 统一宽度。
+      </p>
+
+      <div class="layout-grid">
+        <div v-for="pos in ['top', 'left', 'right']" :key="pos">
+          <p class="layout-label">labelPosition = {{ pos }}</p>
+          <sr-form :model="{ name: '林深' }" :label-position="pos as 'top'" :label-width="54">
+            <sr-form-item prop="name" label="名称">
+              <sr-input />
+            </sr-form-item>
+          </sr-form>
+        </div>
+      </div>
+
       <sr-form
         ref="formRef"
         :model="formModel"
@@ -670,3 +688,18 @@ function resetForm(): void {
     </p>
   </section>
 </template>
+
+<style scoped>
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.layout-label {
+  margin: 0 0 8px;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+}
+</style>

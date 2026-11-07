@@ -60,6 +60,13 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 导航项 */
+const navItems = [
+  { key: 'home', label: '首页', icon: 'lucide:house' },
+  { key: 'list', label: '列表', badge: 3 },
+  { key: 'done', label: '已完成', disabled: true },
+]
+
 /** 下拉菜单 */
 const menuItems = [
   { key: 'x', label: '编辑', icon: 'lucide:pencil' },
@@ -221,6 +228,14 @@ const warningCount = computed(() => hydrationWarnings.length)
               <sr-input :model-value="'x'" />
             </sr-form-item>
           </sr-form>
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Nav</span>
+        <div class="cell__body cell__body--column">
+          <sr-nav :items="navItems" :model-value="'home'" size="sm" />
+          <sr-nav :items="navItems" :model-value="'list'" mode="vertical" size="sm" />
         </div>
       </div>
 
