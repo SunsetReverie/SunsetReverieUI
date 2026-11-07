@@ -156,6 +156,15 @@ export default defineConfig({
           items: [
             { text: 'SrModal', link: '/components/modal' },
             { text: 'SrDrawer', link: '/components/drawer' },
+            { text: 'SrConfirm', link: '/components/confirm' },
+          ],
+        },
+        {
+          text: '全局提示',
+          items: [
+            { text: 'SrToast', link: '/components/toast' },
+            { text: 'SrMessage', link: '/components/message' },
+            { text: 'SrNotification', link: '/components/notification' },
           ],
         },
       ],
