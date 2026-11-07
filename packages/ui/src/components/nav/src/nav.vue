@@ -116,23 +116,6 @@ function pick(item: SrNavItem): void {
   emit('update:modelValue', item.key)
   emit('select', item.key, item)
 }
-
-/** 收起态的悬浮层：当前悬停的父项 */
-const hoverKey = ref('')
-
-/** 悬浮层对应的父项 */
-const hoverItem = computed(() =>
-  props.items.find((item) => item.key === hoverKey.value && item.children?.length),
-)
-
-/**
- * 收起态悬停展开子菜单
- * @param item 导航项
- */
-function onHover(item: SrNavItem): void {
-  if (!props.collapsed) return
-  hoverKey.value = item.children?.length ? (item.key ?? '') : ''
-}
 </script>
 
 <template>
@@ -174,12 +157,7 @@ function onHover(item: SrNavItem): void {
         />
       </button>
 
-      <div
-        v-if="!isGroupHidden(item)"
-        class="sr-nav__entry"
-        @mouseenter="onHover(item)"
-        @mouseleave="onHover({ ...item, children: undefined })"
-      >
+      <div v-if="!isGroupHidden(item)" class="sr-nav__entry">
         <button
           class="sr-nav__item"
           :class="{
@@ -228,18 +206,21 @@ function onHover(item: SrNavItem): void {
         </div>
 
         <!-- 收起态：悬停浮层 -->
-        <div v-if="collapsed && hoverItem && hoverItem.key === item.key" class="sr-nav__flyout">
-          <span class="sr-nav__flyout-title">{{ hoverItem.label }}</span>
+        <!--
+          收起态浮层：常驻 DOM，显示与否完全交给 CSS 的 :hover。
+          用 JS 的 enter/leave 控制会在穿越图标与浮层的间隙时误关，纯 CSS 没有时序问题。
+        -->
+        <div v-if="collapsed && item.children?.length" class="sr-nav__flyout">
+          <span class="sr-nav__flyout-title">{{ item.label }}</span>
           <button
-            v-for="child in hoverItem.children"
+            v-for="child in item.children"
             :key="child.key"
-            class="sr-nav__item sr-nav__item--child"
+            class="sr-nav__item sr-nav__item--child sr-nav__item--plain"
             :class="{ 'is-active': child.key === modelValue, 'is-disabled': child.disabled }"
             type="button"
             :disabled="child.disabled || disabled"
             @click="pick(child)"
           >
-            <sr-icon v-if="child.icon" class="sr-nav__icon" :name="child.icon" :size="15" />
             <span class="sr-nav__label">{{ child.label }}</span>
           </button>
         </div>
