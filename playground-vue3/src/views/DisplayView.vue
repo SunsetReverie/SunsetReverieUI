@@ -151,6 +151,48 @@ const groupNav = [
   { group: '反馈组件', key: 'drawer', label: 'Drawer' },
 ]
 
+/** 完整侧边栏的选中项 */
+const sidebarKey = ref('overview')
+
+/** 完整侧边栏是否收起 */
+const sidebarCollapsed = ref(false)
+
+/** 完整侧边栏：品牌 + 分组 + 两级子菜单 */
+const sidebarNav = [
+  { group: '工作台', key: 'overview', label: '概览', icon: 'lucide:house' },
+  {
+    group: '工作台',
+    key: 'res',
+    label: '资源',
+    icon: 'lucide:inbox',
+    children: [
+      { key: 'file', label: '文件' },
+      { key: 'image', label: '图片' },
+      { key: 'video', label: '视频' },
+    ],
+  },
+  {
+    group: '工作台',
+    key: 'team',
+    label: '团队',
+    icon: 'lucide:heart',
+    children: [
+      { key: 'member', label: '成员' },
+      { key: 'role', label: '角色' },
+    ],
+  },
+  {
+    group: '系统',
+    key: 'setting',
+    label: '设置',
+    icon: 'lucide:settings',
+    children: [
+      { key: 'general', label: '通用' },
+      { key: 'billing', label: '账单' },
+    ],
+  },
+]
+
 /** 激活样式对比用的极简导航 */
 const styleDemo = [
   { key: 'overview', label: '概览', icon: 'lucide:house' },
@@ -490,6 +532,38 @@ function onMenuSelect(key: string): void {
               <p class="muted">{{ item.label }} 的竖排布局，指示器改为右侧竖线。</p>
             </template>
           </SrTabs>
+        </div>
+      </div>
+    </SrPanel>
+
+    <SrPanel
+      title="完整侧边栏"
+      description="带上品牌区就能直接当后台侧栏用：logo、分组、两级子菜单、可收起。"
+    >
+      <div class="sidebar-demo">
+        <SrNav
+          v-model="sidebarKey"
+          :items="sidebarNav"
+          logo="lucide:moon-star"
+          title="夕梦 UI"
+          mode="vertical"
+          active-style="bar"
+          :collapsed="sidebarCollapsed"
+          :width="216"
+          :max-height="420"
+        />
+
+        <div class="sidebar-demo__body">
+          <p class="muted" style="margin: 0 0 10px">
+            当前选中：<SrTag type="primary">{{ sidebarKey }}</SrTag>
+          </p>
+          <SrButton size="sm" variant="outline" @click="sidebarCollapsed = !sidebarCollapsed">
+            {{ sidebarCollapsed ? '展开侧栏' : '收起侧栏' }}
+          </SrButton>
+          <p class="muted" style="margin: 12px 0 0; line-height: 1.7">
+            收起后只剩图标，带子菜单的项悬停会在右侧弹出浮层；<br />
+            分组标题在收起态整块不渲染，不会留下可点的空白。
+          </p>
         </div>
       </div>
     </SrPanel>
@@ -1212,6 +1286,19 @@ function onMenuSelect(key: string): void {
 }
 
 /* 下拉演示：每个触发器配一行说明，避免按钮挤成一排看不出区别 */
+.sidebar-demo {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.sidebar-demo__body {
+  flex: 1 1 220px;
+  min-width: 200px;
+  padding-top: 4px;
+}
+
 .nav-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1232,7 +1319,20 @@ function onMenuSelect(key: string): void {
   gap: 20px 28px;
 }
 
-.menu-row + .nav-grid {
+.menu-row + .sidebar-demo {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.sidebar-demo__body {
+  flex: 1 1 220px;
+  min-width: 200px;
+  padding-top: 4px;
+}
+
+.nav-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;

@@ -132,6 +132,16 @@ function pick(item: SrNavItem): void {
     ]"
     :style="rootStyle"
   >
+    <!-- 品牌区：让导航能独立成一块完整的侧边栏 -->
+    <div v-if="logo || title || $slots.header" class="sr-nav__brand">
+      <slot name="header">
+        <span class="sr-nav__brand-mark">
+          <sr-icon v-if="logo" :name="logo" :size="18" />
+        </span>
+        <span v-if="!collapsed && title" class="sr-nav__brand-title">{{ title }}</span>
+      </slot>
+    </div>
+
     <template v-for="(item, index) in items" :key="item.key ?? index">
       <div v-if="item.divider" class="sr-nav__divider" role="separator" />
 

@@ -159,4 +159,30 @@ describe('SrNav', () => {
     expect(wrapper.findAll('.sr-nav__item')).toHaveLength(2)
     wrapper.unmount()
   })
+  it('品牌区渲染图标与标题', () => {
+    const wrapper = mount(SrNav, {
+      props: { items, logo: 'lucide:moon-star', title: '夕梦 UI' },
+    })
+
+    expect(wrapper.find('.sr-nav__brand').exists()).toBe(true)
+    expect(wrapper.find('.sr-nav__brand-title').text()).toBe('夕梦 UI')
+    expect(wrapper.find('.sr-nav__brand-mark').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('收起态隐藏品牌标题，只留图标', () => {
+    const wrapper = mount(SrNav, {
+      props: { items, logo: 'lucide:moon-star', title: '夕梦 UI', collapsed: true },
+    })
+
+    expect(wrapper.find('.sr-nav__brand-mark').exists()).toBe(true)
+    expect(wrapper.find('.sr-nav__brand-title').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('未传 logo 与 title 时不渲染品牌区', () => {
+    const wrapper = mount(SrNav, { props: { items } })
+    expect(wrapper.find('.sr-nav__brand').exists()).toBe(false)
+    wrapper.unmount()
+  })
 })

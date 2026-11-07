@@ -74,6 +74,44 @@
     opacity: 0.6;
   }
 
+  // ---------- 品牌区 ----------
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    padding: 4px 6px 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--sr-color-primary);
+    color: #fff;
+    box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--sr-color-primary) 80%, transparent);
+  }
+
+  &__brand-title {
+    overflow: hidden;
+    color: var(--sr-color-text);
+    font-size: 15px;
+    font-weight: var(--sr-font-weight-semibold);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &.is-collapsed &__brand {
+    justify-content: center;
+    padding: 4px 0 12px;
+  }
+
   // ---------- 结构 ----------
   &__entry {
     position: relative;

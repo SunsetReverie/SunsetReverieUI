@@ -38,6 +38,16 @@ export const navProps = {
     type: String,
     default: '',
   },
+  /** 品牌图标（图标名），与 title 一起构成顶部的品牌区 */
+  logo: {
+    type: String,
+    default: '',
+  },
+  /** 品牌名称；收起态只留图标 */
+  title: {
+    type: String,
+    default: '',
+  },
   /** 导航项列表 */
   items: {
     type: Array as PropType<SrNavItem[]>,
