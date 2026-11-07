@@ -166,7 +166,6 @@ function pick(item: SrNavItem): void {
             'is-parent': Boolean(item.children?.length),
           }"
           type="button"
-          :title="collapsed ? item.label : undefined"
           :aria-current="item.key === modelValue ? 'page' : undefined"
           :aria-expanded="item.children?.length ? openKeys.has(item.key ?? '') : undefined"
           :disabled="item.disabled || disabled"

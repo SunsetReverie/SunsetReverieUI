@@ -245,16 +245,13 @@
   &__flyout {
     position: absolute;
     top: 0;
-    // 贴住图标：留出视觉间距但元素本身覆盖过道，鼠标横移时不会离开父项
-    left: 100%;
-    margin-left: -6px;
+    // 完整落在侧栏之外：entry 的 100% 是内容宽，还要加上侧栏自身的右侧内边距
+    left: calc(100% + var(--sr-nav-padding) + 8px);
     z-index: 20;
     flex-direction: column;
     gap: 2px;
     min-width: 168px;
     padding: 8px;
-    // 必须在 padding 之后：左侧多留出来的是那道视觉间距
-    padding-left: 14px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: 12px;
     background: var(--sr-color-bg-popover);
@@ -266,6 +263,19 @@
       opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       visibility 0s linear var(--sr-motion-duration-fast);
     .sr-glass-layer(var(--sr-glass-filter-strong));
+  }
+
+  // 透明桥接：浮层与图标之间有 10px 空隙，鼠标横穿时不能掉在空处，
+  // 否则 entry:hover 断掉、浮层消失。伪元素属于浮层，覆盖住这段即可无缝过去
+  &__flyout::before {
+    --sr-flyout-bridge: calc(var(--sr-nav-padding) + 8px);
+
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(-1 * var(--sr-flyout-bridge));
+    width: var(--sr-flyout-bridge);
   }
 
   &__entry:hover &__flyout {
