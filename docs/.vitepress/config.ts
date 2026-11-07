@@ -91,7 +91,21 @@ export default defineConfig({
           items: [
             { text: 'SrButton', link: '/components/button' },
             { text: 'SrInput', link: '/components/input' },
+            { text: 'SrIcon', link: '/components/icon' },
+            { text: 'SrSpinner', link: '/components/spinner' },
           ],
+        },
+        {
+          text: '布局与配置',
+          items: [
+            { text: 'SrRow / SrCol', link: '/components/row' },
+            { text: 'SrConfigProvider', link: '/components/config-provider' },
+            { text: 'SrTransition', link: '/components/transition' },
+          ],
+        },
+        {
+          text: '浮层',
+          items: [{ text: 'SrTooltip', link: '/components/tooltip' }],
         },
         {
           text: '数据录入',
