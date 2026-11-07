@@ -1,39 +1,56 @@
 // 导航
 //
-// 水平模式用底部指示条，垂直模式用左侧竖条。
-// 文件顺序按特异性升序：结构 → 选中色 → 方向边框 → 悬停 → 分组
+// 整条导航是一块浮起的磨砂玻璃，选中项是实色胶囊 + 同色柔光。
+// 不做下划线 / 竖条这类后台模板的指示器 —— 选中态靠填充和发光表达。
 
 @import '../../../styles/mixins/index.less';
 @import '../../icon/style/index.less';
 
 .sr-nav {
-  --sr-nav-height: 40px;
-  --sr-nav-font: 14px;
+  --sr-nav-height: 36px;
+  --sr-nav-font: 13px;
+  --sr-nav-gap: 2px;
+  --sr-nav-padding: 4px;
+  --sr-nav-radius: var(--sr-radius-full);
 
   display: flex;
-  gap: var(--sr-space-1);
+  box-sizing: border-box;
+  gap: var(--sr-nav-gap);
+  padding: var(--sr-nav-padding);
+  border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+  border-radius: var(--sr-nav-radius);
+  background: color-mix(in srgb, var(--sr-color-bg-container) 62%, transparent);
+  box-shadow: var(--sr-shadow-sm);
+  .sr-glass-layer(var(--sr-glass-filter));
 
   &--xs {
-    --sr-nav-height: 30px;
+    --sr-nav-height: 28px;
     --sr-nav-font: 12px;
   }
 
   &--sm {
-    --sr-nav-height: 34px;
+    --sr-nav-height: 32px;
     --sr-nav-font: 13px;
   }
 
   &--lg {
-    --sr-nav-height: 46px;
+    --sr-nav-height: 42px;
     --sr-nav-font: 15px;
   }
 
   &--horizontal {
     flex-direction: row;
     align-items: center;
+    // 胶囊条跟着内容走，拉满整行会显得空
+    width: fit-content;
   }
 
+  // 竖排用更大的圆角，胶囊形在纵向会说不上是"条"
   &--vertical {
+    --sr-nav-radius: 18px;
+    --sr-nav-gap: 3px;
+    --sr-nav-padding: 8px;
+
     flex-direction: column;
     align-items: stretch;
   }
@@ -46,12 +63,13 @@
   &__item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     box-sizing: border-box;
     min-width: 0;
     height: var(--sr-nav-height);
-    padding: 0 var(--sr-space-3);
+    padding: 0 14px;
     border: 0;
+    border-radius: var(--sr-radius-full);
     background: transparent;
     color: var(--sr-color-text-secondary);
     font-size: var(--sr-nav-font);
@@ -60,7 +78,8 @@
     transition:
       color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
       background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
     &:disabled {
       color: var(--sr-color-text-disabled);
@@ -70,6 +89,10 @@
     &:focus-visible {
       .sr-focus-ring();
     }
+  }
+
+  &--vertical &__item {
+    border-radius: 11px;
   }
 
   &__label {
@@ -91,8 +114,12 @@
     background: var(--sr-color-primary-alpha-12);
     color: var(--sr-color-primary-text);
     font-size: 11px;
+    font-weight: var(--sr-font-weight-medium);
     line-height: 18px;
     text-align: center;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__divider {
@@ -104,39 +131,26 @@
     color: var(--sr-color-text-tertiary);
     font-size: 11px;
     font-weight: var(--sr-font-weight-medium);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
   }
 
-  // ---------- 选中色：与方向无关 ----------
-  &__item.is-active {
-    color: var(--sr-color-primary-text);
-    font-weight: var(--sr-font-weight-medium);
-  }
-
-  // ---------- 方向 ----------
-  &--horizontal &__item {
-    border-bottom: 2px solid transparent;
-    border-radius: var(--sr-radius-sm) var(--sr-radius-sm) 0 0;
-  }
-
-  &--vertical &__item {
-    border-left: 2px solid transparent;
-    border-radius: 0 var(--sr-radius-sm) var(--sr-radius-sm) 0;
-  }
-
-  // ---------- 指示条 ----------
-  &--horizontal &__item.is-active {
-    border-bottom-color: var(--sr-color-primary);
-  }
-
-  &--vertical &__item.is-active {
-    border-left-color: var(--sr-color-primary);
-    background: var(--sr-color-primary-alpha-08);
-  }
-
-  // ---------- 悬停 ----------
+  // ---------- 悬停：轻轻的淡色胶囊 ----------
   &__item:hover:not(:disabled, .is-active) {
-    background: var(--sr-color-primary-alpha-08);
+    background: color-mix(in srgb, var(--sr-color-primary) 10%, transparent);
+    color: var(--sr-color-primary-text);
+  }
+
+  // ---------- 选中：实色胶囊 + 柔光 ----------
+  &__item.is-active {
+    background: var(--sr-color-primary);
+    color: #fff;
+    font-weight: var(--sr-font-weight-medium);
+    box-shadow: 0 5px 16px -6px color-mix(in srgb, var(--sr-color-primary) 85%, transparent);
+  }
+
+  // 选中时徽标反过来：白底主色字，避免白字白底
+  &__item.is-active &__badge {
+    background: color-mix(in srgb, #fff 92%, transparent);
     color: var(--sr-color-primary-text);
   }
 
@@ -147,11 +161,11 @@
   }
 
   &--vertical &__group {
-    padding: 10px var(--sr-space-3) 4px;
+    padding: 10px 10px 4px;
   }
 
   &--vertical &__divider {
     height: 1px;
-    margin: 6px var(--sr-space-2);
+    margin: 6px 10px;
   }
 }
