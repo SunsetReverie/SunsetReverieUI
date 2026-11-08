@@ -259,6 +259,14 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Alert</span>
+        <div class="cell__body cell__body--column">
+          <sr-alert type="info" title="提示" description="服务端渲染的警告条" />
+          <sr-alert type="error" title="出错了" closable />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Skeleton</span>
         <div class="cell__body cell__body--column">
           <sr-skeleton :rows="3" avatar />

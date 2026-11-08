@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { createSSRApp, h, type Component } from 'vue'
 
 import {
+  SrAlert,
   SrAvatar,
   SrBadge,
   SrBreadcrumb,
@@ -201,6 +202,12 @@ describe('导航与数据组件的 SSR 渲染', () => {
     const html = await render(SrSkeleton, { rows: 2 })
     expect(html).toContain('sr-skeleton')
     expect(html).toContain('aria-busy="true"')
+  })
+
+  it('SrAlert 服务端输出文案与角色', async () => {
+    const html = await render(SrAlert, { title: '注意', description: '这段说明要在服务端就有' })
+    expect(html).toContain('role="alert"')
+    expect(html).toContain('这段说明要在服务端就有')
   })
 
   it('SrPagination', async () => {

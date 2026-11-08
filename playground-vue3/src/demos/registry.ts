@@ -57,6 +57,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./progress/ProgressDemo.vue'),
       },
       {
+        key: 'alert',
+        name: 'SrAlert',
+        description: '警告提示。四种类型、可关闭、通栏与富内容。',
+        demo: () => import('./alert/AlertDemo.vue'),
+      },
+      {
         key: 'tag',
         name: 'SrTag',
         description: '状态标签。六种语义色、深浅两档。',

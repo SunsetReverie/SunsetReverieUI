@@ -1,4 +1,66 @@
 {
+  "alert": {
+    "name": "alert",
+    "options": [
+      {
+        "from": "alertProps",
+        "name": "type",
+        "type": "SrAlertType",
+        "default": "'info'",
+        "description": "类型 @default 'info' 决定图标、底色和强调色。"
+      },
+      {
+        "from": "alertProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题，不传则只显示描述"
+      },
+      {
+        "from": "alertProps",
+        "name": "description",
+        "type": "string",
+        "default": "''",
+        "description": "描述文案，也可以直接用默认插槽"
+      },
+      {
+        "from": "alertProps",
+        "name": "showIcon",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示图标 @default true"
+      },
+      {
+        "from": "alertProps",
+        "name": "closable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示关闭按钮 @default false"
+      },
+      {
+        "from": "alertProps",
+        "name": "banner",
+        "type": "boolean",
+        "default": "false",
+        "description": "通栏样式 @default false 去掉圆角与左右边框，贴住容器边缘，适合页面顶部横贯一条。"
+      },
+      {
+        "from": "alertProps",
+        "name": "center",
+        "type": "boolean",
+        "default": "false",
+        "description": "文字居中 @default false"
+      }
+    ],
+    "sources": ["alert"],
+    "emits": [
+      {
+        "name": "close",
+        "params": []
+      }
+    ],
+    "slots": ["default", "title"]
+  },
   "avatar": {
     "name": "avatar",
     "options": [

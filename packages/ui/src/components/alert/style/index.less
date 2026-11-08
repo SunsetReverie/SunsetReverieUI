@@ -1,0 +1,135 @@
+/**
+ * 警告提示
+ *
+ * 底色用语义色按比例混出来，并跟随明暗主题：
+ * 亮色下是浅色块 + 深色字，暗色下是深色块 + 亮色字。
+ */
+
+.sr-alert {
+  --sr-alert-accent: var(--sr-color-primary);
+
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid color-mix(in srgb, var(--sr-alert-accent) 22%, transparent);
+  border-radius: var(--sr-radius-base);
+  background: color-mix(in srgb, var(--sr-alert-accent) 8%, transparent);
+  color: var(--sr-color-text);
+  font-size: 13px;
+  line-height: 1.6;
+
+  // ---------- 类型 ----------
+  &--info {
+    --sr-alert-accent: var(--sr-color-primary);
+  }
+
+  &--success {
+    --sr-alert-accent: var(--sr-color-success);
+  }
+
+  &--warning {
+    --sr-alert-accent: var(--sr-color-warning);
+  }
+
+  &--error {
+    --sr-alert-accent: var(--sr-color-danger);
+  }
+
+  // ---------- 图标 ----------
+  &__icon {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: var(--sr-alert-accent);
+  }
+
+  // ---------- 内容 ----------
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    font-weight: var(--sr-font-weight-medium);
+  }
+
+  &__desc {
+    color: var(--sr-color-text-secondary);
+  }
+
+  // 空描述不占位（只传了 title 的情况）
+  &__desc:empty {
+    display: none;
+  }
+
+  // 有标题时描述与标题拉开一点间距
+  &.is-titled &__desc {
+    margin-top: 2px;
+  }
+
+  // ---------- 关闭 ----------
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:focus-visible {
+      outline: 2px solid var(--sr-color-primary-alpha-25);
+      outline-offset: 1px;
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--sr-alert-accent) 14%, transparent);
+      color: var(--sr-color-text);
+    }
+  }
+
+  // ---------- 通栏 ----------
+  // 贴住容器边缘：去掉圆角，只留上下边框
+  &.is-banner {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  // ---------- 居中 ----------
+  // 居中时图标要和文字排成一行，不能顶在上边
+  &.is-center {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  &.is-center &__icon {
+    margin-top: 0;
+  }
+
+  &.is-center &__body {
+    flex: 0 1 auto;
+  }
+}
+
+// ---------- 暗色 ----------
+// 深色底上 8% 的语义色几乎看不见，提到 16%
+[data-sr-theme='dark'] {
+  .sr-alert {
+    background: color-mix(in srgb, var(--sr-alert-accent) 16%, transparent);
+    border-color: color-mix(in srgb, var(--sr-alert-accent) 28%, transparent);
+  }
+}

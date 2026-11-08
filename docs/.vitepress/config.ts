@@ -137,6 +137,7 @@ export default defineConfig({
           text: '展示元素',
           items: [
             { text: 'SrTag', link: '/components/tag' },
+            { text: 'SrAlert', link: '/components/alert' },
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
             { text: 'SrEmpty', link: '/components/empty' },
