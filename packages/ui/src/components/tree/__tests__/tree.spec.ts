@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import SrTree from '../index'
 import type { SrTreeNode } from '../src/tree-utils'
@@ -29,6 +29,57 @@ function mountTree(props: Record<string, unknown> = {}) {
     global: { stubs: { SrIcon: true, SrTreeNodeRow: false } },
     attachTo: document.body,
   })
+}
+
+// jsdom 没有 PointerEvent，用 MouseEvent 补一个最小实现
+class FakePointerEvent extends MouseEvent {
+  pointerType: string
+
+  constructor(type: string, init: PointerEventInit = {}) {
+    super(type, init)
+    this.pointerType = init.pointerType ?? 'mouse'
+  }
+}
+
+beforeAll(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(globalThis as any).PointerEvent = FakePointerEvent
+})
+
+/**
+ * 派发一个指针事件
+ *
+ * 不能用 test-utils 的 trigger：它会去 write clientX，而 MouseEvent 的坐标是只读的。
+ * @param target 目标
+ * @param type 事件名
+ * @param x 横坐标
+ * @param y 纵坐标
+ */
+function fire(target: EventTarget, type: string, x: number, y: number): void {
+  target.dispatchEvent(
+    new PointerEvent(type, { clientX: x, clientY: y, pointerType: 'mouse', bubbles: true }),
+  )
+}
+
+/**
+ * 给元素编一个矩形（jsdom 默认全是 0）
+ * @param element 元素
+ * @param top 顶部位置
+ * @param height 高度
+ */
+function jestRect(element: HTMLElement, top: number, height: number): void {
+  element.getBoundingClientRect = () =>
+    ({
+      top,
+      bottom: top + height,
+      left: 0,
+      right: 300,
+      width: 300,
+      height,
+      x: 0,
+      y: top,
+      toJSON: () => ({}),
+    }) as DOMRect
 }
 
 describe('SrTree', () => {
@@ -148,12 +199,23 @@ describe('SrTree', () => {
     wrapper.unmount()
   })
 
-  it('键盘上下键移动焦点', async () => {
+  it('默认只有第一行可 Tab 进入', () => {
+    const wrapper = mountTree()
+    const tabbables = wrapper.findAll('.sr-tree__row').filter((row) => row.attributes('tabindex') === '0')
+
+    expect(tabbables).toHaveLength(1)
+    expect(tabbables[0]?.attributes('data-key')).toBe('a')
+    wrapper.unmount()
+  })
+
+  it('键盘上下键移动可聚焦行', async () => {
     const wrapper = mountTree()
     await wrapper.find('.sr-tree__row').trigger('keydown', { key: 'ArrowDown' })
 
-    const focused = wrapper.findAll('.sr-tree__row').filter((row) => row.classes('is-focused'))
-    expect(focused).toHaveLength(1)
+    const tabbables = wrapper.findAll('.sr-tree__row').filter((row) => row.attributes('tabindex') === '0')
+    expect(tabbables).toHaveLength(1)
+    // 从第一行 a 移到 b
+    expect(tabbables[0]?.attributes('data-key')).toBe('b')
     wrapper.unmount()
   })
 
@@ -242,16 +304,21 @@ describe('SrTree', () => {
     wrapper.unmount()
   })
 
-  it('拖拽后派发 node-drop 并移动节点', async () => {
+  it('指针拖拽后派发 node-drop 并移动节点', async () => {
     const wrapper = mountTree({ draggable: true })
-    const rows = wrapper.findAll('.sr-tree__row')
 
-    await rows[0]?.trigger('dragstart')
-    await rows[2]?.trigger('dragover', { clientY: 0 })
-    await rows[2]?.trigger('drop')
+    // jsdom 里所有 rect 都是 0，手动铺出高度，落点才算得出来
+    const rows = wrapper.findAll('.sr-tree__row')
+    rows.forEach((row, index) => {
+      jestRect(row.element as HTMLElement, index * 32, 32)
+    })
+
+    fire(rows[0]!.element as HTMLElement, 'pointerdown', 10, 10)
+    // 移到最后一行（index 2，y 范围 64~96）的最底部 → after
+    fire(document.body, 'pointermove', 10, 94)
+    fire(document.body, 'pointerup', 10, 94)
 
     expect(wrapper.emitted('node-drop')).toBeTruthy()
-    // 原位置 a 被移走，树里顶层只剩 b、c（a 挂到了 c 之前）
     const detail = wrapper.emitted('node-drop')?.[0]?.[0] as { dragNode: { key: string }; type: string }
     expect(detail.dragNode.key).toBe('a')
     wrapper.unmount()
@@ -259,12 +326,16 @@ describe('SrTree', () => {
 
   it('拖拽不能把父节点拖进自己的子树', async () => {
     const wrapper = mountTree({ draggable: true, defaultExpandAll: true })
-    const rows = wrapper.findAll('.sr-tree__row')
 
-    // 第 0 行是 a，第 1 行是它的子节点 a1
-    await rows[0]?.trigger('dragstart')
-    await rows[1]?.trigger('dragover', { clientY: 0 })
-    await rows[1]?.trigger('drop')
+    const rows = wrapper.findAll('.sr-tree__row')
+    rows.forEach((row, index) => {
+      jestRect(row.element as HTMLElement, index * 32, 32)
+    })
+
+    // 第 0 行是 a，第 1 行是它的子节点 a1：拖到 a1 中间（inside）应被拒绝
+    fire(rows[0]!.element as HTMLElement, 'pointerdown', 10, 10)
+    fire(document.body, 'pointermove', 10, 48)
+    fire(document.body, 'pointerup', 10, 48)
 
     expect(wrapper.emitted('node-drop')).toBeUndefined()
     wrapper.unmount()

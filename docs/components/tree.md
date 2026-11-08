@@ -182,7 +182,52 @@ function onDrop({ dragNode, dropNode, type }, data) {
 }
 ```
 
-> **用 Pointer Events + 原生 Drag & Drop 实现，没有引入 sortablejs**，保持零运行时依赖。原生 Drag & Drop 在触摸屏上不生效，移动端需要拖拽的话得另外实现触摸手势。
+**鼠标和触屏都支持**：
+
+| 设备 | 启动方式 |
+| --- | --- |
+| 鼠标 | 按住并拖动，超过 4px 才算拖拽（否则是点击） |
+| 触屏 | 长按约 260ms 后开始拖；手指一动就取消（说明用户想滚动） |
+
+实现用的是 Pointer Events，不是原生 Drag & Drop —— 后者在触屏上根本不触发事件。没有引入 `sortablejs`，保持零运行时依赖。
+
+## 复用拖拽逻辑
+
+树的拖拽底层是 `useSrDragSort`，它只认「key + 元素」，不关心树的结构，列表、看板都能用：
+
+```vue
+<script setup lang="ts">
+import { useSrDragSort } from '@sunset-reverie/ui'
+
+const {
+  dragKey,
+  register,
+  onPointerDown,
+  dropTypeOf,
+} = useSrDragSort({
+  orientation: 'vertical',
+  onDrop: (dragKey, overKey, type) => {
+    // type 是 'before' | 'inside' | 'after'
+    list.value = move(list.value, dragKey, overKey, type)
+  },
+  canDrop: (dragKey, overKey) => dragKey !== overKey,
+})
+</script>
+
+<template>
+  <div
+    v-for="item in list"
+    :key="item.key"
+    :ref="(el) => register(item.key, el as HTMLElement | null)"
+    :class="{ 'is-dragging': dragKey === item.key, [`is-drop-${dropTypeOf(item.key)}`]: dropTypeOf(item.key) }"
+    @pointerdown="onPointerDown(item.key, $event)"
+  >
+    {{ item.label }}
+  </div>
+</template>
+```
+
+`register` 负责把元素交给它——落点计算全靠元素的实际矩形，所以必须在 `ref` 里注册。
 
 ## 虚拟滚动
 
@@ -259,6 +304,6 @@ function onDrop({ dragNode, dropNode, type }, data) {
 - **`key` 必须唯一且稳定**。用数组下标当 key，增删节点后选中态会错乱。
 - **`check` 事件里的 `keys` 含父节点**。勾选一个父节点会把它自己的 key 也加进去，业务方通常只关心叶子——用 `halfCheckedKeys` 判断半选，或用暴露的 `leafCheckedKeys`。
 - 虚拟滚动下如果自定义了行高，`itemHeight` 必须同步，否则可视区计算和实际渲染对不上。
-- **拖拽不支持触摸屏**。用的是原生 HTML5 Drag & Drop，移动端浏览器不触发这些事件。要支持得另写一套触摸手势。
+- **拖拽在触屏上需要长按**。按住约 260ms 才开始，太快会被识别成滚动或点击。
 - **异步加载失败后不会自动重试**。`loadData` 抛错时节点保持展开但为空，再次点击箭头才会重新请求；需要重试策略的话在 `loadData` 内部处理。
 - **拖拽只改内部数据副本**。`data` 传进来后组件会克隆一份，所以拖拽不会污染父组件的原数组——但也意味着必须监听 `node-drop` 才能把结果写回去。

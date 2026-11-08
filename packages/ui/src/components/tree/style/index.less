@@ -37,6 +37,9 @@
   &__row {
     position: relative;
     display: flex;
+    // 允许纵向滚动，横向不接管：树本身不需要横向手势
+    touch-action: pan-y;
+    user-select: none;
     align-items: center;
     gap: 4px;
     padding-right: 8px;
@@ -131,7 +134,12 @@
   }
 
   // ---------- 键盘焦点 ----------
-  &__row.is-focused {
+  // 只在键盘导航时显示：鼠标点击不应该留一圈描边，:focus-visible 由浏览器判断
+  &__row:focus {
+    outline: none;
+  }
+
+  &__row:focus-visible {
     outline: 1.5px solid var(--sr-color-primary-alpha-25);
     outline-offset: -1px;
   }

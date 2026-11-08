@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 
+import { useSrDragSort } from '../../../composables/use-sr-drag'
 import SrTreeNodeRow from './tree-node.vue'
 import { treeProps } from './tree'
 import {
@@ -10,6 +11,7 @@ import {
   flattenTree,
   getHalfCheckedKeys,
   getLeafCheckedKeys,
+  isDescendant,
   moveNode,
   toggleCheck,
   type SrTreeDropType,
@@ -208,6 +210,21 @@ function handleCheck(node: SrTreeNode, checked: boolean): void {
   })
 }
 
+/**
+ * 在树里按 key 找节点
+ * @param nodes 树
+ * @param key 目标 key
+ * @returns 节点
+ */
+function findNodeIn(nodes: SrTreeNode[], key: SrTreeKey): SrTreeNode | undefined {
+  for (const node of nodes) {
+    if (node.key === key) return node
+    const hit = node.children ? findNodeIn(node.children, key) : undefined
+    if (hit) return hit
+  }
+  return undefined
+}
+
 /** 叶子层面的勾选 */
 const leafCheckedKeys = computed(() => getLeafCheckedKeys(innerData.value, props.modelValue))
 
@@ -372,83 +389,72 @@ function onKeydown(event: KeyboardEvent): void {
 
 /* ---------- 拖拽 ---------- */
 
-/** 正在拖的 key */
-const draggingKey = ref<SrTreeKey | null>(null)
+/**
+ * 拖拽排序
+ *
+ * 逻辑抽在 useSrDragSort 里：它只认「key + 元素」，不关心树的结构，
+ * 列表、看板之类的场景可以直接复用。
+ */
+const {
+  dragKey: draggingKey,
+  register: registerRow,
+  onPointerDown: startRowDrag,
+  dropTypeOf,
+  cancel: cancelDrag,
+} = useSrDragSort({
+  orientation: 'vertical',
+  isDisabled: () => props.disabled,
+  canDrop: (dragKey, overKey, type) => {
+    const dragNode = findNodeIn(innerData.value, dragKey)
+    const overNode = findNodeIn(innerData.value, overKey)
+    if (!dragNode || !overNode) return false
 
-/** 当前落点 key */
-const dropKey = ref<SrTreeKey | null>(null)
+    // 拖进自己的子树会成环
+    if (isDescendant(innerData.value, dragKey, overKey)) return false
+    // 没有子节点也不允许「放进去」
+    if (type === 'inside' && !overNode.children?.length && !props.loadData) return false
 
-/** 当前落点位置 */
-const dropType = ref<SrTreeDropType | null>(null)
+    return props.allowDrop ? props.allowDrop(dragNode, overNode, type) : true
+  },
+  onDrop: (dragKey, overKey, type) => {
+    const dragNode = findNodeIn(innerData.value, dragKey)
+    const overNode = findNodeIn(innerData.value, overKey)
+    if (!dragNode || !overNode) return
+
+    const next = moveNode(innerData.value, dragKey, overKey, type)
+    if (!next) return
+
+    innerData.value = next
+    emit('node-drop', { dragNode, dropNode: overNode, type }, next)
+  },
+})
+
+watch(draggingKey, (value) => {
+  if (value === null) cancelDrag()
+})
 
 /**
- * 拖起
- * @param node 被拖的节点
+ * 行按下：row 组件传的是节点，composable 要的是 key
+ * @param node 节点
+ * @param event 指针事件
  */
-function onDragStart(node: SrTreeNode): void {
-  draggingKey.value = node.key
+function onRowPointerDown(node: SrTreeNode, event: PointerEvent): void {
+  startRowDrag(node.key, event)
 }
 
 /**
- * 拖到某行上方
- * @param node 目标节点
- * @param type 放置位置
+ * 可 Tab 进入的行
+ *
+ * 树整体只占一个 Tab 位：没进行过键盘导航时落在第一行，
+ * 一旦用方向键移动过就跟着走。
  */
-function onDragOver(node: SrTreeNode, type: SrTreeDropType): void {
-  if (draggingKey.value === null) return
-
-  const dragNode = rows.value.find((row) => row.node.key === draggingKey.value)?.node
-  if (!dragNode) return
-
-  // 拖到自己身上，或拖进自己的子树（会成环）
-  if (dragNode.key === node.key) {
-    dropKey.value = null
-    dropType.value = null
-    return
-  }
-
-  if (props.allowDrop && !props.allowDrop(dragNode, node, type)) {
-    dropKey.value = null
-    dropType.value = null
-    return
-  }
-
-  dropKey.value = node.key
-  dropType.value = type
-}
+const tabbableKey = computed<SrTreeKey | null>(() => activeKey.value ?? rows.value[0]?.node.key ?? null)
 
 /**
- * 放下
- * @param node 目标节点
- * @param type 放置位置
+ * 是否正在加载子节点
+ * @param key 项标识
+ * @returns 是否 loading
  */
-function onDrop(node: SrTreeNode, type: SrTreeDropType): void {
-  const dragKey = draggingKey.value
-  const dragNode = rows.value.find((row) => row.node.key === dragKey)?.node
-
-  clearDragState()
-  if (dragKey === null || !dragNode) return
-
-  const next = moveNode(innerData.value, dragKey, node.key, type)
-  if (!next) return
-
-  innerData.value = next
-  emit('node-drop', { dragNode, dropNode: node, type }, next)
-}
-
-/** 清理拖拽态 */
-function clearDragState(): void {
-  draggingKey.value = null
-  dropKey.value = null
-  dropType.value = null
-}
-
-/** 行的落点位置（只给目标行） */
-function dropTypeOf(key: SrTreeKey): SrTreeDropType | null {
-  return dropKey.value === key ? dropType.value : null
-}
-
-/** 是否正在加载 */
 function isLoading(key: SrTreeKey): boolean {
   return loadingKeys.value.includes(key)
 }
@@ -463,9 +469,6 @@ function isLoadable(row: { node: SrTreeNode; hasChildren: boolean }): boolean {
   if (row.hasChildren) return false
   return !loadedKeys.value.includes(row.node.key)
 }
-
-/** 焦点行 key（没设过就默认第一行） */
-const focusKey = computed<SrTreeKey | null>(() => activeKey.value ?? rows.value[0]?.node.key ?? null)
 
 defineExpose({ leafCheckedKeys, rows, innerData })
 </script>
@@ -499,19 +502,16 @@ defineExpose({ leafCheckedKeys, rows, innerData })
             :disabled="disabled"
             :expand-on-click-node="expandOnClickNode"
             :draggable="draggable"
-            :focused="focusKey === row.node.key"
+            :tabbable="tabbableKey === row.node.key"
             :dragging-key="draggingKey"
             :drop-type="dropTypeOf(row.node.key)"
             :loading="isLoading(row.node.key)"
             :loadable="isLoadable(row)"
+            :register="(el) => registerRow(row.node.key, el)"
             @toggle="toggleExpand"
             @check="handleCheck"
             @select="selectNode"
-            @drag-start="onDragStart"
-            @drag-over="onDragOver"
-            @drag-leave="dropKey = null"
-            @drop="onDrop"
-            @drag-end="clearDragState"
+            @pointer-down="onRowPointerDown"
           />
         </div>
       </div>
@@ -529,19 +529,16 @@ defineExpose({ leafCheckedKeys, rows, innerData })
           :disabled="disabled"
           :expand-on-click-node="expandOnClickNode"
           :draggable="draggable"
-          :focused="focusKey === row.node.key"
+          :tabbable="tabbableKey === row.node.key"
           :dragging-key="draggingKey"
           :drop-type="dropTypeOf(row.node.key)"
           :loading="isLoading(row.node.key)"
           :loadable="isLoadable(row)"
+          :register="(el) => registerRow(row.node.key, el)"
           @toggle="toggleExpand"
           @check="handleCheck"
           @select="selectNode"
-          @drag-start="onDragStart"
-          @drag-over="onDragOver"
-          @drag-leave="dropKey = null"
-          @drop="onDrop"
-          @drag-end="clearDragState"
+          @pointer-down="onRowPointerDown"
         />
       </template>
     </div>

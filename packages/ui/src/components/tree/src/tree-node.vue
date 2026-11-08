@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import SrCheckbox from '../../checkbox/src/checkbox.vue'
 import SrIcon from '../../icon/src/icon.vue'
@@ -26,8 +26,10 @@ const props = defineProps<{
   expandOnClickNode: boolean
   /** 是否可拖拽 */
   draggable: boolean
-  /** 是否是键盘焦点所在行 */
-  focused: boolean
+  /** 注册元素，供父级计算落点 */
+  register: (element: HTMLElement | null) => void
+  /** 是否可被 Tab 进入 */
+  tabbable: boolean
   /** 正在被拖动的 key */
   draggingKey: unknown
   /** 当前拖到本行的哪个位置 */
@@ -45,16 +47,8 @@ const emit = defineEmits<{
   check: [node: SrFlatNode['node'], checked: boolean]
   /** 点击文字选中 */
   select: [node: SrFlatNode['node']]
-  /** 拖拽开始 */
-  'drag-start': [node: SrFlatNode['node'], event: DragEvent]
-  /** 拖到本行 */
-  'drag-over': [node: SrFlatNode['node'], type: SrTreeDropType, event: DragEvent]
-  /** 拖离本行 */
-  'drag-leave': []
-  /** 放下 */
-  drop: [node: SrFlatNode['node'], type: SrTreeDropType, event: DragEvent]
-  /** 拖拽结束 */
-  'drag-end': []
+  /** 指针按下（拖拽起始） */
+  'pointer-down': [node: SrFlatNode['node'], event: PointerEvent]
 }>()
 
 /** 本行元素 */
@@ -77,62 +71,32 @@ const hasArrow = computed(() => {
 const dropClass = computed(() => (props.dropType ? `is-drop-${props.dropType}` : ''))
 
 /**
- * 拖起
- * @param event 原生事件
- */
-function onDragStart(event: DragEvent): void {
-  if (!props.draggable || props.disabled || props.row.node.disabled) {
-    event.preventDefault()
-    return
-  }
-
-  event.dataTransfer?.setData('text/plain', String(props.row.node.key))
-  if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
-  emit('drag-start', props.row.node, event)
-}
-
-/**
- * 拖到本行上方：按鼠标在行内的相对位置决定放置方式
+ * 指针按下
  *
- * 上下各 1/4 是「放到之前/之后」，中间一半是「放进去成为子节点」——
- * 这是文件树的通用约定，用户不用额外说明就能理解。
- * @param event 原生事件
+ * 只有可拖拽的节点才转发给父级；否则交给浏览器做正常点击/选择。
+ * @param event 指针事件
  */
-function onDragOver(event: DragEvent): void {
+function onPointerDown(event: PointerEvent): void {
   if (!props.draggable || props.disabled || props.row.node.disabled) return
+  // 点在复选框或箭头上时不启动拖拽，否则按钮点不动
+  const target = event.target as HTMLElement | null
+  if (target?.closest('.sr-checkbox, .sr-tree__arrow')) return
 
-  event.preventDefault()
-  if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
-
-  const rect = rowRef.value?.getBoundingClientRect()
-  if (!rect) return
-
-  const offset = event.clientY - rect.top
-  const ratio = offset / rect.height
-
-  let type: SrTreeDropType = 'inside'
-  if (ratio < 0.25) type = 'before'
-  else if (ratio > 0.75) type = 'after'
-
-  // 叶子节点不能「放进去」
-  if (type === 'inside' && !props.row.hasChildren && props.row.node.isLeaf) type = 'after'
-
-  emit('drag-over', props.row.node, type, event)
-}
-
-/**
- * 放下
- * @param event 原生事件
- */
-function onDrop(event: DragEvent): void {
-  if (!props.dropType) return
-  emit('drop', props.row.node, props.dropType, event)
+  emit('pointer-down', props.row.node, event)
 }
 
 /** 行点击：按配置决定是展开还是只聚焦 */
 function onRowClick(): void {
   if (props.expandOnClickNode) emit('toggle', props.row.node)
 }
+
+onMounted(() => {
+  props.register(rowRef.value ?? null)
+})
+
+onBeforeUnmount(() => {
+  props.register(null)
+})
 
 defineExpose({ rowRef })
 </script>
@@ -146,7 +110,6 @@ defineExpose({ rowRef })
         'is-expanded': row.expanded,
         'is-leaf': !row.hasChildren,
         'is-disabled': row.node.disabled,
-        'is-focused': focused,
         'is-dragging': draggingKey === row.node.key,
       },
       dropClass,
@@ -154,14 +117,9 @@ defineExpose({ rowRef })
     :style="rowStyle"
     :data-key="row.node.key"
     :data-level="row.level"
-    :draggable="draggable && !row.node.disabled && !disabled"
-    :tabindex="focused ? 0 : -1"
+    :tabindex="tabbable ? 0 : -1"
     @click="onRowClick"
-    @dragstart="onDragStart"
-    @dragover="onDragOver"
-    @dragleave="emit('drag-leave')"
-    @drop.prevent="onDrop"
-    @dragend="emit('drag-end')"
+    @pointerdown="onPointerDown"
   >
     <button
       v-if="hasArrow"
