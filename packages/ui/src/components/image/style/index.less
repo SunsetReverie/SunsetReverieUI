@@ -98,6 +98,10 @@
   padding: 48px;
   background: rgb(0 0 0 / 72%);
   cursor: zoom-out;
+  // 滚轮用于缩放，不要让它滚到背后的页面
+  overscroll-behavior: contain;
+  // 放大后图片会超出视口，裁掉而不是让它盖到遮罩外面
+  overflow: hidden;
 
   &__img {
     max-width: 100%;
@@ -106,6 +110,43 @@
     box-shadow: 0 8px 40px rgb(0 0 0 / 40%);
     // 点图片本身不关闭，只有点遮罩才关
     cursor: default;
+    // 缩放/平移靠 transform，不给它加过渡，否则拖动会跟手发飘
+    transform-origin: center;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  &__img.is-zoomed {
+    cursor: grab;
+  }
+
+  &__img.is-zoomed:active {
+    cursor: grabbing;
+  }
+
+  // ---------- 缩放比例 ----------
+  &__scale {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    padding: 3px 10px;
+    border-radius: var(--sr-radius-full);
+    background: rgb(255 255 255 / 14%);
+    color: #fff;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    transform: translateX(-50%);
+  }
+
+  // ---------- 操作提示 ----------
+  &__tip {
+    position: absolute;
+    bottom: 52px;
+    left: 50%;
+    color: rgb(255 255 255 / 45%);
+    font-size: 11.5px;
+    white-space: nowrap;
+    transform: translateX(-50%);
   }
 
   &__close {

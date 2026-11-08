@@ -1,8 +1,23 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 import SrImage from '../index'
+
+// jsdom 没有 PointerEvent
+class FakePointerEvent extends MouseEvent {
+  pointerType: string
+
+  constructor(type: string, init: PointerEventInit = {}) {
+    super(type, init)
+    this.pointerType = init.pointerType ?? 'mouse'
+  }
+}
+
+beforeAll(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(globalThis as any).PointerEvent = FakePointerEvent
+})
 
 /**
  * 挂载图片
@@ -15,6 +30,15 @@ function mountImage(props: Record<string, unknown> = {}) {
     attachTo: document.body,
     global: { stubs: { SrIcon: true } },
   })
+}
+
+/**
+ * 清掉上个用例残留的预览层
+ *
+ * Transition 的离场动画可能还没跑完，节点会留到下一个用例。
+ */
+function cleanup(): void {
+  document.querySelectorAll('.sr-image-preview').forEach((node) => node.remove())
 }
 
 describe('SrImage', () => {
@@ -137,6 +161,100 @@ describe('SrImage', () => {
     await nextTick()
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await nextTick()
+
+    expect(document.querySelector('.sr-image-preview')).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('滚轮放大图片', async () => {
+    cleanup()
+    const wrapper = mountImage({ preview: true })
+    await wrapper.find('.sr-image__media').trigger('load')
+    await wrapper.find('.sr-image').trigger('click')
+    await nextTick()
+
+    const overlay = document.querySelector('.sr-image-preview') as HTMLElement
+    overlay.dispatchEvent(new WheelEvent('wheel', { deltaY: -100, bubbles: true }))
+    await nextTick()
+
+    const img = document.querySelector('.sr-image-preview__img') as HTMLElement
+    expect(img.style.transform).toContain('scale(1.2)')
+    // 放大后出现比例提示
+    expect(document.querySelector('.sr-image-preview__scale')?.textContent?.trim()).toBe('120%')
+    wrapper.unmount()
+  })
+
+  it('缩放下限是 1 倍', async () => {
+    cleanup()
+    const wrapper = mountImage({ preview: true })
+    await wrapper.find('.sr-image__media').trigger('load')
+    await wrapper.find('.sr-image').trigger('click')
+    await nextTick()
+
+    const overlay = document.querySelector('.sr-image-preview') as HTMLElement
+    overlay.dispatchEvent(new WheelEvent('wheel', { deltaY: 300, bubbles: true }))
+    await nextTick()
+
+    const img = document.querySelector('.sr-image-preview__img') as HTMLElement
+    expect(img.style.transform).toContain('scale(1)')
+    expect(document.querySelector('.sr-image-preview__scale')).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('双击在 1 倍与放大之间切换', async () => {
+    cleanup()
+    const wrapper = mountImage({ preview: true })
+    await wrapper.find('.sr-image__media').trigger('load')
+    await wrapper.find('.sr-image').trigger('click')
+    await nextTick()
+
+    const overlay = document.querySelector('.sr-image-preview') as HTMLElement
+    overlay.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+    await nextTick()
+
+    let img = document.querySelector('.sr-image-preview__img') as HTMLElement
+    expect(img.style.transform).toContain('scale(2.5)')
+
+    overlay.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+    await nextTick()
+
+    img = document.querySelector('.sr-image-preview__img') as HTMLElement
+    expect(img.style.transform).toContain('scale(1)')
+    wrapper.unmount()
+  })
+
+  it('放大后图片可拖拽平移', async () => {
+    cleanup()
+    const wrapper = mountImage({ preview: true })
+    await wrapper.find('.sr-image__media').trigger('load')
+    await wrapper.find('.sr-image').trigger('click')
+    await nextTick()
+
+    const overlay = document.querySelector('.sr-image-preview') as HTMLElement
+    overlay.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+    await nextTick()
+
+    const img = document.querySelector('.sr-image-preview__img') as HTMLElement
+    img.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 100, bubbles: true }))
+    document.dispatchEvent(new PointerEvent('pointermove', { clientX: 140, clientY: 120, bubbles: true }))
+    await nextTick()
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 140, clientY: 120, bubbles: true }))
+    await nextTick()
+
+    expect(img.style.transform).toContain('translate(40px, 20px)')
+    wrapper.unmount()
+  })
+
+  it('1 倍时点遮罩关闭', async () => {
+    cleanup()
+    const wrapper = mountImage({ preview: true })
+    await wrapper.find('.sr-image__media').trigger('load')
+    await wrapper.find('.sr-image').trigger('click')
+    await nextTick()
+
+    const overlay = document.querySelector('.sr-image-preview') as HTMLElement
+    overlay.click()
     await nextTick()
 
     expect(document.querySelector('.sr-image-preview')).toBeNull()

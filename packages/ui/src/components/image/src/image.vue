@@ -27,6 +27,18 @@ const status = ref<'idle' | 'loading' | 'loaded' | 'error'>('idle')
 const inView = ref(false)
 /** 预览是否打开 */
 const previewOpen = ref(false)
+/** 预览缩放倍数 */
+const previewScale = ref(1)
+/** 预览平移量 */
+const previewOffset = ref({ x: 0, y: 0 })
+/** 拖动起点，用来区分「拖拽」与「点击关闭」 */
+let dragStart: { x: number; y: number } | null = null
+/** 本次按下是否发生了实际拖动 */
+let dragged = false
+
+/** 缩放范围 */
+const MIN_SCALE = 1
+const MAX_SCALE = 4
 /** 视口观察器 */
 let observer: IntersectionObserver | null = null
 
@@ -96,6 +108,8 @@ function onError(event: Event): void {
 function openPreview(): void {
   if (!props.preview || status.value !== 'loaded') return
   previewOpen.value = true
+  previewScale.value = 1
+  previewOffset.value = { x: 0, y: 0 }
   emit('preview-change', true)
 }
 
@@ -103,7 +117,95 @@ function openPreview(): void {
 function closePreview(): void {
   if (!previewOpen.value) return
   previewOpen.value = false
+  previewScale.value = 1
+  previewOffset.value = { x: 0, y: 0 }
   emit('preview-change', false)
+}
+
+/**
+ * 调整缩放，并夹到范围内
+ * @param next 目标倍数
+ * @param origin 缩放中心（视口坐标）
+ */
+function applyScale(next: number, origin?: { x: number; y: number }): void {
+  const clamped = Math.min(MAX_SCALE, Math.max(MIN_SCALE, next))
+  if (clamped === 1) previewOffset.value = { x: 0, y: 0 }
+  previewScale.value = clamped
+
+  // 缩到 1 倍以外时保持中心，避免图跑出视口
+  if (origin && clamped > 1) {
+    const { x, y } = previewOffset.value
+    previewOffset.value = {
+      x: x - (origin.x - window.innerWidth / 2) * 0.08,
+      y: y - (origin.y - window.innerHeight / 2) * 0.08,
+    }
+  }
+}
+
+/**
+ * 滚轮缩放
+ * @param event 滚轮事件
+ */
+function onWheel(event: WheelEvent): void {
+  event.preventDefault()
+  const delta = event.deltaY > 0 ? -0.2 : 0.2
+  applyScale(previewScale.value + delta, { x: event.clientX, y: event.clientY })
+}
+
+/**
+ * 双击放大 / 还原
+ */
+function onDoubleClick(): void {
+  applyScale(previewScale.value > 1 ? 1 : 2.5)
+}
+
+/**
+ * 按下开始拖拽
+ * @param event 指针事件
+ */
+function onPreviewPointerDown(event: PointerEvent): void {
+  if (previewScale.value <= 1) return
+  dragStart = { x: event.clientX - previewOffset.value.x, y: event.clientY - previewOffset.value.y }
+  dragged = false
+  document.addEventListener('pointermove', onPreviewPointerMove)
+  document.addEventListener('pointerup', onPreviewPointerUp)
+}
+
+/**
+ * 拖拽中
+ * @param event 指针事件
+ */
+function onPreviewPointerMove(event: PointerEvent): void {
+  if (!dragStart) return
+
+  const x = event.clientX - dragStart.x
+  const y = event.clientY - dragStart.y
+  if (Math.abs(x - previewOffset.value.x) > 2 || Math.abs(y - previewOffset.value.y) > 2) dragged = true
+
+  previewOffset.value = { x, y }
+}
+
+/**
+ * 结束拖拽
+ */
+function onPreviewPointerUp(): void {
+  dragStart = null
+  document.removeEventListener('pointermove', onPreviewPointerMove)
+  document.removeEventListener('pointerup', onPreviewPointerUp)
+}
+
+/**
+ * 点遮罩：拖过就不算点击
+ * @param event 鼠标事件
+ */
+function onOverlayClick(event: MouseEvent): void {
+  // 点关闭按钮时由按钮自己处理
+  if ((event.target as HTMLElement).closest('.sr-image-preview__close')) return
+  if (dragged) {
+    dragged = false
+    return
+  }
+  closePreview()
 }
 
 /**
@@ -142,6 +244,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('pointermove', onPreviewPointerMove)
+  document.removeEventListener('pointerup', onPreviewPointerUp)
   observer?.disconnect()
   observer = null
 })
@@ -199,8 +303,26 @@ onBeforeUnmount(() => {
   <!-- 预览层 -->
   <Teleport to="body">
     <Transition name="sr-image-preview">
-      <div v-if="previewOpen" class="sr-image-preview" role="dialog" aria-modal="true" @click="closePreview">
-        <img class="sr-image-preview__img" :src="src" :alt="alt" />
+      <div
+        v-if="previewOpen"
+        class="sr-image-preview"
+        role="dialog"
+        aria-modal="true"
+        @click="onOverlayClick"
+        @wheel.prevent="onWheel"
+        @dblclick="onDoubleClick"
+      >
+        <img
+          class="sr-image-preview__img"
+          :class="{ 'is-zoomed': previewScale > 1 }"
+          :src="src"
+          :alt="alt"
+          :style="{
+            transform: `translate(${previewOffset.x}px, ${previewOffset.y}px) scale(${previewScale})`,
+          }"
+          @pointerdown.stop="onPreviewPointerDown"
+        />
+
         <button
           class="sr-image-preview__close"
           type="button"
@@ -209,7 +331,15 @@ onBeforeUnmount(() => {
         >
           <SrIcon name="lucide:x" :size="20" />
         </button>
+
+        <!-- 缩放比例：只在放大后出现 -->
+        <span v-if="previewScale > 1" class="sr-image-preview__scale">
+          {{ Math.round(previewScale * 100) }}%
+        </span>
+
         <span v-if="alt" class="sr-image-preview__caption">{{ alt }}</span>
+
+        <span class="sr-image-preview__tip">滚轮缩放 · 双击放大 · 拖动平移</span>
       </div>
     </Transition>
   </Teleport>
