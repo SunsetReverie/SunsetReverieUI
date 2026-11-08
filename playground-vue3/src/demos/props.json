@@ -3770,5 +3770,53 @@
       }
     ],
     "slots": ["icon", "trigger"]
+  },
+  "virtual-list": {
+    "name": "virtual-list",
+    "options": [
+      {
+        "from": "virtualListProps",
+        "name": "items",
+        "type": "unknown[]",
+        "default": "() => []",
+        "description": "数据源"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "itemHeight",
+        "type": "number",
+        "default": "",
+        "description": "每项固定高度（像素） 必须是固定值。不定高需要边渲染边测量，会带来位置回跳， 属于另一套实现（动态虚拟滚动）。"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "height",
+        "type": "number",
+        "default": "",
+        "description": "可视区高度（像素）"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "buffer",
+        "type": "number",
+        "default": "3",
+        "description": "上下额外渲染的项数 @default 3 留一点缓冲，快速滚动时不会露出空白。"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "itemKey",
+        "type": "(item: unknown, index: number) =",
+        "default": "undefined",
+        "description": "取每一项的 key 不传就用下标。**列表会增删时建议传**，否则复用逻辑会错位。"
+      }
+    ],
+    "sources": ["virtualList"],
+    "emits": [
+      {
+        "name": "scroll",
+        "params": ["scrollTop"]
+      }
+    ],
+    "slots": ["default"]
   }
 }

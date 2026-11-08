@@ -55,6 +55,7 @@ export const SR_COMPONENT_NAMES = [
   'Transition',
   'Tree',
   'Upload',
+  'VirtualList',
 ] as const
 
 /** 组件名联合类型，供类型体操与文档生成使用 */

@@ -47,6 +47,7 @@ import {
   SrTooltip,
   SrTree,
   SrUpload,
+  SrVirtualList,
 } from '..'
 
 /**
@@ -281,6 +282,17 @@ describe('导航与数据组件的 SSR 渲染', () => {
     const html = await render(SrResult, { status: 'success', title: '提交成功' })
     expect(html).toContain('role="status"')
     expect(html).toContain('提交成功')
+  })
+
+  it('SrVirtualList 服务端只输出可视区附近的项', async () => {
+    const html = await render(SrVirtualList, {
+      items: Array.from({ length: 500 }, (_, i) => i),
+      itemHeight: 30,
+      height: 300,
+    })
+
+    // 总高度撑开
+    expect(html).toContain('15000px')
   })
 
   it('SrPagination', async () => {

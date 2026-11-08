@@ -1,0 +1,33 @@
+/**
+ * 虚拟列表
+ *
+ * 三层结构：
+ *   viewport（固定高度，负责滚动）
+ *     phantom（撑出总高度，让滚动条长度正确）
+ *       inner（整体平移，把当前段推到正确位置）
+ */
+
+.sr-virtual-list {
+  position: relative;
+  // 纵向滚动、横向裁掉：内容宽度固定为容器宽度
+  overflow: auto hidden;
+  // 滚动时不要把内容甩出去太远，接近底部的回弹更自然
+  overscroll-behavior: contain;
+
+  &__phantom {
+    position: relative;
+    width: 100%;
+  }
+
+  &__inner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+
+  &__item {
+    // 高度由内联样式给，这里只保证不塌陷
+    box-sizing: border-box;
+  }
+}

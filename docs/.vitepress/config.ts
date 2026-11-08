@@ -132,6 +132,7 @@ export default defineConfig({
             { text: 'SrLoadMore', link: '/components/load-more' },
             { text: 'SrUpload', link: '/components/upload' },
             { text: 'SrTree', link: '/components/tree' },
+            { text: 'SrVirtualList', link: '/components/virtual-list' },
           ],
         },
         {

@@ -151,6 +151,12 @@ export const demoGroups: DemoGroup[] = [
     title: '数据',
     items: [
       {
+        key: 'virtual-list',
+        name: 'SrVirtualList',
+        description: '虚拟列表。长列表只渲染可视区，一万条也不卡。',
+        demo: () => import('./virtual-list/VirtualListDemo.vue'),
+      },
+      {
         key: 'table',
         name: 'SrTable',
         description: '数据表格。排序、多选、展开、固定列、分页、懒加载。',

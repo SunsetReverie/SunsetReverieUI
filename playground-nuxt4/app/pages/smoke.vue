@@ -73,6 +73,9 @@ const segOptions = [
   { label: '月', value: 'month' },
 ]
 
+/** 虚拟列表数据 */
+const vlistItems = Array.from({ length: 200 }, (_, i) => i)
+
 /** 折叠面板数据 */
 const collapseItems = [
   { key: 'a', title: '基础设置', content: '内容 A' },
@@ -287,6 +290,17 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">VirtualList</span>
+        <div class="cell__body cell__body--column">
+          <sr-virtual-list :items="vlistItems" :item-height="28" :height="120">
+            <template #default="{ item }">
+              <div style="font-size: 12px">第 {{ item }} 条</div>
+            </template>
+          </sr-virtual-list>
         </div>
       </div>
 
