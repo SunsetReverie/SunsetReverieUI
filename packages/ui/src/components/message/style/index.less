@@ -31,7 +31,8 @@
     background-color: var(--sr-message-bg, var(--sr-feedback-bg));
     background-image: var(--sr-feedback-sheen, none);
     box-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
-    color: var(--sr-color-text);
+    // 文字色可由 color 选项覆盖（深色背景下必须传）
+    color: var(--sr-message-color, var(--sr-color-text));
     font-size: var(--sr-font-size-sm);
     line-height: var(--sr-line-height-sm);
     .sr-glass-layer(var(--sr-glass-filter-strong));
@@ -40,7 +41,8 @@
 
   &__icon {
     flex: 0 0 auto;
-    color: var(--sr-message-icon, var(--sr-color-info));
+    // 优先级：iconColor 选项 > 类型自带色 > 兜底
+    color: var(--sr-message-icon-color, var(--sr-message-icon, var(--sr-color-info)));
   }
 
   &__content {

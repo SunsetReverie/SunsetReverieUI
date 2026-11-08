@@ -31,15 +31,46 @@ defineOptions({ name: 'MessageDemo' })
     </section>
 
     <section>
-      <h3>自定义背景色</h3>
+      <h3>自定义配色</h3>
       <div class="row">
-        <SrButton size="sm" variant="outline" @click="srMessage('紫色消息', { backgroundColor: '#8b5cf6' })">
-          紫色
+        <SrButton
+          size="sm"
+          variant="outline"
+          @click="srMessage('浅色底（文字不用改）', { backgroundColor: '#fdf2e9' })"
+        >
+          浅色底
         </SrButton>
-        <SrButton size="sm" variant="outline" @click="srMessage('深色消息', { backgroundColor: '#1f2937' })">
-          深色
+        <SrButton
+          size="sm"
+          variant="outline"
+          @click="
+            srMessage('深色底要配浅色文字', {
+              backgroundColor: '#1f2937',
+              color: '#f1f5f9',
+              iconColor: '#60a5fa',
+            })
+          "
+        >
+          深色底 + 浅色文字
+        </SrButton>
+        <SrButton
+          size="sm"
+          variant="outline"
+          @click="
+            srMessage('品牌紫，白色文字', {
+              backgroundColor: '#8b5cf6',
+              color: '#ffffff',
+              iconColor: '#e9d5ff',
+            })
+          "
+        >
+          品牌紫 + 白字
         </SrButton>
       </div>
+      <p class="hint">
+        只改背景不改文字时，深色底会让文字完全看不见——深色背景必须同时传
+        <code>color</code>；<code>iconColor</code> 不传则跟随消息类型的主色
+      </p>
     </section>
 
     <section>

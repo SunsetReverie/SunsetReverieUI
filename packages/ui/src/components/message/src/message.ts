@@ -23,8 +23,24 @@ export interface SrMessageOptions {
   type?: SrMessageType
   /** 停留毫秒，0 表示不自动关闭 @default 2000 */
   duration?: number
-  /** 自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底 */
+  /**
+   * 自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底
+   *
+   * 换成深色时**必须同时传 `color`**，否则文字仍是默认深色、会看不见。
+   */
   backgroundColor?: string
+  /**
+   * 自定义文字颜色
+   *
+   * 深色背景下需要改成浅色；浅色背景下通常不用动。
+   */
+  color?: string
+  /**
+   * 自定义图标颜色
+   *
+   * 不传时图标跟随消息类型的主色（info 蓝、success 绿等）。
+   */
+  iconColor?: string
 }
 
 /** 命令式 API 的函数签名 */
@@ -109,6 +125,8 @@ function show(content: string, options: SrMessageOptions = {}): number {
     type: options.type ?? 'info',
     content,
     ...(options.backgroundColor ? { backgroundColor: options.backgroundColor } : {}),
+    ...(options.color ? { color: options.color } : {}),
+    ...(options.iconColor ? { iconColor: options.iconColor } : {}),
   }
 
   srMessageItems.value.push(item)

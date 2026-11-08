@@ -10,6 +10,10 @@ export interface SrMessageItem {
   content: string
   /** 自定义背景色（任意 CSS 颜色） */
   backgroundColor?: string
+  /** 自定义文字颜色；深色背景下必须传，否则文字与背景同色 */
+  color?: string
+  /** 自定义图标颜色，不传则跟随类型的主色 */
+  iconColor?: string
 }
 
 /**

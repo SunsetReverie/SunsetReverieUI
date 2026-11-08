@@ -35,6 +35,28 @@ describe('srMessage', () => {
     expect(srMessageItems.value[0]?.backgroundColor).toBe('#10b981')
   })
 
+  it('color 与 iconColor 分别写入条目', () => {
+    srMessage('深色底', {
+      backgroundColor: '#1f2937',
+      color: '#f1f5f9',
+      iconColor: '#60a5fa',
+    })
+
+    const item = srMessageItems.value[0]
+    expect(item?.backgroundColor).toBe('#1f2937')
+    expect(item?.color).toBe('#f1f5f9')
+    expect(item?.iconColor).toBe('#60a5fa')
+  })
+
+  it('不传颜色时条目上不出现多余字段', () => {
+    srMessage('默认配色')
+    const item = srMessageItems.value[0]
+
+    expect(item?.color).toBeUndefined()
+    expect(item?.iconColor).toBeUndefined()
+    expect(item?.backgroundColor).toBeUndefined()
+  })
+
   it('到期后自动移除', () => {
     vi.useFakeTimers()
     srMessage('自动关闭', { duration: 1000 })

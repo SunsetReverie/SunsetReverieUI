@@ -87,27 +87,40 @@ srMessage('第四条')   // 第一条被自动关掉
 
 3 条这个数字比 Toast（5 条）小，因为居中的消息叠多了会直接糊住页面主体。
 
-## 自定义背景色
+## 自定义配色
+
+三个颜色可以单独控制：
 
 ```ts
-srMessage('自定义底色', { backgroundColor: '#fdf2e9' })
+srMessage('浅色底', { backgroundColor: '#fdf2e9' })
+srMessage('深色底', { backgroundColor: '#1f2937', color: '#f1f5f9', iconColor: '#60a5fa' })
 ```
 
 <div class="sr-demo">
-  <SrButton size="sm" variant="outline" @click="srMessage('浅色底的消息', { backgroundColor: '#fdf2e9' })">浅橙底</SrButton>
-  <SrButton size="sm" variant="outline" @click="srMessage('浅绿底的消息', { backgroundColor: '#eef9f2' })">浅绿底</SrButton>
+  <SrButton size="sm" variant="outline" @click="srMessage('浅色底的消息', { backgroundColor: '#fdf2e9' })">浅色底</SrButton>
+  <SrButton
+    size="sm"
+    variant="outline"
+    @click="srMessage('深色底要配浅色文字', { backgroundColor: '#1f2937', color: '#f1f5f9', iconColor: '#60a5fa' })"
+  >深色底 + 浅色文字</SrButton>
 </div>
 
-> **只换背景，不换文字色。** 文字始终是 `--sr-color-text`（深色），所以传深色底会让文字看不见：
->
-> ```ts
-> srMessage('深色底', { backgroundColor: '#1c2027' })
-> // 实测：背景 rgb(28,32,39)，文字 rgb(28,32,39) —— 完全不可见
-> ```
->
-> 需要深色底的消息，用 `type: 'error'` 这类自带配色的类型，不要自定义背景。
+| 选项 | 作用 | 不传时 |
+| --- | --- | --- |
+| `backgroundColor` | 背景色 | 预设的玻璃底 |
+| `color` | 文字颜色 | `--sr-color-text`（深色） |
+| `iconColor` | 图标颜色 | 跟随消息类型的主色 |
 
-这个选项的实际用途是「让消息穿上品牌浅色」这一种。常规提示直接用类型自带的配色。
+**深色背景必须同时传 `color`**。文字色不会自动跟随背景——只传 `backgroundColor: '#1c2027'` 的话，背景和文字都是深色，结果完全看不见：
+
+```
+背景 rgb(28, 32, 39)
+文字 rgb(28, 32, 39)      ← 同色，不可见
+```
+
+`iconColor` 是独立的，不传时仍用类型自带的蓝 / 绿 / 黄 / 红。
+
+常规提示直接用 `type` 的配色就够了，自定义三个颜色的场景主要是「让消息穿上品牌色」。
 
 ## 三种提示怎么选
 
@@ -145,7 +158,9 @@ srMessage.closeAll(): void
 | --- | --- | --- | --- |
 | `type` | `'info' \| 'success' \| 'warning' \| 'error'` | `'info'` | 类型 |
 | `duration` | `number` | `2000` | 停留毫秒，`0` 表示不自动关闭 |
-| `backgroundColor` | `string` | — | 自定义背景色，覆盖预设（**文字色不变，只适合浅色**）|
+| `backgroundColor` | `string` | — | 自定义背景色，覆盖预设玻璃底 |
+| `color` | `string` | — | 自定义文字颜色，深色背景下必须传 |
+| `iconColor` | `string` | — | 自定义图标颜色，不传跟随类型主色 |
 
 ## 注意事项
 
@@ -153,6 +168,6 @@ srMessage.closeAll(): void
 - **没有关闭按钮**。所以 `duration: 0` 要配合 `close(id)` 使用，否则消息会一直挂着。
 - **必须在客户端调用**（事件回调、`onMounted`、定时器里）。SSR 阶段调用是空操作，不会报错但也不会有反应。
 - **不需要在每个组件里放容器**。宿主节点由库自己管理，`document.body` 里只会有一个。
-- **`backgroundColor` 不能配深色。** 文字色固定为深色，深底会完全看不清。这是已知限制，不是 bug——真需要深色效果请用带配色的 `type`。
+- **深色背景要成对传 `color`。** 只改背景不改文字，两者会变成同一个颜色、完全看不见。`iconColor` 可以单独给，也可以不传（保留类型色）。
 - **不要用它做长文案**。一行之外的文字会被截断，需要多行用 `SrNotification`。
 - **连续触发会被顶掉**。批量操作时如果每条都弹消息，前面的会被后面的挤掉，用户可能什么都看不清——这种情况应该合并成一条「已处理 12 项」。
