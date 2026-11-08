@@ -30,6 +30,14 @@ const releaseItems: SrTimelineItem[] = [
 /** 倒序开关 */
 const reversed = ref(false)
 
+/** 活动日志 */
+const logItems: SrTimelineItem[] = [
+  { content: '提交了首个版本', timestamp: '2026-09-14' },
+  { content: '补全单元测试，覆盖率 82%', timestamp: '2026-09-12' },
+  { content: '依赖升级时发现一处不兼容，已回滚', timestamp: '2026-09-08' },
+  { content: '创建仓库', timestamp: '2026-09-01' },
+]
+
 /** 错误示例 */
 const errorItems: SrTimelineItem[] = [
   { content: '开始构建', timestamp: '09:00', type: 'success' },
@@ -66,6 +74,27 @@ const errorItems: SrTimelineItem[] = [
       <h3>自定义图标</h3>
       <SrTimeline :items="releaseItems" />
       <p class="hint">传了 icon 就替换掉圆点，同时节点会撑大一点容纳图标</p>
+    </section>
+
+    <section>
+      <h3>时间在上（mode = top）</h3>
+      <SrTimeline :items="logItems" mode="top" />
+      <p class="hint">时间挤在内容上方，仍保留圆点与连接线；适合时间需要强调、内容较长的场景</p>
+    </section>
+
+    <section>
+      <h3>无节点（plain）</h3>
+      <div class="grid">
+        <div class="card">
+          <span class="tag">plain</span>
+          <SrTimeline :items="logItems" plain />
+        </div>
+        <div class="card">
+          <span class="tag">plain + reverse（最新在上）</span>
+          <SrTimeline :items="logItems" plain reverse />
+        </div>
+      </div>
+      <p class="hint">隐藏圆点与连接线，时间自动移到内容上方——活动日志、提交记录的常见排版</p>
     </section>
 
     <section>
@@ -133,5 +162,25 @@ h3 {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  padding: 14px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+}
+
+.tag {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11px;
 }
 </style>

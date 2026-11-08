@@ -20,6 +20,13 @@ const approvalItems = [
 ]
 
 const reversed = ref(false)
+
+const logItems = [
+  { content: '提交了首个版本', timestamp: '2026-09-14' },
+  { content: '补全单元测试，覆盖率 82%', timestamp: '2026-09-12' },
+  { content: '依赖升级时发现一处不兼容，已回滚', timestamp: '2026-09-08' },
+  { content: '创建仓库', timestamp: '2026-09-01' },
+]
 </script>
 
 ## 交互演示
@@ -48,6 +55,41 @@ const reversed = ref(false)
 </div>
 
 适合时间占位固定的日志列表——左边一列时间对齐，扫一眼就能定位。
+
+## 时间在上
+
+`mode="top"` 把时间挤到内容上方，仍保留圆点与连接线：
+
+<div class="sr-demo is-block">
+  <SrTimeline :items="logItems" mode="top" />
+</div>
+
+适合时间需要强调、或者内容比时间长的场景。三种模式的差别只在于时间放哪：
+
+| `mode` | 布局 |
+| --- | --- |
+| `right`（默认） | 内容在左、时间在右 |
+| `left` | 时间在左、内容在右 |
+| `top` | 时间在上、内容在下 |
+
+## 无节点
+
+`plain` 隐藏圆点与连接线，时间自动移到内容上方——活动日志、提交记录的常见排版：
+
+<div class="sr-demo is-block">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px">
+    <div>
+      <p style="margin: 0 0 8px; font-size: 12px; color: var(--vp-c-text-3)">正序</p>
+      <SrTimeline :items="logItems" plain />
+    </div>
+    <div>
+      <p style="margin: 0 0 8px; font-size: 12px; color: var(--vp-c-text-3)">reverse（最新在上）</p>
+      <SrTimeline :items="logItems" plain reverse />
+    </div>
+  </div>
+</div>
+
+**`plain` 下 `mode` 失效**——没有轴列可以放时间，只能渲染在内容上方。
 
 ## 节点类型
 
@@ -136,7 +178,8 @@ const reversed = ref(false)
 | 名称 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `items` | `SrTimelineItem[]` | `[]` | 节点列表 |
-| `mode` | `'left' \| 'right'` | `'right'` | 时间戳位置 |
+| `mode` | `'left' \| 'right' \| 'top'` | `'right'` | 时间戳位置 |
+| `plain` | `boolean` | `false` | 无节点模式，隐藏圆点与连接线 |
 | `reverse` | `boolean` | `false` | 倒序排列 |
 
 ### SrTimelineItem
@@ -161,3 +204,5 @@ const reversed = ref(false)
 - **`hollow` 和 `type` 可以叠加**：空心 + 红色表示「本该出错但被跳过了」。
 - **连接线是绝对定位的**，贯穿到下一项的圆点上方。最后一项不画，所以不会有多余的尾巴。
 - **节点数量多时考虑分页**。几百条的时间轴没有虚拟滚动，DOM 会全部渲染。
+- **`plain` 会覆盖 `mode`**。没有轴线列，时间只能放内容上方。
+- **自定义图标时节点自动撑到 18px**，轴宽、圆点偏移、连接线长度会一起跟着变，所以图标始终落在竖线正中、并与首行文字对齐。

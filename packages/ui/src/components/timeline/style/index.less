@@ -2,13 +2,16 @@
  * 时间轴
  *
  * 每项是一个 grid：时间 / 轴（圆点 + 竖线）/ 内容。
- * 轴线用绝对定位贯穿整项高度，这样最后一项可以截断，不影响布局。
+ *
+ * 圆点的垂直位置用固定 padding-top 而不是 center：
+ * 对齐目标是「首行文字的中心」，而不是整块内容（含底部留白）的中心。
+ *
+ * 规则按特异性分组：基础(1) → 变体(2) → 组合(3)。
  */
 
 .sr-timeline {
   --sr-timeline-node-size: 9px;
-  // 圆点距每项顶部的距离：让圆点中心落在首行文字的中心线上
-  // 首行高 = 13px × 1.6 ≈ 20.8px，中心 10.4px，圆点 9px → 顶部留 6px
+  // 圆点距每项顶部：首行 13px × 1.6 ≈ 20.8，中心 10.4，圆点 9px → 顶部 6px
   --sr-timeline-node-offset: 6px;
   --sr-timeline-accent: var(--sr-color-border);
 
@@ -19,16 +22,14 @@
 
   // ---------- 单项 ----------
   &__item {
+    position: relative;
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: start;
     gap: 10px;
-    position: relative;
   }
 
   // ---------- 轴线 ----------
-  // 不用 flex 居中：居中会让圆点落在整项（含底部留白）的中线上，
-  // 视觉上比首行文字低一大截
   &__axis {
     position: relative;
     align-self: stretch;
@@ -36,6 +37,7 @@
     padding-top: var(--sr-timeline-node-offset);
   }
 
+  // ---------- 圆点 ----------
   &__node {
     position: relative;
     z-index: 1;
@@ -49,21 +51,9 @@
     color: #fff;
   }
 
-  // 有图标时把圆点撑大一点，否则图标糊成一团
-  &__node:has(svg) {
-    width: 18px;
-    height: 18px;
-  }
-
-  // 空心：只留描边
-  &__item.is-hollow &__node {
-    border: 1.5px solid var(--sr-timeline-accent);
-    background: var(--sr-color-bg-container);
-  }
-
-  // 竖线：从圆点底部画到下一项圆点的顶部
-  // bottom 为负值就是在「越界」到下一项——两项之间没有间隙，
-  // 所以只有画进下一项的头部区域，线才连得上
+  // ---------- 竖线 ----------
+  // 从圆点底部画到下一项圆点的顶部。两项之间没有间隙，
+  // 所以 bottom 要取负值「越界」到下一项的头部区域，线才连得上。
   &__tail {
     position: absolute;
     top: calc(var(--sr-timeline-node-offset) + var(--sr-timeline-node-size));
@@ -84,15 +74,13 @@
     line-height: 1.6;
   }
 
-  // 最后一项不需要底部留白
-  &__item.is-last &__content {
-    padding-bottom: 0;
+  &__body {
+    min-width: 0;
   }
 
   // ---------- 时间戳 ----------
   &__time {
     min-width: 0;
-    padding-top: 0;
     padding-bottom: 18px;
     color: var(--sr-color-text-tertiary);
     font-size: 12px;
@@ -100,16 +88,34 @@
     white-space: nowrap;
   }
 
-  &__item.is-last &__time {
-    padding-bottom: 0;
-  }
-
-  // 时间放在左侧时右对齐，靠近轴线
   &__time--left {
     text-align: right;
   }
 
-  // ---------- 类型 ----------
+  // 时间在内容上方时不需要额外留白，紧贴内容
+  &__time--top {
+    padding-bottom: 2px;
+    font-size: 11.5px;
+  }
+
+  // ---------- 变体：图标节点 ----------
+  // 圆点撑大后轴宽、偏移、线长都要跟着变，否则线会偏离图标中心
+  &__axis:has(svg) {
+    --sr-timeline-node-size: 18px;
+    --sr-timeline-node-offset: 2px;
+  }
+
+  // ---------- 变体：时间在左 ----------
+  &--left &__item {
+    grid-template-columns: auto auto 1fr;
+  }
+
+  // ---------- 变体：时间在上 ----------
+  &--top &__item {
+    grid-template-columns: auto 1fr;
+  }
+
+  // ---------- 变体：节点类型 ----------
   &__item.is-primary {
     --sr-timeline-accent: var(--sr-color-primary);
   }
@@ -126,8 +132,22 @@
     --sr-timeline-accent: var(--sr-color-danger);
   }
 
-  // ---------- 时间在左 ----------
-  &--left &__item {
-    grid-template-columns: auto auto 1fr;
+  // ---------- 最后一项 ----------
+  &__item.is-last &__content,
+  &__item.is-last &__time {
+    padding-bottom: 0;
+  }
+
+  // ---------- 组合：无节点 ----------
+  // 只剩一列，时间由内层渲染在内容上方
+  &.is-plain &__item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  // ---------- 组合：空心节点 ----------
+  &__item.is-hollow &__node {
+    border: 1.5px solid var(--sr-timeline-accent);
+    background: var(--sr-color-bg-container);
   }
 }

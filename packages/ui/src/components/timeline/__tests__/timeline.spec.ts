@@ -101,6 +101,53 @@ describe('SrTimeline', () => {
     wrapper.unmount()
   })
 
+  it('mode=top 时时间戳渲染在内容内部上方', () => {
+    const wrapper = mountTimeline({ mode: 'top' })
+    const first = wrapper.findAll('.sr-timeline__item')[0]
+
+    expect(wrapper.classes()).toContain('sr-timeline--top')
+    // 时间在 __content 里的 __time--top，不在独立列
+    expect(first?.find('.sr-timeline__content .sr-timeline__time--top').exists()).toBe(true)
+    expect(first?.find('.sr-timeline__time--left').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('mode=top 仍保留圆点与连接线', () => {
+    const wrapper = mountTimeline({ mode: 'top' })
+
+    expect(wrapper.findAll('.sr-timeline__node')).toHaveLength(4)
+    expect(wrapper.findAll('.sr-timeline__tail')).toHaveLength(3)
+    wrapper.unmount()
+  })
+
+  it('plain 模式不渲染圆点与连接线', () => {
+    const wrapper = mountTimeline({ plain: true })
+
+    expect(wrapper.find('.sr-timeline__axis').exists()).toBe(false)
+    expect(wrapper.findAll('.sr-timeline__node')).toHaveLength(0)
+    expect(wrapper.findAll('.sr-timeline__tail')).toHaveLength(0)
+    wrapper.unmount()
+  })
+
+  it('plain 模式时间自动移到内容上方', () => {
+    const wrapper = mountTimeline({ plain: true })
+    const first = wrapper.findAll('.sr-timeline__item')[0]
+
+    expect(wrapper.classes()).toContain('is-plain')
+    expect(first?.find('.sr-timeline__time--top').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('plain 模式下 mode 不再影响时间位置', () => {
+    const wrapper = mountTimeline({ plain: true, mode: 'left' })
+    const first = wrapper.findAll('.sr-timeline__item')[0]
+
+    // 即使传了 left，时间仍在内容上方
+    expect(first?.find('.sr-timeline__time--left').exists()).toBe(false)
+    expect(first?.find('.sr-timeline__time--top').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
   it('最后一项没有连接线', () => {
     const wrapper = mountTimeline()
     const nodes = wrapper.findAll('.sr-timeline__item')

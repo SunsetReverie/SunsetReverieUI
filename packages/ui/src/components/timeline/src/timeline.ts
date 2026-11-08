@@ -27,11 +27,23 @@ export const timelineProps = {
   /**
    * 时间戳位置 @default 'right'
    *
-   * `right` 内容在左、时间在右；`left` 反过来。
+   * - `right` 内容在左、时间在右
+   * - `left` 反过来
+   * - `top` 时间在上、内容在下（仍保留圆点与连接线）
    */
   mode: {
-    type: String as PropType<'left' | 'right'>,
+    type: String as PropType<'left' | 'right' | 'top'>,
     default: 'right',
+  },
+  /**
+   * 无节点模式 @default false
+   *
+   * 隐藏圆点与连接线，时间自动移到内容上方——适合「活动日志」这类
+   * 只关心时间与文字、不需要图形引导的场景。
+   */
+  plain: {
+    type: Boolean,
+    default: false,
   },
   /** 倒序排列 @default false */
   reverse: {
