@@ -53,6 +53,7 @@ export const SR_COMPONENT_NAMES = [
   'Tag',
   'Timeline',
   'Tooltip',
+  'Transfer',
   'Transition',
   'Tree',
   'Upload',

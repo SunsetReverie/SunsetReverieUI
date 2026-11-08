@@ -3529,6 +3529,79 @@
     "emits": [],
     "slots": []
   },
+  "transfer": {
+    "name": "transfer",
+    "options": [
+      {
+        "from": "transferProps",
+        "name": "modelValue",
+        "type": "SrTransferValue[]",
+        "default": "() => []",
+        "description": "右侧（已选）的值，配合 v-model 只存「在哪一边」，不存顺序——顺序始终跟 `data` 一致。"
+      },
+      {
+        "from": "transferProps",
+        "name": "data",
+        "type": "SrTransferItem[]",
+        "default": "() => []",
+        "description": "全部数据"
+      },
+      {
+        "from": "transferProps",
+        "name": "titles",
+        "type": "[string, string]",
+        "default": "() => ['待选', '已选']",
+        "description": "两侧标题 @default ['待选', '已选']"
+      },
+      {
+        "from": "transferProps",
+        "name": "filterable",
+        "type": "boolean",
+        "default": "false",
+        "description": "两侧可搜索 @default false"
+      },
+      {
+        "from": "transferProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "transferProps",
+        "name": "height",
+        "type": "number",
+        "default": "260",
+        "description": "列表高度 @default 260"
+      },
+      {
+        "from": "transferProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空状态文案 @default '暂无数据'"
+      },
+      {
+        "from": "transferProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["transfer"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": []
+  },
   "transition": {
     "name": "transition",
     "options": [

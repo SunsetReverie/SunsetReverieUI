@@ -1,0 +1,226 @@
+/**
+ * 穿梭框
+ *
+ * 三个部分横向排开：左列表、中间按钮、右列表。
+ * 两侧结构完全对称，只有数据和标题不同。
+ */
+
+.sr-transfer {
+  --sr-transfer-panel-width: 200px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  // ---------- 面板 ----------
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    width: var(--sr-transfer-panel-width);
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-color-bg-container);
+    overflow: hidden;
+  }
+
+  // ---------- 头部 ----------
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    cursor: pointer;
+  }
+
+  &__check input {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    accent-color: var(--sr-color-primary);
+    cursor: pointer;
+  }
+
+  &__title {
+    color: var(--sr-color-text);
+    font-size: 12.5px;
+    font-weight: var(--sr-font-weight-medium);
+    white-space: nowrap;
+  }
+
+  &__count {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---------- 搜索 ----------
+  &__filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text);
+    font-size: 12.5px;
+    outline: none;
+  }
+
+  // ---------- 列表 ----------
+  &__list {
+    padding: 4px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 6px;
+    border-radius: var(--sr-radius-sm);
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__item:hover {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__item input {
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    accent-color: var(--sr-color-primary);
+    cursor: pointer;
+  }
+
+  &__label {
+    min-width: 0;
+    color: var(--sr-color-text);
+    font-size: 12.5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: 24px 8px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  // ---------- 中间按钮 ----------
+  &__actions {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-form-radius);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text-secondary);
+    cursor: pointer;
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__btn:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: 1px;
+  }
+
+  &__btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  &__btn:hover:not(:disabled) {
+    border-color: var(--sr-color-primary);
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary-text);
+  }
+
+  // ---------- 禁用与状态 ----------
+  &.is-disabled &__panel {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &.is-disabled &__item {
+    cursor: not-allowed;
+  }
+
+  &__item.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &__item.is-disabled:hover {
+    background: transparent;
+  }
+
+  // ---------- 尺寸 ----------
+  &--sm {
+    --sr-transfer-panel-width: 170px;
+  }
+
+  &--sm &__label,
+  &--sm &__input {
+    font-size: 12px;
+  }
+
+  &--lg {
+    --sr-transfer-panel-width: 240px;
+  }
+
+  &--lg &__label,
+  &--lg &__input {
+    font-size: 13.5px;
+  }
+
+  // ---------- 窄屏：竖排 ----------
+  @media (width <= 640px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    &__panel {
+      width: 100%;
+    }
+
+    &__actions {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+}

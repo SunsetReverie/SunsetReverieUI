@@ -73,6 +73,12 @@ const segOptions = [
   { label: '月', value: 'month' },
 ]
 
+/** 穿梭框数据 */
+const transferData = [
+  { value: 'a', label: '选项 A' },
+  { value: 'b', label: '选项 B' },
+]
+
 /** 级联数据 */
 const cascaderOptions = [
   {
@@ -303,6 +309,13 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Transfer</span>
+        <div class="cell__body cell__body--column">
+          <sr-transfer :data="transferData" :model-value="['a']" :height="120" />
         </div>
       </div>
 

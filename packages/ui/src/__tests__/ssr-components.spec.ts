@@ -46,6 +46,7 @@ import {
   SrTimeline,
   SrTag,
   SrTooltip,
+  SrTransfer,
   SrTree,
   SrUpload,
   SrVirtualList,
@@ -304,6 +305,19 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('浙江')
     expect(html).toContain('杭州')
+  })
+
+  it('SrTransfer 服务端输出两侧列表', async () => {
+    const html = await render(SrTransfer, {
+      data: [
+        { value: 'a', label: '苹果' },
+        { value: 'b', label: '香蕉' },
+      ],
+      modelValue: ['a'],
+    })
+
+    expect(html).toContain('苹果')
+    expect(html).toContain('香蕉')
   })
 
   it('SrPagination', async () => {

@@ -104,6 +104,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./input-number/InputNumberDemo.vue'),
       },
       {
+        key: 'transfer',
+        name: 'SrTransfer',
+        description: '穿梭框。双列表选择，支持搜索、全选与禁用。',
+        demo: () => import('./transfer/TransferDemo.vue'),
+      },
+      {
         key: 'cascader',
         name: 'SrCascader',
         description: '级联选择。多级联动、可搜索、支持多选。',
