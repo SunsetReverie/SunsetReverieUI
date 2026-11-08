@@ -85,12 +85,15 @@
     padding: 14px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
-    // 半透明但不透字：不透明度在 0.72 附近（能感知背后有内容），
-    // 磨砂靠足够强的模糊把背后的文字糊成色块，而不是靠加白盖住。
-    background: color-mix(in srgb, var(--sr-color-bg-elevated) 80%, transparent);
+    // 不用 color-mix 叠加：那样只有 0.84 × 0.8 ≈ 0.67 的效果，
+    // 而且 color-mix 在旧浏览器里整条声明会失效，退化成不透明白。
+    // 这里直接写 rgba，值明确、兼容性好。
+    background: rgb(255 255 255 / 62%);
     box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
-    backdrop-filter: blur(56px) saturate(180%);
-    -webkit-backdrop-filter: blur(56px) saturate(180%);
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    // 边框弱化：半透明面板上再画深色边框会显得很脏
+    border-color: rgb(255 255 255 / 55%);
 
     // 极淡的噪点：blur 只能做出「糊」，加一层颗粒才像磨砂玻璃
     &::after {
@@ -126,6 +129,11 @@
     &:hover {
       background: var(--sr-color-primary-alpha-12);
     }
+  }
+
+  [data-sr-theme='dark'] &__panel {
+    background: rgb(38 42 50 / 68%);
+    border-color: rgb(255 255 255 / 14%);
   }
 
   // ---------- 主体 ----------
