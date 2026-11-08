@@ -1,0 +1,138 @@
+/**
+ * 骨架屏
+ *
+ * 结构：可选的圆形头像 + 标题条 + 若干段落条。
+ * 动画用背景渐变横向平移，比 opacity 呼吸更接近「加载中」的心理预期 ——
+ * 闪光扫过暗示内容正在填充，忽明忽暗容易被误认为是卡顿。
+ */
+
+.sr-skeleton {
+  --sr-skeleton-row-height: 14px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+
+  // ---------- 尺寸 ----------
+  &--xs {
+    --sr-skeleton-row-height: 10px;
+  }
+
+  &--sm {
+    --sr-skeleton-row-height: 12px;
+  }
+
+  &--lg {
+    --sr-skeleton-row-height: 16px;
+  }
+
+  // ---------- 头像 ----------
+  &__avatar {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-skeleton-bg);
+  }
+
+  &--lg &__avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  &--sm &__avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  &--xs &__avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  &.is-round &__avatar {
+    border-radius: 50%;
+  }
+
+  // ---------- 文本区 ----------
+  &__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  &__title {
+    width: 42%;
+    height: calc(var(--sr-skeleton-row-height) + 6px);
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-skeleton-bg);
+  }
+
+  &__row {
+    height: var(--sr-skeleton-row-height);
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-skeleton-bg);
+  }
+
+  // ---------- 闪光 ----------
+  // 静态时是一块浅灰；开动画后叠一层高光从左扫到右
+  &.is-animated &__avatar,
+  &.is-animated &__title,
+  &.is-animated &__row {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, var(--sr-skeleton-shine) 50%, transparent 100%);
+      content: '';
+      transform: translateX(-100%);
+      animation: sr-skeleton-shine 1.4s ease-in-out infinite;
+    }
+  }
+
+  // 动画间距错开，避免整块一起闪，看起来像一个大色块在动
+  &.is-animated &__row:nth-child(2)::after {
+    animation-delay: 0.1s;
+  }
+
+  &.is-animated &__row:nth-child(3)::after {
+    animation-delay: 0.2s;
+  }
+
+  &.is-animated &__row:nth-child(4)::after {
+    animation-delay: 0.3s;
+  }
+
+  // ---------- 无障碍 ----------
+  // 骨架本身没有语义，靠这个给读屏软件一句说明
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@keyframes sr-skeleton-shine {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-skeleton.is-animated .sr-skeleton__avatar::after,
+  .sr-skeleton.is-animated .sr-skeleton__title::after,
+  .sr-skeleton.is-animated .sr-skeleton__row::after {
+    animation: none;
+  }
+}

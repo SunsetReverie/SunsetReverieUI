@@ -2281,6 +2281,63 @@
     ],
     "slots": ["option"]
   },
+  "skeleton": {
+    "name": "skeleton",
+    "options": [
+      {
+        "from": "skeletonProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否处于加载中 @default true 为 true 渲染骨架占位，为 false 渲染默认插槽内容。 不传插槽时可以当成纯占位块用。"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "rows",
+        "type": "number",
+        "default": "3",
+        "description": "段落行数，0 表示不显示段落 @default 3"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "title",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示标题占位 @default true"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "avatar",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示头像占位 @default false"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "round",
+        "type": "boolean",
+        "default": "false",
+        "description": "头像是否为圆形 @default false"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "animated",
+        "type": "boolean",
+        "default": "true",
+        "description": "闪光动画 @default true 关掉后是静态灰块。`prefers-reduced-motion` 下会自动关掉，不依赖这个开关。"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位，影响行高与间距"
+      }
+    ],
+    "sources": ["skeleton"],
+    "emits": [],
+    "slots": []
+  },
   "spinner": {
     "name": "spinner",
     "options": [

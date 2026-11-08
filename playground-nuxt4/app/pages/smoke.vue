@@ -259,6 +259,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Skeleton</span>
+        <div class="cell__body cell__body--column">
+          <sr-skeleton :rows="3" avatar />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Progress</span>
         <div class="cell__body cell__body--column">
           <sr-progress :percent="62" />

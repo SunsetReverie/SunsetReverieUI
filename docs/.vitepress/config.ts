@@ -140,6 +140,7 @@ export default defineConfig({
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
             { text: 'SrEmpty', link: '/components/empty' },
+            { text: 'SrSkeleton', link: '/components/skeleton' },
           ],
         },
         {

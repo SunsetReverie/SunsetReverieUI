@@ -30,6 +30,7 @@ import {
   SrRadio,
   SrRadioGroup,
   SrSelect,
+  SrSkeleton,
   SrSpinner,
   SrSwitch,
   SrTable,
@@ -194,6 +195,12 @@ describe('导航与数据组件的 SSR 渲染', () => {
     // 收起状态下子节点不应出现
     expect(html).toContain('A')
     expect(html).not.toContain('A1')
+  })
+
+  it('SrSkeleton 服务端输出占位结构', async () => {
+    const html = await render(SrSkeleton, { rows: 2 })
+    expect(html).toContain('sr-skeleton')
+    expect(html).toContain('aria-busy="true"')
   })
 
   it('SrPagination', async () => {

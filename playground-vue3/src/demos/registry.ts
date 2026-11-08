@@ -186,6 +186,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./avatar/AvatarDemo.vue'),
       },
       {
+        key: 'skeleton',
+        name: 'SrSkeleton',
+        description: '骨架屏。加载时占住布局，避免内容出现时整块跳变。',
+        demo: () => import('./skeleton/SkeletonDemo.vue'),
+      },
+      {
         key: 'empty',
         name: 'SrEmpty',
         description: '空状态。图标 / 插图 / 虚线框 / 操作区。',

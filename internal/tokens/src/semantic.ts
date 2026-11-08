@@ -149,6 +149,10 @@ export const semanticLight: Record<string, string> = {
 
   // ---------- 遮罩 ----------
   'color-mask': 'rgba(16, 20, 26, 0.45)',
+  // 骨架屏：底色比 border-subtle 略深一点，才能在浅底上分辨出「这是一块占位」
+  'skeleton-bg': 'rgba(16, 20, 26, 0.07)',
+  // 扫光的高光，比底色亮一档
+  'skeleton-shine': 'rgba(255, 255, 255, 0.65)',
 }
 
 /**
@@ -232,6 +236,9 @@ export const semanticDark: Record<string, string> = {
 
   // ---------- 遮罩 ----------
   'color-mask': 'rgba(0, 0, 0, 0.65)',
+  // 暗色下用白色低透明度做底，高光反过来用「更亮」的白
+  'skeleton-bg': 'rgba(255, 255, 255, 0.09)',
+  'skeleton-shine': 'rgba(255, 255, 255, 0.14)',
 }
 
 /**

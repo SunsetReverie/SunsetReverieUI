@@ -37,6 +37,7 @@ export const SR_COMPONENT_NAMES = [
   'RadioGroup',
   'Row',
   'Select',
+  'Skeleton',
   'Spinner',
   'Switch',
   'Table',
