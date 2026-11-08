@@ -119,6 +119,15 @@ export const datePickerProps = {
     type: Boolean,
     default: true,
   },
+  /**
+   * 是否显示秒 @default true
+   *
+   * 关掉后时间只有时:分，值里的秒会被清零。只对 datetime / datetimerange 有效。
+   */
+  showSeconds: {
+    type: Boolean,
+    default: true,
+  },
   /** 一周从周几开始，0 为周日 @default 1 */
   firstDayOfWeek: {
     type: Number,

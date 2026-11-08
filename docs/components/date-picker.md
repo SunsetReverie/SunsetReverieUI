@@ -84,6 +84,19 @@ const date = ref(null)
 
 带时间时点日期**不会立即提交**，需要点「确定」。否则调完时分秒面板就关了，没法继续改。
 
+时间可以直接在输入框里打字，不需要连点加减号。
+
+### 时间精度
+
+`showSeconds` 控制要不要秒：
+
+```vue
+<SrDatePicker type="datetime" />                        <!-- 时:分:秒 -->
+<SrDatePicker type="datetime" :show-seconds="false" />  <!-- 只要时:分 -->
+```
+
+关掉后显示格式自动变成 `YYYY-MM-DD HH:mm`，值里的秒也会被清零——不这么做会出现「界面显示 09:30，实际存了 09:30:45」的错位。
+
 ## 快捷选项（可选）
 
 **默认不显示快捷区**。它是一个可选变体：大多数场景下用户只需要一个日历，多一排按钮反而占地方。传 `shortcuts` 才会渲染。
@@ -171,6 +184,7 @@ const disabledWeekend = (date: Date) => [0, 6].includes(date.getDay())
 | `status` | `'default' \| 'error' \| 'warning' \| 'success'` | `'default'` | 校验态 |
 | `shortcuts` | `SrDatePickerShortcut[]` | — | 快捷选项；不传则不显示快捷区 |
 | `showShortcuts` | `boolean` | `true` | 是否渲染快捷区（需配合 `shortcuts`） |
+| `showSeconds` | `boolean` | `true` | 时间是否精确到秒 |
 | `firstDayOfWeek` | `number` | `1` | 一周起始日，0 为周日 |
 | `editable` | `boolean` | `false` | 允许直接输入 |
 

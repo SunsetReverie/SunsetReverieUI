@@ -51,7 +51,8 @@ const hasTime = computed(() => props.type === 'datetime' || props.type === 'date
 /** 显示格式 */
 const displayFormat = computed(() => {
   if (props.format) return props.format
-  return hasTime.value ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
+  if (!hasTime.value) return 'YYYY-MM-DD'
+  return props.showSeconds ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm'
 })
 
 /** 最小可选 */
@@ -353,31 +354,54 @@ const timeValue = computed<Date>(() => {
 })
 
 /**
- * 调整时间
+ * 直接输入时间
+ *
+ * 比连点加减号快得多，尤其是要跳到某个具体时刻时。
  * @param unit 单位
- * @param delta 增量
+ * @param raw 输入值
  */
-function stepTime(unit: 'hours' | 'minutes' | 'seconds', delta: number): void {
-  const value = draft.value ?? inner.value
-  if (!value) return
+function setTime(unit: 'hours' | 'minutes' | 'seconds', raw: string): void {
+  const max = unit === 'hours' ? 23 : 59
+  const parsed = Number(raw)
+  if (Number.isNaN(parsed)) return
+
+  const next = Math.min(max, Math.max(0, Math.trunc(parsed)))
+  const value = draft.value ?? inner.value ?? new Date()
 
   const apply = (date: Date): Date => {
-    const next = new Date(date)
-    if (unit === 'hours') next.setHours(next.getHours() + delta)
-    else if (unit === 'minutes') next.setMinutes(next.getMinutes() + delta)
-    else next.setSeconds(next.getSeconds() + delta)
-    return next
+    const copy = new Date(date)
+    if (unit === 'hours') copy.setHours(next)
+    else if (unit === 'minutes') copy.setMinutes(next)
+    else copy.setSeconds(next)
+    return copy
   }
 
   draft.value = Array.isArray(value) ? [apply(value[0]), apply(value[1])] : apply(value)
 }
 
-/** 时间单位：横排三组，避免右侧竖栏留出一大片空白 */
-const TIME_UNITS = computed(() => [
-  { key: 'hours' as const, label: '时', value: timeValue.value.getHours() },
-  { key: 'minutes' as const, label: '分', value: timeValue.value.getMinutes() },
-  { key: 'seconds' as const, label: '秒', value: timeValue.value.getSeconds() },
-])
+/**
+ * 时间单位
+ *
+ * 关掉 showSeconds 时只保留时和分；秒在提交时会被清零，
+ * 避免「显示 09:30 但值里带着 45 秒」这种不一致。
+ */
+interface TimeUnit {
+  key: 'hours' | 'minutes' | 'seconds'
+  label: string
+  max: number
+  value: number
+}
+
+const TIME_UNITS = computed<TimeUnit[]>(() => {
+  const units: TimeUnit[] = [
+    { key: 'hours' as const, label: '时', max: 23, value: timeValue.value.getHours() },
+    { key: 'minutes' as const, label: '分', max: 59, value: timeValue.value.getMinutes() },
+  ]
+  if (props.showSeconds) {
+    units.push({ key: 'seconds' as const, label: '秒', max: 59, value: timeValue.value.getSeconds() })
+  }
+  return units
+})
 
 /**
  * 补零
@@ -617,25 +641,17 @@ defineExpose({ open, close, toggle })
           <div class="sr-date-picker__time-fields">
             <template v-for="(unit, index) in TIME_UNITS" :key="unit.key">
               <span v-if="index > 0" class="sr-date-picker__time-sep">:</span>
-              <div class="sr-date-picker__time-field" :title="unit.label">
-                <button
-                  class="sr-date-picker__step"
-                  type="button"
-                  :aria-label="`${unit.label}减一`"
-                  @click="stepTime(unit.key, -1)"
-                >
-                  −
-                </button>
-                <span class="sr-date-picker__time-value">{{ pad2(unit.value) }}</span>
-                <button
-                  class="sr-date-picker__step"
-                  type="button"
-                  :aria-label="`${unit.label}加一`"
-                  @click="stepTime(unit.key, 1)"
-                >
-                  +
-                </button>
-              </div>
+              <input
+                class="sr-date-picker__time-input"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                :max="unit.max"
+                :value="pad2(unit.value)"
+                :aria-label="unit.label"
+                :title="unit.label"
+                @input="setTime(unit.key, ($event.target as HTMLInputElement).value)"
+              />
             </template>
           </div>
         </div>

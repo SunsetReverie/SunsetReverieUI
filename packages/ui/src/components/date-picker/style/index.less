@@ -251,15 +251,19 @@
   &__time {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 8px 6px;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0;
     border-top: 1px solid var(--sr-color-border-subtle);
   }
 
   &__time-tabs {
     display: flex;
-    gap: 4px;
     flex: 0 0 auto;
+    gap: 2px;
+    padding: 2px;
+    border-radius: var(--sr-date-picker-radius, 8px);
+    background: var(--sr-color-bg-sunken);
   }
 
   &__time-fields {
@@ -274,19 +278,50 @@
     gap: 2px;
   }
 
+  // 时间输入框：直接输入比连点加减号快，也不需要一排按钮占空间
+  &__time-input {
+    width: 34px;
+    height: 26px;
+    padding: 0 2px;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-date-picker-radius, 8px);
+    background: color-mix(in srgb, var(--sr-color-bg-container) 60%, transparent);
+    color: var(--sr-color-text);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+
+    &:focus {
+      border-color: var(--sr-color-primary);
+      outline: none;
+    }
+
+    // 去掉原生上下箭头：本来就有直接输入，多一排箭头反而挤
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      margin: 0;
+      appearance: none;
+    }
+
+    appearance: textfield;
+  }
+
   &__time-tab {
     flex: 1 1 0;
-    padding: 3px 0;
+    padding: 3px 8px;
     border: 0;
-    border-radius: var(--sr-radius-sm);
-    background: var(--sr-color-bg-sunken);
+    border-radius: 6px;
+    background: transparent;
     color: var(--sr-color-text-tertiary);
     font-size: 11px;
+    white-space: nowrap;
     cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
     &.is-active {
-      background: var(--sr-color-primary-alpha-12);
+      background: var(--sr-color-bg-container);
       color: var(--sr-color-primary-text);
+      font-weight: var(--sr-font-weight-medium);
     }
   }
 

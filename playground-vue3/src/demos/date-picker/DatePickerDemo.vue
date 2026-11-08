@@ -10,6 +10,9 @@ const range = ref<[Date, Date] | null>(null)
 const dateTime = ref<Date | null>(null)
 const dateTimeRange = ref<[Date, Date] | null>(null)
 
+/** 不带秒的时间 */
+const noSeconds = ref<Date | null>(null)
+
 /** 范围限制 */
 const bounded = ref<Date | null>(null)
 const today = new Date()
@@ -99,6 +102,21 @@ const readonlyValue = ref<Date | null>(new Date(2026, 10, 8))
         </div>
       </div>
       <p class="hint">带时间时需要点「确定」才提交，避免调完时分秒就关掉面板</p>
+    </section>
+
+    <section>
+      <h3>时间精度（showSeconds）</h3>
+      <div class="grid">
+        <div>
+          <span class="tag">showSeconds = true（时:分:秒）</span>
+          <SrDatePicker v-model="dateTime" type="datetime" />
+        </div>
+        <div>
+          <span class="tag">showSeconds = false（只要时:分）</span>
+          <SrDatePicker v-model="noSeconds" type="datetime" :show-seconds="false" />
+        </div>
+      </div>
+      <p class="hint">关掉秒后，值里的秒会被清零，显示格式也自动变成 HH:mm</p>
     </section>
 
     <section>

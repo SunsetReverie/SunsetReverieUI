@@ -200,6 +200,51 @@ describe('SrDatePicker', () => {
     wrapper.unmount()
   })
 
+  it('时间可直接输入并提交', async () => {
+    const wrapper = mountPicker({ type: 'datetime', modelValue: new Date(2026, 10, 8, 9, 30, 0) })
+    await wrapper.find('.sr-date-picker__trigger').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
+    })
+
+    const inputs = wrapper.findAll('.sr-date-picker__time-input')
+    await inputs[0]?.setValue('15')
+    await inputs[1]?.setValue('45')
+
+    // 点确定提交，小时应是输入的 15
+    await wrapper.find('.sr-date-picker__confirm').trigger('click')
+    const value = wrapper.emitted('update:modelValue')?.at(-1)?.[0] as Date
+    expect(value.getHours()).toBe(15)
+    expect(value.getMinutes()).toBe(45)
+    wrapper.unmount()
+  })
+
+  it('showSeconds=false 时只有两个输入框', async () => {
+    const wrapper = mountPicker({
+      type: 'datetime',
+      modelValue: new Date(2026, 10, 8, 9, 30),
+      showSeconds: false,
+    })
+    await wrapper.find('.sr-date-picker__trigger').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
+    })
+
+    expect(wrapper.findAll('.sr-date-picker__time-input')).toHaveLength(2)
+    wrapper.unmount()
+  })
+
+  it('showSeconds=false 时显示格式不带秒', () => {
+    const wrapper = mountPicker({
+      type: 'datetime',
+      modelValue: new Date(2026, 10, 8, 9, 30, 15),
+      showSeconds: false,
+    })
+
+    expect(wrapper.find('.sr-date-picker__value').text()).toBe('2026-11-08 09:30')
+    wrapper.unmount()
+  })
+
   it('datetime 模式渲染时间选择区', async () => {
     const wrapper = mountPicker({ type: 'datetime', modelValue: new Date(2026, 10, 8, 9, 30) })
     await wrapper.find('.sr-date-picker__trigger').trigger('click')
@@ -208,7 +253,8 @@ describe('SrDatePicker', () => {
     })
 
     expect(wrapper.find('.sr-date-picker__time').exists()).toBe(true)
-    expect(wrapper.findAll('.sr-date-picker__time-field')).toHaveLength(3)
+    // 时分秒三个输入框
+    expect(wrapper.findAll('.sr-date-picker__time-input')).toHaveLength(3)
     wrapper.unmount()
   })
 })

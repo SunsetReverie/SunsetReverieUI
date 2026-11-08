@@ -773,14 +773,21 @@
         "name": "shortcuts",
         "type": "SrDatePickerShortcut[]",
         "default": "undefined",
-        "description": "快捷选项 不传时使用内置的「今天 / 近 7 天 / 本月」；传空数组则完全不显示。"
+        "description": "快捷选项 默认不显示快捷区。传了数组才渲染，这是可选变体而不是默认形态 —— 大多数场景用户只需要一个日历，多一列按钮反而占地方。"
       },
       {
         "from": "datePickerProps",
         "name": "showShortcuts",
         "type": "boolean",
         "default": "true",
-        "description": "显示快捷区 @default true"
+        "description": "显示快捷区，需要同时传 shortcuts 才有内容 @default true"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "showSeconds",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示秒 @default true 关掉后时间只有时:分，值里的秒会被清零。只对 datetime / datetimerange 有效。"
       },
       {
         "from": "datePickerProps",
