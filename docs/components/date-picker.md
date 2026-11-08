@@ -61,7 +61,7 @@ const date = ref(null)
 
 ### 单个日期
 
-<div class="sr-demo is-block">
+<div class="sr-demo is-block" style="padding-bottom: 340px">
   <SrDatePicker v-model="single" />
   <p style="margin: 8px 0 0; font-size: 13px; color: var(--vp-c-text-3)">
     {{ single ? single.toLocaleDateString('zh-CN') : '未选择' }}
