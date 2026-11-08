@@ -297,6 +297,7 @@ export const qualityFlat: Record<string, string> = {
   // flat 用 none 而非 blur(0)：后者仍会创建无意义的合成层
   'glass-filter': 'none',
   'glass-filter-strong': 'none',
+  'glass-filter-hero': 'none',
   // 注意不能写 none：surface mixin 会拼成 `box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight)`，
   // 若这里是 none 会导致整条 box-shadow 非法而失效。用零尺寸透明阴影占位。
   'glass-highlight': '0 0 0 0 transparent',
@@ -343,6 +344,9 @@ export const qualityGlass: Record<string, string> = {
   // 浮层（下拉菜单等）用更强的模糊：面积小、悬浮在内容之上，
   // 模糊不足时半透明底会显得像"没生效的白板"
   'glass-filter-strong': 'blur(28px) saturate(200%)',
+  // 面积小但内容密集的面板（日期选择器）再强一档：
+  // 28px 不足以把背后的正文糊成色块，文字轮廓会干扰阅读
+  'glass-filter-hero': 'blur(40px) saturate(220%)',
   'glass-highlight': 'inset 0 1px 0 rgba(255, 255, 255, 0.55)',
   'glass-border-width': '1px',
   'glass-border-color': 'rgba(255, 255, 255, 0.55)',

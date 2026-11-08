@@ -92,8 +92,8 @@
     background: var(--sr-date-picker-panel-bg);
     border-color: var(--sr-date-picker-panel-border);
     box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
-    backdrop-filter: blur(60px) saturate(180%);
-    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    // 用 hero 档（40px）：内容密集的小面板需要比常规浮层更强的模糊
+    .sr-glass-layer(var(--sr-glass-filter-hero));
 
     // 极淡的噪点：blur 只能做出「糊」，加一层颗粒才像磨砂玻璃
     &::after {
