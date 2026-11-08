@@ -81,11 +81,13 @@
     display: flex;
     flex-direction: column;
     width: max-content;
-    padding: 6px;
+    // 面板是浮层，留白要够，贴边会显得很局促
+    padding: 14px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
-    background: var(--sr-color-bg-container);
-    box-shadow: var(--sr-shadow-lg);
+    // 比容器底色更透一档：玻璃要能透出背后的内容才成立
+    background: color-mix(in srgb, var(--sr-color-bg-container) 82%, transparent);
+    box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
     .sr-glass-layer(var(--sr-glass-filter-strong));
   }
 
@@ -99,7 +101,7 @@
   }
 
   &__shortcut {
-    padding: 3px 9px;
+    padding: 4px 10px;
     border: 1px solid transparent;
     border-radius: var(--sr-radius-full);
     background: var(--sr-color-primary-alpha-08);
@@ -153,7 +155,7 @@
     height: 22px;
     padding: 0;
     border: 0;
-    border-radius: var(--sr-radius-sm);
+    border-radius: var(--sr-date-picker-radius, 8px);
     background: transparent;
     color: var(--sr-color-text-tertiary);
     cursor: pointer;
@@ -187,7 +189,8 @@
     height: 28px;
     padding: 0;
     border: 0;
-    border-radius: var(--sr-radius-sm);
+    // 不复用 --sr-radius-sm（只有 2px，在 28px 的格子上显得很硬）
+    border-radius: var(--sr-date-picker-radius, 8px);
     background: transparent;
     color: var(--sr-color-text);
     font-size: 12.5px;
@@ -335,9 +338,9 @@
   }
 
   &__confirm {
-    padding: 4px 12px;
+    padding: 5px 14px;
     border: 0;
-    border-radius: var(--sr-radius-sm);
+    border-radius: var(--sr-date-picker-radius, 8px);
     background: var(--sr-color-primary);
     color: #fff;
     font-size: 12px;

@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 
-import { useSrTheme } from '@sunset-reverie/ui'
+import { SR_STYLE_STORAGE_KEY, useSrTheme } from '@sunset-reverie/ui'
 import '@sunset-reverie/ui/style.css'
 
 import App from './App.vue'
@@ -25,6 +25,9 @@ if (themeParam === 'light' || themeParam === 'dark' || themeParam === 'auto') {
 const styleParam = params.get('style')
 if (styleParam === 'flat' || styleParam === 'glass') {
   theme.setStyle(styleParam)
+} else if (!localStorage.getItem(SR_STYLE_STORAGE_KEY)) {
+  // 没存过偏好时默认玻璃：平面纯色下看不出这套设计的分层，磨砂才是它的重点
+  theme.setStyle('glass')
 }
 // ?tip=1 强制显示所有提示气泡：无头截图无法触发 hover，用它拍视觉稿
 if (params.get('tip') === '1') document.body.classList.add('force-tooltip')
