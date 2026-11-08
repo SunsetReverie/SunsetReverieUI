@@ -313,6 +313,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">QRCode</span>
+        <div class="cell__body cell__body--column">
+          <sr-q-r-code value="https://example.com" :size="120" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">ColorPicker</span>
         <div class="cell__body cell__body--column">
           <sr-color-picker model-value="#3e3edc" />

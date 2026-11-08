@@ -1,0 +1,74 @@
+/**
+ * 二维码
+ *
+ * 用 SVG 绘制：码点拼成一条 path，缩放到任意尺寸都不糊。
+ * 容器尺寸由内联样式控制，这里只负责居中与遮罩层。
+ */
+
+.sr-qrcode {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: var(--sr-radius-sm);
+  overflow: hidden;
+
+  &__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  // ---------- 加载占位 ----------
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__text {
+    font-size: 12px;
+  }
+
+  // ---------- 中心图标 ----------
+  // 白底 + 圆角，既挡住下面的码点，又不会让图标糊在深色块上
+  &__icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--sr-radius-sm);
+    background: #fff;
+    box-shadow: 0 0 0 3px #fff;
+    color: var(--sr-color-text);
+    transform: translate(-50%, -50%);
+  }
+
+  // ---------- 失效遮罩 ----------
+  &__mask {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--sr-color-bg-container) 82%, transparent);
+  }
+
+  &__badge {
+    padding: 4px 10px;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-text);
+    color: var(--sr-color-bg-container);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}

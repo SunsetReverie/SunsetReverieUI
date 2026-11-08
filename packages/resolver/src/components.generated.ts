@@ -38,6 +38,7 @@ export const SR_COMPONENT_NAMES = [
   'Pagination',
   'Panel',
   'Progress',
+  'QRCode',
   'Radio',
   'RadioGroup',
   'Result',

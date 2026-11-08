@@ -119,6 +119,7 @@ export default defineConfig({
             { text: 'SrCascader', link: '/components/cascader' },
             { text: 'SrTransfer', link: '/components/transfer' },
             { text: 'SrColorPicker', link: '/components/color-picker' },
+            { text: 'SrQRCode', link: '/components/qrcode' },
             { text: 'SrInputNumber', link: '/components/input-number' },
             { text: 'SrCheckbox', link: '/components/checkbox' },
             { text: 'SrRadio', link: '/components/radio' },

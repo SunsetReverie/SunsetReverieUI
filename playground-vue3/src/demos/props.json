@@ -2416,6 +2416,89 @@
     "emits": [],
     "slots": []
   },
+  "qrcode": {
+    "name": "qrcode",
+    "options": [
+      {
+        "from": "qrcodeProps",
+        "name": "value",
+        "type": "string",
+        "default": "''",
+        "description": "要编码的内容（URL、文本、Wi-Fi 配置等）"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "size",
+        "type": "number",
+        "default": "160",
+        "description": "渲染尺寸（像素） @default 160 这是容器边长，内部用 SVG 绘制，放大不会模糊。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "level",
+        "type": "SrQrLevel",
+        "default": "'M'",
+        "description": "纠错等级 @default 'M' L 约 7%、M 约 15%、Q 约 25%、H 约 30% 的码字可被修复。 等级越高越抗污损，但同样内容需要的版本更大。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "margin",
+        "type": "number",
+        "default": "2",
+        "description": "静区宽度（模块数） @default 2 规范建议 4，但小尺寸下会显得四周很空；2 在多数扫码器上够用。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "color",
+        "type": "string",
+        "default": "'#000000'",
+        "description": "前景色 @default '#000000'"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "'#ffffff'",
+        "description": "背景色 @default '#ffffff'"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "中心图标名 @default '' 会盖住中间一块区域，建议同时把 `level` 提到 `H`。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "iconSize",
+        "type": "number",
+        "default": "28",
+        "description": "图标尺寸（像素） @default 28"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "status",
+        "type": "'active' | 'loading' | 'expired'",
+        "default": "'active'",
+        "description": "状态 @default 'active' `expired` 会盖一层「已失效」遮罩并停止渲染码点，`loading` 显示占位。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "expiredText",
+        "type": "string",
+        "default": "'二维码已失效'",
+        "description": "失效状态的提示文案 @default '二维码已失效'"
+      }
+    ],
+    "sources": ["qrcode"],
+    "emits": [
+      {
+        "name": "error",
+        "params": ["reason"]
+      }
+    ],
+    "slots": []
+  },
   "radio": {
     "name": "radio",
     "options": [

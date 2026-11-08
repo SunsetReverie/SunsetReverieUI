@@ -32,6 +32,7 @@ import {
   SrPagination,
   SrProgress,
   SrPanel,
+  SrQRCode,
   SrRadio,
   SrRadioGroup,
   SrResult,
@@ -324,6 +325,14 @@ describe('导航与数据组件的 SSR 渲染', () => {
   it('SrColorPicker 服务端输出色值文本', async () => {
     const html = await render(SrColorPicker, { modelValue: '#3e3edc' })
     expect(html).toContain('#3e3edc')
+  })
+
+  it('SrQRCode 服务端输出 SVG 码点', async () => {
+    const html = await render(SrQRCode, { value: 'HELLO' })
+
+    expect(html).toContain('<svg')
+    expect(html).toContain('<path')
+    expect(html).toContain('role="img"')
   })
 
   it('SrPagination', async () => {

@@ -104,6 +104,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./input-number/InputNumberDemo.vue'),
       },
       {
+        key: 'qrcode',
+        name: 'SrQRCode',
+        description: '二维码。零依赖自研编码，支持纠错等级、中心图标与失效状态。',
+        demo: () => import('./qrcode/QrcodeDemo.vue'),
+      },
+      {
         key: 'color-picker',
         name: 'SrColorPicker',
         description: '颜色选择器。饱和度面板、色相条、透明度与预设色板。',
