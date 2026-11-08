@@ -267,6 +267,8 @@ const rules = {
 
 覆盖的控件：`SrInput`、`SrInputNumber`、`SrSelect`、`SrSwitch`、`SrCheckbox`、`SrRadio`、`SrDatePicker`、`SrUpload`。
 
+**按钮不受影响**。禁用状态下仍然需要能点「取消」「关闭」，全禁会导致表单卡死。
+
 单项想单独禁用，用 `SrFormItem` 的 `disabled`，两者取「或」：
 
 ```vue

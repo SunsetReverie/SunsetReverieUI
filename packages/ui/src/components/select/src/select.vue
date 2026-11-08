@@ -376,7 +376,7 @@ onScopeDispose(() => {
 const rootClass = computed(() => [
   `sr-select--${resolvedStatus.value}`,
   {
-    'is-disabled': isDisabled,
+    'is-disabled': isDisabled.value,
     'is-open': visible.value,
     'is-multiple': props.multiple,
     'is-empty': selectedValues.value.length === 0,

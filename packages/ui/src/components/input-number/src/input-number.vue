@@ -83,7 +83,7 @@ const currentValue = computed<number | null>(() =>
 )
 
 /** 是否显示步进按钮 */
-const showControls = computed(() => props.controls && !props.disabled)
+const showControls = computed(() => props.controls && !isDisabled.value)
 /** 是否可继续增加 / 减小 */
 const canIncrease = computed(() => currentValue.value === null || currentValue.value < props.max)
 const canDecrease = computed(() => currentValue.value === null || currentValue.value > props.min)
@@ -91,7 +91,7 @@ const canDecrease = computed(() => currentValue.value === null || currentValue.v
 const rootClass = computed(() => [
   `sr-input--${resolvedStatus.value}`,
   {
-    'is-disabled': isDisabled,
+    'is-disabled': isDisabled.value,
     'is-readonly': props.readonly,
     'sr-input-number--both': props.controlsPosition === 'both',
   },

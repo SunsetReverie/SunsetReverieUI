@@ -6,6 +6,19 @@ import { SrInput } from '..'
 import { SrConfigProvider } from '../../config-provider'
 
 describe('SrInput', () => {
+  it('is-disabled 类名跟着 disabled 属性联动', async () => {
+    const wrapper = mount(SrInput, { props: { disabled: true }, attachTo: document.body })
+    expect(wrapper.classes()).toContain('is-disabled')
+    expect(wrapper.find('input').attributes('disabled')).toBeDefined()
+
+    await wrapper.setProps({ disabled: false })
+
+    // 类名和属性必须一致：只留一个会变成「看着禁用但能输入」
+    expect(wrapper.classes()).not.toContain('is-disabled')
+    expect(wrapper.find('input').attributes('disabled')).toBeUndefined()
+    wrapper.unmount()
+  })
+
   it('渲染内层原生 input，wrapper 不带原生属性', () => {
     const wrapper = mount(SrInput, { attrs: { class: 'my-input', 'data-test': 'field' } })
 

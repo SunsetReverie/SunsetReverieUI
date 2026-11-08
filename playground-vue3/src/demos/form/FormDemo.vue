@@ -343,7 +343,10 @@ async function validateOne(): Promise<void> {
           </SrFormItem>
         </SrForm>
       </div>
-      <p class="hint">表单级 disabled 会传给所有子控件，不用逐个加，适合「查看模式」</p>
+      <p class="hint">
+        表单级 disabled 会下发给输入框、数字框、选择器、开关、复选框、单选、日期与上传；
+        <strong>按钮不受影响</strong>——否则禁用后连提交都点不了。
+      </p>
     </section>
 
     <section>

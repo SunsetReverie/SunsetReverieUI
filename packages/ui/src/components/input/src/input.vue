@@ -123,7 +123,7 @@ const countText = computed(() => {
 const rootClass = computed(() => [
   `sr-input--${resolvedStatus.value}`,
   {
-    'is-disabled': isDisabled,
+    'is-disabled': isDisabled.value,
     'is-readonly': props.readonly,
     'is-textarea': isTextarea.value,
     // 高度自适应的文本域永远不需要滚动条，直接禁掉避免系统占位条常驻
