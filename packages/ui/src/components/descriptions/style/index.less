@@ -1,0 +1,168 @@
+/**
+ * 描述列表
+ *
+ * 列数通过 --sr-desc-column 下发，窄屏用 media query 降级。
+ * 边框模式靠「格子之间共享 1px 边框」实现，不用 border-collapse。
+ */
+
+.sr-descriptions {
+  --sr-desc-column: 3;
+  --sr-desc-label-color: var(--sr-color-text-tertiary);
+  --sr-desc-cell-padding-y: 8px;
+  --sr-desc-cell-padding-x: 0px;
+
+  width: 100%;
+
+  // ---------- 头部 ----------
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  &__title {
+    color: var(--sr-color-text);
+    font-size: 14px;
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__extra {
+    flex: 0 0 auto;
+  }
+
+  // ---------- 栅格 ----------
+  &__body {
+    display: grid;
+    grid-template-columns: repeat(var(--sr-desc-column), minmax(0, 1fr));
+    gap: 12px 24px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &__label {
+    flex: 0 0 auto;
+    color: var(--sr-desc-label-color);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  // 字段名后统一跟一个冒号，省得每处手写
+  &__label::after {
+    content: '：';
+  }
+
+  &__value {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+
+  // ---------- 上下排 ----------
+  &--vertical &__item {
+    display: block;
+  }
+
+  &--vertical &__label {
+    margin-bottom: 2px;
+    font-size: 12px;
+  }
+
+  // ---------- 尺寸 ----------
+  &--small {
+    --sr-desc-cell-padding-y: 5px;
+  }
+
+  &--small &__label,
+  &--small &__value {
+    font-size: 12px;
+  }
+
+  &--large {
+    --sr-desc-cell-padding-y: 11px;
+  }
+
+  &--large &__label,
+  &--large &__value {
+    font-size: 14px;
+  }
+
+  // ---------- 带边框 ----------
+  // 用 gap: 0 + 每个格子单独描边，形成表格观感
+  &.is-bordered &__body {
+    gap: 0;
+    border-top: 1px solid var(--sr-color-border-subtle);
+    border-left: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-base);
+    overflow: hidden;
+  }
+
+  &.is-bordered &__item {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border-right: 1px solid var(--sr-color-border-subtle);
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &.is-bordered &__label {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-width: 88px;
+    padding: var(--sr-desc-cell-padding-y) 10px;
+    background: var(--sr-color-bg-sunken);
+    font-size: 12.5px;
+  }
+
+  &.is-bordered &__value {
+    display: flex;
+    align-items: center;
+    padding: var(--sr-desc-cell-padding-y) 10px;
+  }
+
+  // 边框模式下竖直排列：字段名单独一行，值在下
+  &.is-bordered.sr-descriptions--vertical &__item {
+    display: block;
+  }
+
+  &.is-bordered.sr-descriptions--vertical &__label {
+    min-width: 0;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+}
+
+// ---------- 响应式 ----------
+// 直接覆盖 grid-template-columns 而不是改变量：
+// column 是内联 style 设的，内联优先级最高，media query 改不动变量。
+@media (width <= 992px) {
+  .sr-descriptions__body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 768px) {
+  .sr-descriptions__body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  // 窄屏下边框模式恢复成上下排，否则字段名占掉一半宽度
+  .sr-descriptions.is-bordered .sr-descriptions__item {
+    display: block;
+  }
+
+  .sr-descriptions.is-bordered .sr-descriptions__label {
+    min-width: 0;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+}

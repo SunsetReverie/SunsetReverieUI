@@ -883,6 +883,63 @@
     ],
     "slots": []
   },
+  "descriptions": {
+    "name": "descriptions",
+    "options": [
+      {
+        "from": "descriptionsProps",
+        "name": "items",
+        "type": "SrDescriptionItem[]",
+        "default": "() => []",
+        "description": "字段列表"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "column",
+        "type": "number",
+        "default": "3",
+        "description": "每行列数 @default 3"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "border",
+        "type": "boolean",
+        "default": "false",
+        "description": "带边框 @default false 打开后是表格样式，字段名有独立底色，适合信息密度高的详情页。"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "字段名与值的方向 @default 'horizontal' `horizontal` 是左右排（省高度），`vertical` 是上下排（省宽度）。"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "labelWidth",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "字段名宽度，仅 horizontal 有效 @default 'auto'"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["descriptions"],
+    "emits": [],
+    "slots": []
+  },
   "drawer": {
     "name": "drawer",
     "options": [

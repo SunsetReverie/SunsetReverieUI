@@ -13,6 +13,7 @@ import {
   SrCheckbox,
   SrCheckboxGroup,
   SrDatePicker,
+  SrDescriptions,
   SrDrawer,
   SrDropdown,
   SrEmpty,
@@ -219,6 +220,16 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('第一步')
     expect(html).toContain('第二步')
+  })
+
+  it('SrDescriptions 服务端输出字段与值', async () => {
+    const html = await render(SrDescriptions, {
+      items: [{ label: '姓名', value: '林深' }],
+      title: '用户信息',
+    })
+
+    expect(html).toContain('用户信息')
+    expect(html).toContain('林深')
   })
 
   it('SrPagination', async () => {

@@ -60,6 +60,12 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 描述列表数据 */
+const descItems = [
+  { label: '姓名', value: '林深' },
+  { label: '公司', value: '夕梦科技' },
+]
+
 /** 步骤条数据 */
 const stepItems = [
   { title: '填写', description: '基础资料' },
@@ -262,6 +268,13 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Descriptions</span>
+        <div class="cell__body cell__body--column">
+          <sr-descriptions :items="descItems" :column="2" />
         </div>
       </div>
 

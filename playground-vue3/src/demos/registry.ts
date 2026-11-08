@@ -57,6 +57,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./progress/ProgressDemo.vue'),
       },
       {
+        key: 'descriptions',
+        name: 'SrDescriptions',
+        description: '描述列表。详情页的字段名与值排版，支持列数、边框与跨列。',
+        demo: () => import('./descriptions/DescriptionsDemo.vue'),
+      },
+      {
         key: 'steps',
         name: 'SrSteps',
         description: '步骤条。横向纵向、简洁模式、可点击切换与出错状态。',

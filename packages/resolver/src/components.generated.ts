@@ -20,6 +20,7 @@ export const SR_COMPONENT_NAMES = [
   'ConfigProvider',
   'Confirm',
   'DatePicker',
+  'Descriptions',
   'Drawer',
   'Dropdown',
   'Empty',
