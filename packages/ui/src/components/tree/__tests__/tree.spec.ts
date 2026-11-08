@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import SrTree from '../index'
 import type { SrTreeNode } from '../src/tree-utils'
@@ -138,6 +138,135 @@ describe('SrTree', () => {
     await wrapper.findAll('.sr-tree__label')[0]?.trigger('click')
 
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('复选框用组件库自己的 SrCheckbox', () => {
+    const wrapper = mountTree({ checkable: true })
+    expect(wrapper.findAll('.sr-checkbox').length).toBeGreaterThan(0)
+    // 半选靠组件的 is-indeterminate 类，不是原生 indeterminate 属性
+    wrapper.unmount()
+  })
+
+  it('键盘上下键移动焦点', async () => {
+    const wrapper = mountTree()
+    await wrapper.find('.sr-tree__row').trigger('keydown', { key: 'ArrowDown' })
+
+    const focused = wrapper.findAll('.sr-tree__row').filter((row) => row.classes('is-focused'))
+    expect(focused).toHaveLength(1)
+    wrapper.unmount()
+  })
+
+  it('右键展开、左键收起', async () => {
+    const wrapper = mountTree()
+    const first = wrapper.find('.sr-tree__row')
+
+    await first.trigger('keydown', { key: 'ArrowRight' })
+    await vi.waitFor(() => {
+      expect(wrapper.findAll('.sr-tree__row').length).toBe(5)
+    })
+    expect(wrapper.emitted('update:expandedKeys')).toBeTruthy()
+    wrapper.unmount()
+  })
+
+  it('回车选中当前焦点节点', async () => {
+    const wrapper = mountTree()
+    await wrapper.find('.sr-tree__row').trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([['a']])
+    wrapper.unmount()
+  })
+
+  it('空格切换勾选', async () => {
+    const wrapper = mountTree({ checkable: true })
+    await wrapper.find('.sr-tree__row').trigger('keydown', { key: ' ' })
+
+    const emitted = wrapper.emitted('update:modelValue')?.[0]?.[0] as string[]
+    expect(emitted.sort()).toEqual(['a', 'a1', 'a2'].sort())
+    wrapper.unmount()
+  })
+
+  it('异步加载：展开时调 loadData 并渲染子节点', async () => {
+    const loadData = vi.fn(async () => [{ key: 'lazy-1', label: '懒加载项' }])
+
+    const wrapper = mount(SrTree, {
+      props: {
+        data: [{ key: 'lazy', label: '懒节点' }],
+        loadData,
+      },
+      global: { stubs: { SrIcon: true } },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('.sr-tree__arrow').trigger('click')
+
+    await vi.waitFor(() => {
+      expect(loadData).toHaveBeenCalledTimes(1)
+    })
+    await vi.waitFor(() => {
+      expect(wrapper.findAll('.sr-tree__row')).toHaveLength(2)
+    })
+    wrapper.unmount()
+  })
+
+  it('异步加载结果通过 load 事件回传', async () => {
+    const loadData = vi.fn(async () => [{ key: 'x1', label: 'X1' }])
+    const wrapper = mount(SrTree, {
+      props: { data: [{ key: 'x', label: 'X' }], loadData },
+      global: { stubs: { SrIcon: true } },
+    })
+
+    await wrapper.find('.sr-tree__arrow').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.emitted('load')).toBeTruthy()
+    })
+    wrapper.unmount()
+  })
+
+  it('已加载过的节点不会重复请求', async () => {
+    const loadData = vi.fn(async () => [{ key: 'y1', label: 'Y1' }])
+    const wrapper = mount(SrTree, {
+      props: { data: [{ key: 'y', label: 'Y' }], loadData },
+      global: { stubs: { SrIcon: true } },
+    })
+
+    await wrapper.find('.sr-tree__arrow').trigger('click')
+    await vi.waitFor(() => expect(loadData).toHaveBeenCalledTimes(1))
+    // 收起再展开
+    await wrapper.find('.sr-tree__arrow').trigger('click')
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    await wrapper.find('.sr-tree__arrow').trigger('click')
+    await new Promise((resolve) => setTimeout(resolve, 20))
+
+    expect(loadData).toHaveBeenCalledTimes(1)
+    wrapper.unmount()
+  })
+
+  it('拖拽后派发 node-drop 并移动节点', async () => {
+    const wrapper = mountTree({ draggable: true })
+    const rows = wrapper.findAll('.sr-tree__row')
+
+    await rows[0]?.trigger('dragstart')
+    await rows[2]?.trigger('dragover', { clientY: 0 })
+    await rows[2]?.trigger('drop')
+
+    expect(wrapper.emitted('node-drop')).toBeTruthy()
+    // 原位置 a 被移走，树里顶层只剩 b、c（a 挂到了 c 之前）
+    const detail = wrapper.emitted('node-drop')?.[0]?.[0] as { dragNode: { key: string }; type: string }
+    expect(detail.dragNode.key).toBe('a')
+    wrapper.unmount()
+  })
+
+  it('拖拽不能把父节点拖进自己的子树', async () => {
+    const wrapper = mountTree({ draggable: true, defaultExpandAll: true })
+    const rows = wrapper.findAll('.sr-tree__row')
+
+    // 第 0 行是 a，第 1 行是它的子节点 a1
+    await rows[0]?.trigger('dragstart')
+    await rows[1]?.trigger('dragover', { clientY: 0 })
+    await rows[1]?.trigger('drop')
+
+    expect(wrapper.emitted('node-drop')).toBeUndefined()
     wrapper.unmount()
   })
 

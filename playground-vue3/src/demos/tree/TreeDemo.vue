@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { SrButton, SrTag, SrTree, type SrTreeKey, type SrTreeNode } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'TreeDemo' })
@@ -66,6 +66,42 @@ const bigTree = computed<SrTreeNode[]>(() =>
     })),
   })),
 )
+
+/** 拖拽后的树 */
+const dragTree = ref<SrTreeNode[]>(JSON.parse(JSON.stringify(catalog))) as Ref<SrTreeNode[]>
+
+/** 最近一次拖放信息 */
+const lastDrop = ref('')
+
+/**
+ * 拖放回调
+ * @param detail 拖放详情
+ * @param data 新树
+ */
+function onDrop(
+  detail: { dragNode: SrTreeNode; dropNode: SrTreeNode; type: string },
+  data: SrTreeNode[],
+): void {
+  dragTree.value = data
+  const pos = detail.type === 'before' ? '之前' : detail.type === 'after' ? '之后' : '内部'
+  lastDrop.value = `${detail.dragNode.label} → ${detail.dropNode.label} ${pos}`
+}
+
+/** 异步树：初始只有一层 */
+const asyncTree = ref<SrTreeNode[]>([
+  { key: 'docs', label: '文档' },
+  { key: 'code', label: '代码' },
+  { key: 'assets', label: '资源' },
+])
+
+/** 模拟请求：600ms 后返回子节点 */
+async function loadChildren(node: SrTreeNode): Promise<SrTreeNode[]> {
+  await new Promise((resolve) => setTimeout(resolve, 600))
+  return Array.from({ length: 4 }, (_, index) => ({
+    key: `${node.key}-${index}`,
+    label: `${node.label} / 子项 ${index + 1}`,
+  }))
+}
 
 /** 大树的展开状态 */
 const bigExpanded = ref<SrTreeKey[]>(['g0', 'g1'])
@@ -179,6 +215,57 @@ function clearAll(): void {
     </section>
 
     <section>
+      <h3>键盘操作</h3>
+      <div class="grid">
+        <div class="card">
+          <SrTree :data="catalog" default-expand-all checkable />
+        </div>
+        <div class="side">
+          <p class="hint" style="margin: 0">点一下任意行（或用 Tab 进入），然后：</p>
+          <ul class="keys">
+            <li><kbd>↑</kbd> <kbd>↓</kbd> 上下移动</li>
+            <li><kbd>→</kbd> 展开 / 进子节点</li>
+            <li><kbd>←</kbd> 收起 / 回父节点</li>
+            <li><kbd>空格</kbd> 勾选</li>
+            <li><kbd>Enter</kbd> 选中</li>
+            <li><kbd>Home</kbd> <kbd>End</kbd> 跳到首尾</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>异步加载（loadData）</h3>
+      <div class="grid">
+        <div class="card">
+          <SrTree :data="asyncTree" :load-data="loadChildren" @update:expanded-keys="() => {}" />
+        </div>
+        <div class="side">
+          <p class="hint" style="margin: 0">初始只有 3 个节点，展开时才请求子节点</p>
+          <p class="hint">加载期间箭头位置显示转圈，加载完自动铺开；已加载过的节点再次展开不会重复请求</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>拖拽排序（draggable）</h3>
+      <div class="grid">
+        <div class="card">
+          <SrTree :data="dragTree" draggable default-expand-all @node-drop="onDrop" />
+        </div>
+        <div class="side">
+          <p class="hint" style="margin: 0">拖动任意节点试试</p>
+          <p class="hint">
+            拖到行的<strong>上 1/4</strong>放到之前、<strong>下 1/4</strong
+            >放到之后、<strong>中间</strong>会成为子节点
+          </p>
+          <p v-if="lastDrop" class="hint">最近一次：{{ lastDrop }}</p>
+          <p class="hint">拖父节点进自己的子树会被拒绝（会成环）</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
       <h3>空数据与禁用</h3>
       <div class="grid">
         <div class="card">
@@ -233,5 +320,30 @@ h3 {
   flex-direction: column;
   gap: 6px;
   align-items: flex-start;
+}
+
+.keys {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+}
+
+.keys kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  border: 1px solid var(--sr-color-border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text-secondary);
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+  text-align: center;
 }
 </style>

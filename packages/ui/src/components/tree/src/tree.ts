@@ -1,7 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue'
 
 import type { SrSize } from '../../../types/config'
-import type { SrTreeKey, SrTreeNode } from './tree-utils'
+import type { SrTreeDropType, SrTreeKey, SrTreeNode } from './tree-utils'
 
 export const treeProps = {
   /** 树数据 */
@@ -97,6 +97,35 @@ export const treeProps = {
   itemHeight: {
     type: Number,
     default: 32,
+  },
+  /** 开启键盘导航 @default true */
+  keyboard: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 允许拖拽节点调整位置 @default false
+   *
+   * 用 Pointer Events 实现，不依赖 sortablejs。
+   */
+  draggable: {
+    type: Boolean,
+    default: false,
+  },
+  /** 判断某个节点能否拖放，返回 false 会拒绝 */
+  allowDrop: {
+    type: Function as PropType<(dragNode: SrTreeNode, dropNode: SrTreeNode, type: SrTreeDropType) => boolean>,
+    default: undefined,
+  },
+  /**
+   * 异步加载子节点
+   *
+   * 节点没有 children 且未加载过时，展开会先调用它。
+   * 返回的数组会作为该节点的 children。
+   */
+  loadData: {
+    type: Function as PropType<(node: SrTreeNode) => Promise<SrTreeNode[]>>,
+    default: undefined,
   },
   /** 尺寸档位 */
   size: {

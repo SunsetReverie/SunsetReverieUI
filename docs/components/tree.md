@@ -121,6 +121,69 @@ const selected = ref([])
   <SrTree v-model="single" :data="catalog" :multiple="false" default-expand-all />
 </div>
 
+## 键盘操作
+
+树整体接收一个 Tab 焦点，内部用方向键移动——这样 Tab 不会在几十个节点之间反复停留。
+
+| 按键 | 行为 |
+| --- | --- |
+| `↑` `↓` | 上下移动焦点 |
+| `→` | 展开当前节点；已展开则进入第一个子节点 |
+| `←` | 收起当前节点；已收起则回到父节点 |
+| `空格` | 切换勾选（不可勾选时改为选中） |
+| `Enter` | 选中当前节点 |
+| `Home` `End` | 跳到首行 / 末行 |
+
+`keyboard={false}` 可以整体关掉。焦点行会滚动进可视区，虚拟滚动模式下同样有效。
+
+## 异步加载
+
+```vue
+<SrTree :data="base" :load-data="loadChildren" />
+```
+
+```ts
+const loadChildren = async (node) => {
+  const res = await fetch(`/api/children/${node.key}`)
+  return res.json()
+}
+```
+
+节点**没有 `children` 且未加载过**时，展开会先调用 `loadData`：
+
+1. 立即展开并显示转圈（不是「点了没反应」）
+2. 请求返回后把结果挂上去并铺开
+3. 同一个节点再次展开不会重复请求
+
+返回空数组时该节点会被标记成叶子，箭头随之消失——否则用户点开永远是空的。
+
+## 拖拽排序
+
+```vue
+<SrTree :data="tree" draggable @node-drop="onDrop" />
+```
+
+拖到行内的不同位置代表不同含义：
+
+| 落点 | 结果 |
+| --- | --- |
+| 上 1/4 | 放到该节点**之前**（同级） |
+| 中间一半 | 放进该节点**内部**（成为子节点） |
+| 下 1/4 | 放到该节点**之后**（同级） |
+
+落点会有视觉提示：前后是一条 2px 的靛蓝横线，内部是整行高亮加描边。
+
+**不允许的操作**会自动拒绝：拖到自己身上、拖进自己的子树（会让树变成环）。
+
+```ts
+function onDrop({ dragNode, dropNode, type }, data) {
+  // data 是移动后的完整新树，直接替换即可
+  tree.value = data
+}
+```
+
+> **用 Pointer Events + 原生 Drag & Drop 实现，没有引入 sortablejs**，保持零运行时依赖。原生 Drag & Drop 在触摸屏上不生效，移动端需要拖拽的话得另外实现触摸手势。
+
 ## 虚拟滚动
 
 数据量大时开 `virtual`，只渲染可视区内的行：
@@ -151,6 +214,10 @@ const selected = ref([])
 | `showLine` | `boolean` | `false` | 显示连接线 |
 | `indent` | `number` | `18` | 每层缩进（px） |
 | `emptyText` | `string` | `'暂无数据'` | 空数据文案 |
+| `keyboard` | `boolean` | `true` | 开启键盘导航 |
+| `draggable` | `boolean` | `false` | 允许拖拽调整位置 |
+| `allowDrop` | `(drag, drop, type) => boolean` | — | 判断能否拖放，返回 false 拒绝 |
+| `loadData` | `(node) => Promise<SrTreeNode[]>` | — | 异步加载子节点 |
 | `virtual` | `boolean` | `false` | 开启虚拟滚动 |
 | `height` | `number` | `320` | 虚拟滚动容器高度 |
 | `itemHeight` | `number` | `32` | 行高，虚拟滚动依赖它 |
@@ -177,6 +244,8 @@ const selected = ref([])
 | `check` | `keys, { checked, node, halfCheckedKeys }` | 勾选变化 |
 | `expand` | `keys, { node, expanded }` | 展开收起 |
 | `node-click` | `node` | 点击节点 |
+| `load` | `node, children` | 异步加载完成 |
+| `node-drop` | `{ dragNode, dropNode, type }, data` | 拖放完成，`data` 是移动后的新树 |
 
 ## 暴露的方法
 
@@ -190,5 +259,6 @@ const selected = ref([])
 - **`key` 必须唯一且稳定**。用数组下标当 key，增删节点后选中态会错乱。
 - **`check` 事件里的 `keys` 含父节点**。勾选一个父节点会把它自己的 key 也加进去，业务方通常只关心叶子——用 `halfCheckedKeys` 判断半选，或用暴露的 `leafCheckedKeys`。
 - 虚拟滚动下如果自定义了行高，`itemHeight` 必须同步，否则可视区计算和实际渲染对不上。
-- **没有实现拖拽排序**。拖拽要引入 `sortablejs`，会破坏「零运行时依赖」的定位；而且树形拖拽的交互细节（跨层、禁用节点、防成环）本身就够写一个组件，需要时单独评估。
-- **没有实现异步加载子节点**。`children` 需要一次性给全；懒加载要处理 loading 态、失败重试、展开中状态，是另一套逻辑。
+- **拖拽不支持触摸屏**。用的是原生 HTML5 Drag & Drop，移动端浏览器不触发这些事件。要支持得另写一套触摸手势。
+- **异步加载失败后不会自动重试**。`loadData` 抛错时节点保持展开但为空，再次点击箭头才会重新请求；需要重试策略的话在 `loadData` 内部处理。
+- **拖拽只改内部数据副本**。`data` 传进来后组件会克隆一份，所以拖拽不会污染父组件的原数组——但也意味着必须监听 `node-drop` 才能把结果写回去。

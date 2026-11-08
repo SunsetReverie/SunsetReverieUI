@@ -9,6 +9,15 @@
 /** 节点 key */
 export type SrTreeKey = string | number
 
+/**
+ * 拖放位置
+ *
+ * - before：放到目标节点之前（同级）
+ * - inside：放进目标节点内部（成为子节点）
+ * - after：放到目标节点之后（同级）
+ */
+export type SrTreeDropType = 'before' | 'inside' | 'after'
+
 /** 树节点 */
 export interface SrTreeNode {
   /** 唯一标识 */
@@ -285,4 +294,124 @@ export function getLeafCheckedKeys(data: SrTreeNode[], checkedKeys: SrTreeKey[])
 
   walk(data)
   return keys
+}
+
+/**
+ * 判断某个 key 是否是另一个 key 的后代
+ *
+ * 拖拽时用来防止「把父节点拖进自己的子树」，那会让树变成环。
+ * @param data 树数据
+ * @param ancestorKey 祖先 key
+ * @param key 待判断的 key
+ * @returns 是否是后代
+ */
+export function isDescendant(data: SrTreeNode[], ancestorKey: SrTreeKey, key: SrTreeKey): boolean {
+  const ancestor = findNode(data, ancestorKey)
+  if (!ancestor?.children?.length) return false
+
+  return collectSubtreeKeys(ancestor).includes(key) && ancestorKey !== key
+}
+
+/**
+ * 深拷贝一棵树
+ *
+ * 拖拽要生成新对象才能触发响应式更新；直接改原数组里的 children 不会让视图刷新。
+ * @param data 树数据
+ * @returns 新树
+ */
+export function cloneTree(data: SrTreeNode[]): SrTreeNode[] {
+  return data.map((node) => ({
+    ...node,
+    children: node.children ? cloneTree(node.children) : undefined,
+  }))
+}
+
+/**
+ * 从树里移除一个节点
+ * @param data 树数据（会被直接修改，调用前先 clone）
+ * @param key 目标 key
+ * @returns 被移除的节点，找不到返回 undefined
+ */
+export function removeNode(data: SrTreeNode[], key: SrTreeKey): SrTreeNode | undefined {
+  for (let index = 0; index < data.length; index += 1) {
+    const node = data[index]
+    if (!node) continue
+
+    if (node.key === key) {
+      data.splice(index, 1)
+      return node
+    }
+
+    if (node.children?.length) {
+      const removed = removeNode(node.children, key)
+      if (removed) return removed
+    }
+  }
+
+  return undefined
+}
+
+/**
+ * 把节点插入到目标附近
+ * @param data 树数据（会被直接修改）
+ * @param targetKey 目标节点 key
+ * @param node 待插入节点
+ * @param type 插入位置
+ * @returns 是否插入成功
+ */
+export function insertNode(
+  data: SrTreeNode[],
+  targetKey: SrTreeKey,
+  node: SrTreeNode,
+  type: SrTreeDropType,
+): boolean {
+  for (let index = 0; index < data.length; index += 1) {
+    const target = data[index]
+    if (!target) continue
+
+    if (target.key === targetKey) {
+      if (type === 'before') data.splice(index, 0, node)
+      else if (type === 'after') data.splice(index + 1, 0, node)
+      else {
+        target.children = [...(target.children ?? []), node]
+        return true
+      }
+      return true
+    }
+
+    if (target.children?.length && insertNode(target.children, targetKey, node, type)) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
+ * 移动节点
+ *
+ * 完整流程：深拷贝 → 摘出 → 插入。用拷贝而不是原地改，
+ * 是因为父组件通常直接把 data 传进来，原地改会污染外部数据。
+ * @param data 树数据
+ * @param dragKey 被拖的 key
+ * @param dropKey 目标 key
+ * @param type 放置位置
+ * @returns 新的树；不合法时返回 null
+ */
+export function moveNode(
+  data: SrTreeNode[],
+  dragKey: SrTreeKey,
+  dropKey: SrTreeKey,
+  type: SrTreeDropType,
+): SrTreeNode[] | null {
+  if (dragKey === dropKey) return null
+  // 拖进自己的子树会成环
+  if (isDescendant(data, dragKey, dropKey)) return null
+
+  const next = cloneTree(data)
+  const node = removeNode(next, dragKey)
+  if (!node) return null
+
+  const ok = insertNode(next, dropKey, node, type)
+  return ok ? next : null
 }

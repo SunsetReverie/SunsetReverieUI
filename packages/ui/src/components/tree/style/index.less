@@ -35,6 +35,7 @@
 
   // ---------- 行 ----------
   &__row {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -73,24 +74,24 @@
   }
 
   // ---------- 复选框 ----------
+  // 用组件库自己的 SrCheckbox，尺寸压到树行的比例
   &__check {
-    display: inline-flex;
-    align-items: center;
     flex: 0 0 auto;
-    margin-right: 2px;
-    cursor: pointer;
+    margin-right: 4px;
+  }
 
-    > input {
-      width: 14px;
-      height: 14px;
-      margin: 0;
-      accent-color: var(--sr-color-primary);
-      cursor: pointer;
-    }
+  &__check.sr-checkbox {
+    --sr-checkbox-size: 14px;
+  }
 
-    > input:disabled {
-      cursor: not-allowed;
-    }
+  // 异步加载的转圈
+  &__spinner {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid var(--sr-color-border);
+    border-top-color: var(--sr-color-primary);
+    border-radius: 50%;
+    animation: sr-tree-spin 0.7s linear infinite;
   }
 
   // ---------- 文字 ----------
@@ -129,6 +130,42 @@
     color: var(--sr-color-primary);
   }
 
+  // ---------- 键盘焦点 ----------
+  &__row.is-focused {
+    outline: 1.5px solid var(--sr-color-primary-alpha-25);
+    outline-offset: -1px;
+  }
+
+  // ---------- 拖拽 ----------
+  &__row.is-dragging {
+    opacity: 0.45;
+  }
+
+  // 落点提示：before/after 用一条横线，inside 用整行高亮
+  &__row.is-drop-before::before,
+  &__row.is-drop-after::after {
+    position: absolute;
+    right: 6px;
+    left: 6px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--sr-color-primary);
+    content: '';
+  }
+
+  &__row.is-drop-before::before {
+    top: -1px;
+  }
+
+  &__row.is-drop-after::after {
+    bottom: -1px;
+  }
+
+  &__row.is-drop-inside {
+    background: var(--sr-color-primary-alpha-12);
+    box-shadow: inset 0 0 0 1.5px var(--sr-color-primary-alpha-25);
+  }
+
   // ---------- 空状态 ----------
   &__empty {
     margin: 0;
@@ -149,5 +186,11 @@
     height: 1px;
     background: var(--sr-color-border);
     content: '';
+  }
+}
+
+@keyframes sr-tree-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
