@@ -25,6 +25,11 @@
     color: var(--sr-color-danger);
   }
 
+  // 表单级隐藏：有些设计规范不在标签上打星
+  .sr-form.is-hide-required-mark &.is-required &__label::after {
+    content: none;
+  }
+
   &__control {
     min-width: 0;
   }

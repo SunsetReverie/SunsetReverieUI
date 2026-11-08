@@ -101,6 +101,15 @@ export const formProps = {
     type: String as PropType<'top' | 'left' | 'right'>,
     default: 'top',
   },
+  /**
+   * 隐藏必填项标签后的星号 @default false
+   *
+   * 有些设计规范不在标签上打星，改为在占位文案或校验提示里说明。
+   */
+  hideRequiredMark: {
+    type: Boolean,
+    default: false,
+  },
   /** 表单级尺寸，下发给子组件 */
   size: {
     type: String as PropType<SrSize>,

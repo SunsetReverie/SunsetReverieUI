@@ -117,7 +117,11 @@ const hasLabel = computed(() => props.labelPosition !== 'top')
 <template>
   <form
     class="sr-form"
-    :class="[`sr-form--label-${labelPosition}`, { 'is-label-inline': hasLabel }, attrs.class]"
+    :class="[
+      `sr-form--label-${labelPosition}`,
+      { 'is-label-inline': hasLabel, 'is-hide-required-mark': hideRequiredMark },
+      attrs.class,
+    ]"
     :style="[{ '--sr-form-label-width': labelWidth }, attrs.style]"
     @submit="onSubmit"
   >

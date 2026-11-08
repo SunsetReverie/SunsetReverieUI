@@ -23,6 +23,12 @@ const rules = {
 
 const layoutModel = ref({ name: '林深' })
 
+/** 必填标记演示的数据 */
+const markModel = ref({ name: '' })
+const markRules = {
+  name: [{ required: true, message: '请输入姓名' }],
+}
+
 async function submit() {
   const valid = await formRef.value?.validate()
   result.value = valid ? '校验通过，可以提交' : '存在错误，请检查'
@@ -159,6 +165,45 @@ const rules = {
 
 `SrFormItem` 自身暴露 `validate()` 与 `clear()`。
 
+## 必填标记
+
+必填项的标签后面会跟一个红色星号。有些设计规范不在标签上打星，用 `hide-required-mark` 关掉：
+
+<div class="sr-demo is-block">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px">
+    <div>
+      <p style="margin: 0 0 8px; font-size: 12px; color: var(--vp-c-text-3)">默认</p>
+      <SrForm :model="markModel" :rules="markRules" label-position="left" :label-width="60">
+        <SrFormItem label="姓名" prop="name">
+          <SrInput v-model="markModel.name" placeholder="必填" />
+        </SrFormItem>
+      </SrForm>
+    </div>
+    <div>
+      <p style="margin: 0 0 8px; font-size: 12px; color: var(--vp-c-text-3)">hide-required-mark</p>
+      <SrForm :model="markModel" :rules="markRules" label-position="left" :label-width="60" hide-required-mark>
+        <SrFormItem label="姓名" prop="name">
+          <SrInput v-model="markModel.name" placeholder="必填" />
+        </SrFormItem>
+      </SrForm>
+    </div>
+  </div>
+</div>
+
+星号是纯视觉标记（CSS 伪元素），关掉之后**必填校验照旧生效**，错误提示也照常显示。
+
+单个字段想单独控制，可以在 `SrFormItem` 的 label 插槽里自己画：
+
+```vue
+<SrFormItem prop="name">
+  <template #label>
+    <span>姓名</span>
+    <em v-if="showMark" style="color: var(--sr-color-danger)">*</em>
+  </template>
+  <SrInput v-model="model.name" />
+</SrFormItem>
+```
+
 ## 错误展示
 
 - 失败时 `SrFormItem` 加 `is-error`，并把 `aria-invalid` 下发到内部控件
@@ -179,6 +224,7 @@ const rules = {
 | `rules` | `Record<string, SrFormRule \| SrFormRule[]>` | `{}` | 全局校验规则 |
 | `labelWidth` | `string \| number` | `'88px'` | 标签列宽度 |
 | `labelPosition` | `'top' \| 'left' \| 'right'` | `'top'` | 标签位置 |
+| `hideRequiredMark` | `boolean` | `false` | 隐藏必填项标签后的星号 |
 | `size` | `SrSize` | 继承配置 | 表单级尺寸，下发给子控件 |
 | `disabled` | `boolean` | `false` | 整表禁用 |
 | `showMessage` | `boolean` | `true` | 是否显示错误文案 |
@@ -208,6 +254,8 @@ const rules = {
 | `default` | 表单项与操作按钮 |
 
 ## 注意事项
+
+- **`hideRequiredMark` 只影响星号显示**，不改变校验行为。它加的是根元素的类名，样式层面用 `content: none` 干掉伪元素。
 
 - **`prop` 必须和 `model` 的字段名一致**，否则规则取不到值，校验会静默通过。
 - **`required` 只是显示星号**，不参与校验。真正拦截输入的是 `rules` 里的 `{ required: true }`。

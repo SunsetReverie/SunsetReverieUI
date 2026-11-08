@@ -40,6 +40,18 @@ function mountForm(
 }
 
 describe('SrForm / SrFormItem', () => {
+  it('hideRequiredMark 在根元素上加类名', () => {
+    const wrapper = mount(SrForm, { props: { model: {}, hideRequiredMark: true } })
+    expect(wrapper.classes()).toContain('is-hide-required-mark')
+    wrapper.unmount()
+  })
+
+  it('默认不加隐藏类名', () => {
+    const wrapper = mount(SrForm, { props: { model: {} } })
+    expect(wrapper.classes()).not.toContain('is-hide-required-mark')
+    wrapper.unmount()
+  })
+
   it('渲染标签与必填星号', () => {
     const { wrapper } = mountForm({ name: { required: true } })
 
