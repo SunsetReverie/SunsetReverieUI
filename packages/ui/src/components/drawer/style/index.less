@@ -12,10 +12,10 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  // 直接用容器色：flat 下是实色、glass 下是 0.72 半透，
-  // 配合下面的强模糊才有磨砂感（之前叠成实底就完全看不出玻璃）
+  // 和弹窗同一档：都是铺满一侧的大面板浮层，
+  // 用 bg-modal（glass 下 0.68）而不是 bg-container（0.72），保持同类浮层语义一致
   border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
-  background: var(--sr-color-bg-container);
+  background: var(--sr-color-bg-modal);
   box-shadow: var(--sr-shadow-lg);
   .sr-glass-layer(var(--sr-glass-filter-strong));
 
