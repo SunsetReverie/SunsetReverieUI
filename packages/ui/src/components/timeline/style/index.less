@@ -7,6 +7,9 @@
 
 .sr-timeline {
   --sr-timeline-node-size: 9px;
+  // 圆点距每项顶部的距离：让圆点中心落在首行文字的中心线上
+  // 首行高 = 13px × 1.6 ≈ 20.8px，中心 10.4px，圆点 9px → 顶部留 6px
+  --sr-timeline-node-offset: 6px;
   --sr-timeline-accent: var(--sr-color-border);
 
   display: flex;
@@ -24,23 +27,21 @@
   }
 
   // ---------- 轴线 ----------
+  // 不用 flex 居中：居中会让圆点落在整项（含底部留白）的中线上，
+  // 视觉上比首行文字低一大截
   &__axis {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     align-self: stretch;
     width: var(--sr-timeline-node-size);
-    padding-top: 5px;
+    padding-top: var(--sr-timeline-node-offset);
   }
 
   &__node {
     position: relative;
     z-index: 1;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 auto;
     width: var(--sr-timeline-node-size);
     height: var(--sr-timeline-node-size);
     border-radius: 50%;
@@ -60,10 +61,13 @@
     background: var(--sr-color-bg-container);
   }
 
+  // 竖线：从圆点底部画到下一项圆点的顶部
+  // bottom 为负值就是在「越界」到下一项——两项之间没有间隙，
+  // 所以只有画进下一项的头部区域，线才连得上
   &__tail {
     position: absolute;
-    top: calc(5px + var(--sr-timeline-node-size) + 3px);
-    bottom: 0;
+    top: calc(var(--sr-timeline-node-offset) + var(--sr-timeline-node-size));
+    bottom: calc(-1 * var(--sr-timeline-node-offset));
     left: 50%;
     width: 1.5px;
     background: var(--sr-color-border-subtle);
@@ -88,7 +92,7 @@
   // ---------- 时间戳 ----------
   &__time {
     min-width: 0;
-    padding-top: 1px;
+    padding-top: 0;
     padding-bottom: 18px;
     color: var(--sr-color-text-tertiary);
     font-size: 12px;
