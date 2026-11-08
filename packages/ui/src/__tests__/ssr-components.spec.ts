@@ -40,6 +40,7 @@ import {
   SrSwitch,
   SrTable,
   SrTabs,
+  SrTimeline,
   SrTag,
   SrTooltip,
   SrTree,
@@ -257,6 +258,15 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('日')
     expect(html).toContain('周')
+  })
+
+  it('SrTimeline 服务端输出节点内容', async () => {
+    const html = await render(SrTimeline, {
+      items: [{ content: '第一步', timestamp: '10:00' }, { content: '第二步' }],
+    })
+
+    expect(html).toContain('第一步')
+    expect(html).toContain('10:00')
   })
 
   it('SrPagination', async () => {

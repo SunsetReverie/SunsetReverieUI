@@ -60,6 +60,12 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 时间轴数据 */
+const timelineItems = [
+  { content: '提交申请', timestamp: '10:24', type: 'primary' },
+  { content: '审核通过', timestamp: '14:02', type: 'success' },
+]
+
 /** 分段控制器选项 */
 const segOptions = [
   { label: '日', value: 'day' },
@@ -281,6 +287,13 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Timeline</span>
+        <div class="cell__body cell__body--column">
+          <sr-timeline :items="timelineItems" />
         </div>
       </div>
 

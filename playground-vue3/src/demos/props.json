@@ -3088,6 +3088,35 @@
     ],
     "slots": ["default"]
   },
+  "timeline": {
+    "name": "timeline",
+    "options": [
+      {
+        "from": "timelineProps",
+        "name": "items",
+        "type": "SrTimelineItem[]",
+        "default": "() => []",
+        "description": "节点列表"
+      },
+      {
+        "from": "timelineProps",
+        "name": "mode",
+        "type": "'left' | 'right'",
+        "default": "'right'",
+        "description": "时间戳位置 @default 'right' `right` 内容在左、时间在右；`left` 反过来。"
+      },
+      {
+        "from": "timelineProps",
+        "name": "reverse",
+        "type": "boolean",
+        "default": "false",
+        "description": "倒序排列 @default false"
+      }
+    ],
+    "sources": ["timeline"],
+    "emits": [],
+    "slots": []
+  },
   "toast": {
     "name": "toast",
     "options": [

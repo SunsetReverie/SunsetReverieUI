@@ -186,6 +186,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./card/CardDemo.vue'),
       },
       {
+        key: 'timeline',
+        name: 'SrTimeline',
+        description: '时间轴。节点类型、图标、左右布局与倒序。',
+        demo: () => import('./timeline/TimelineDemo.vue'),
+      },
+      {
         key: 'collapse',
         name: 'SrCollapse',
         description: '折叠面板组。可多开或手风琴，支持禁用与自定义内容。',

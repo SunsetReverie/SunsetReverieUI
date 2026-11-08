@@ -1,0 +1,129 @@
+/**
+ * 时间轴
+ *
+ * 每项是一个 grid：时间 / 轴（圆点 + 竖线）/ 内容。
+ * 轴线用绝对定位贯穿整项高度，这样最后一项可以截断，不影响布局。
+ */
+
+.sr-timeline {
+  --sr-timeline-node-size: 9px;
+  --sr-timeline-accent: var(--sr-color-border);
+
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+
+  // ---------- 单项 ----------
+  &__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 10px;
+    position: relative;
+  }
+
+  // ---------- 轴线 ----------
+  &__axis {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    width: var(--sr-timeline-node-size);
+    padding-top: 5px;
+  }
+
+  &__node {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--sr-timeline-node-size);
+    height: var(--sr-timeline-node-size);
+    border-radius: 50%;
+    background: var(--sr-timeline-accent);
+    color: #fff;
+  }
+
+  // 有图标时把圆点撑大一点，否则图标糊成一团
+  &__node:has(svg) {
+    width: 18px;
+    height: 18px;
+  }
+
+  // 空心：只留描边
+  &__item.is-hollow &__node {
+    border: 1.5px solid var(--sr-timeline-accent);
+    background: var(--sr-color-bg-container);
+  }
+
+  &__tail {
+    position: absolute;
+    top: calc(5px + var(--sr-timeline-node-size) + 3px);
+    bottom: 0;
+    left: 50%;
+    width: 1.5px;
+    background: var(--sr-color-border-subtle);
+    transform: translateX(-50%);
+  }
+
+  // ---------- 内容 ----------
+  &__content {
+    min-width: 0;
+    padding-bottom: 18px;
+    padding-left: 2px;
+    color: var(--sr-color-text);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  // 最后一项不需要底部留白
+  &__item.is-last &__content {
+    padding-bottom: 0;
+  }
+
+  // ---------- 时间戳 ----------
+  &__time {
+    min-width: 0;
+    padding-top: 1px;
+    padding-bottom: 18px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+
+  &__item.is-last &__time {
+    padding-bottom: 0;
+  }
+
+  // 时间放在左侧时右对齐，靠近轴线
+  &__time--left {
+    text-align: right;
+  }
+
+  // ---------- 类型 ----------
+  &__item.is-primary {
+    --sr-timeline-accent: var(--sr-color-primary);
+  }
+
+  &__item.is-success {
+    --sr-timeline-accent: var(--sr-color-success);
+  }
+
+  &__item.is-warning {
+    --sr-timeline-accent: var(--sr-color-warning);
+  }
+
+  &__item.is-error {
+    --sr-timeline-accent: var(--sr-color-danger);
+  }
+
+  // ---------- 时间在左 ----------
+  &--left &__item {
+    grid-template-columns: auto auto 1fr;
+  }
+}

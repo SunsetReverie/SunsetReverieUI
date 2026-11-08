@@ -142,6 +142,7 @@ export default defineConfig({
             { text: 'SrDescriptions', link: '/components/descriptions' },
             { text: 'SrCollapse', link: '/components/collapse' },
             { text: 'SrSegmented', link: '/components/segmented' },
+            { text: 'SrTimeline', link: '/components/timeline' },
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
             { text: 'SrEmpty', link: '/components/empty' },
