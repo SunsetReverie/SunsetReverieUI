@@ -2987,10 +2987,10 @@ P1 需补充的原子组件：`SrCheckbox`、`SrRadio`、`SrSwitch`、`SrSpinner
 
 | 组件 | 说明 | 备注 | 状态 |
 | --- | --- | --- | --- |
-| `SrDatePicker` | 日期 / 日期范围 / 快捷选项 | 自研日历逻辑成本高，评估是否用 `dayjs` + 自研面板 | ⏳ 待做 |
-| `SrTree` | 虚拟滚动 / 半选 / 拖拽排序 | 拖拽需引入 `sortablejs`（⏳ 待决策） | ⏳ 待做 |
-| `SrCarousel` | 自动播放 / 循环 / 指示器 | 触碰滑动支持 | ⏳ 待做 |
-| `SrUpload` | 拖拽 / 进度 / 多文件 / 图片预览 | — | ⏳ 待做 |
+| `SrDatePicker` | 日期 / 日期范围 / 快捷选项 | 自研日历，**未引 `dayjs`**；四种模式，快捷项改为可选变体 | ✅ 已完成 |
+| `SrTree` | 虚拟滚动 / 半选 / 拖拽排序 | 拖拽自研 Pointer 实现，**未引 `sortablejs`**；另加异步加载与键盘导航 | ✅ 已完成 |
+| `SrCarousel` | 自动播放 / 循环 / 指示器 | 拖动与触摸（Pointer）、纵向、封面覆盖层 | ✅ 已完成 |
+| `SrUpload` | 拖拽 / 进度 / 多文件 / 图片预览 | 按钮形态、图片回显、自定义图标；进度条抽成 `SrProgress` | ✅ 已完成 |
 | `SrDrawer` | 四方向 / 尺寸 / 与 Modal 共用逻辑 | 抽出独立的遮罩 + 焦点陷阱，未共用 Modal | ✅ 已完成 |
 | `SrPagination` | 页码 / 每页条数 / 跳转 | 顺带替换了 `SrTable` 内联的分页器 | ✅ 已完成 |
 | `SrDropdown` | 触发 / 菜单 / 分组 / 分割线 | 复用 `utils/floating` 定位引擎 | ✅ 已完成 |
@@ -3001,7 +3001,19 @@ P1 需补充的原子组件：`SrCheckbox`、`SrRadio`、`SrSwitch`、`SrSpinner
 
 ### 10.5 P3（远期）
 
-`SrVirtualList`、`SrCascader`、`SrTransfer`、`SrColorPicker`、`SrTimeline`、`SrSteps`、`SrDescriptions`、`SrSkeleton`、`SrEmpty`、`SrResult`、`SrAffix`、`SrAnchor`、`SrWatermark`。
+| 组件 | 说明 | 状态 |
+| --- | --- | --- |
+| `SrEmpty` | 空状态 | ✅ 提前完成（P2 阶段落地） |
+| `SrSkeleton` | 骨架屏 | 📋 排入 P4 第一批 |
+| `SrSteps` | 步骤条 | 📋 排入 P4 第一批 |
+| `SrDescriptions` | 描述列表 | 📋 排入 P4 第一批 |
+| `SrTimeline` | 时间轴 | 📋 排入 P4 第二批 |
+| `SrCascader` | 级联选择 | 待评估（`tree-utils` 可复用） |
+| `SrTransfer` | 穿梭框 | 待评估（双列表状态同步） |
+| `SrColorPicker` | 颜色选择 | 待评估（色彩空间转换） |
+| `SrResult` | 结果页 | 待评估 |
+| `SrVirtualList` | 虚拟列表 | 待评估（树的虚拟滚动可抽出来） |
+| `SrAffix` / `SrAnchor` / `SrWatermark` | 固钉 / 锚点 / 水印 | ❌ 不做，见 10.9 |
 
 ### 10.6 组件依赖图（分期）
 
@@ -3038,9 +3050,14 @@ graph LR
 - [ ] 文档站有 2 个以上示例（基础 + 进阶）
 - [ ] CHANGELOG 有对应条目
 
-### 10.8 实际完成情况（截至 W10 结束）
+### 10.8 实际完成情况（截至 W14 前）
 
-规划里 P0/P1 全部完成，P2 提前交付了 8 个，另有若干规划外的组件因演示站需要而落地。当前 **34 个组件目录**（含 `SrTransition`、`SrConfigProvider` 两个基建件）。
+规划里 **P0 / P1 / P2 全部完成**（P2 含原先标记为「待决策」的 `SrDatePicker`、`SrTree`），另有若干规划外的组件因实际需要落地。当前 **39 个组件目录**（含 `SrTransition`、`SrConfigProvider` 两个基建件）。
+
+对照 10.7 的验收清单，另有三项在 P2 阶段补进了全库：
+- `lint` 链条从 2 条扩到 6 条（标签、demo 类名、裸 ref、文档缺口等），拦截静默失效
+- 演示站从「一个大页面塞 13 个组件」改为一组件一页，API 表由源码自动生成
+- 拖拽抽成 `useSrDragSort` 组合式函数，树、列表、看板共用
 
 | 批次 | 组件 | 规划外 |
 | --- | --- | --- |
@@ -3099,6 +3116,45 @@ graph LR
 这个项目是私有仓库 + tag 分发，不需要靠版本号对外证明稳定性，`0.x` 完全够用。等到组件补齐、API 稳定、有实际项目验证过，再发 `1.0.0` 才有实际意义。
 
 ---
+
+### 10.9 P4 后续批次（W14 之后）
+
+规划文档最初只排到 P3，而实际推进到 W14 时 P0～P2 已全部完成。以下按**后台项目使用频率**重新排定后续批次，不是照抄其他组件库的清单。
+
+#### 第一批（4 个）
+
+| 组件 | 说明 | 优先级理由 |
+| --- | --- | --- |
+| `SrSkeleton` | 骨架屏 | 列表 / 详情加载必备，现在只能用 `SrSpinner` 顶替，内容跳变明显 |
+| `SrAlert` | 警告提示 | 表单页顶部提示、权限警示高频出现，目前靠 `SrCard` 拼 |
+| `SrSteps` | 步骤条 | 分步表单、审批流程 |
+| `SrDescriptions` | 描述列表 | 详情页「字段名 / 值」标准排版，手写会重复 |
+
+#### 第二批（4 个）
+
+| 组件 | 说明 |
+| --- | --- |
+| `SrCollapse` | 折叠面板。与 `SrPanel` 语义不同：`Panel` 是容器，Collapse 是「多个面板可互斥或多开」的列表 |
+| `SrSegmented` | 分段控制器，比 `SrRadioGroup` 更紧凑，适合视图切换 |
+| `SrTimeline` | 时间轴，操作日志 / 审批记录 |
+| `SrSlider` | 滑块，范围筛选 / 音量 / 进度设置 |
+
+#### 不做（用现有能力解决）
+
+| 组件 | 替代方案 |
+| --- | --- |
+| `SrAffix` / `SrBacktop` | `position: sticky` + `scroll-behavior: smooth`，不值得抽组件 |
+| `SrWatermark` | canvas 生成 dataURL 铺满，十几行 |
+| `SrQRCode` | 需要实现 Reed-Solomon 编码，会破坏「零运行时依赖」的定位 |
+
+#### 待评估
+
+| 组件 | 卡点 |
+| --- | --- |
+| `SrCascader` | 可选，`tree-utils` 的扁平化与父子索引能直接复用 |
+| `SrTransfer` | 双列表状态同步 + 搜索，工作量约等于两个 `SrTable` |
+| `SrColorPicker` | 色彩空间转换（hex / rgb / hsl），纯计算但量不小 |
+| `SrVirtualList` | 树的虚拟滚动可以抽成通用件，但抽象层级不好定 |
 
 ## 十一、构建、发布与版本管理
 
@@ -4835,6 +4891,22 @@ P2 中除 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload` 外均已提前�
 | Token 校验 | `pnpm lint:tokens` 对齐变量定义与引用，防住「变量拼错导致整条声明静默失效」 |
 
 因此 W11 的范围收敛为：组件文档 + 文档站 + 首个 tag。版本承诺范围定为「P0 + P1 + 已完成的 P2」，不追求把全部 P2 纳入 `v1.0.0`。
+
+**W11 ~ W14 实际执行**
+
+| 周次 | 计划 | 实际 |
+| --- | --- | --- |
+| W11 | 文档 + 发布 `v0.1.0` | 39 个组件文档补齐；文档站上线；`SrProgress` 因上传进度条需求提前落地 |
+| W12 | P2 批次一 | `SrDrawer`、`SrPagination`、`SrCard`/`SrTag`/`SrBadge`/`SrAvatar` 按计划完成 |
+| W13 | P2 批次二 | `SrDatePicker`、`SrUpload`、`SrDropdown`、`SrBreadcrumb` 完成；另交付 `SrCarousel`、`SrTree` |
+| W14 | 缓冲与复盘 | 演示站重构（一组件一页）、拖拽抽成 `useSrDragSort`、校验链扩到 6 条、浮层材质统一 |
+
+两项原计划里标为「待决策」的技术选型，最终都选择了**自研**：
+
+| 组件 | 原计划 | 实际 |
+| --- | --- | --- |
+| `SrDatePicker` | 评估 `dayjs` | 自研 `date-utils`，14 个纯函数单测覆盖闰年 / 跨月 / 区间 |
+| `SrTree` 拖拽 | 评估 `sortablejs` | 自研 Pointer Events，鼠标与触屏共用一套，零依赖 |
 
 **关键路径**（不可压缩）：
 
