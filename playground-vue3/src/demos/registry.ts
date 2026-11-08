@@ -104,6 +104,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./input-number/InputNumberDemo.vue'),
       },
       {
+        key: 'color-picker',
+        name: 'SrColorPicker',
+        description: '颜色选择器。饱和度面板、色相条、透明度与预设色板。',
+        demo: () => import('./color-picker/ColorPickerDemo.vue'),
+      },
+      {
         key: 'transfer',
         name: 'SrTransfer',
         description: '穿梭框。双列表选择，支持搜索、全选与禁用。',

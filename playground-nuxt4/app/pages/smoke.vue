@@ -313,6 +313,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">ColorPicker</span>
+        <div class="cell__body cell__body--column">
+          <sr-color-picker model-value="#3e3edc" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Transfer</span>
         <div class="cell__body cell__body--column">
           <sr-transfer :data="transferData" :model-value="['a']" :height="120" />

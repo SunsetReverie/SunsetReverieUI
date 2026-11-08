@@ -1,0 +1,311 @@
+@import '../../../styles/mixins/index.less';
+
+/**
+ * 颜色选择器
+ *
+ * 面板结构：饱和度面板 → 色相条 → 透明度条 → 输入区 → 预设色板。
+ * 拖拽全部走 Pointer Events，鼠标与触屏共用一套。
+ */
+
+.sr-color-picker {
+  --sr-cp-height: 32px;
+  // 棋盘格底纹：表示透明的部分
+  --sr-cp-checker: repeating-conic-gradient(var(--sr-color-border-subtle) 0% 25%, transparent 0% 50%) 50% /
+    8px 8px;
+
+  position: relative;
+  display: inline-block;
+
+  // ---------- 触发器 ----------
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 160px;
+    height: var(--sr-cp-height);
+    padding: 0 10px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-form-radius);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__trigger:focus-visible {
+    border-color: var(--sr-color-primary);
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: 1px;
+  }
+
+  &__swatch {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: 3px;
+    background-image: var(--sr-cp-checker);
+  }
+
+  &__swatch--empty {
+    background-color: var(--sr-color-bg-sunken);
+  }
+
+  &__value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__value.is-placeholder {
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--sr-color-text-tertiary);
+    color: var(--sr-color-bg-container);
+    cursor: pointer;
+  }
+
+  // ---------- 面板 ----------
+  &__panel {
+    position: fixed;
+    z-index: var(--sr-z-index-popover, 1050);
+    width: 232px;
+    padding: 10px;
+    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-color-bg-popover);
+    box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
+    .sr-glass-layer(var(--sr-glass-filter-strong));
+  }
+
+  // ---------- 饱和度面板 ----------
+  // 纯色底 + 两层渐变：横向白→透明（饱和度），纵向透明→黑（亮度）
+  &__area {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    border-radius: var(--sr-radius-sm);
+    background-image:
+      linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent);
+    cursor: crosshair;
+    touch-action: none;
+    overflow: hidden;
+  }
+
+  &__area-cursor {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 30%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  // ---------- 色相条 ----------
+  &__hue {
+    position: relative;
+    height: 10px;
+    margin-top: 10px;
+    border-radius: var(--sr-radius-full);
+    background: linear-gradient(
+      to right,
+      #f00 0%,
+      #ff0 17%,
+      #0f0 33%,
+      #0ff 50%,
+      #00f 67%,
+      #f0f 83%,
+      #f00 100%
+    );
+    cursor: pointer;
+    touch-action: none;
+  }
+
+  &__hue-cursor {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 30%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  // ---------- 透明度条 ----------
+  &__alpha {
+    position: relative;
+    height: 10px;
+    margin-top: 10px;
+    border-radius: var(--sr-radius-full);
+    cursor: pointer;
+    touch-action: none;
+    overflow: hidden;
+  }
+
+  &__alpha-cursor {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 30%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  // ---------- 输入区 ----------
+  &__inputs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  &__preview {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-sm);
+    background-image: var(--sr-cp-checker);
+  }
+
+  &__hex {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 24px;
+    padding: 0 6px;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: 12px;
+    outline: none;
+  }
+
+  &__hex:focus {
+    border-color: var(--sr-color-primary);
+  }
+
+  &__alpha-value {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---------- 预设 ----------
+  &__presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__preset {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__preset:hover {
+    transform: scale(1.1);
+  }
+
+  &__preset:focus-visible {
+    outline: 2px solid var(--sr-color-primary);
+    outline-offset: 1px;
+  }
+
+  &__preset.is-active {
+    box-shadow:
+      0 0 0 2px var(--sr-color-bg-container),
+      0 0 0 3px var(--sr-color-primary);
+  }
+
+  // ---------- 尺寸 ----------
+  &--sm {
+    --sr-cp-height: 28px;
+  }
+
+  &--sm &__trigger {
+    font-size: 12.5px;
+  }
+
+  &--lg {
+    --sr-cp-height: 38px;
+  }
+
+  &--lg &__trigger {
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  &--lg &__swatch {
+    width: 18px;
+    height: 18px;
+  }
+
+  // ---------- 状态 ----------
+  &.is-open &__trigger {
+    border-color: var(--sr-color-primary);
+  }
+
+  &.is-disabled &__trigger {
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-tertiary);
+    cursor: not-allowed;
+  }
+
+  &.is-disabled &__swatch {
+    opacity: 0.5;
+  }
+}
+
+// ---------- 面板过渡 ----------
+.sr-color-picker-panel-enter-active,
+.sr-color-picker-panel-leave-active {
+  transition:
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.sr-color-picker-panel-enter-from,
+.sr-color-picker-panel-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-color-picker-panel-enter-active,
+  .sr-color-picker-panel-leave-active {
+    transition: none;
+  }
+}

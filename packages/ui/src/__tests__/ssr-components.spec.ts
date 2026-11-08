@@ -26,6 +26,7 @@ import {
   SrCarousel,
   SrCascader,
   SrCollapse,
+  SrColorPicker,
   SrModal,
   SrNav,
   SrPagination,
@@ -318,6 +319,11 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('苹果')
     expect(html).toContain('香蕉')
+  })
+
+  it('SrColorPicker 服务端输出色值文本', async () => {
+    const html = await render(SrColorPicker, { modelValue: '#3e3edc' })
+    expect(html).toContain('#3e3edc')
   })
 
   it('SrPagination', async () => {

@@ -783,6 +783,83 @@
     ],
     "slots": ["item", "title"]
   },
+  "color-picker": {
+    "name": "color-picker",
+    "options": [
+      {
+        "from": "colorPickerProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "颜色值，配合 v-model 接受 hex / rgb() / hsl() 三种输入，输出格式由 `format` 决定。"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "format",
+        "type": "SrColorFormat",
+        "default": "'hex'",
+        "description": "输出格式 @default 'hex'"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "showAlpha",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示透明度 @default false 打开后会多一条透明度滑条，输出值带 alpha（hex 为 8 位）。"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "presets",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "预设色板，点一下直接选中"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可清空 @default false"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'请选择颜色'",
+        "description": "占位文案 @default '请选择颜色'"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["colorPicker"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": []
+  },
   "config-provider": {
     "name": "config-provider",
     "options": [

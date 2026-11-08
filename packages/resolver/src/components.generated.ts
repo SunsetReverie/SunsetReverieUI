@@ -19,6 +19,7 @@ export const SR_COMPONENT_NAMES = [
   'CheckboxGroup',
   'Col',
   'Collapse',
+  'ColorPicker',
   'ConfigProvider',
   'Confirm',
   'DatePicker',
