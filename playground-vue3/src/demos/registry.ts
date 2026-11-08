@@ -57,6 +57,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./progress/ProgressDemo.vue'),
       },
       {
+        key: 'steps',
+        name: 'SrSteps',
+        description: '步骤条。横向纵向、简洁模式、可点击切换与出错状态。',
+        demo: () => import('./steps/StepsDemo.vue'),
+      },
+      {
         key: 'alert',
         name: 'SrAlert',
         description: '警告提示。四种类型、可关闭、通栏与富内容。',

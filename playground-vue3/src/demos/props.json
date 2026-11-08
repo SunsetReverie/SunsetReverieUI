@@ -2436,6 +2436,82 @@
     "emits": [],
     "slots": []
   },
+  "steps": {
+    "name": "steps",
+    "options": [
+      {
+        "from": "stepsProps",
+        "name": "items",
+        "type": "SrStepItem[]",
+        "default": "() => []",
+        "description": "步骤数据"
+      },
+      {
+        "from": "stepsProps",
+        "name": "current",
+        "type": "number",
+        "default": "0",
+        "description": "当前进行到第几步 @default 0 从 0 开始。小于它的都是「已完成」，大于它的都是「未开始」。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "status",
+        "type": "Exclude<SrStepStatus, 'wait' | 'finish'>",
+        "default": "'process'",
+        "description": "当前步骤的状态 @default 'process' 只影响 `current` 那一步；其余按位置推导。 设成 `error` 表示这一步出了问题，后面的步骤全部停在「未开始」。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "方向 @default 'horizontal'"
+      },
+      {
+        "from": "stepsProps",
+        "name": "labelPlacement",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "标题与描述的位置 @default 'horizontal' 横向步骤条里，`vertical` 会让标题和描述上下排列，适合文案较长的情况。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "simple",
+        "type": "boolean",
+        "default": "false",
+        "description": "简洁模式：只显示标题和连接线 @default false"
+      },
+      {
+        "from": "stepsProps",
+        "name": "clickable",
+        "type": "boolean",
+        "default": "false",
+        "description": "允许点击切换 @default false"
+      },
+      {
+        "from": "stepsProps",
+        "name": "lineStyle",
+        "type": "'solid' | 'dashed'",
+        "default": "'solid'",
+        "description": "连接线样式 @default 'solid' `dashed` 让未完成的连接线变成虚线，进度感更明显。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["steps"],
+    "emits": [
+      {
+        "name": "change",
+        "params": ["index"]
+      }
+    ],
+    "slots": ["description", "title"]
+  },
   "switch": {
     "name": "switch",
     "options": [

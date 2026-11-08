@@ -33,6 +33,7 @@ import {
   SrSelect,
   SrSkeleton,
   SrSpinner,
+  SrSteps,
   SrSwitch,
   SrTable,
   SrTabs,
@@ -208,6 +209,16 @@ describe('导航与数据组件的 SSR 渲染', () => {
     const html = await render(SrAlert, { title: '注意', description: '这段说明要在服务端就有' })
     expect(html).toContain('role="alert"')
     expect(html).toContain('这段说明要在服务端就有')
+  })
+
+  it('SrSteps 服务端输出全部标题', async () => {
+    const html = await render(SrSteps, {
+      items: [{ title: '第一步' }, { title: '第二步' }],
+      current: 0,
+    })
+
+    expect(html).toContain('第一步')
+    expect(html).toContain('第二步')
   })
 
   it('SrPagination', async () => {

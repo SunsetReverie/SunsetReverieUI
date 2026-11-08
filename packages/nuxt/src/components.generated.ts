@@ -40,6 +40,7 @@ export const SR_COMPONENT_NAMES = [
   'Select',
   'Skeleton',
   'Spinner',
+  'Steps',
   'Switch',
   'Table',
   'Tabs',

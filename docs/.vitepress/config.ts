@@ -138,6 +138,7 @@ export default defineConfig({
           items: [
             { text: 'SrTag', link: '/components/tag' },
             { text: 'SrAlert', link: '/components/alert' },
+            { text: 'SrSteps', link: '/components/steps' },
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
             { text: 'SrEmpty', link: '/components/empty' },

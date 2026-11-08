@@ -1,0 +1,277 @@
+/**
+ * 步骤条
+ *
+ * 结构：每项 = 头部（圆点 + 连接线）+ 内容（标题 + 描述）。
+ *
+ * 规则严格按选择器特异性分组排列（stylelint 的 no-descending-specificity）：
+ *   1. 基础 —— 1 个 class
+ *   2. 单变体（方向 / 虚线 / 简洁 / 尺寸）—— 2 个 class
+ *   3. 复合变体与状态 —— 3 个 class
+ *   4. 组合场景（虚线 + 完成、hover）—— 4 个 class
+ */
+
+.sr-steps {
+  // ========== 1. 基础 ==========
+  display: flex;
+  width: 100%;
+
+  &__item {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  &__marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--sr-color-border);
+    border-radius: 50%;
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    font-weight: var(--sr-font-weight-medium);
+    font-variant-numeric: tabular-nums;
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__tail {
+    flex: 1 1 auto;
+    background: var(--sr-color-border-subtle);
+  }
+
+  &__body {
+    min-width: 0;
+    padding-top: 2px;
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 13px;
+    font-weight: var(--sr-font-weight-medium);
+    line-height: 1.4;
+  }
+
+  &__desc {
+    margin: 2px 0 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  // ========== 2. 单变体（2 个 class）==========
+
+  // ----- 横向 -----
+  &--horizontal &__item {
+    flex-direction: column;
+  }
+
+  &--horizontal &__head {
+    width: 100%;
+  }
+
+  &--horizontal &__tail {
+    height: 1.5px;
+    margin: 0 8px;
+  }
+
+  &--horizontal &__body {
+    padding-top: 8px;
+    padding-right: 6px;
+  }
+
+  // ----- 纵向 -----
+  &--vertical {
+    flex-direction: column;
+  }
+
+  &--vertical &__item {
+    min-height: 56px;
+  }
+
+  &--vertical &__head {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &--vertical &__tail {
+    width: 1.5px;
+    min-height: 28px;
+    margin: 4px 0;
+  }
+
+  &--vertical &__body {
+    flex: 1 1 auto;
+    padding-top: 0;
+    padding-left: 10px;
+  }
+
+  // ----- 虚线 -----
+  &--line-dashed &__tail {
+    background: repeating-linear-gradient(to right, var(--sr-color-border-subtle) 0 4px, transparent 4px 8px);
+  }
+
+  // ----- 尺寸 -----
+  &--small &__marker {
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+  }
+
+  &--small &__title {
+    font-size: 12px;
+  }
+
+  &--large &__marker {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+
+  &--large &__title {
+    font-size: 14px;
+  }
+
+  // ========== 3. 复合变体与状态（3 个 class）==========
+
+  // ----- 简洁 -----
+  &.is-simple &__marker {
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+  }
+
+  &.is-simple &__body {
+    align-self: center;
+    padding-top: 0;
+  }
+
+  // ----- 横向 + 标题并排 -----
+  &--horizontal.sr-steps--label-horizontal &__item {
+    align-items: flex-start;
+    flex-direction: row;
+  }
+
+  &--horizontal.sr-steps--label-horizontal &__head {
+    width: auto;
+  }
+
+  &--horizontal.sr-steps--label-horizontal &__tail {
+    margin: 0 8px;
+  }
+
+  &--horizontal.sr-steps--label-horizontal &__body {
+    padding-top: 1px;
+    padding-left: 8px;
+  }
+
+  // ----- 纵向 + 虚线 -----
+  &--line-dashed.sr-steps--vertical &__tail {
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--sr-color-border-subtle) 0 4px,
+      transparent 4px 8px
+    );
+  }
+
+  // ----- 横向 + 简洁 -----
+  &--horizontal.is-simple &__item {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  &--horizontal.is-simple &__head {
+    width: auto;
+  }
+
+  &--horizontal.is-simple &__body {
+    padding-right: 6px;
+    padding-left: 6px;
+  }
+
+  // ----- 状态：已完成 -----
+  &__item.is-finish &__marker {
+    border-color: var(--sr-color-primary);
+    background: var(--sr-color-primary);
+    color: #fff;
+  }
+
+  &__item.is-finish &__tail {
+    background: var(--sr-color-primary);
+  }
+
+  &__item.is-finish &__title {
+    color: var(--sr-color-text);
+  }
+
+  // ----- 状态：进行中 -----
+  &__item.is-process &__marker {
+    border-color: var(--sr-color-primary);
+    color: var(--sr-color-primary-text);
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__item.is-process &__title {
+    color: var(--sr-color-text);
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__item.is-process &__desc {
+    color: var(--sr-color-text-secondary);
+  }
+
+  // ----- 状态：出错 -----
+  &__item.is-error &__marker {
+    border-color: var(--sr-color-danger);
+    background: var(--sr-color-danger);
+    color: #fff;
+  }
+
+  &__item.is-error &__title {
+    color: var(--sr-color-danger);
+  }
+
+  // ----- 交互：禁用 -----
+  &__item.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  // ========== 4. 组合场景（4 个 class）==========
+
+  // ----- 虚线 + 已完成 -----
+  &--line-dashed &__item.is-finish &__tail {
+    background: repeating-linear-gradient(to right, var(--sr-color-primary) 0 4px, transparent 4px 8px);
+  }
+
+  &--line-dashed.sr-steps--vertical &__item.is-finish &__tail {
+    background: repeating-linear-gradient(to bottom, var(--sr-color-primary) 0 4px, transparent 4px 8px);
+  }
+
+  // ----- 可点击 -----
+  &__item.is-clickable {
+    cursor: pointer;
+  }
+
+  &__item.is-clickable:hover &__marker {
+    border-color: var(--sr-color-primary);
+  }
+
+  &__item.is-clickable:hover &__title {
+    color: var(--sr-color-primary-text);
+  }
+}
