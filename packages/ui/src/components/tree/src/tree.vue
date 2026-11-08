@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 import { useSrDragSort } from '../../../composables/use-sr-drag'
 import SrTreeNodeRow from './tree-node.vue'
@@ -268,6 +268,10 @@ function onScroll(event: Event): void {
   scrollTop.value = (event.target as HTMLElement).scrollTop
 }
 
+onMounted(() => {
+  registerContainer(viewportRef.value ?? null)
+})
+
 watch(
   () => props.height,
   () => {
@@ -398,13 +402,14 @@ function onKeydown(event: KeyboardEvent): void {
 const {
   dragKey: draggingKey,
   register: registerRow,
+  registerContainer,
   onPointerDown: startRowDrag,
   dropTypeOf,
   cancel: cancelDrag,
 } = useSrDragSort({
   orientation: 'vertical',
   isDisabled: () => props.disabled,
-  canDrop: (dragKey, overKey, type) => {
+  canDrop: ({ dragKey, overKey, type }) => {
     const dragNode = findNodeIn(innerData.value, dragKey)
     const overNode = findNodeIn(innerData.value, overKey)
     if (!dragNode || !overNode) return false
@@ -416,7 +421,7 @@ const {
 
     return props.allowDrop ? props.allowDrop(dragNode, overNode, type) : true
   },
-  onDrop: (dragKey, overKey, type) => {
+  onDrop: ({ dragKey, overKey, type }) => {
     const dragNode = findNodeIn(innerData.value, dragKey)
     const overNode = findNodeIn(innerData.value, overKey)
     if (!dragNode || !overNode) return

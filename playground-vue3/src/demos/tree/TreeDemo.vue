@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, type Ref } from 'vue'
 import { SrButton, SrTag, SrTree, type SrTreeKey, type SrTreeNode } from '@sunset-reverie/ui'
+import DragBoard from './DragBoard.vue'
 
 defineOptions({ name: 'TreeDemo' })
 
@@ -263,6 +264,15 @@ function clearAll(): void {
           <p class="hint">拖父节点进自己的子树会被拒绝（会成环）</p>
         </div>
       </div>
+    </section>
+
+    <section>
+      <h3>跨列表拖拽（同一套逻辑复用到看板）</h3>
+      <DragBoard />
+      <p class="hint">
+        两列共用 <code>createSrDragContext()</code> 创建的上下文，卡片可以在列之间拖动。
+        这套逻辑和树的拖拽是同一个 <code>useSrDragSort</code>：它只认「key + 元素」，不关心数据结构。
+      </p>
     </section>
 
     <section>

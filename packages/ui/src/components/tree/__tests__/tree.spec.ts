@@ -62,6 +62,29 @@ function fire(target: EventTarget, type: string, x: number, y: number): void {
 }
 
 /**
+ * 给列表容器编一个矩形
+ * @param wrapper 挂载结果
+ */
+function mockContainer(wrapper: ReturnType<typeof mountTree>): void {
+  const viewport = wrapper.find('.sr-tree__viewport').element as HTMLElement
+  viewport.getBoundingClientRect = () =>
+    ({
+      top: 0,
+      bottom: 400,
+      left: 0,
+      right: 300,
+      width: 300,
+      height: 400,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    }) as DOMRect
+
+  // jsdom 没有命中测试，直接让它返回容器自身
+  document.elementFromPoint = () => viewport
+}
+
+/**
  * 给元素编一个矩形（jsdom 默认全是 0）
  * @param element 元素
  * @param top 顶部位置
@@ -307,6 +330,7 @@ describe('SrTree', () => {
   it('指针拖拽后派发 node-drop 并移动节点', async () => {
     const wrapper = mountTree({ draggable: true })
 
+    mockContainer(wrapper)
     // jsdom 里所有 rect 都是 0，手动铺出高度，落点才算得出来
     const rows = wrapper.findAll('.sr-tree__row')
     rows.forEach((row, index) => {
@@ -327,6 +351,7 @@ describe('SrTree', () => {
   it('拖拽不能把父节点拖进自己的子树', async () => {
     const wrapper = mountTree({ draggable: true, defaultExpandAll: true })
 
+    mockContainer(wrapper)
     const rows = wrapper.findAll('.sr-tree__row')
     rows.forEach((row, index) => {
       jestRect(row.element as HTMLElement, index * 32, 32)

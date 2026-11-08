@@ -229,6 +229,35 @@ const {
 
 `register` 负责把元素交给它——落点计算全靠元素的实际矩形，所以必须在 `ref` 里注册。
 
+### 跨列表拖拽
+
+两个列表想互相拖，必须**共享同一个上下文**：
+
+```ts
+const context = createSrDragContext()
+
+const left = useSrDragSort({ context, listId: 'todo', onDrop: move, canDrop: () => true })
+const right = useSrDragSort({ context, listId: 'done', onDrop: move, canDrop: () => true })
+```
+
+`onDrop` 拿到的是完整信息，据此决定数据怎么搬：
+
+```ts
+function move({ dragKey, overKey, type, fromListId, toListId }) {
+  // 从 fromListId 摘出 dragKey，插到 toListId 的 overKey 附近
+}
+```
+
+**空列表也能接住**：每列还要注册容器，否则空列没有项可命中，拖进去没有任何反应。
+
+```vue
+<div :ref="(el) => right.registerContainer(el as HTMLElement)">…</div>
+```
+
+此时 `overKey` 是 `SR_DRAG_CONTAINER_KEY`（一个约定的占位值），代表「追加到末尾」。
+
+> **为什么必须共享 context**：`pointermove` 是全局监听的，每个列表都会收到。不共享的话各自只认自己的元素，指针移出边界就什么都不知道了。共享之后，落点归属由「指针在谁的容器内」决定，只有一个列表会接管。
+
 ## 虚拟滚动
 
 数据量大时开 `virtual`，只渲染可视区内的行：
