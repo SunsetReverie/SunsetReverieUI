@@ -92,12 +92,31 @@ const resolvedStatus = computed(() =>
   props.status !== 'default' ? props.status : (formItem?.status.value ?? 'default'),
 )
 
+/** 非受控时的内部值 */
+const innerValue = ref<SrSelectValue | SrSelectValue[] | undefined>(props.defaultValue)
+
+/** 实际生效的值：受控优先 */
+const currentValue = computed(() => props.modelValue ?? innerValue.value)
+
+/**
+ * 写入选中值
+ *
+ * 受控时只派发事件等父级回写，非受控时直接更新内部状态——
+ * 后者避免「忘了绑 v-model 就点了没反应」。
+ * @param next 新值
+ */
+function setValue(next: SrSelectValue | SrSelectValue[]): void {
+  if (props.modelValue === undefined) innerValue.value = next
+  emit('update:modelValue', next)
+}
+
 /** 当前选中的值数组（统一形态，简化判断） */
 const selectedValues = computed<SrSelectValue[]>(() => {
+  const value = currentValue.value
   if (props.multiple) {
-    return Array.isArray(props.modelValue) ? props.modelValue : []
+    return Array.isArray(value) ? value : []
   }
-  return props.modelValue === undefined ? [] : [props.modelValue as SrSelectValue]
+  return value === undefined ? [] : [value as SrSelectValue]
 })
 
 /** 已选选项对象 */
@@ -218,7 +237,7 @@ function pick(option: SrSelectOption): void {
       ? current.filter((value) => value !== option.value)
       : [...current, option.value]
 
-    emit('update:modelValue', next)
+    setValue(next)
     emit('change', next)
     formItem?.notify('change')
     // 多选不关闭面板，允许连续选择
@@ -226,7 +245,7 @@ function pick(option: SrSelectOption): void {
     return
   }
 
-  emit('update:modelValue', option.value)
+  setValue(option.value)
   emit('change', option.value)
   formItem?.notify('change')
   close()

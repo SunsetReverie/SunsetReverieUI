@@ -210,6 +210,8 @@ const disabledWeekend = (date: Date) => [0, 6].includes(date.getDay())
 
 ## 注意事项
 
+- **SrDatePicker 是受控组件，必须绑 `v-model`；不绑的话面板里选完日期不会显示到触发器上。**
+
 - **区间模式必须点两次**。第一次点只设起点，此时不会派发 `update:modelValue`，底部会提示「请选择结束日期」。
 - **带时间（`datetime` / `datetimerange`）需要点「确定」**才提交。纯日期模式点选即提交并关闭。
 - 面板固定渲染 **6 行 × 7 列 = 42 格**，前后补齐上下月的日期。固定行数是为了避免切换月份时面板高度抖动。

@@ -20,7 +20,17 @@ export type SrSelectStatus = 'default' | 'error' | 'warning' | 'success'
 
 export const selectProps = {
   /** 选中值；multiple 时为数组 */
+  /**
+   * 选中值，配合 v-model
+   *
+   * 不传就是非受控：组件自己维护选中状态，点击依然有效。
+   */
   modelValue: {
+    type: [String, Number, Array] as PropType<SrSelectValue | SrSelectValue[] | undefined>,
+    default: undefined,
+  },
+  /** 非受控时的初始值 */
+  defaultValue: {
     type: [String, Number, Array] as PropType<SrSelectValue | SrSelectValue[] | undefined>,
     default: undefined,
   },

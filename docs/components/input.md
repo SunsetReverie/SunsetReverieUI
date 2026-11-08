@@ -100,3 +100,7 @@
 ```ts
 import '@sunset-reverie/ui/components/input/style.css'
 ```
+
+## 注意事项
+
+- SrInput 是受控组件，必须绑 `v-model`；不绑的话输入框能打字，但值不会回写到组件状态（清空按钮、字数统计会失效）。

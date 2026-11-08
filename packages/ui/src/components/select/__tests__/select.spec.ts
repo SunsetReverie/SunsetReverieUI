@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick, ref } from 'vue'
 
 import { SrSelect } from '..'
@@ -55,6 +55,31 @@ describe('SrSelect', () => {
     expect(wrapper.find('.sr-select__panel').isVisible()).toBe(true)
     expect(wrapper.emitted('visible-change')?.[0]).toEqual([true])
 
+    wrapper.unmount()
+  })
+
+  it('不绑 v-model 时也能选中（非受控）', async () => {
+    // 不传 modelValue，只给 options
+    const wrapper = mountSelect({ options })
+    await wrapper.find('.sr-select__trigger').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-select__option').exists()).toBe(true)
+    })
+
+    await wrapper.findAll('.sr-select__option')[0]?.trigger('click')
+    await wrapper.vm.$nextTick()
+
+    // 内部状态生效：选中文案出现在触发器里，不再显示占位
+    expect(wrapper.find('.sr-select__placeholder').exists()).toBe(false)
+    // 同时仍然派发事件
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+    wrapper.unmount()
+  })
+
+  it('defaultValue 提供初值（非受控）', () => {
+    const wrapper = mountSelect({ options, defaultValue: 'a' })
+
+    expect(wrapper.text()).toContain('苹果')
     wrapper.unmount()
   })
 

@@ -94,6 +94,7 @@ const options = [
 
 | 名称 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `defaultValue` | `SrSelectValue \| SrSelectValue[]` | — | 非受控时的初始值 |
 | `modelValue` | `SrSelectValue \| SrSelectValue[]` | — | 选中值；`multiple` 时为数组 |
 | `options` | `SrSelectOption[]` | `[]` | 选项列表 |
 | `multiple` | `boolean` | `false` | 多选 |
