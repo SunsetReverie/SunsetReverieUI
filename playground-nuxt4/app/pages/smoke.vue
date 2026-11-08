@@ -101,6 +101,12 @@ const collapseItems = [
   { key: 'b', title: '高级设置', content: '内容 B' },
 ]
 
+/** 右键菜单项 */
+const contextMenuItems = [
+  { key: 'copy', label: '复制' },
+  { key: 'remove', label: '删除', danger: true },
+]
+
 /** 描述列表数据 */
 const descItems = [
   { label: '姓名', value: '林深' },
@@ -309,6 +315,37 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Statistic / Tile</span>
+        <div class="cell__body cell__body--column">
+          <sr-statistic title="总用户" :value="1280" />
+          <sr-tile icon="lucide:heart" title="收藏" active />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Loading</span>
+        <div class="cell__body cell__body--column">
+          <sr-loading text="加载中…" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Calendar</span>
+        <div class="cell__body cell__body--column">
+          <sr-calendar model-value="2026-11-09" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">ContextMenu</span>
+        <div class="cell__body cell__body--column">
+          <sr-context-menu :items="contextMenuItems">
+            <div style="padding: 12px; border: 1px dashed #ccc">右键区域</div>
+          </sr-context-menu>
         </div>
       </div>
 

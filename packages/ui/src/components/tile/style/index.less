@@ -1,0 +1,181 @@
+/**
+ * 图标砖
+ *
+ * 图标、标题、描述自上而下排列的方块。用于功能宫格与图标选择器。
+ * 规则按特异性分组：基础(1) → 单变体/状态(2) → 组合(3)。
+ */
+
+.sr-tile {
+  --sr-tile-accent: var(--sr-color-text-secondary);
+  --sr-tile-padding: 14px 12px;
+  --sr-tile-icon-box: 40px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: var(--sr-tile-padding);
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text);
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.sr-tile:focus-visible {
+  border-color: var(--sr-color-primary);
+  outline: 2px solid var(--sr-color-primary-alpha-25);
+  outline-offset: 1px;
+}
+
+.sr-tile:hover:not(:disabled) {
+  border-color: var(--sr-color-primary);
+  transform: translateY(-1px);
+}
+
+/* ---------- 图标 ---------- */
+
+.sr-tile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--sr-tile-icon-box);
+  height: var(--sr-tile-icon-box);
+  border-radius: var(--sr-radius-sm);
+  background: color-mix(in srgb, var(--sr-tile-accent) 12%, transparent);
+  color: var(--sr-tile-accent);
+}
+
+.sr-tile__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sr-tile__title {
+  color: var(--sr-color-text);
+  font-size: 13px;
+  font-weight: var(--sr-font-weight-medium);
+  line-height: 1.4;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sr-tile__desc {
+  color: var(--sr-color-text-tertiary);
+  font-size: 11.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 选中标记 ---------- */
+
+.sr-tile__check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--sr-color-primary);
+  color: #fff;
+}
+
+/* ---------- 变体：语义色 ---------- */
+
+.sr-tile--primary {
+  --sr-tile-accent: var(--sr-color-primary);
+}
+
+.sr-tile--success {
+  --sr-tile-accent: var(--sr-color-success);
+}
+
+.sr-tile--warning {
+  --sr-tile-accent: var(--sr-color-warning);
+}
+
+.sr-tile--error {
+  --sr-tile-accent: var(--sr-color-danger);
+}
+
+/* ---------- 变体：尺寸 ---------- */
+
+.sr-tile--xs {
+  --sr-tile-padding: 8px 6px;
+  --sr-tile-icon-box: 28px;
+}
+
+.sr-tile--xs .sr-tile__title {
+  font-size: 11.5px;
+}
+
+.sr-tile--sm {
+  --sr-tile-padding: 10px 8px;
+  --sr-tile-icon-box: 34px;
+}
+
+.sr-tile--sm .sr-tile__title {
+  font-size: 12.5px;
+}
+
+.sr-tile--lg {
+  --sr-tile-padding: 18px 16px;
+  --sr-tile-icon-box: 48px;
+}
+
+.sr-tile--lg .sr-tile__title {
+  font-size: 14px;
+}
+
+/* ---------- 变体：横向 ---------- */
+
+.sr-tile.is-horizontal {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 10px;
+  text-align: left;
+}
+
+.sr-tile.is-horizontal .sr-tile__icon {
+  width: 34px;
+  height: 34px;
+}
+
+.sr-tile.is-horizontal .sr-tile__body {
+  flex: 1 1 auto;
+}
+
+/* ---------- 状态：选中 / 禁用 ---------- */
+
+.sr-tile.is-active {
+  border-color: var(--sr-color-primary);
+  background: var(--sr-color-primary-alpha-12);
+}
+
+.sr-tile.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.sr-tile.is-disabled:hover {
+  border-color: var(--sr-color-border-subtle);
+  transform: none;
+}

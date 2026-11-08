@@ -1,0 +1,115 @@
+/**
+ * 加载中
+ *
+ * 三种形态：包裹内容（遮罩盖住插槽）、全屏（固定定位）、行内（只有转圈）。
+ * 遮罩用半透明底 + 轻模糊，让人能看出「下面还有内容，只是暂时不能点」。
+ */
+
+.sr-loading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  color: var(--sr-color-text-secondary);
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+  }
+
+  &__body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--sr-radius-base);
+  }
+
+  &__text {
+    color: var(--sr-color-text-secondary);
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  // ---------- 形态：包裹内容 ----------
+  &--wrapper {
+    display: block;
+    min-height: 0;
+  }
+
+  // ---------- 形态：全屏 ----------
+  &--fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: var(--sr-z-index-modal, 1100);
+    min-height: 0;
+  }
+
+  &--fullscreen &__body {
+    padding: 20px 28px;
+    background: var(--sr-color-bg-popover);
+    box-shadow: var(--sr-shadow-lg);
+  }
+
+  // ---------- 形态：行内 ----------
+  &--inline {
+    display: inline-flex;
+    min-height: 0;
+    padding: 8px;
+  }
+
+  // ---------- 遮罩 ----------
+  &__overlay.is-mask {
+    background: color-mix(in srgb, var(--sr-color-bg-container) 72%, transparent);
+    backdrop-filter: blur(1px);
+  }
+
+  &.is-mask {
+    background: color-mix(in srgb, var(--sr-color-bg-container) 72%, transparent);
+    backdrop-filter: blur(1px);
+  }
+
+  // 没遮罩时把 body 的白底去掉，避免出现一块突兀的卡片
+  &:not(.is-mask) &__body,
+  &:not(.is-mask) &__overlay &__body {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  // ---------- 尺寸 ----------
+  &--xs &__text,
+  &--sm &__text {
+    font-size: 12px;
+  }
+
+  &--lg &__text {
+    font-size: 13.5px;
+  }
+}
+
+// ---------- 过渡 ----------
+.sr-loading-fade-enter-active,
+.sr-loading-fade-leave-active {
+  transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.sr-loading-fade-enter-from,
+.sr-loading-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-loading-fade-enter-active,
+  .sr-loading-fade-leave-active {
+    transition: none;
+  }
+}

@@ -97,6 +97,9 @@ export default defineConfig({
             { text: 'SrIcon', link: '/components/icon' },
             { text: 'SrSpinner', link: '/components/spinner' },
             { text: 'SrProgress', link: '/components/progress' },
+            { text: 'SrStatistic', link: '/components/statistic' },
+            { text: 'SrTile', link: '/components/tile' },
+            { text: 'SrLoading', link: '/components/loading' },
           ],
         },
         {
@@ -126,6 +129,7 @@ export default defineConfig({
             { text: 'SrSwitch', link: '/components/switch' },
             { text: 'SrSlider', link: '/components/slider' },
             { text: 'SrDatePicker', link: '/components/date-picker' },
+            { text: 'SrCalendar', link: '/components/calendar' },
           ],
         },
         {
@@ -173,6 +177,7 @@ export default defineConfig({
             { text: 'SrNav', link: '/components/nav' },
             { text: 'SrTabs', link: '/components/tabs' },
             { text: 'SrDropdown', link: '/components/dropdown' },
+            { text: 'SrContextMenu', link: '/components/context-menu' },
             { text: 'SrBreadcrumb', link: '/components/breadcrumb' },
           ],
         },

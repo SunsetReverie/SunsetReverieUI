@@ -303,6 +303,76 @@
     "emits": [],
     "slots": []
   },
+  "calendar": {
+    "name": "calendar",
+    "options": [
+      {
+        "from": "calendarProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "选中日期，配合 v-model 格式 `YYYY-MM-DD`，空字符串表示未选。"
+      },
+      {
+        "from": "calendarProps",
+        "name": "firstDayOfWeek",
+        "type": "number",
+        "default": "1",
+        "description": "每周第一天，0 是周日、1 是周一 @default 1"
+      },
+      {
+        "from": "calendarProps",
+        "name": "min",
+        "type": "string",
+        "default": "''",
+        "description": "最小可选日期 `YYYY-MM-DD`"
+      },
+      {
+        "from": "calendarProps",
+        "name": "max",
+        "type": "string",
+        "default": "''",
+        "description": "最大可选日期 `YYYY-MM-DD`"
+      },
+      {
+        "from": "calendarProps",
+        "name": "marks",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "需要标记的日期 @default [] 有事件的日期在格子下方显示一个小点。"
+      },
+      {
+        "from": "calendarProps",
+        "name": "showToday",
+        "type": "boolean",
+        "default": "true",
+        "description": "顶部显示「回到今天」 @default true"
+      },
+      {
+        "from": "calendarProps",
+        "name": "cellHeight",
+        "type": "number",
+        "default": "44",
+        "description": "格子高度（像素） @default 44"
+      }
+    ],
+    "sources": ["calendar"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "month-change",
+        "params": ["year", "month"]
+      }
+    ],
+    "slots": []
+  },
   "card": {
     "name": "card",
     "options": [
@@ -973,6 +1043,37 @@
       {
         "name": "close",
         "params": []
+      }
+    ],
+    "slots": ["default"]
+  },
+  "context-menu": {
+    "name": "context-menu",
+    "options": [
+      {
+        "from": "contextMenuProps",
+        "name": "items",
+        "type": "SrContextMenuItem[]",
+        "default": "() => []",
+        "description": "菜单项"
+      },
+      {
+        "from": "contextMenuProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整个菜单 @default false 禁用后右键仍会阻止默认菜单，只是不弹出自己的。"
+      }
+    ],
+    "sources": ["contextMenu"],
+    "emits": [
+      {
+        "name": "select",
+        "params": ["key", "item"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
       }
     ],
     "slots": ["default"]
@@ -2002,6 +2103,56 @@
         "params": []
       }
     ],
+    "slots": []
+  },
+  "loading": {
+    "name": "loading",
+    "options": [
+      {
+        "from": "loadingProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示 @default true 包裹内容时通常绑一个变量；单独用时不用传。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "text",
+        "type": "string",
+        "default": "''",
+        "description": "提示文案"
+      },
+      {
+        "from": "loadingProps",
+        "name": "fullscreen",
+        "type": "boolean",
+        "default": "false",
+        "description": "全屏模式 @default false 打开后固定定位覆盖整个视口，同时锁定页面滚动。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "mask",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示遮罩 @default true 关掉后只有转圈，背景内容可以继续操作。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "delay",
+        "type": "number",
+        "default": "0",
+        "description": "延迟显示（毫秒） @default 0 接口很快返回时不必闪一下 loading；设成 200 可以让快请求完全不闪。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["loading"],
+    "emits": [],
     "slots": []
   },
   "message": {
@@ -3183,6 +3334,77 @@
     "emits": [],
     "slots": []
   },
+  "statistic": {
+    "name": "statistic",
+    "options": [
+      {
+        "from": "statisticProps",
+        "name": "value",
+        "type": "number",
+        "default": "0",
+        "description": "数值"
+      },
+      {
+        "from": "statisticProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "statisticProps",
+        "name": "precision",
+        "type": "number",
+        "default": "0",
+        "description": "小数位数 @default 0 不足补零，超出四舍五入。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "prefix",
+        "type": "string",
+        "default": "''",
+        "description": "前缀（货币符号等）"
+      },
+      {
+        "from": "statisticProps",
+        "name": "suffix",
+        "type": "string",
+        "default": "''",
+        "description": "后缀（单位）"
+      },
+      {
+        "from": "statisticProps",
+        "name": "separator",
+        "type": "string",
+        "default": "','",
+        "description": "千分位分隔符 @default ',' 传空字符串关闭分组。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "formatter",
+        "type": "(value: number) =",
+        "default": "undefined",
+        "description": "自定义格式化 @default undefined 传了就完全接管显示，`precision` / `separator` 不再生效。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "加载中 @default false"
+      },
+      {
+        "from": "statisticProps",
+        "name": "valueColor",
+        "type": "string",
+        "default": "''",
+        "description": "数值颜色，接受任意 CSS 颜色"
+      }
+    ],
+    "sources": ["statistic"],
+    "emits": [],
+    "slots": []
+  },
   "steps": {
     "name": "steps",
     "options": [
@@ -3680,6 +3902,75 @@
       }
     ],
     "slots": ["default"]
+  },
+  "tile": {
+    "name": "tile",
+    "options": [
+      {
+        "from": "tileProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "图标名"
+      },
+      {
+        "from": "tileProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "tileProps",
+        "name": "description",
+        "type": "string",
+        "default": "''",
+        "description": "描述，标题下方的一行小字"
+      },
+      {
+        "from": "tileProps",
+        "name": "active",
+        "type": "boolean",
+        "default": "false",
+        "description": "选中态 @default false 用于「图标选择器」「功能开关」这类可选的宫格。"
+      },
+      {
+        "from": "tileProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "tileProps",
+        "name": "type",
+        "type": "'default' | 'primary' | 'success' | 'warning' | 'error'",
+        "default": "'default'",
+        "description": "图标区域的配色 @default 'default' 传语义色时图标底色会跟着变，用于区分功能分组。"
+      },
+      {
+        "from": "tileProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      },
+      {
+        "from": "tileProps",
+        "name": "horizontal",
+        "type": "boolean",
+        "default": "false",
+        "description": "横向排布 @default false 打开后图标在左、文字在右，适合列表式的快捷入口。"
+      }
+    ],
+    "sources": ["tile"],
+    "emits": [
+      {
+        "name": "click",
+        "params": ["event"]
+      }
+    ],
+    "slots": ["description", "icon", "title"]
   },
   "timeline": {
     "name": "timeline",

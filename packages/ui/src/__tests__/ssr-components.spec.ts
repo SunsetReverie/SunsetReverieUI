@@ -9,6 +9,7 @@ import {
   SrBadge,
   SrBreadcrumb,
   SrButton,
+  SrCalendar,
   SrCard,
   SrCheckbox,
   SrCheckboxGroup,
@@ -25,9 +26,11 @@ import {
   SrInput,
   SrInputNumber,
   SrLoadMore,
+  SrLoading,
   SrCarousel,
   SrCascader,
   SrCollapse,
+  SrContextMenu,
   SrColorPicker,
   SrModal,
   SrNav,
@@ -42,6 +45,7 @@ import {
   SrSpace,
   SrSelect,
   SrSkeleton,
+  SrStatistic,
   SrSlider,
   SrSpinner,
   SrSteps,
@@ -50,6 +54,7 @@ import {
   SrTabs,
   SrTimeline,
   SrTag,
+  SrTile,
   SrTooltip,
   SrTransfer,
   SrTree,
@@ -353,6 +358,33 @@ describe('导航与数据组件的 SSR 渲染', () => {
     const html = await render(SrImage, { src: 'a.png', alt: '示例', width: 80 })
     expect(html).toContain('a.png')
     expect(html).toContain('80px')
+  })
+
+  it('SrStatistic 服务端输出格式化数值', async () => {
+    const html = await render(SrStatistic, { title: '总额', value: 1234 })
+    expect(html).toContain('总额')
+    expect(html).toContain('1,234')
+  })
+
+  it('SrLoading 服务端输出转圈结构', async () => {
+    const html = await render(SrLoading, { text: '加载中' })
+    expect(html).toContain('sr-loading')
+    expect(html).toContain('加载中')
+  })
+
+  it('SrTile 服务端输出标题', async () => {
+    const html = await render(SrTile, { title: '收藏' })
+    expect(html).toContain('收藏')
+  })
+
+  it('SrCalendar 服务端输出月份标题', async () => {
+    const html = await render(SrCalendar, { modelValue: '2026-11-09' })
+    expect(html).toContain('2026 年 11 月')
+  })
+
+  it('SrContextMenu 服务端只渲染插槽', async () => {
+    const html = await render(SrContextMenu, { items: [{ key: 'a', label: '复制' }] })
+    expect(html).toContain('sr-context-menu')
   })
 
   it('SrPagination', async () => {

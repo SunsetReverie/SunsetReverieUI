@@ -45,6 +45,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./icon/IconDemo.vue'),
       },
       {
+        key: 'loading',
+        name: 'SrLoading',
+        description: '加载中。包裹式遮罩、全屏、延迟显示。',
+        demo: () => import('./loading/LoadingDemo.vue'),
+      },
+      {
         key: 'spinner',
         name: 'SrSpinner',
         description: '环形加载指示器。',
@@ -73,6 +79,12 @@ export const demoGroups: DemoGroup[] = [
         name: 'SrAlert',
         description: '警告提示。四种类型、可关闭、通栏与富内容。',
         demo: () => import('./alert/AlertDemo.vue'),
+      },
+      {
+        key: 'statistic',
+        name: 'SrStatistic',
+        description: '统计数值。千分位、精度、前后缀与加载占位。',
+        demo: () => import('./statistic/StatisticDemo.vue'),
       },
       {
         key: 'tag',
@@ -158,6 +170,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./switch/SwitchDemo.vue'),
       },
       {
+        key: 'calendar',
+        name: 'SrCalendar',
+        description: '日历。常驻显示的月历，支持标记与可选范围。',
+        demo: () => import('./calendar/CalendarDemo.vue'),
+      },
+      {
         key: 'date-picker',
         name: 'SrDatePicker',
         description: '日期选择。单日、区间、带时间、范围限制与快捷选项。',
@@ -226,6 +244,12 @@ export const demoGroups: DemoGroup[] = [
         name: 'SrDivider',
         description: '分割线。水平/垂直、虚线、带文字的区块切分。',
         demo: () => import('./divider/DividerDemo.vue'),
+      },
+      {
+        key: 'tile',
+        name: 'SrTile',
+        description: '图标砖。图标 + 标题的方块入口，可选态用于图标选择器。',
+        demo: () => import('./tile/TileDemo.vue'),
       },
       {
         key: 'card',
@@ -315,6 +339,12 @@ export const demoGroups: DemoGroup[] = [
         name: 'SrBreadcrumb',
         description: '面包屑。图标分隔符、超长折叠、禁用项。',
         demo: () => import('./breadcrumb/BreadcrumbDemo.vue'),
+      },
+      {
+        key: 'context-menu',
+        name: 'SrContextMenu',
+        description: '右键菜单。跟随鼠标位置，支持禁用与危险项。',
+        demo: () => import('./context-menu/ContextMenuDemo.vue'),
       },
       {
         key: 'dropdown',

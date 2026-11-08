@@ -1,0 +1,175 @@
+/**
+ * 日历
+ *
+ * 常驻显示的月历（不弹层），与 DatePicker 的区别就在这里：
+ * 它占一张卡片的位置，适合仪表盘、排期页。
+ */
+
+.sr-calendar {
+  --sr-calendar-cell-size: 36px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+
+  // ---------- 头部 ----------
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    color: var(--sr-color-text);
+    font-size: 14px;
+    font-weight: var(--sr-font-weight-semibold);
+    text-align: center;
+  }
+
+  &__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__nav:hover {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__today {
+    flex: 0 0 auto;
+    margin-left: 4px;
+    padding: 3px 8px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-family: inherit;
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+
+  &__today:hover {
+    border-color: var(--sr-color-primary);
+    color: var(--sr-color-primary-text);
+  }
+
+  // ---------- 星期 ----------
+  &__week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  &__weekday {
+    color: var(--sr-color-text-tertiary);
+    font-size: 11.5px;
+    text-align: center;
+  }
+
+  // ---------- 格子 ----------
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  &__cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text);
+    font-family: inherit;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__cell:focus-visible {
+    border-color: var(--sr-color-primary);
+    outline: 1px solid var(--sr-color-primary-alpha-25);
+  }
+
+  &__cell:hover:not(:disabled) {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__day {
+    line-height: 1;
+  }
+
+  // ---------- 变体：非本月 / 今天 / 选中 ----------
+  &__cell.is-out {
+    color: var(--sr-color-text-tertiary);
+    opacity: 0.45;
+  }
+
+  &__cell.is-today {
+    border-color: var(--sr-color-primary);
+    color: var(--sr-color-primary-text);
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__cell.is-selected {
+    background: var(--sr-color-primary);
+    border-color: var(--sr-color-primary);
+    color: #fff;
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__cell.is-selected:hover {
+    background: var(--sr-color-primary-hover, var(--sr-color-primary));
+  }
+
+  &__cell.is-disabled {
+    color: var(--sr-color-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+
+  // ---------- 标记点 ----------
+  &__cell.is-marked::after {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--sr-color-primary);
+    content: '';
+    transform: translateX(-50%);
+  }
+
+  &__cell.is-selected.is-marked::after {
+    background: #fff;
+  }
+
+  &__cell.is-out.is-marked::after {
+    background: var(--sr-color-text-tertiary);
+  }
+}

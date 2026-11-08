@@ -1,0 +1,50 @@
+/**
+ * 统计数值
+ *
+ * 标题在上、数值在下。数值用等宽数字，多位数据并排时不会左右跳。
+ */
+
+.sr-statistic {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  &__title {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  &__value {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    color: var(--sr-color-text);
+    font-size: 24px;
+    font-weight: var(--sr-font-weight-semibold);
+    line-height: 1.2;
+    // 等宽数字：数值变化时宽度不跳
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__number {
+    min-width: 0;
+  }
+
+  &__affix {
+    color: var(--sr-color-text-secondary);
+    font-size: 14px;
+    font-weight: var(--sr-font-weight-regular);
+  }
+
+  // ---------- 加载占位 ----------
+  &__skeleton {
+    display: block;
+    width: 84px;
+    height: 22px;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-skeleton-bg);
+  }
+}
