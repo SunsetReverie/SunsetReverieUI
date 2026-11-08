@@ -291,6 +291,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Slider</span>
+        <div class="cell__body cell__body--column">
+          <sr-slider :model-value="42" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Timeline</span>
         <div class="cell__body cell__body--column">
           <sr-timeline :items="timelineItems" />

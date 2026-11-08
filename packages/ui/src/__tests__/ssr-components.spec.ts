@@ -35,6 +35,7 @@ import {
   SrSegmented,
   SrSelect,
   SrSkeleton,
+  SrSlider,
   SrSpinner,
   SrSteps,
   SrSwitch,
@@ -267,6 +268,12 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('第一步')
     expect(html).toContain('10:00')
+  })
+
+  it('SrSlider 服务端输出轨道结构', async () => {
+    const html = await render(SrSlider, { modelValue: 42 })
+    expect(html).toContain('sr-slider__track')
+    expect(html).toContain('aria-valuenow="42"')
   })
 
   it('SrPagination', async () => {

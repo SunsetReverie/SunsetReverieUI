@@ -1,0 +1,183 @@
+/**
+ * 滑块
+ *
+ * 轨道是定位基准，滑块用 left/bottom 百分比定位，
+ * 填充段用 left + width 表示已选范围。
+ */
+
+.sr-slider {
+  --sr-slider-size: 14px;
+  --sr-slider-track: 4px;
+
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+  user-select: none;
+
+  // ---------- 轨道 ----------
+  &__track {
+    position: relative;
+    flex: 1 1 auto;
+    height: var(--sr-slider-track);
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-color-bg-sunken);
+    cursor: pointer;
+  }
+
+  // ---------- 已选段 ----------
+  &__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
+    background: var(--sr-color-primary);
+    pointer-events: none;
+  }
+
+  // ---------- 间断点 ----------
+  &__stop {
+    position: absolute;
+    top: 50%;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: var(--sr-color-bg-container);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  // ---------- 滑块 ----------
+  &__handle {
+    position: absolute;
+    top: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sr-slider-size);
+    height: var(--sr-slider-size);
+    padding: 0;
+    border: 2px solid var(--sr-color-primary);
+    border-radius: 50%;
+    background: var(--sr-color-bg-container);
+    box-shadow: var(--sr-shadow-sm);
+    cursor: grab;
+    transform: translate(-50%, -50%);
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__handle:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: 2px;
+  }
+
+  &__handle:disabled {
+    cursor: not-allowed;
+    border-color: var(--sr-color-border);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  // ---------- 数值提示 ----------
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    padding: 2px 6px;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-elevated);
+    box-shadow: var(--sr-shadow-md);
+    color: var(--sr-color-text);
+    font-size: 11px;
+    white-space: nowrap;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  // ---------- 交互态（2 个 class）----------
+  &__handle:hover:not(:disabled) {
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+
+  &__handle.is-active {
+    cursor: grabbing;
+    box-shadow: var(--sr-shadow-md);
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+
+  // ---------- 整体禁用（3 个 class）----------
+  &.is-disabled &__track {
+    cursor: not-allowed;
+  }
+
+  &.is-disabled &__fill {
+    background: var(--sr-color-border);
+  }
+
+  // ---------- 纵向 ----------
+  &.is-vertical {
+    flex-direction: column;
+    align-self: stretch;
+    width: auto;
+    height: auto;
+    min-height: 120px;
+    padding: 10px 0;
+  }
+
+  &.is-vertical &__track {
+    width: var(--sr-slider-track);
+    height: 100%;
+  }
+
+  // 纵向改为从底部起算，高度由内联样式给
+  &.is-vertical &__fill {
+    inset: auto 0 0;
+    width: auto;
+  }
+
+  &.is-vertical &__handle {
+    top: auto;
+    left: 50%;
+    transform: translate(-50%, 50%);
+  }
+
+  &.is-vertical &__handle:hover:not(:disabled),
+  &.is-vertical &__handle.is-active {
+    transform: translate(-50%, 50%) scale(1.12);
+  }
+
+  &.is-vertical &__stop {
+    left: 50%;
+    transform: translate(-50%, 50%);
+  }
+
+  &.is-vertical &__tooltip {
+    bottom: 50%;
+    left: calc(100% + 8px);
+    transform: translateY(50%);
+  }
+
+  // ---------- 尺寸 ----------
+  &--xs {
+    --sr-slider-size: 10px;
+    --sr-slider-track: 3px;
+  }
+
+  &--sm {
+    --sr-slider-size: 12px;
+  }
+
+  &--lg {
+    --sr-slider-size: 18px;
+    --sr-slider-track: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-slider__handle {
+    transition: none;
+  }
+}

@@ -2554,6 +2554,100 @@
     "emits": [],
     "slots": []
   },
+  "slider": {
+    "name": "slider",
+    "options": [
+      {
+        "from": "sliderProps",
+        "name": "modelValue",
+        "type": "SrSliderValue",
+        "default": "0",
+        "description": "当前值，配合 v-model"
+      },
+      {
+        "from": "sliderProps",
+        "name": "min",
+        "type": "number",
+        "default": "0",
+        "description": "最小值 @default 0"
+      },
+      {
+        "from": "sliderProps",
+        "name": "max",
+        "type": "number",
+        "default": "100",
+        "description": "最大值 @default 100"
+      },
+      {
+        "from": "sliderProps",
+        "name": "step",
+        "type": "number",
+        "default": "1",
+        "description": "步长 @default 1 传 `null` 表示不吸附——拖动时取连续值，适合精度要求高的场景。"
+      },
+      {
+        "from": "sliderProps",
+        "name": "range",
+        "type": "boolean",
+        "default": "false",
+        "description": "双滑块区间模式 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "vertical",
+        "type": "boolean",
+        "default": "false",
+        "description": "纵向排列 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "showStops",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示间断点 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "showTooltip",
+        "type": "boolean",
+        "default": "true",
+        "description": "拖动时显示数值提示 @default true 关掉后不渲染浮层，适合放在窄容器里。"
+      },
+      {
+        "from": "sliderProps",
+        "name": "formatTooltip",
+        "type": "(value: number) =",
+        "default": "undefined",
+        "description": "数值格式化 用于给数值加单位，比如 `(v) => \\`${v}°C\\``。"
+      },
+      {
+        "from": "sliderProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["slider"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": []
+  },
   "spinner": {
     "name": "spinner",
     "options": [

@@ -92,6 +92,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./input/InputDemo.vue'),
       },
       {
+        key: 'slider',
+        name: 'SrSlider',
+        description: '滑块。单值或区间、步长吸附、间断点、纵向。',
+        demo: () => import('./slider/SliderDemo.vue'),
+      },
+      {
         key: 'input-number',
         name: 'SrInputNumber',
         description: '数字输入。范围、步长、精度控制。',
