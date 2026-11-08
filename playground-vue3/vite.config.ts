@@ -38,6 +38,10 @@ export default defineConfig({
         replacement: resolvePath('../packages/ui/src/styles/index.less'),
       },
       {
+        find: /^@sunset-reverie\/ui\/draggable\.css$/,
+        replacement: resolvePath('../packages/ui/src/styles/extras/draggable.less'),
+      },
+      {
         find: /^@sunset-reverie\/ui$/,
         replacement: resolvePath('../packages/ui/src/index.ts'),
       },

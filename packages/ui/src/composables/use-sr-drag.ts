@@ -452,6 +452,36 @@ export function useSrDragSort(options: SrDragSortOptions) {
     return over.key === key ? over.type : null
   }
 
+  /**
+   * 某一项的拖拽状态类名
+   *
+   * 配上 `@sunset-reverie/ui/draggable.css` 即可获得完整视觉反馈，
+   * 不用自己拼 `sr-draggable--drop-xxx` 这种字符串。
+   * @param key 项标识
+   * @returns 类名对象，直接给 :class
+   */
+  function stateClass(key: SrDragKey): Record<string, boolean> {
+    const type = dropTypeOf(key)
+    const classes: Record<string, boolean> = {
+      'sr-draggable': true,
+      'sr-draggable--dragging': dragKey.value === key,
+    }
+
+    if (type) classes[`sr-draggable--drop-${type}`] = true
+    return classes
+  }
+
+  /**
+   * 容器是否正在被拖入（空列表时用）
+   *
+   * @returns 是否有东西拖到本列表上
+   */
+  function containerClass(): Record<string, boolean> {
+    return {
+      'sr-draggable-container--active': ownContext.over.value?.listId === listId,
+    }
+  }
+
   /** 本列表是否正被拖入（用于空列表时显示占位提示） */
   const isDropTarget = () => ownContext.over.value?.listId === listId
 
@@ -483,6 +513,10 @@ export function useSrDragSort(options: SrDragSortOptions) {
     onPointerDown,
     /** 某一项的落点类型 */
     dropTypeOf,
+    /** 某一项的状态类名，配合 draggable.css 使用 */
+    stateClass,
+    /** 容器状态类名，空列表时用 */
+    containerClass,
     /** 本列表是否被拖入 */
     isDropTarget,
     /** 主动取消 */

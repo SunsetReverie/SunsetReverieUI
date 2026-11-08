@@ -1,0 +1,77 @@
+/**
+ * 拖拽排序的可选样式
+ *
+ * `useSrDragSort` 只算逻辑，不负责视觉。这个文件提供一套约定类名，
+ * 引入后配合 `stateClass(key)` 返回的对象即可获得完整反馈。
+ *
+ * 用法：
+ *   import '@sunset-reverie/ui/draggable.css'
+ *
+ * 类名挂在「项」上，容器不需要额外类。
+ *
+ * 为什么单独一个文件而不是并进 style.css：
+ * 不用拖拽的项目没必要多背这几 KB，而且这套类名依赖使用者主动套用，
+ * 放进全量样式只会变成死代码。
+ */
+
+@import '../mixins/index.less';
+
+.sr-draggable {
+  // 伪元素要定位基准：使用方没给 position 时兜一层
+  position: relative;
+  // 拖拽时只接管纵向手势，页面滚动不受影响
+  touch-action: pan-y;
+  user-select: none;
+  transition:
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  // ---------- 拖动中的源项 ----------
+  &--dragging {
+    opacity: 0.45;
+    cursor: grabbing;
+  }
+
+  // ---------- 落点：放到之前 / 之后 ----------
+  // 用伪元素画横线，不占布局空间，也不会让列表高度跳动
+  &--drop-before::before,
+  &--drop-after::after {
+    position: absolute;
+    right: 4px;
+    left: 4px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--sr-color-primary);
+    content: '';
+    pointer-events: none;
+  }
+
+  &--drop-before::before {
+    top: -1px;
+  }
+
+  &--drop-after::after {
+    bottom: -1px;
+  }
+
+  // ---------- 落点：放到内部 ----------
+  &--drop-inside {
+    background: var(--sr-color-primary-alpha-08);
+    box-shadow: inset 0 0 0 1.5px var(--sr-color-primary-alpha-25);
+  }
+}
+
+// ---------- 空容器可放置 ----------
+// 目标列表是空的时候没有「项」可挂类名，改用容器类
+.sr-draggable-container--active {
+  border-color: var(--sr-color-primary-alpha-25);
+  background: var(--sr-color-primary-alpha-08);
+}
+
+// ---------- 全局拖动态 ----------
+// 拖拽进行中给 body 加类，防止整页文字被选中
+.sr-draggable-dragging {
+  cursor: grabbing;
+  user-select: none;
+}

@@ -193,70 +193,15 @@ function onDrop({ dragNode, dropNode, type }, data) {
 
 ## 复用拖拽逻辑
 
-树的拖拽底层是 `useSrDragSort`，它只认「key + 元素」，不关心树的结构，列表、看板都能用：
+树的拖拽底层是 `useSrDragSort`——一个组合式函数，只认「key + 元素」，不关心数据结构。
 
-```vue
-<script setup lang="ts">
+```ts
 import { useSrDragSort } from '@sunset-reverie/ui'
-
-const {
-  dragKey,
-  register,
-  onPointerDown,
-  dropTypeOf,
-} = useSrDragSort({
-  orientation: 'vertical',
-  onDrop: (dragKey, overKey, type) => {
-    // type 是 'before' | 'inside' | 'after'
-    list.value = move(list.value, dragKey, overKey, type)
-  },
-  canDrop: (dragKey, overKey) => dragKey !== overKey,
-})
-</script>
-
-<template>
-  <div
-    v-for="item in list"
-    :key="item.key"
-    :ref="(el) => register(item.key, el as HTMLElement | null)"
-    :class="{ 'is-dragging': dragKey === item.key, [`is-drop-${dropTypeOf(item.key)}`]: dropTypeOf(item.key) }"
-    @pointerdown="onPointerDown(item.key, $event)"
-  >
-    {{ item.label }}
-  </div>
-</template>
 ```
 
-`register` 负责把元素交给它——落点计算全靠元素的实际矩形，所以必须在 `ref` 里注册。
+完整用法（基础列表、跨列表看板、样式约定、空列表处理）见 [拖拽排序](/guide/drag-sort)。
 
-### 跨列表拖拽
-
-两个列表想互相拖，必须**共享同一个上下文**：
-
-```ts
-const context = createSrDragContext()
-
-const left = useSrDragSort({ context, listId: 'todo', onDrop: move, canDrop: () => true })
-const right = useSrDragSort({ context, listId: 'done', onDrop: move, canDrop: () => true })
-```
-
-`onDrop` 拿到的是完整信息，据此决定数据怎么搬：
-
-```ts
-function move({ dragKey, overKey, type, fromListId, toListId }) {
-  // 从 fromListId 摘出 dragKey，插到 toListId 的 overKey 附近
-}
-```
-
-**空列表也能接住**：每列还要注册容器，否则空列没有项可命中，拖进去没有任何反应。
-
-```vue
-<div :ref="(el) => right.registerContainer(el as HTMLElement)">…</div>
-```
-
-此时 `overKey` 是 `SR_DRAG_CONTAINER_KEY`（一个约定的占位值），代表「追加到末尾」。
-
-> **为什么必须共享 context**：`pointermove` 是全局监听的，每个列表都会收到。不共享的话各自只认自己的元素，指针移出边界就什么都不知道了。共享之后，落点归属由「指针在谁的容器内」决定，只有一个列表会接管。
+树在这一层之上额外做了两件事：**防成环**（不能把父节点拖进自己的子树）和**层级判断**（`inside` 才是成为子节点）。那部分是树自己的逻辑，不走通用 composable。
 
 ## 虚拟滚动
 

@@ -23,7 +23,8 @@
       "types": "./dist/components/*/index.d.ts",
       "import": "./dist/components/*/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./draggable.css": "./dist/draggable.css"
   },
   "peerDependencies": {
     "vue": "^3.4.0"

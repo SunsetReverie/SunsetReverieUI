@@ -5,6 +5,7 @@
  * - dist/base.css                        仅 CSS 变量 + reset + 动画 + 工具类（全站引入一次）
  * - dist/style.css                       base + 全部组件样式（全量引入场景）
  * - dist/components/<name>/style.css     单组件样式（按需引入场景）
+ * - dist/draggable.css                   拖拽排序的可选样式（非组件，按需引入）
  *
  * 为什么要拆：base 里的 :root 变量块若被打进每个组件 CSS，
  * 体积会重复 N 份；而按需引入时若只能引全量 CSS，按需就失去意义。
@@ -52,6 +53,9 @@ async function main() {
   console.log(`[ui] dist/base.css（${(baseSize / 1024).toFixed(1)} KB）`)
 
   const fullSize = await compile('src/styles/index.less', 'style.css')
+
+  // 拖拽样式单独一个文件：不用拖拽的项目不必背这部分体积
+  await compile('src/styles/extras/draggable.less', 'draggable.css')
   console.log(`[ui] dist/style.css（${(fullSize / 1024).toFixed(1)} KB）`)
 
   // 遍历全部组件目录，而不是只遍历「有 style/index.less 的」：

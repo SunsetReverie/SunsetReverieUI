@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 
 import { SR_STYLE_STORAGE_KEY, useSrTheme } from '@sunset-reverie/ui'
 import '@sunset-reverie/ui/style.css'
+import '@sunset-reverie/ui/draggable.css'
 
 import App from './App.vue'
 import { router } from './router'

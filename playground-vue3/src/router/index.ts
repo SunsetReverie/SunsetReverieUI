@@ -45,6 +45,12 @@ const labRoutes: RouteRecordRaw[] = [
     component: () => import('../views/AdminView.vue'),
     meta: { title: '后台布局', group: '实验室' },
   },
+  {
+    path: '/drag',
+    name: 'drag',
+    component: () => import('../views/DragSortView.vue'),
+    meta: { title: '拖拽排序', group: '实验室' },
+  },
 ]
 
 export const router = createRouter({
@@ -70,6 +76,7 @@ const LAB_ICONS: Record<string, string> = {
   responsive: 'lucide:settings',
   audit: 'lucide:eye',
   admin: 'lucide:moon-star',
+  drag: 'lucide:mouse-pointer',
 }
 
 /**
