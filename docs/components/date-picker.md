@@ -84,9 +84,9 @@ const date = ref(null)
 
 带时间时点日期**不会立即提交**，需要点「确定」。否则调完时分秒面板就关了，没法继续改。
 
-## 快捷选项
+## 快捷选项（可选）
 
-区间模式内置「今天 / 近 7 天 / 近 30 天 / 本月 / 上个月」，单日模式内置「今天 / 昨天 / 一周前」。
+**默认不显示快捷区**。它是一个可选变体：大多数场景下用户只需要一个日历，多一排按钮反而占地方。传 `shortcuts` 才会渲染。
 
 <div class="sr-demo is-block">
   <SrDatePicker v-model="customRange" type="daterange" :shortcuts="customShortcuts" />
@@ -106,7 +106,7 @@ const shortcuts = [
 
 > **`value` 是函数而不是固定值**。快捷项依赖「当前时间」，在组件外算一次会过时——尤其页面挂着几小时后再点「今天」，应该给的是新的今天。
 
-传空数组 `:shortcuts="[]"` 或 `:show-shortcuts="false"` 都能关掉快捷区。
+不传 `shortcuts`，或传空数组，或是 `:show-shortcuts="false"`，都等同于「没有快捷区」。
 
 ## 范围限制
 
@@ -169,8 +169,8 @@ const disabledWeekend = (date: Date) => [0, 6].includes(date.getDay())
 | `readonly` | `boolean` | `false` | 只读 |
 | `size` | `SrSize` | 继承配置 | 尺寸档位 |
 | `status` | `'default' \| 'error' \| 'warning' \| 'success'` | `'default'` | 校验态 |
-| `shortcuts` | `SrDatePickerShortcut[]` | 内置 | 快捷选项，空数组则不显示 |
-| `showShortcuts` | `boolean` | `true` | 显示快捷区 |
+| `shortcuts` | `SrDatePickerShortcut[]` | — | 快捷选项；不传则不显示快捷区 |
+| `showShortcuts` | `boolean` | `true` | 是否渲染快捷区（需配合 `shortcuts`） |
 | `firstDayOfWeek` | `number` | `1` | 一周起始日，0 为周日 |
 | `editable` | `boolean` | `false` | 允许直接输入 |
 

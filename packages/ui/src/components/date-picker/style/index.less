@@ -80,7 +80,7 @@
     z-index: var(--sr-z-popover, 2200);
     display: flex;
     flex-direction: column;
-    min-width: 300px;
+    width: max-content;
     padding: 6px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
@@ -228,19 +228,31 @@
     }
   }
 
-  // ---------- 时间 ----------
+  // ---------- 时间（底部横排） ----------
   &__time {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 108px;
-    padding: 4px 8px;
-    border-left: 1px solid var(--sr-color-border-subtle);
+    align-items: center;
+    gap: 14px;
+    padding: 8px 6px;
+    border-top: 1px solid var(--sr-color-border-subtle);
   }
 
   &__time-tabs {
     display: flex;
     gap: 4px;
+    flex: 0 0 auto;
+  }
+
+  &__time-fields {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__time-field {
+    display: flex;
+    align-items: center;
+    gap: 2px;
   }
 
   &__time-tab {
@@ -259,20 +271,14 @@
     }
   }
 
-  &__time-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  &__time-label {
-    flex: 0 0 16px;
+  // 时:分:秒 之间的分隔符
+  &__time-sep {
     color: var(--sr-color-text-tertiary);
-    font-size: 11px;
+    font-size: 12px;
   }
 
   &__time-value {
-    flex: 1 1 auto;
+    min-width: 20px;
     color: var(--sr-color-text);
     font-size: 13px;
     font-variant-numeric: tabular-nums;
@@ -280,8 +286,8 @@
   }
 
   &__step {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     padding: 0;
     border: 0;
     border-radius: var(--sr-radius-sm);

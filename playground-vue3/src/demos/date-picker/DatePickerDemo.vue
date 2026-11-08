@@ -114,14 +114,18 @@ const readonlyValue = ref<Date | null>(new Date(2026, 10, 8))
     </section>
 
     <section>
-      <h3>自定义快捷项</h3>
+      <h3>快捷选项（可选变体）</h3>
       <SrDatePicker v-model="customRange" type="daterange" :shortcuts="customShortcuts" />
-      <p class="hint">shortcuts 传函数而不是固定值——快捷项依赖「当前时间」，在组件外算会过时</p>
+      <p class="hint">
+        默认不显示快捷区，传 shortcuts 才出现。value 是函数而不是固定值——快捷项依赖「当前时间」，
+        在组件外算会过时
+      </p>
     </section>
 
     <section>
-      <h3>不显示快捷区</h3>
-      <SrDatePicker v-model="single" :show-shortcuts="false" />
+      <h3>默认形态（无快捷区）</h3>
+      <SrDatePicker v-model="single" />
+      <p class="hint">不传 shortcuts 时面板只有日历本身，与上面那块对比</p>
     </section>
 
     <section>

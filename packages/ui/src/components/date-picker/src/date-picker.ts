@@ -107,13 +107,14 @@ export const datePickerProps = {
   /**
    * 快捷选项
    *
-   * 不传时使用内置的「今天 / 近 7 天 / 本月」；传空数组则完全不显示。
+   * 默认不显示快捷区。传了数组才渲染，这是可选变体而不是默认形态 ——
+   * 大多数场景用户只需要一个日历，多一列按钮反而占地方。
    */
   shortcuts: {
     type: Array as PropType<SrDatePickerShortcut[]>,
     default: undefined,
   },
-  /** 显示快捷区 @default true */
+  /** 显示快捷区，需要同时传 shortcuts 才有内容 @default true */
   showShortcuts: {
     type: Boolean,
     default: true,

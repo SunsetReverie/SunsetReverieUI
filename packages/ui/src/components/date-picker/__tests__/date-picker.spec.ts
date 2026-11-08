@@ -20,6 +20,17 @@ function mountPicker(props: Record<string, unknown> = {}) {
 }
 
 describe('SrDatePicker', () => {
+  it('默认不渲染快捷区', async () => {
+    const wrapper = mountPicker()
+    await wrapper.find('.sr-date-picker__trigger').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
+    })
+
+    expect(wrapper.find('.sr-date-picker__shortcuts').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('未选中时显示占位文案', () => {
     const wrapper = mountPicker()
 
@@ -100,7 +111,19 @@ describe('SrDatePicker', () => {
   })
 
   it('快捷项一键填充区间', async () => {
-    const wrapper = mountPicker({ type: 'daterange' })
+    const wrapper = mountPicker({
+      type: 'daterange',
+      // 快捷区不是默认形态，需要显式传
+      shortcuts: [
+        {
+          label: '近 7 天',
+          value: () => {
+            const today = new Date()
+            return [new Date(today.getTime() - 6 * 86400000), today]
+          },
+        },
+      ],
+    })
     await wrapper.find('.sr-date-picker__trigger').trigger('click')
     await vi.waitFor(() => {
       expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
@@ -185,7 +208,7 @@ describe('SrDatePicker', () => {
     })
 
     expect(wrapper.find('.sr-date-picker__time').exists()).toBe(true)
-    expect(wrapper.findAll('.sr-date-picker__time-row')).toHaveLength(3)
+    expect(wrapper.findAll('.sr-date-picker__time-field')).toHaveLength(3)
     wrapper.unmount()
   })
 })

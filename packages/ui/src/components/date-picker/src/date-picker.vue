@@ -144,38 +144,8 @@ function cellsOf(month: Date) {
 /** 星期表头 */
 const weekLabels = computed(() => getWeekLabels(props.firstDayOfWeek))
 
-/** 内置快捷项 */
-const builtinShortcuts = computed<SrDatePickerShortcut[]>(() => {
-  const today = startOfDay(new Date())
-
-  if (isRange.value) {
-    return [
-      { label: '今天', value: () => [today, endOfDay(today)] },
-      { label: '近 7 天', value: () => [new Date(today.getTime() - 6 * 86400000), endOfDay(today)] },
-      { label: '近 30 天', value: () => [new Date(today.getTime() - 29 * 86400000), endOfDay(today)] },
-      {
-        label: '本月',
-        value: () => [new Date(today.getFullYear(), today.getMonth(), 1), endOfDay(today)],
-      },
-      {
-        label: '上个月',
-        value: () => [
-          new Date(today.getFullYear(), today.getMonth() - 1, 1),
-          endOfDay(new Date(today.getFullYear(), today.getMonth(), 0)),
-        ],
-      },
-    ]
-  }
-
-  return [
-    { label: '今天', value: () => today },
-    { label: '昨天', value: () => new Date(today.getTime() - 86400000) },
-    { label: '一周前', value: () => new Date(today.getTime() - 7 * 86400000) },
-  ]
-})
-
-/** 实际使用的快捷项 */
-const shortcuts = computed(() => props.shortcuts ?? builtinShortcuts.value)
+/** 实际使用的快捷项：不传就没有快捷区 */
+const shortcuts = computed(() => (props.showShortcuts ? (props.shortcuts ?? []) : []))
 
 /** 某个日期是否禁用 */
 function isDisabled(date: Date): boolean {
@@ -402,6 +372,22 @@ function stepTime(unit: 'hours' | 'minutes' | 'seconds', delta: number): void {
   draft.value = Array.isArray(value) ? [apply(value[0]), apply(value[1])] : apply(value)
 }
 
+/** 时间单位：横排三组，避免右侧竖栏留出一大片空白 */
+const TIME_UNITS = computed(() => [
+  { key: 'hours' as const, label: '时', value: timeValue.value.getHours() },
+  { key: 'minutes' as const, label: '分', value: timeValue.value.getMinutes() },
+  { key: 'seconds' as const, label: '秒', value: timeValue.value.getSeconds() },
+])
+
+/**
+ * 补零
+ * @param value 数字
+ * @returns 两位字符串
+ */
+function pad2(value: number): string {
+  return String(value).padStart(2, '0')
+}
+
 /** 确定（带时间时需要显式确认） */
 function confirm(): void {
   if (draft.value) commit(draft.value)
@@ -611,48 +597,46 @@ defineExpose({ open, close, toggle })
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- 时间 -->
-          <div v-if="hasTime" class="sr-date-picker__time">
-            <div v-if="isRange" class="sr-date-picker__time-tabs">
-              <button
-                v-for="(label, index) in ['开始', '结束']"
-                :key="label"
-                class="sr-date-picker__time-tab"
-                :class="{ 'is-active': timeTarget === index }"
-                type="button"
-                @click="timeTarget = index"
-              >
-                {{ label }}
-              </button>
-            </div>
+        <!-- 时间：横向一条，跟在日历下方 -->
+        <div v-if="hasTime" class="sr-date-picker__time">
+          <div v-if="isRange" class="sr-date-picker__time-tabs">
+            <button
+              v-for="(label, index) in ['开始', '结束']"
+              :key="label"
+              class="sr-date-picker__time-tab"
+              :class="{ 'is-active': timeTarget === index }"
+              type="button"
+              @click="timeTarget = index"
+            >
+              {{ label }}
+            </button>
+          </div>
 
-            <div class="sr-date-picker__time-row">
-              <span class="sr-date-picker__time-label">时</span>
-              <button class="sr-date-picker__step" type="button" @click="stepTime('hours', -1)">−</button>
-              <span class="sr-date-picker__time-value">{{
-                String(timeValue.getHours()).padStart(2, '0')
-              }}</span>
-              <button class="sr-date-picker__step" type="button" @click="stepTime('hours', 1)">+</button>
-            </div>
-
-            <div class="sr-date-picker__time-row">
-              <span class="sr-date-picker__time-label">分</span>
-              <button class="sr-date-picker__step" type="button" @click="stepTime('minutes', -1)">−</button>
-              <span class="sr-date-picker__time-value">{{
-                String(timeValue.getMinutes()).padStart(2, '0')
-              }}</span>
-              <button class="sr-date-picker__step" type="button" @click="stepTime('minutes', 1)">+</button>
-            </div>
-
-            <div class="sr-date-picker__time-row">
-              <span class="sr-date-picker__time-label">秒</span>
-              <button class="sr-date-picker__step" type="button" @click="stepTime('seconds', -1)">−</button>
-              <span class="sr-date-picker__time-value">{{
-                String(timeValue.getSeconds()).padStart(2, '0')
-              }}</span>
-              <button class="sr-date-picker__step" type="button" @click="stepTime('seconds', 1)">+</button>
-            </div>
+          <div class="sr-date-picker__time-fields">
+            <template v-for="(unit, index) in TIME_UNITS" :key="unit.key">
+              <span v-if="index > 0" class="sr-date-picker__time-sep">:</span>
+              <div class="sr-date-picker__time-field" :title="unit.label">
+                <button
+                  class="sr-date-picker__step"
+                  type="button"
+                  :aria-label="`${unit.label}减一`"
+                  @click="stepTime(unit.key, -1)"
+                >
+                  −
+                </button>
+                <span class="sr-date-picker__time-value">{{ pad2(unit.value) }}</span>
+                <button
+                  class="sr-date-picker__step"
+                  type="button"
+                  :aria-label="`${unit.label}加一`"
+                  @click="stepTime(unit.key, 1)"
+                >
+                  +
+                </button>
+              </div>
+            </template>
           </div>
         </div>
 
