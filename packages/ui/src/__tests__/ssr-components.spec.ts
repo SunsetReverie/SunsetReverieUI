@@ -14,12 +14,14 @@ import {
   SrCheckboxGroup,
   SrDatePicker,
   SrDescriptions,
+  SrDivider,
   SrDrawer,
   SrDropdown,
   SrEmpty,
   SrForm,
   SrFormItem,
   SrIcon,
+  SrImage,
   SrInput,
   SrInputNumber,
   SrLoadMore,
@@ -37,6 +39,7 @@ import {
   SrRadioGroup,
   SrResult,
   SrSegmented,
+  SrSpace,
   SrSelect,
   SrSkeleton,
   SrSlider,
@@ -333,6 +336,23 @@ describe('导航与数据组件的 SSR 渲染', () => {
     expect(html).toContain('<svg')
     expect(html).toContain('<path')
     expect(html).toContain('role="img"')
+  })
+
+  it('SrDivider 服务端输出分隔符角色', async () => {
+    const html = await render(SrDivider, {})
+    expect(html).toContain('role="separator"')
+  })
+
+  it('SrSpace 服务端输出间距样式', async () => {
+    const html = await render(SrSpace, { size: 'md' })
+    // 服务端把 style 序列化成紧凑形式，没有空格
+    expect(html).toContain('gap:12px')
+  })
+
+  it('SrImage 服务端输出图片标签', async () => {
+    const html = await render(SrImage, { src: 'a.png', alt: '示例', width: 80 })
+    expect(html).toContain('a.png')
+    expect(html).toContain('80px')
   })
 
   it('SrPagination', async () => {

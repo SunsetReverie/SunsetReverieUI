@@ -1,0 +1,28 @@
+/**
+ * 间距
+ *
+ * 用 flex + gap，不给子元素加 margin：margin 会和外层的间距叠加，
+ * 出现「明明设了 8px 结果看着像 16px」的问题。
+ */
+
+.sr-space {
+  display: flex;
+
+  &--horizontal {
+    flex-direction: row;
+  }
+
+  &--vertical {
+    flex-direction: column;
+  }
+
+  // ---------- 变体：换行 ----------
+  &.is-wrap {
+    flex-wrap: wrap;
+  }
+
+  // ---------- 变体：行内 ----------
+  &.is-inline {
+    display: inline-flex;
+  }
+}

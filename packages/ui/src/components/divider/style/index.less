@@ -1,0 +1,84 @@
+/**
+ * 分割线
+ *
+ * 水平：用 1px 的 ::before 画线，文字压在中间，两侧自动撑开。
+ * 垂直：定宽 1px，靠 align-self 撑满父容器高度。
+ *
+ * 规则按特异性分组：基础(1) → 变体(2) → 组合(3)。
+ */
+
+.sr-divider {
+  --sr-divider-color: var(--sr-color-border-subtle);
+
+  box-sizing: border-box;
+  margin: 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+
+  // ---------- 水平 ----------
+  &--horizontal {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 16px 0;
+    // 线用伪元素画，避免为空时没有高度
+    border-top: 1px solid var(--sr-divider-color);
+  }
+
+  // ---------- 垂直 ----------
+  &--vertical {
+    display: inline-block;
+    align-self: stretch;
+    width: 1px;
+    min-height: 1em;
+    margin: 0 12px;
+    background: var(--sr-divider-color);
+    vertical-align: middle;
+  }
+
+  // ---------- 文字 ----------
+  &__text {
+    flex: 0 0 auto;
+    padding: 0 12px;
+    background: var(--sr-color-bg-container);
+    white-space: nowrap;
+  }
+
+  // ---------- 变体：虚线 ----------
+  &.is-dashed {
+    border-top-style: dashed;
+  }
+
+  // ---------- 变体：文字位置 ----------
+  &.sr-divider--text-left &__text {
+    order: -1;
+    padding-left: 0;
+  }
+
+  &.sr-divider--text-right &__text {
+    padding-right: 0;
+  }
+
+  // ---------- 组合：带文字时把线拆成两段 ----------
+  &.is-with-text {
+    border-top: 0;
+  }
+
+  &.is-with-text::before,
+  &.is-with-text::after {
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--sr-divider-color);
+    content: '';
+  }
+
+  &.is-dashed.is-with-text::before,
+  &.is-dashed.is-with-text::after {
+    background: repeating-linear-gradient(to right, var(--sr-divider-color) 0 4px, transparent 4px 8px);
+  }
+
+  // 垂直方向即使有内容也不拆线，直接隐藏文字
+  &.sr-divider--vertical &__text {
+    display: none;
+  }
+}

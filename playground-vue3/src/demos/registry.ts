@@ -216,6 +216,18 @@ export const demoGroups: DemoGroup[] = [
     title: '展示',
     items: [
       {
+        key: 'space',
+        name: 'SrSpace',
+        description: '间距。用 flex + gap 统一相邻元素的距离。',
+        demo: () => import('./space/SpaceDemo.vue'),
+      },
+      {
+        key: 'divider',
+        name: 'SrDivider',
+        description: '分割线。水平/垂直、虚线、带文字的区块切分。',
+        demo: () => import('./divider/DividerDemo.vue'),
+      },
+      {
         key: 'card',
         name: 'SrCard',
         description: '卡片。头部 / 主体 / 底部三段，内边距可调。',
@@ -250,6 +262,12 @@ export const demoGroups: DemoGroup[] = [
         name: 'SrBadge',
         description: '徽标。数字角标与状态点。',
         demo: () => import('./badge/BadgeDemo.vue'),
+      },
+      {
+        key: 'image',
+        name: 'SrImage',
+        description: '图片。加载占位、失败兜底、懒加载与点击预览。',
+        demo: () => import('./image/ImageDemo.vue'),
       },
       {
         key: 'avatar',

@@ -1181,6 +1181,35 @@
     "emits": [],
     "slots": []
   },
+  "divider": {
+    "name": "divider",
+    "options": [
+      {
+        "from": "dividerProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "方向 @default 'horizontal' 水平分割线占满整行，垂直分割线需要父容器有确定高度。"
+      },
+      {
+        "from": "dividerProps",
+        "name": "dashed",
+        "type": "boolean",
+        "default": "false",
+        "description": "虚线 @default false"
+      },
+      {
+        "from": "dividerProps",
+        "name": "contentPosition",
+        "type": "'left' | 'center' | 'right'",
+        "default": "'center'",
+        "description": "文字位置 @default 'center' 只有在水平方向且带内容时生效。"
+      }
+    ],
+    "sources": ["divider"],
+    "emits": [],
+    "slots": []
+  },
   "drawer": {
     "name": "drawer",
     "options": [
@@ -1576,6 +1605,97 @@
     ],
     "sources": ["icon"],
     "emits": [],
+    "slots": []
+  },
+  "image": {
+    "name": "image",
+    "options": [
+      {
+        "from": "imageProps",
+        "name": "src",
+        "type": "string",
+        "default": "''",
+        "description": "图片地址"
+      },
+      {
+        "from": "imageProps",
+        "name": "alt",
+        "type": "string",
+        "default": "''",
+        "description": "替代文本，同时作为无障碍描述"
+      },
+      {
+        "from": "imageProps",
+        "name": "width",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "宽度，数字按像素处理"
+      },
+      {
+        "from": "imageProps",
+        "name": "height",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "高度，数字按像素处理"
+      },
+      {
+        "from": "imageProps",
+        "name": "fit",
+        "type": "SrImageFit",
+        "default": "'cover'",
+        "description": "填充方式 @default 'cover'"
+      },
+      {
+        "from": "imageProps",
+        "name": "radius",
+        "type": "string | number",
+        "default": "0",
+        "description": "圆角，数字按像素处理 @default 0"
+      },
+      {
+        "from": "imageProps",
+        "name": "lazy",
+        "type": "boolean",
+        "default": "false",
+        "description": "懒加载 @default false 用 IntersectionObserver，进入视口才真正请求图片。"
+      },
+      {
+        "from": "imageProps",
+        "name": "preview",
+        "type": "boolean",
+        "default": "false",
+        "description": "点击放大 @default false"
+      },
+      {
+        "from": "imageProps",
+        "name": "fallback",
+        "type": "string",
+        "default": "''",
+        "description": "加载失败的兜底图 @default '' 不传时显示一个占位图标 + 替代文本。"
+      },
+      {
+        "from": "imageProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "''",
+        "description": "加载中的占位图 @default ''"
+      }
+    ],
+    "sources": ["image"],
+    "emits": [
+      {
+        "name": "load",
+        "params": ["event"]
+      },
+      {
+        "name": "error",
+        "params": ["event"]
+      },
+      {
+        "name": "preview-change",
+        "params": ["open"]
+      }
+    ],
     "slots": []
   },
   "input": {
@@ -2982,6 +3102,49 @@
         "params": ["value"]
       }
     ],
+    "slots": []
+  },
+  "space": {
+    "name": "space",
+    "options": [
+      {
+        "from": "spaceProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "排列方向 @default 'horizontal'"
+      },
+      {
+        "from": "spaceProps",
+        "name": "size",
+        "type": "SrSize | number",
+        "default": "'sm'",
+        "description": "间距 @default 'sm' 传档位用设计令牌，传数字直接当像素。"
+      },
+      {
+        "from": "spaceProps",
+        "name": "align",
+        "type": "'start' | 'end' | 'center' | 'baseline'",
+        "default": "'center'",
+        "description": "交叉轴对齐 @default 'center'"
+      },
+      {
+        "from": "spaceProps",
+        "name": "wrap",
+        "type": "boolean",
+        "default": "false",
+        "description": "空间不足时换行 @default false"
+      },
+      {
+        "from": "spaceProps",
+        "name": "inline",
+        "type": "boolean",
+        "default": "false",
+        "description": "行内模式 @default false 打开后用 inline-flex，适合夹在文字中间的小按钮组。"
+      }
+    ],
+    "sources": ["space"],
+    "emits": [],
     "slots": []
   },
   "spinner": {

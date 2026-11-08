@@ -39,7 +39,14 @@ const ICON_PATTERN = /['"`]([a-z0-9-]+:[a-z0-9-]+)['"`]/g
  * @returns {boolean} 是否应当跳过
  */
 function isNotIcon(icon) {
-  return icon.startsWith('update:') || icon.startsWith('v-slot:')
+  // Vue 事件与插槽名
+  if (icon.startsWith('update:') || icon.startsWith('v-slot:')) return true
+
+  // 时间戳：演示数据里的 '10:24' 会被 [a-z0-9-]+:[a-z0-9-]+ 误判成图标名
+  if (/^\d+:\d+$/.test(icon)) return true
+
+  // 集合名必须是已知的几套，'10:24' 的左侧是数字，这里再兜一层
+  return /^\d/.test(icon)
 }
 
 /**

@@ -1,0 +1,160 @@
+/**
+ * 图片
+ *
+ * 容器固定尺寸，内部三种状态（加载中 / 成功 / 失败）叠在同一块区域上。
+ * 预览层 Teleport 到 body，避免被父级的 overflow 裁掉。
+ */
+
+.sr-image {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  background: var(--sr-color-bg-sunken);
+  overflow: hidden;
+  vertical-align: middle;
+
+  &__media {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__media--placeholder {
+    filter: blur(8px);
+  }
+
+  // ---------- 失败占位 ----------
+  &__error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__error-text {
+    max-width: 100%;
+    font-size: 11px;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  // ---------- 懒加载占位 ----------
+  &__lazy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--sr-color-text-tertiary);
+    opacity: 0.6;
+  }
+
+  // ---------- 可预览提示 ----------
+  // 默认不显示，hover 才浮出来，避免列表里满屏图标
+  &__hint {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--sr-radius-sm);
+    background: rgb(0 0 0 / 45%);
+    color: #fff;
+    opacity: 0;
+    transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  // ---------- 变体：可预览 ----------
+  &.is-previewable {
+    cursor: zoom-in;
+  }
+
+  &.is-previewable:hover &__hint {
+    opacity: 1;
+  }
+}
+
+// ---------- 预览层 ----------
+.sr-image-preview {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sr-z-index-modal, 1100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: rgb(0 0 0 / 72%);
+  cursor: zoom-out;
+
+  &__img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--sr-radius-sm);
+    box-shadow: 0 8px 40px rgb(0 0 0 / 40%);
+    // 点图片本身不关闭，只有点遮罩才关
+    cursor: default;
+  }
+
+  &__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 14%);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__close:hover {
+    background: rgb(255 255 255 / 26%);
+  }
+
+  &__caption {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    max-width: 70%;
+    color: rgb(255 255 255 / 80%);
+    font-size: 13px;
+    text-align: center;
+    transform: translateX(-50%);
+  }
+}
+
+.sr-image-preview-enter-active,
+.sr-image-preview-leave-active {
+  transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.sr-image-preview-enter-from,
+.sr-image-preview-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-image-preview-enter-active,
+  .sr-image-preview-leave-active {
+    transition: none;
+  }
+}

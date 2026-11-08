@@ -151,6 +151,7 @@ export default defineConfig({
             { text: 'SrTimeline', link: '/components/timeline' },
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
+            { text: 'SrImage', link: '/components/image' },
             { text: 'SrEmpty', link: '/components/empty' },
             { text: 'SrResult', link: '/components/result' },
             { text: 'SrSkeleton', link: '/components/skeleton' },
@@ -160,6 +161,8 @@ export default defineConfig({
           text: '容器',
           items: [
             { text: 'SrCard', link: '/components/card' },
+            { text: 'SrDivider', link: '/components/divider' },
+            { text: 'SrSpace', link: '/components/space' },
             { text: 'SrPanel', link: '/components/panel' },
             { text: 'SrCarousel', link: '/components/carousel' },
           ],

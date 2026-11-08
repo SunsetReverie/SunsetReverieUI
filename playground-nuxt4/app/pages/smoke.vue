@@ -313,6 +313,25 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Divider / Space</span>
+        <div class="cell__body cell__body--column">
+          <sr-space size="sm">
+            <span>甲</span>
+            <sr-divider direction="vertical" />
+            <span>乙</span>
+          </sr-space>
+          <sr-divider>分组</sr-divider>
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Image</span>
+        <div class="cell__body cell__body--column">
+          <sr-image src="https://picsum.photos/60" alt="缩略图" :width="60" :height="60" radius="6" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">QRCode</span>
         <div class="cell__body cell__body--column">
           <sr-q-r-code value="https://example.com" :size="120" />
