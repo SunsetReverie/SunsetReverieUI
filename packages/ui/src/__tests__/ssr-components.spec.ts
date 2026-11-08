@@ -24,6 +24,7 @@ import {
   SrInputNumber,
   SrLoadMore,
   SrCarousel,
+  SrCollapse,
   SrModal,
   SrNav,
   SrPagination,
@@ -230,6 +231,18 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('用户信息')
     expect(html).toContain('林深')
+  })
+
+  it('SrCollapse 服务端输出所有标题', async () => {
+    const html = await render(SrCollapse, {
+      items: [
+        { key: 'a', title: '面板一', content: '内容一' },
+        { key: 'b', title: '面板二' },
+      ],
+    })
+
+    expect(html).toContain('面板一')
+    expect(html).toContain('面板二')
   })
 
   it('SrPagination', async () => {

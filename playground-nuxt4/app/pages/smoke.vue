@@ -60,6 +60,12 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 折叠面板数据 */
+const collapseItems = [
+  { key: 'a', title: '基础设置', content: '内容 A' },
+  { key: 'b', title: '高级设置', content: '内容 B' },
+]
+
 /** 描述列表数据 */
 const descItems = [
   { label: '姓名', value: '林深' },
@@ -268,6 +274,13 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Collapse</span>
+        <div class="cell__body cell__body--column">
+          <sr-collapse :items="collapseItems" :model-value="['a']" />
         </div>
       </div>
 

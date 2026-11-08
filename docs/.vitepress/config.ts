@@ -140,6 +140,7 @@ export default defineConfig({
             { text: 'SrAlert', link: '/components/alert' },
             { text: 'SrSteps', link: '/components/steps' },
             { text: 'SrDescriptions', link: '/components/descriptions' },
+            { text: 'SrCollapse', link: '/components/collapse' },
             { text: 'SrBadge', link: '/components/badge' },
             { text: 'SrAvatar', link: '/components/avatar' },
             { text: 'SrEmpty', link: '/components/empty' },

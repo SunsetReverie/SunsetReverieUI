@@ -180,6 +180,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./card/CardDemo.vue'),
       },
       {
+        key: 'collapse',
+        name: 'SrCollapse',
+        description: '折叠面板组。可多开或手风琴，支持禁用与自定义内容。',
+        demo: () => import('./collapse/CollapseDemo.vue'),
+      },
+      {
         key: 'panel',
         name: 'SrPanel',
         description: '分区面板。轻量容器，可折叠。',

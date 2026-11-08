@@ -619,6 +619,51 @@
     "emits": [],
     "slots": []
   },
+  "collapse": {
+    "name": "collapse",
+    "options": [
+      {
+        "from": "collapseProps",
+        "name": "modelValue",
+        "type": "SrCollapseKey[]",
+        "default": "() => []",
+        "description": "展开的面板 key 配合 `v-model`。手风琴模式下内部只会保留一个。"
+      },
+      {
+        "from": "collapseProps",
+        "name": "items",
+        "type": "SrCollapseItem[]",
+        "default": "() => []",
+        "description": "面板数据"
+      },
+      {
+        "from": "collapseProps",
+        "name": "accordion",
+        "type": "boolean",
+        "default": "false",
+        "description": "手风琴模式 @default false 同一时刻只允许展开一个，展开新的会自动收起之前的。"
+      },
+      {
+        "from": "collapseProps",
+        "name": "ghost",
+        "type": "boolean",
+        "default": "false",
+        "description": "无边框、无背景 @default false 适合嵌在卡片内部，避免出现「框中框」。"
+      }
+    ],
+    "sources": ["collapse"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["keys"]
+      },
+      {
+        "name": "change",
+        "params": ["keys"]
+      }
+    ],
+    "slots": ["item", "title"]
+  },
   "config-provider": {
     "name": "config-provider",
     "options": [
