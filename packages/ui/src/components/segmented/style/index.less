@@ -1,0 +1,129 @@
+/**
+ * 分段控制器
+ *
+ * 选项用 grid 等分，滑块按百分比平移 —— 这样不用测量 DOM，
+ * 也能保证滑块宽度和选项完全一致。
+ *
+ * 规则按特异性分组：基础(1) → 单状态与变体(2) → hover(3) → 组合(3+)。
+ * 注意 `&:hover:not(:disabled)` 已经是 3 个 class，别排在 2 个 class 的前面。
+ */
+
+.sr-segmented {
+  --sr-segmented-count: 2;
+  --sr-segmented-height: 30px;
+  --sr-segmented-padding: 2px;
+
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: var(--sr-segmented-padding);
+  border-radius: var(--sr-form-radius);
+  background: var(--sr-color-bg-sunken);
+  isolation: isolate;
+
+  // ---------- 基础 ----------
+  &__indicator {
+    position: absolute;
+    top: var(--sr-segmented-padding);
+    bottom: var(--sr-segmented-padding);
+    left: var(--sr-segmented-padding);
+    z-index: -1;
+    border-radius: calc(var(--sr-form-radius) - 1px);
+    background: var(--sr-color-bg-container);
+    box-shadow: var(--sr-shadow-sm);
+    // 宽度按选项数等分，位移按「自己宽度的倍数」算
+    transition:
+      transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
+      width var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: var(--sr-segmented-height);
+    padding: 0 12px;
+    border: 0;
+    border-radius: calc(var(--sr-form-radius) - 1px);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__label {
+    line-height: 1;
+  }
+
+  // ---------- 单状态与变体（2 个 class）----------
+  &__item:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: 1px;
+  }
+
+  &__item:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &__item.is-active {
+    color: var(--sr-color-text);
+    font-weight: var(--sr-font-weight-medium);
+  }
+
+  &.is-block {
+    display: grid;
+    width: 100%;
+  }
+
+  // ----- 尺寸 -----
+  &--xs {
+    --sr-segmented-height: 24px;
+    --sr-segmented-padding: 2px;
+  }
+
+  &--xs &__item {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  &--sm {
+    --sr-segmented-height: 26px;
+  }
+
+  &--sm &__item {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  &--lg {
+    --sr-segmented-height: 36px;
+  }
+
+  &--lg &__item {
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  // ---------- 悬浮（3 个 class）----------
+  &__item:hover:not(:disabled) {
+    color: var(--sr-color-text);
+  }
+
+  // ---------- 组合（3 个 class）----------
+  &.is-disabled &__indicator {
+    opacity: 0.6;
+  }
+}
+
+// 无过渡偏好下不做滑块动画
+@media (prefers-reduced-motion: reduce) {
+  .sr-segmented__indicator {
+    transition: none;
+  }
+}

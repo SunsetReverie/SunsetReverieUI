@@ -2336,6 +2336,58 @@
     "emits": [],
     "slots": []
   },
+  "segmented": {
+    "name": "segmented",
+    "options": [
+      {
+        "from": "segmentedProps",
+        "name": "modelValue",
+        "type": "SrSegmentedValue | undefined",
+        "default": "undefined",
+        "description": "当前选中值，配合 v-model"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "options",
+        "type": "SrSegmentedOption[]",
+        "default": "() => []",
+        "description": "选项列表"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "block",
+        "type": "boolean",
+        "default": "false",
+        "description": "占满容器宽度 @default false 打开后每项等分宽度；关闭时宽度随内容。"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "整体禁用"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["segmented"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": []
+  },
   "select": {
     "name": "select",
     "options": [

@@ -110,6 +110,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./checkbox/CheckboxDemo.vue'),
       },
       {
+        key: 'segmented',
+        name: 'SrSegmented',
+        description: '分段控制器。等分选项、滑动指示器，适合视图切换。',
+        demo: () => import('./segmented/SegmentedDemo.vue'),
+      },
+      {
         key: 'radio',
         name: 'SrRadio',
         description: '单选框。组内互斥，方向键切换。',

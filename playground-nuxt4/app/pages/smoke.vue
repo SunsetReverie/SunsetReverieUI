@@ -60,6 +60,13 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 分段控制器选项 */
+const segOptions = [
+  { label: '日', value: 'day' },
+  { label: '周', value: 'week' },
+  { label: '月', value: 'month' },
+]
+
 /** 折叠面板数据 */
 const collapseItems = [
   { key: 'a', title: '基础设置', content: '内容 A' },
@@ -274,6 +281,13 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Segmented</span>
+        <div class="cell__body cell__body--column">
+          <sr-segmented :options="segOptions" model-value="day" />
         </div>
       </div>
 

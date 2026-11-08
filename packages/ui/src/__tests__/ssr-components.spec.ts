@@ -32,6 +32,7 @@ import {
   SrPanel,
   SrRadio,
   SrRadioGroup,
+  SrSegmented,
   SrSelect,
   SrSkeleton,
   SrSpinner,
@@ -243,6 +244,19 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('面板一')
     expect(html).toContain('面板二')
+  })
+
+  it('SrSegmented 服务端输出所有选项', async () => {
+    const html = await render(SrSegmented, {
+      options: [
+        { label: '日', value: 'day' },
+        { label: '周', value: 'week' },
+      ],
+      modelValue: 'day',
+    })
+
+    expect(html).toContain('日')
+    expect(html).toContain('周')
   })
 
   it('SrPagination', async () => {
