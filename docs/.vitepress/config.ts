@@ -116,6 +116,7 @@ export default defineConfig({
           items: [
             { text: 'SrForm', link: '/components/form' },
             { text: 'SrSelect', link: '/components/select' },
+            { text: 'SrCascader', link: '/components/cascader' },
             { text: 'SrInputNumber', link: '/components/input-number' },
             { text: 'SrCheckbox', link: '/components/checkbox' },
             { text: 'SrRadio', link: '/components/radio' },

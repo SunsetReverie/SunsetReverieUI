@@ -104,6 +104,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./input-number/InputNumberDemo.vue'),
       },
       {
+        key: 'cascader',
+        name: 'SrCascader',
+        description: '级联选择。多级联动、可搜索、支持多选。',
+        demo: () => import('./cascader/CascaderDemo.vue'),
+      },
+      {
         key: 'select',
         name: 'SrSelect',
         description: '选择器。单选、多选、可搜索、可清空。',

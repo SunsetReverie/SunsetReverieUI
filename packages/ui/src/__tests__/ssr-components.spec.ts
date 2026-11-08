@@ -24,6 +24,7 @@ import {
   SrInputNumber,
   SrLoadMore,
   SrCarousel,
+  SrCascader,
   SrCollapse,
   SrModal,
   SrNav,
@@ -293,6 +294,16 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     // 总高度撑开
     expect(html).toContain('15000px')
+  })
+
+  it('SrCascader 服务端输出选中路径', async () => {
+    const html = await render(SrCascader, {
+      options: [{ value: 'zj', label: '浙江', children: [{ value: 'hz', label: '杭州' }] }],
+      modelValue: ['zj', 'hz'],
+    })
+
+    expect(html).toContain('浙江')
+    expect(html).toContain('杭州')
   })
 
   it('SrPagination', async () => {

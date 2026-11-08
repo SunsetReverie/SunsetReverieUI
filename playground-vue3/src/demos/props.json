@@ -482,6 +482,125 @@
     ],
     "slots": ["item", "overlay"]
   },
+  "cascader": {
+    "name": "cascader",
+    "options": [
+      {
+        "from": "cascaderProps",
+        "name": "modelValue",
+        "type": "SrCascaderModel",
+        "default": "() => []",
+        "description": "选中值，配合 v-model 单选时是**路径数组**（从根到叶子），多选时是路径数组的数组。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "options",
+        "type": "SrCascaderOption[]",
+        "default": "() => []",
+        "description": "级联数据"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "false",
+        "description": "多选 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "filterable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可搜索 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可清空 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'请选择'",
+        "description": "占位文案 @default '请选择'"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "separator",
+        "type": "string",
+        "default": "' / '",
+        "description": "层级分隔符 @default ' / ' 显示选中路径时用它连接各级标签。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "showAllLevels",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示完整路径 @default true 关掉后只显示最后一级，触发器更省空间但看不出层级。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "expandTrigger",
+        "type": "'click' | 'hover'",
+        "default": "'click'",
+        "description": "展开方式 @default 'click' `hover` 在鼠标移入时就展开下一级，适合层级浅的数据。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "maxHeight",
+        "type": "number",
+        "default": "280",
+        "description": "面板最大高度 @default 280"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空状态文案 @default '暂无数据'"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "status",
+        "type": "'error' | 'warning'",
+        "default": "undefined",
+        "description": "校验态"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["cascader"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": []
+  },
   "checkbox": {
     "name": "checkbox",
     "options": [
@@ -1710,7 +1829,21 @@
         "name": "backgroundColor",
         "type": "string",
         "default": "",
-        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底"
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底 换成深色时**必须同时传 `color`**，否则文字仍是默认深色、会看不见。"
+      },
+      {
+        "from": "options",
+        "name": "color",
+        "type": "string",
+        "default": "",
+        "description": "自定义文字颜色 深色背景下需要改成浅色；浅色背景下通常不用动。"
+      },
+      {
+        "from": "options",
+        "name": "iconColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义图标颜色 不传时图标跟随消息类型的主色（info 蓝、success 绿等）。"
       }
     ],
     "sources": ["options"],
@@ -3238,9 +3371,16 @@
       {
         "from": "timelineProps",
         "name": "mode",
-        "type": "'left' | 'right'",
+        "type": "'left' | 'right' | 'top'",
         "default": "'right'",
-        "description": "时间戳位置 @default 'right' `right` 内容在左、时间在右；`left` 反过来。"
+        "description": "时间戳位置 @default 'right' - `right` 内容在左、时间在右 - `left` 反过来 - `top` 时间在上、内容在下（仍保留圆点与连接线）"
+      },
+      {
+        "from": "timelineProps",
+        "name": "plain",
+        "type": "boolean",
+        "default": "false",
+        "description": "无节点模式 @default false 隐藏圆点与连接线，时间自动移到内容上方——适合「活动日志」这类 只关心时间与文字、不需要图形引导的场景。"
       },
       {
         "from": "timelineProps",

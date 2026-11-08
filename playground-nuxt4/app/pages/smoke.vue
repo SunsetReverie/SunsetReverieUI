@@ -73,6 +73,19 @@ const segOptions = [
   { label: '月', value: 'month' },
 ]
 
+/** 级联数据 */
+const cascaderOptions = [
+  {
+    value: 'zj',
+    label: '浙江',
+    children: [
+      { value: 'hz', label: '杭州' },
+      { value: 'nb', label: '宁波' },
+    ],
+  },
+  { value: 'js', label: '江苏' },
+]
+
 /** 虚拟列表数据 */
 const vlistItems = Array.from({ length: 200 }, (_, i) => i)
 
@@ -290,6 +303,13 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-date-picker :model-value="pickDate" />
           <sr-date-picker type="daterange" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Cascader</span>
+        <div class="cell__body cell__body--column">
+          <sr-cascader :options="cascaderOptions" :model-value="['zj', 'hz']" />
         </div>
       </div>
 
