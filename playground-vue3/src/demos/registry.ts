@@ -139,6 +139,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./load-more/LoadMoreDemo.vue'),
       },
       {
+        key: 'tree',
+        name: 'SrTree',
+        description: '树形控件。展开折叠、复选联动、半选、虚拟滚动。',
+        demo: () => import('./tree/TreeDemo.vue'),
+      },
+      {
         key: 'upload',
         name: 'SrUpload',
         description: '文件上传。点击或拖拽、进度、多文件、图片预览与各种限制。',

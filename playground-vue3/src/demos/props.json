@@ -2889,6 +2889,157 @@
     "emits": [],
     "slots": ["default"]
   },
+  "tree": {
+    "name": "tree",
+    "options": [
+      {
+        "from": "treeProps",
+        "name": "data",
+        "type": "SrTreeNode[]",
+        "default": "() => []",
+        "description": "树数据"
+      },
+      {
+        "from": "treeProps",
+        "name": "modelValue",
+        "type": "SrTreeKey[]",
+        "default": "() => []",
+        "description": "选中的 key，配合 v-model"
+      },
+      {
+        "from": "treeProps",
+        "name": "expandedKeys",
+        "type": "SrTreeKey[]",
+        "default": "undefined",
+        "description": "展开的 key，配合 v-model:expanded-keys"
+      },
+      {
+        "from": "treeProps",
+        "name": "defaultExpandedKeys",
+        "type": "SrTreeKey[]",
+        "default": "() => []",
+        "description": "默认展开的 key（非受控时生效）"
+      },
+      {
+        "from": "treeProps",
+        "name": "defaultExpandAll",
+        "type": "boolean",
+        "default": "false",
+        "description": "默认展开全部 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "checkable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示复选框 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "checkStrictly",
+        "type": "boolean",
+        "default": "false",
+        "description": "父子勾选不联动 @default false 默认联动：勾父带子、子全选则父自动选中。 开启后每个节点独立，只影响自己。"
+      },
+      {
+        "from": "treeProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许多选 @default true"
+      },
+      {
+        "from": "treeProps",
+        "name": "selectable",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击节点文字即可选中 @default true"
+      },
+      {
+        "from": "treeProps",
+        "name": "expandOnClickNode",
+        "type": "boolean",
+        "default": "false",
+        "description": "点击整行都能切换展开 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整棵树 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "showLine",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示层级连接线 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "indent",
+        "type": "number",
+        "default": "18",
+        "description": "每层缩进（px）@default 18"
+      },
+      {
+        "from": "treeProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空数据文案 @default '暂无数据'"
+      },
+      {
+        "from": "treeProps",
+        "name": "virtual",
+        "type": "boolean",
+        "default": "false",
+        "description": "开启虚拟滚动 @default false 数据量大（几千行以上）时必开，否则一次性渲染全部行会明显卡顿。"
+      },
+      {
+        "from": "treeProps",
+        "name": "height",
+        "type": "number",
+        "default": "320",
+        "description": "虚拟滚动容器高度（px）@default 320"
+      },
+      {
+        "from": "treeProps",
+        "name": "itemHeight",
+        "type": "number",
+        "default": "32",
+        "description": "行高（px），虚拟滚动按它算可视区 @default 32"
+      },
+      {
+        "from": "treeProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["tree"],
+    "emits": [
+      {
+        "name": "toggle",
+        "params": ["node"]
+      },
+      {
+        "name": "check",
+        "params": ["node"]
+      },
+      {
+        "name": "select",
+        "params": ["node"]
+      },
+      {
+        "name": "rowClick",
+        "params": ["node"]
+      }
+    ],
+    "slots": []
+  },
   "upload": {
     "name": "upload",
     "options": [

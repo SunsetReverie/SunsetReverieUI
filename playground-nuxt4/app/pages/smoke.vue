@@ -60,6 +60,12 @@ const tabItems = [
 /** 面包屑 */
 const crumbs = [{ label: '首页', href: '#', icon: 'lucide:house' }, { label: '组件' }, { label: '冒烟' }]
 
+/** 树数据 */
+const treeData = [
+  { key: 'a', label: '设计', children: [{ key: 'a1', label: 'Token' }] },
+  { key: 'b', label: '工程' },
+]
+
 /** 日期选择器的初始值 */
 const pickDate = new Date(2026, 10, 8)
 
@@ -234,6 +240,13 @@ const warningCount = computed(() => hydrationWarnings.length)
               <sr-input :model-value="'x'" />
             </sr-form-item>
           </sr-form>
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Tree</span>
+        <div class="cell__body cell__body--column">
+          <sr-tree :data="treeData" checkable default-expand-all />
         </div>
       </div>
 

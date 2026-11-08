@@ -1,0 +1,153 @@
+/**
+ * 树
+ *
+ * 行是 flex 布局：箭头（固定宽）+ 复选框（可选）+ 文字。
+ * 缩进用行内 padding-left 实现，层级越深越大。
+ *
+ * 虚拟滚动时：__phantom 撑出总高度，内部用 translateY 把可见段推到正确位置。
+ */
+
+@import '../../../styles/mixins/index.less';
+
+.sr-tree {
+  --sr-tree-row-height: 32px;
+
+  display: flex;
+  flex-direction: column;
+  color: var(--sr-color-text);
+  font-size: 13px;
+
+  &.is-disabled {
+    opacity: 0.6;
+  }
+
+  // ---------- 滚动容器 ----------
+  &__viewport {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--sr-color-text) 18%, transparent) transparent;
+  }
+
+  // 虚拟滚动：没有这层就撑不出总高度，滚动条会失真
+  &__phantom {
+    position: relative;
+  }
+
+  // ---------- 行 ----------
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-right: 8px;
+    border-radius: var(--sr-radius-sm);
+    cursor: default;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      background: var(--sr-color-bg-hover);
+    }
+  }
+
+  // ---------- 展开箭头 ----------
+  &__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    cursor: pointer;
+    transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    .sr-tree__row.is-expanded > & {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__arrow--placeholder {
+    cursor: default;
+  }
+
+  // ---------- 复选框 ----------
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin-right: 2px;
+    cursor: pointer;
+
+    > input {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      accent-color: var(--sr-color-primary);
+      cursor: pointer;
+    }
+
+    > input:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // ---------- 文字 ----------
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 2px 6px;
+    border-radius: var(--sr-radius-sm);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &.is-selected {
+      background: var(--sr-color-primary-alpha-12);
+      color: var(--sr-color-primary-text);
+      font-weight: var(--sr-font-weight-medium);
+    }
+
+    &.is-disabled {
+      color: var(--sr-color-text-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__label.is-selected &__icon {
+    color: var(--sr-color-primary);
+  }
+
+  // ---------- 空状态 ----------
+  &__empty {
+    margin: 0;
+    padding: 24px 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  // ---------- 连接线 ----------
+  &.is-line &__row {
+    position: relative;
+  }
+
+  &.is-line &__arrow::before {
+    position: absolute;
+    width: 10px;
+    height: 1px;
+    background: var(--sr-color-border);
+    content: '';
+  }
+}

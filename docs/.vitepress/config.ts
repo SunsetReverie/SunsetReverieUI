@@ -127,6 +127,7 @@ export default defineConfig({
             { text: 'SrPagination', link: '/components/pagination' },
             { text: 'SrLoadMore', link: '/components/load-more' },
             { text: 'SrUpload', link: '/components/upload' },
+            { text: 'SrTree', link: '/components/tree' },
           ],
         },
         {

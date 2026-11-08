@@ -44,6 +44,7 @@ export const SR_COMPONENT_NAMES = [
   'Tag',
   'Tooltip',
   'Transition',
+  'Tree',
   'Upload',
 ] as const
 

@@ -36,6 +36,7 @@ import {
   SrTabs,
   SrTag,
   SrTooltip,
+  SrTree,
   SrUpload,
 } from '..'
 
@@ -180,6 +181,19 @@ describe('导航与数据组件的 SSR 渲染', () => {
     const html = await render(SrDatePicker, { modelValue: new Date(2026, 10, 8) })
     // 面板是 Teleport + 交互后才挂载，服务端不应出现
     expect(html).not.toContain('sr-date-picker__panel')
+  })
+
+  it('SrTree 默认只渲染顶层', async () => {
+    const html = await render(SrTree, {
+      data: [
+        { key: 'a', label: 'A', children: [{ key: 'a1', label: 'A1' }] },
+        { key: 'b', label: 'B' },
+      ],
+    })
+
+    // 收起状态下子节点不应出现
+    expect(html).toContain('A')
+    expect(html).not.toContain('A1')
   })
 
   it('SrPagination', async () => {
