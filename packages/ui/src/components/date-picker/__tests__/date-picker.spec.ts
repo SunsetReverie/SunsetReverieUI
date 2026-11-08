@@ -200,6 +200,37 @@ describe('SrDatePicker', () => {
     wrapper.unmount()
   })
 
+  it('datetime range 选完两次后仍显示选中态', async () => {
+    const wrapper = mountPicker({ type: 'datetimerange' })
+    await wrapper.find('.sr-date-picker__trigger').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
+    })
+
+    const days = wrapper.findAll('.sr-date-picker__day').filter((btn) => !btn.classes('is-out'))
+    await days[4]?.trigger('click')
+    await days[12]?.trigger('click')
+
+    // 带时间时不立即提交，但选中态必须已经更新（之前这里会全空）
+    expect(wrapper.findAll('.sr-date-picker__day.is-selected')).toHaveLength(2)
+    expect(wrapper.findAll('.sr-date-picker__day.is-in-range').length).toBeGreaterThan(2)
+    // 面板保持打开，等用户调时间
+    expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('datetime range 有两个时间输入行', async () => {
+    const wrapper = mountPicker({ type: 'datetimerange' })
+    await wrapper.find('.sr-date-picker__trigger').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.sr-date-picker__panel').exists()).toBe(true)
+    })
+
+    expect(wrapper.findAll('.sr-date-picker__time-line')).toHaveLength(2)
+    expect(wrapper.findAll('.sr-date-picker__time-input')).toHaveLength(6)
+    wrapper.unmount()
+  })
+
   it('时间可直接输入并提交', async () => {
     const wrapper = mountPicker({ type: 'datetime', modelValue: new Date(2026, 10, 8, 9, 30, 0) })
     await wrapper.find('.sr-date-picker__trigger').trigger('click')

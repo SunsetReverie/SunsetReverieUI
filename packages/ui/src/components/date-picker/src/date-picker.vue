@@ -155,15 +155,34 @@ function isDisabled(date: Date): boolean {
   return props.disabledDate?.(date) ?? false
 }
 
+/**
+ * 面板里正在编辑的区间
+ *
+ * 带时间时点完两次日期不会立即提交（要给用户调时间的机会），
+ * 此时 modelValue 还是旧值。选中态必须读 draft，否则刚选的区间会「消失」。
+ */
+const draftRange = computed<[Date, Date] | null>(() => {
+  const value = draft.value
+  return Array.isArray(value) ? value : null
+})
+
+/** 面板里正在编辑的单值 */
+const draftSingle = computed<Date | null>(() => {
+  const value = draft.value
+  return value && !Array.isArray(value) ? value : null
+})
+
 /** 是否选中（单值或区间端点） */
 function isSelected(date: Date): boolean {
   if (isRange.value) {
     if (isSameDay(date, pendingStart.value)) return true
-    return (
-      !!rangeValue.value && (isSameDay(date, rangeValue.value[0]) || isSameDay(date, rangeValue.value[1]))
-    )
+
+    const active = draftRange.value ?? rangeValue.value
+    return !!active && (isSameDay(date, active[0]) || isSameDay(date, active[1]))
   }
-  return isSameDay(date, singleValue.value) || isSameDay(date, draft.value as Date | null)
+
+  const active = draftSingle.value ?? singleValue.value
+  return isSameDay(date, active)
 }
 
 /** 是否处于高亮区间内 */
@@ -175,7 +194,7 @@ function inRange(date: Date): boolean {
     return isInRange(date, [pendingStart.value, hoverDate.value])
   }
 
-  return isInRange(date, rangeValue.value)
+  return isInRange(date, draftRange.value ?? rangeValue.value)
 }
 
 /** 是否今天 */
@@ -234,7 +253,7 @@ function toggle(): void {
 
 /** 提交值 */
 function commit(value: SrDatePickerValue): void {
-  const output = formatOutput(value)
+  const output = formatOutput(normalizeSeconds(value))
   emit('update:modelValue', output)
   emit('change', output)
 }
@@ -344,23 +363,55 @@ function shiftYear(step: number): void {
   leftMonth.value = addMonths(leftMonth.value, step * 12)
 }
 
-/** 当前编辑的时间值 */
-const timeValue = computed<Date>(() => {
+/** 时间单位 */
+interface TimeUnit {
+  key: 'hours' | 'minutes' | 'seconds'
+  label: string
+  max: number
+  value: number
+}
+
+/**
+ * 取某个端点的时间
+ *
+ * 区间模式下起点和终点各有一份时间，用 target 区分：
+ * 0 是开始，1 是结束。
+ * @param target 端点下标
+ * @returns 该端点的时间
+ */
+function timeOf(target = 0): Date {
   const value = draft.value ?? inner.value
   if (!value) return new Date()
+  return Array.isArray(value) ? (value[target] ?? value[0]) : value
+}
 
-  if (Array.isArray(value)) return value[timeTarget.value] ?? value[0]
-  return value
-})
+/**
+ * 时间单位表
+ *
+ * 关掉 showSeconds 时只保留时和分。
+ * @param target 端点下标
+ * @returns 单位列表
+ */
+function unitsOf(target = 0): TimeUnit[] {
+  const date = timeOf(target)
+
+  const units: TimeUnit[] = [
+    { key: 'hours', label: '时', max: 23, value: date.getHours() },
+    { key: 'minutes', label: '分', max: 59, value: date.getMinutes() },
+  ]
+  if (props.showSeconds) {
+    units.push({ key: 'seconds', label: '秒', max: 59, value: date.getSeconds() })
+  }
+  return units
+}
 
 /**
  * 直接输入时间
- *
- * 比连点加减号快得多，尤其是要跳到某个具体时刻时。
  * @param unit 单位
  * @param raw 输入值
+ * @param target 端点下标（区间模式用）
  */
-function setTime(unit: 'hours' | 'minutes' | 'seconds', raw: string): void {
+function setTime(unit: 'hours' | 'minutes' | 'seconds', raw: string, target = 0): void {
   const max = unit === 'hours' ? 23 : 59
   const parsed = Number(raw)
   if (Number.isNaN(parsed)) return
@@ -376,32 +427,15 @@ function setTime(unit: 'hours' | 'minutes' | 'seconds', raw: string): void {
     return copy
   }
 
-  draft.value = Array.isArray(value) ? [apply(value[0]), apply(value[1])] : apply(value)
-}
-
-/**
- * 时间单位
- *
- * 关掉 showSeconds 时只保留时和分；秒在提交时会被清零，
- * 避免「显示 09:30 但值里带着 45 秒」这种不一致。
- */
-interface TimeUnit {
-  key: 'hours' | 'minutes' | 'seconds'
-  label: string
-  max: number
-  value: number
-}
-
-const TIME_UNITS = computed<TimeUnit[]>(() => {
-  const units: TimeUnit[] = [
-    { key: 'hours' as const, label: '时', max: 23, value: timeValue.value.getHours() },
-    { key: 'minutes' as const, label: '分', max: 59, value: timeValue.value.getMinutes() },
-  ]
-  if (props.showSeconds) {
-    units.push({ key: 'seconds' as const, label: '秒', max: 59, value: timeValue.value.getSeconds() })
+  if (Array.isArray(value)) {
+    const nextPair: [Date, Date] = [new Date(value[0]), new Date(value[1])]
+    nextPair[target] = apply(value[target] ?? value[0])
+    draft.value = nextPair
+    return
   }
-  return units
-})
+
+  draft.value = apply(value)
+}
 
 /**
  * 补零
@@ -416,6 +450,27 @@ function pad2(value: number): string {
 function confirm(): void {
   if (draft.value) commit(draft.value)
   close()
+}
+
+/**
+ * 关掉 showSeconds 时把秒清零
+ *
+ * 不做的话会出现「界面显示 09:30，值里却是 09:30:45」——
+ * 后端拿到的时间比用户看到的多几十秒。
+ * @param value 待提交值
+ * @returns 处理后的值
+ */
+function normalizeSeconds(value: SrDatePickerValue): SrDatePickerValue {
+  if (props.showSeconds || !hasTime.value) return value
+
+  const clear = (date: Date): Date => {
+    const next = new Date(date)
+    next.setSeconds(0, 0)
+    return next
+  }
+
+  if (!value) return value
+  return Array.isArray(value) ? [clear(value[0]), clear(value[1])] : clear(value)
 }
 
 /** 选今天 */
@@ -623,23 +678,14 @@ defineExpose({ open, close, toggle })
           </div>
         </div>
 
-        <!-- 时间：横向一条，跟在日历下方 -->
+        <!-- 时间：区间模式下起点、终点各一行，不用切换 -->
         <div v-if="hasTime" class="sr-date-picker__time">
-          <div v-if="isRange" class="sr-date-picker__time-tabs">
-            <button
-              v-for="(label, index) in ['开始', '结束']"
-              :key="label"
-              class="sr-date-picker__time-tab"
-              :class="{ 'is-active': timeTarget === index }"
-              type="button"
-              @click="timeTarget = index"
-            >
-              {{ label }}
-            </button>
-          </div>
+          <div v-for="row in isRange ? [0, 1] : [0]" :key="row" class="sr-date-picker__time-line">
+            <span class="sr-date-picker__time-label">
+              {{ isRange ? (row === 0 ? '开始' : '结束') : '时间' }}
+            </span>
 
-          <div class="sr-date-picker__time-fields">
-            <template v-for="(unit, index) in TIME_UNITS" :key="unit.key">
+            <template v-for="(unit, index) in unitsOf(row)" :key="unit.key">
               <span v-if="index > 0" class="sr-date-picker__time-sep">:</span>
               <input
                 class="sr-date-picker__time-input"
@@ -648,9 +694,9 @@ defineExpose({ open, close, toggle })
                 min="0"
                 :max="unit.max"
                 :value="pad2(unit.value)"
-                :aria-label="unit.label"
+                :aria-label="`${isRange ? (row === 0 ? '开始' : '结束') : ''}${unit.label}`"
                 :title="unit.label"
-                @input="setTime(unit.key, ($event.target as HTMLInputElement).value)"
+                @input="setTime(unit.key, ($event.target as HTMLInputElement).value, row)"
               />
             </template>
           </div>

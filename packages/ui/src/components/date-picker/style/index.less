@@ -250,20 +250,26 @@
   // ---------- 时间（底部横排） ----------
   &__time {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px 0;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 0 8px;
     border-top: 1px solid var(--sr-color-border-subtle);
   }
 
-  &__time-tabs {
+  // 一行 = 一个端点：标签 + 时:分[:秒]
+  &__time-line {
     display: flex;
-    flex: 0 0 auto;
-    gap: 2px;
-    padding: 2px;
-    border-radius: var(--sr-date-picker-radius, 8px);
-    background: var(--sr-color-bg-sunken);
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  &__time-label {
+    min-width: 30px;
+    margin-right: 6px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+    white-space: nowrap;
   }
 
   &__time-fields {
@@ -304,25 +310,6 @@
     }
 
     appearance: textfield;
-  }
-
-  &__time-tab {
-    flex: 1 1 0;
-    padding: 3px 8px;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--sr-color-text-tertiary);
-    font-size: 11px;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-
-    &.is-active {
-      background: var(--sr-color-bg-container);
-      color: var(--sr-color-primary-text);
-      font-weight: var(--sr-font-weight-medium);
-    }
   }
 
   // 时:分:秒 之间的分隔符
