@@ -103,4 +103,4 @@ import '@sunset-reverie/ui/components/input/style.css'
 
 ## 注意事项
 
-- SrInput 是受控组件，必须绑 `v-model`；不绑的话输入框能打字，但值不会回写到组件状态（清空按钮、字数统计会失效）。
+- SrInput 是受控组件，**必须绑 `v-model`**。不绑的话输入时会派发 `update:modelValue`，但没人接收，`props.modelValue` 一直是初始值；组件下一次重渲染时，Vue 会拿 DOM 里的值跟绑定值比对，不一致就重置回初始值——表现为「打着打着字突然消失」。
