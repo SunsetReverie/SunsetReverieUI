@@ -82,7 +82,7 @@ const checked = ref(true)
 | `value` | `string \| number \| boolean` | — | 组内使用时的标识 |
 | `indeterminate` | `boolean` | `false` | 半选状态，只影响视觉 |
 | `disabled` | `boolean` | `false` | 禁用 |
-| `label` | `string` | `''` | 文字，也可用默认插槽 |
+| `label` | `string` | `''` | 文字；也可用 `default` 插槽替代 |
 | `size` | `SrSize` | 继承组/配置 | 尺寸档位 |
 | `name` | `string` | `''` | 原生 name |
 

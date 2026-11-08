@@ -85,6 +85,41 @@ srConfirm.warning({ title: '…' })
 srConfirm.danger({ title: '…' })
 ```
 
+## 组件式用法
+
+除了函数调用，也可以当普通组件用：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SrConfirm } from '@sunset-reverie/ui'
+
+const visible = ref(false)
+const submitting = ref(false)
+</script>
+
+<template>
+  <SrConfirm
+    v-model="visible"
+    title="确认删除？"
+    content="删除后无法恢复"
+    type="danger"
+    :loading="submitting"
+    @confirm="handleConfirm"
+    @close="handleClose"
+  >
+    <!-- default 插槽会覆盖 content，可放富文本 -->
+  </SrConfirm>
+</template>
+```
+
+| 场景 | 推荐写法 |
+| --- | --- |
+| 流程中临时确认一次 | `srConfirm()`，不用管显隐状态 |
+| 同一个弹窗反复用 / 内容复杂 | `<SrConfirm v-model>`，显隐由自己控制 |
+
+组件式可以放自定义内容（表格、勾选项），函数式只支持纯文本。
+
 ## 简写
 
 只传一个字符串时，它作为 `title`，类型默认 `danger`：
@@ -123,6 +158,8 @@ srConfirm.open / primary / warning / danger(options | string): Promise<boolean>
 
 | 字段 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `modelValue` | `boolean` | `false` | 显隐（组件式用法，配合 `v-model`） |
+| `loading` | `boolean` | `false` | 手动控制确认按钮的 loading |
 | `type` | `'primary' \| 'warning' \| 'danger'` | `'danger'` | 类型，决定图标与确认按钮样式 |
 | `title` | `string` | `''` | 标题 |
 | `content` | `string` | `''` | 正文说明 |
@@ -132,6 +169,23 @@ srConfirm.open / primary / warning / danger(options | string): Promise<boolean>
 | `maskClosable` | `boolean` | `true` | 点遮罩是否关闭 |
 | `width` | `number \| string` | `420` | 弹窗宽度 |
 | `onConfirm` | `() => void \| Promise<void>` | — | 点击确认后的回调，返回 Promise 时自动 loading |
+
+### 事件（组件式）
+
+| 事件 | 参数 | 说明 |
+| --- | --- | --- |
+| `update:modelValue` | `visible` | 显隐变化，配合 `v-model` |
+| `confirm` | — | 点了确认 |
+| `cancel` | — | 点了取消 |
+| `close` | — | 弹窗关闭（确认、取消、点遮罩都会触发） |
+
+`confirm` 和 `close` 都会触发，按需选一个用：`confirm` 只关心「确认了」，`close` 关心「收起了」——比如用来复位 loading。
+
+### 插槽（组件式）
+
+| 名称 | 说明 |
+| --- | --- |
+| `default` | 自定义正文，会覆盖 `content` 属性 |
 
 ## 注意事项
 

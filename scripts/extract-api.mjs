@@ -11,7 +11,7 @@
  */
 
 import { readdirSync, readFileSync } from 'node:fs'
-import { join, resolve } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 
 const ROOT = resolve(import.meta.dirname, '..')
 const COMPONENTS = join(ROOT, 'packages/ui/src/components')
@@ -251,6 +251,17 @@ function extract(name) {
   const sources = readSources(join(COMPONENTS, name))
   const all = sources.map((item) => item.code).join('\n')
 
+  /**
+   * 主组件源码
+   *
+   * 事件只从主组件读：目录里可能还有 tree-node.vue 这类内部子组件，
+   * 它们 emit 的是内部事件，不该出现在公开 API 里。
+   */
+  const candidates = sources.filter((item) => basename(item.file).replace(/\.(vue|ts)$/, '') === name)
+  // 同名文件可能有 .ts（props）和 .vue（emits），取第一个能解析出事件的
+  const mainCode =
+    candidates.find((item) => parseEmits(item.code).length > 0)?.code ?? candidates[0]?.code ?? all
+
   const props = []
   /** 每个 props 变量的名字，用于区分同文件里的多个组件（如 Form / FormItem） */
   const sourceNames = []
@@ -277,8 +288,8 @@ function extract(name) {
     name,
     options: props,
     sources: sourceNames,
-    emits: parseEmits(all),
-    slots: parseSlots(all),
+    emits: parseEmits(mainCode),
+    slots: parseSlots(mainCode),
   }
 }
 

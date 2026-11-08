@@ -47,7 +47,7 @@
     ],
     "sources": ["avatar"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "badge": {
     "name": "badge",
@@ -111,7 +111,7 @@
     ],
     "sources": ["badge"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "breadcrumb": {
     "name": "breadcrumb",
@@ -147,7 +147,7 @@
     ],
     "sources": ["breadcrumb"],
     "emits": [],
-    "slots": ["separator"]
+    "slots": []
   },
   "button": {
     "name": "button",
@@ -239,7 +239,7 @@
     ],
     "sources": ["button"],
     "emits": [],
-    "slots": ["default", "icon", "loading"]
+    "slots": []
   },
   "card": {
     "name": "card",
@@ -289,7 +289,7 @@
     ],
     "sources": ["card"],
     "emits": [],
-    "slots": ["default", "extra", "footer", "header"]
+    "slots": []
   },
   "carousel": {
     "name": "carousel",
@@ -555,7 +555,7 @@
     ],
     "sources": ["col"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "config-provider": {
     "name": "config-provider",
@@ -577,7 +577,7 @@
     ],
     "sources": ["configProvider"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "confirm": {
     "name": "confirm",
@@ -1037,7 +1037,7 @@
     ],
     "sources": ["empty"],
     "emits": [],
-    "slots": ["action", "default"]
+    "slots": []
   },
   "form": {
     "name": "form",
@@ -1069,6 +1069,13 @@
         "type": "'top' | 'left' | 'right'",
         "default": "'top'",
         "description": "标签位置"
+      },
+      {
+        "from": "formProps",
+        "name": "hideRequiredMark",
+        "type": "boolean",
+        "default": "false",
+        "description": "隐藏必填项标签后的星号 @default false 有些设计规范不在标签上打星，改为在占位文案或校验提示里说明。"
       },
       {
         "from": "formProps",
@@ -1132,6 +1139,13 @@
         "type": "string | number",
         "default": "undefined",
         "description": "单独覆盖标签宽度"
+      },
+      {
+        "from": "formItemProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "单独禁用这一项，与表单级 disabled 取或"
       }
     ],
     "sources": ["form", "formItem"],
@@ -1202,7 +1216,7 @@
     ],
     "sources": ["icon"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "input": {
     "name": "input",
@@ -2026,7 +2040,7 @@
     ],
     "sources": ["progress"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "radio": {
     "name": "radio",
@@ -2156,7 +2170,7 @@
     ],
     "sources": ["row"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "select": {
     "name": "select",
@@ -2166,7 +2180,14 @@
         "name": "modelValue",
         "type": "SrSelectValue | SrSelectValue[] | undefined",
         "default": "undefined",
-        "description": "选中值；multiple 时为数组"
+        "description": "选中值；multiple 时为数组 选中值，配合 v-model 不传就是非受控：组件自己维护选中状态，点击依然有效。"
+      },
+      {
+        "from": "selectProps",
+        "name": "defaultValue",
+        "type": "SrSelectValue | SrSelectValue[] | undefined",
+        "default": "undefined",
+        "description": "非受控时的初始值"
       },
       {
         "from": "selectProps",
@@ -2851,7 +2872,7 @@
     ],
     "sources": ["tooltip"],
     "emits": [],
-    "slots": ["content", "default"]
+    "slots": []
   },
   "transition": {
     "name": "transition",
@@ -2887,7 +2908,7 @@
     ],
     "sources": ["transition"],
     "emits": [],
-    "slots": ["default"]
+    "slots": []
   },
   "tree": {
     "name": "tree",
@@ -2903,8 +2924,15 @@
         "from": "treeProps",
         "name": "modelValue",
         "type": "SrTreeKey[]",
+        "default": "undefined",
+        "description": "选中的 key，配合 v-model 不传就是非受控：组件自己维护勾选状态，点击依然有效。 只支持受控的话，「checkable 但忘了绑 v-model」会变成点了没反应。"
+      },
+      {
+        "from": "treeProps",
+        "name": "defaultCheckedKeys",
+        "type": "SrTreeKey[]",
         "default": "() => []",
-        "description": "选中的 key，配合 v-model"
+        "description": "非受控时的初始勾选"
       },
       {
         "from": "treeProps",
@@ -3013,6 +3041,34 @@
       },
       {
         "from": "treeProps",
+        "name": "keyboard",
+        "type": "boolean",
+        "default": "true",
+        "description": "开启键盘导航 @default true"
+      },
+      {
+        "from": "treeProps",
+        "name": "draggable",
+        "type": "boolean",
+        "default": "false",
+        "description": "允许拖拽节点调整位置 @default false 用 Pointer Events 实现，不依赖 sortablejs。"
+      },
+      {
+        "from": "treeProps",
+        "name": "allowDrop",
+        "type": "(dragNode: SrTreeNode, dropNode: SrTreeNode, type: SrTreeDropType) =",
+        "default": "undefined",
+        "description": "判断某个节点能否拖放，返回 false 会拒绝"
+      },
+      {
+        "from": "treeProps",
+        "name": "loadData",
+        "type": "(node: SrTreeNode) =",
+        "default": "undefined",
+        "description": "异步加载子节点 节点没有 children 且未加载过时，展开会先调用它。 返回的数组会作为该节点的 children。"
+      },
+      {
+        "from": "treeProps",
         "name": "size",
         "type": "SrSize",
         "default": "undefined",
@@ -3022,20 +3078,32 @@
     "sources": ["tree"],
     "emits": [
       {
-        "name": "toggle",
-        "params": ["node"]
+        "name": "update:modelValue",
+        "params": ["keys"]
+      },
+      {
+        "name": "update:expandedKeys",
+        "params": ["keys"]
       },
       {
         "name": "check",
+        "params": ["keys"]
+      },
+      {
+        "name": "expand",
+        "params": ["keys"]
+      },
+      {
+        "name": "node-click",
         "params": ["node"]
       },
       {
-        "name": "select",
-        "params": ["node"]
+        "name": "load",
+        "params": ["node", "children"]
       },
       {
-        "name": "rowClick",
-        "params": ["node"]
+        "name": "node-drop",
+        "params": ["detail", "data"]
       }
     ],
     "slots": []

@@ -2,6 +2,34 @@
 
 模态对话框，内置焦点陷阱、滚动锁定与嵌套层级管理。
 
+<script setup>
+import { ref } from 'vue'
+
+const open = ref(false)
+const wideOpen = ref(false)
+const bareOpen = ref(false)
+</script>
+
+## 交互演示
+
+<div class="sr-demo">
+  <SrButton variant="primary" @click="open = true">打开弹窗</SrButton>
+  <SrButton variant="outline" @click="wideOpen = true">宽弹窗</SrButton>
+  <SrButton variant="text" @click="bareOpen = true">无遮罩</SrButton>
+</div>
+
+<SrModal v-model="open" title="基础弹窗" :width="440">
+  点右上角关闭、按 Esc、点遮罩都能关掉。
+</SrModal>
+
+<SrModal v-model="wideOpen" title="宽弹窗" :width="720">
+  内容多的时候用宽一点的尺寸，内部会自己处理滚动。
+</SrModal>
+
+<SrModal v-model="bareOpen" title="无遮罩" :mask="false" :width="400">
+  不挡背景，适合不打断操作的场景。
+</SrModal>
+
 ## 基础用法
 
 ```vue
