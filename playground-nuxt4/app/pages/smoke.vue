@@ -291,6 +291,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Result</span>
+        <div class="cell__body cell__body--column">
+          <sr-result status="success" title="提交成功" sub-title="服务端渲染的结果页" compact />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Slider</span>
         <div class="cell__body cell__body--column">
           <sr-slider :model-value="42" />

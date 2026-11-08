@@ -234,6 +234,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./skeleton/SkeletonDemo.vue'),
       },
       {
+        key: 'result',
+        name: 'SrResult',
+        description: '结果页。四种状态的整页反馈，支持额外信息与操作区。',
+        demo: () => import('./result/ResultDemo.vue'),
+      },
+      {
         key: 'empty',
         name: 'SrEmpty',
         description: '空状态。图标 / 插图 / 虚线框 / 操作区。',

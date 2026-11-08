@@ -32,6 +32,7 @@ import {
   SrPanel,
   SrRadio,
   SrRadioGroup,
+  SrResult,
   SrSegmented,
   SrSelect,
   SrSkeleton,
@@ -274,6 +275,12 @@ describe('导航与数据组件的 SSR 渲染', () => {
     const html = await render(SrSlider, { modelValue: 42 })
     expect(html).toContain('sr-slider__track')
     expect(html).toContain('aria-valuenow="42"')
+  })
+
+  it('SrResult 服务端输出标题与角色', async () => {
+    const html = await render(SrResult, { status: 'success', title: '提交成功' })
+    expect(html).toContain('role="status"')
+    expect(html).toContain('提交成功')
   })
 
   it('SrPagination', async () => {

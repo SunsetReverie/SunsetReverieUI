@@ -2293,6 +2293,49 @@
     ],
     "slots": ["default"]
   },
+  "result": {
+    "name": "result",
+    "options": [
+      {
+        "from": "resultProps",
+        "name": "status",
+        "type": "SrResultStatus",
+        "default": "'info'",
+        "description": "结果类型 @default 'info' 决定图标与主色。业务上「404 / 403」这类场景用 `warning` 或 `error`， 文案自己写，不需要额外的枚举值。"
+      },
+      {
+        "from": "resultProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "主标题"
+      },
+      {
+        "from": "resultProps",
+        "name": "subTitle",
+        "type": "string",
+        "default": "''",
+        "description": "副标题 / 说明"
+      },
+      {
+        "from": "resultProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "自定义图标 @default undefined 传了就不再显示状态图标，适合「提交成功用插画」这类需求。"
+      },
+      {
+        "from": "resultProps",
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "紧凑模式 @default false 缩小图标与间距，适合嵌在卡片或弹窗里，而不是占满整页。"
+      }
+    ],
+    "sources": ["result"],
+    "emits": [],
+    "slots": []
+  },
   "row": {
     "name": "row",
     "options": [

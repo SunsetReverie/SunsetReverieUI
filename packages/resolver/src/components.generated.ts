@@ -38,6 +38,7 @@ export const SR_COMPONENT_NAMES = [
   'Progress',
   'Radio',
   'RadioGroup',
+  'Result',
   'Row',
   'Segmented',
   'Select',
