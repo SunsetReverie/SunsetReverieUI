@@ -678,28 +678,32 @@ defineExpose({ open, close, toggle })
           </div>
         </div>
 
-        <!-- 时间：区间模式下起点、终点各一行，不用切换 -->
+        <!-- 时间：一行内排开，区间两端用 ~ 连接 -->
         <div v-if="hasTime" class="sr-date-picker__time">
-          <div v-for="row in isRange ? [0, 1] : [0]" :key="row" class="sr-date-picker__time-line">
-            <span class="sr-date-picker__time-label">
-              {{ isRange ? (row === 0 ? '开始' : '结束') : '时间' }}
-            </span>
+          <template v-for="(row, rowIndex) in isRange ? [0, 1] : [0]" :key="row">
+            <span v-if="rowIndex > 0" class="sr-date-picker__time-dash">~</span>
 
-            <template v-for="(unit, index) in unitsOf(row)" :key="unit.key">
-              <span v-if="index > 0" class="sr-date-picker__time-sep">:</span>
-              <input
-                class="sr-date-picker__time-input"
-                type="number"
-                inputmode="numeric"
-                min="0"
-                :max="unit.max"
-                :value="pad2(unit.value)"
-                :aria-label="`${isRange ? (row === 0 ? '开始' : '结束') : ''}${unit.label}`"
-                :title="unit.label"
-                @input="setTime(unit.key, ($event.target as HTMLInputElement).value, row)"
-              />
-            </template>
-          </div>
+            <div class="sr-date-picker__time-line">
+              <span class="sr-date-picker__time-label">
+                {{ isRange ? (row === 0 ? '开始' : '结束') : '时间' }}
+              </span>
+
+              <template v-for="(unit, index) in unitsOf(row)" :key="unit.key">
+                <span v-if="index > 0" class="sr-date-picker__time-sep">:</span>
+                <input
+                  class="sr-date-picker__time-input"
+                  type="number"
+                  inputmode="numeric"
+                  min="0"
+                  :max="unit.max"
+                  :value="pad2(unit.value)"
+                  :aria-label="`${isRange ? (row === 0 ? '开始' : '结束') : ''}${unit.label}`"
+                  :title="unit.label"
+                  @input="setTime(unit.key, ($event.target as HTMLInputElement).value, row)"
+                />
+              </template>
+            </div>
+          </template>
         </div>
 
         <!-- 底部操作 -->

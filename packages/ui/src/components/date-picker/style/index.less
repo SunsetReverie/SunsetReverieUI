@@ -250,23 +250,30 @@
   // ---------- 时间（底部横排） ----------
   &__time {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 6px;
     padding: 10px 0 8px;
     border-top: 1px solid var(--sr-color-border-subtle);
   }
 
-  // 一行 = 一个端点：标签 + 时:分[:秒]
+  // 一个端点：标签 + 时:分[:秒]
   &__time-line {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 4px;
   }
 
+  // 区间两端的连接符
+  &__time-dash {
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+  }
+
   &__time-label {
-    min-width: 30px;
-    margin-right: 6px;
+    min-width: 26px;
+    margin-right: 4px;
     color: var(--sr-color-text-tertiary);
     font-size: 11px;
     white-space: nowrap;
@@ -286,7 +293,7 @@
 
   // 时间输入框：直接输入比连点加减号快，也不需要一排按钮占空间
   &__time-input {
-    width: 34px;
+    width: 30px;
     height: 26px;
     padding: 0 2px;
     border: 1px solid var(--sr-color-border-subtle);
