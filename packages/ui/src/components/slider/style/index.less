@@ -60,7 +60,8 @@
     padding: 0;
     border: 2px solid var(--sr-color-primary);
     border-radius: 50%;
-    background: var(--sr-color-bg-container);
+    // 实色：半透明会透出下方已经填满的轨道，看起来像圆里有个洞
+    background: var(--sr-track-handle-bg);
     box-shadow: var(--sr-shadow-sm);
     cursor: grab;
     transform: translate(-50%, -50%);
@@ -78,7 +79,7 @@
   &__handle:disabled {
     cursor: not-allowed;
     border-color: var(--sr-color-border);
-    background: var(--sr-color-bg-sunken);
+    background: var(--sr-track-handle-bg);
   }
 
   // ---------- 数值提示 ----------
