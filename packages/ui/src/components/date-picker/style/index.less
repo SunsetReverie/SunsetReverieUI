@@ -85,15 +85,16 @@
     padding: 14px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
-    // 不用 color-mix 叠加：那样只有 0.84 × 0.8 ≈ 0.67 的效果，
-    // 而且 color-mix 在旧浏览器里整条声明会失效，退化成不透明白。
-    // 这里直接写 rgba，值明确、兼容性好。
-    background: rgb(255 255 255 / 62%);
+    // 面板底色与描边集中成局部变量，暗色只覆盖这两个值，
+    // 避免同一个魔法数字散落在两处、改一处漏一处
+    --sr-date-picker-panel-bg: rgb(255 255 255 / 62%);
+    --sr-date-picker-panel-border: rgb(255 255 255 / 55%);
+
+    background: var(--sr-date-picker-panel-bg);
+    border-color: var(--sr-date-picker-panel-border);
     box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
     backdrop-filter: blur(60px) saturate(180%);
     -webkit-backdrop-filter: blur(60px) saturate(180%);
-    // 边框弱化：半透明面板上再画深色边框会显得很脏
-    border-color: rgb(255 255 255 / 55%);
 
     // 极淡的噪点：blur 只能做出「糊」，加一层颗粒才像磨砂玻璃
     &::after {
@@ -132,8 +133,8 @@
   }
 
   [data-sr-theme='dark'] &__panel {
-    background: rgb(38 42 50 / 68%);
-    border-color: rgb(255 255 255 / 14%);
+    --sr-date-picker-panel-bg: rgb(38 42 50 / 68%);
+    --sr-date-picker-panel-border: rgb(255 255 255 / 14%);
   }
 
   // ---------- 主体 ----------
