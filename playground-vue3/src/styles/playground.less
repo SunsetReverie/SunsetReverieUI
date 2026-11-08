@@ -128,6 +128,13 @@ body {
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--sr-color-text) 18%, transparent) transparent;
 
+    // 内容区自带一层色彩：浮层（日期面板、下拉、弹窗）弹出时压在这上面，
+    // 磨砂才透得出东西。只靠 body 的光晕不够 —— 中间隔着不透明的卡片。
+    background-image:
+      radial-gradient(ellipse 55% 40% at 12% 0%, var(--sr-color-primary-alpha-12), transparent 62%),
+      radial-gradient(ellipse 45% 38% at 92% 100%, var(--sr-color-primary-alpha-08), transparent 64%);
+    background-attachment: local;
+
     // 视图根节点改成纵向流，面板之间的节奏统一由这里给
     > * {
       display: flex;
