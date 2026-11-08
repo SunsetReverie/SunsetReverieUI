@@ -85,10 +85,13 @@
     padding: 14px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
-    // 比容器底色更透一档：玻璃要能透出背后的内容才成立
-    background: color-mix(in srgb, var(--sr-color-bg-container) 82%, transparent);
+    // 浮层必须挡住背后的正文，否则文字会透上来干扰阅读。
+    // 用 elevated 这一档（glass 下 84% 不白）而不是 container（72%），
+    // 磨砂感靠更强的模糊来体现，不是靠透。
+    background: var(--sr-color-bg-elevated);
     box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
-    .sr-glass-layer(var(--sr-glass-filter-strong));
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
   }
 
   // ---------- 快捷区 ----------
@@ -310,7 +313,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 4px 2px;
+    // 左右不加内边距：面板自身已有 14px，再叠加会显得按钮被往里挤
+    padding: 8px 0 0;
     border-top: 1px solid var(--sr-color-border-subtle);
   }
 
@@ -338,7 +342,7 @@
   }
 
   &__confirm {
-    padding: 5px 14px;
+    padding: 4px 10px;
     border: 0;
     border-radius: var(--sr-date-picker-radius, 8px);
     background: var(--sr-color-primary);
