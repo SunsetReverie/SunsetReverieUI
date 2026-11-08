@@ -27,6 +27,9 @@ const attrs = useAttrs()
 const config = useSrConfig()
 const formItem = inject(SR_FORM_ITEM_KEY, null)
 
+/** 最终是否禁用：表单级 disabled 也要生效 */
+const isDisabled = computed(() => props.disabled || (formItem?.disabled?.value ?? false))
+
 /** 小数位：显式 precision 优先，否则从 step 推导 */
 const resolvedPrecision = computed(() => props.precision ?? srNumberPrecision(Math.abs(props.step) || 1))
 
@@ -88,7 +91,7 @@ const canDecrease = computed(() => currentValue.value === null || currentValue.v
 const rootClass = computed(() => [
   `sr-input--${resolvedStatus.value}`,
   {
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled,
     'is-readonly': props.readonly,
     'sr-input-number--both': props.controlsPosition === 'both',
   },
@@ -223,7 +226,7 @@ watch(
       class="sr-input-number__btn sr-input-number__btn--side"
       type="button"
       tabindex="-1"
-      :disabled="!canDecrease || disabled || readonly"
+      :disabled="!canDecrease || isDisabled || readonly"
       aria-label="减少"
       @mousedown.prevent
       @click="stepBy(-1)"
@@ -239,7 +242,7 @@ watch(
       autocomplete="off"
       :value="inputText"
       :placeholder="placeholder"
-      :disabled="disabled"
+      :disabled="isDisabled"
       :readonly="readonly"
       :aria-valuemin="Number.isFinite(min) ? min : undefined"
       :aria-valuemax="Number.isFinite(max) ? max : undefined"
@@ -259,7 +262,7 @@ watch(
         class="sr-input-number__btn sr-input-number__btn--up"
         type="button"
         tabindex="-1"
-        :disabled="!canIncrease || disabled || readonly"
+        :disabled="!canIncrease || isDisabled || readonly"
         aria-label="增加"
         @mousedown.prevent
         @click="stepBy(1)"
@@ -270,7 +273,7 @@ watch(
         class="sr-input-number__btn sr-input-number__btn--down"
         type="button"
         tabindex="-1"
-        :disabled="!canDecrease || disabled || readonly"
+        :disabled="!canDecrease || isDisabled || readonly"
         aria-label="减少"
         @mousedown.prevent
         @click="stepBy(-1)"
@@ -284,7 +287,7 @@ watch(
       class="sr-input-number__btn sr-input-number__btn--side"
       type="button"
       tabindex="-1"
-      :disabled="!canIncrease || disabled || readonly"
+      :disabled="!canIncrease || isDisabled || readonly"
       aria-label="增加"
       @mousedown.prevent
       @click="stepBy(1)"

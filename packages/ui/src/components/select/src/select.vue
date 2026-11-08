@@ -29,6 +29,9 @@ const config = useSrConfig()
 // 表单内使用时由 SrFormItem 提供校验态
 const formItem = inject(SR_FORM_ITEM_KEY, null)
 
+/** 最终是否禁用：表单级 disabled 也要生效 */
+const isDisabled = computed(() => props.disabled || (formItem?.disabled?.value ?? false))
+
 /** 根元素（用于判断点击是否在内部） */
 const rootRef = ref<HTMLElement | null>(null)
 /** 触发元素 */
@@ -137,7 +140,7 @@ const filteredOptions = computed(() => {
 })
 
 /** 是否显示清空按钮 */
-const showClear = computed(() => props.clearable && selectedValues.value.length > 0 && !props.disabled)
+const showClear = computed(() => props.clearable && selectedValues.value.length > 0 && !isDisabled.value)
 
 /**
  * 判断某个值是否被选中
@@ -189,7 +192,7 @@ function scheduleUpdate(): void {
  * @returns {Promise<void>}
  */
 async function open(): Promise<void> {
-  if (props.disabled || visible.value) return
+  if (isDisabled.value || visible.value) return
 
   visible.value = true
   keyword.value = ''
@@ -277,7 +280,7 @@ function clear(): void {
  * @returns {void}
  */
 function onKeydown(event: KeyboardEvent): void {
-  if (props.disabled) return
+  if (isDisabled.value) return
 
   const key = event.key
 
@@ -373,7 +376,7 @@ onScopeDispose(() => {
 const rootClass = computed(() => [
   `sr-select--${resolvedStatus.value}`,
   {
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled,
     'is-open': visible.value,
     'is-multiple': props.multiple,
     'is-empty': selectedValues.value.length === 0,

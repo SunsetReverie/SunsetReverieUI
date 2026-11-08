@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue'
+import { computed, inject, useAttrs } from 'vue'
+import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 
 import { useSrConfig } from '../../../composables/use-sr-config'
 import { srOmit } from '../../../utils/attrs'
@@ -9,6 +10,9 @@ import { switchProps } from './switch'
 defineOptions({ name: 'SrSwitch', inheritAttrs: false })
 
 const props = defineProps(switchProps)
+
+/** 表单项上下文：表单级 disabled 从这里下发 */
+const formItem = inject(SR_FORM_ITEM_KEY, null)
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -22,7 +26,7 @@ const config = useSrConfig()
 const size = computed(() => props.size ?? config.value.size)
 
 /** 是否不可交互 */
-const isDisabled = computed(() => props.disabled || props.loading)
+const isDisabled = computed(() => props.disabled || props.loading || (formItem?.disabled?.value ?? false))
 
 /** 当前应显示的文字 */
 const text = computed(() => (props.modelValue ? props.checkedText : props.uncheckedText))

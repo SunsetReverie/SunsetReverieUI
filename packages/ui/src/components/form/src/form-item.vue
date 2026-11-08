@@ -5,6 +5,7 @@ import {
   SR_FORM_ITEM_KEY,
   SR_FORM_KEY,
   formItemProps,
+  type SrFormContext,
   type SrFormError,
   type SrFormRule,
   type SrFormTrigger,
@@ -15,7 +16,7 @@ defineOptions({ name: 'SrFormItem', inheritAttrs: false })
 const props = defineProps(formItemProps)
 
 const attrs = useAttrs()
-const form = inject(SR_FORM_KEY, null)
+const form = inject<SrFormContext | null>(SR_FORM_KEY, null)
 
 /** 唯一 id，用于串联 label / error / 控件 */
 const uid = useId()
@@ -139,10 +140,19 @@ function clear(): void {
   errorMessage.value = ''
 }
 
+/**
+ * 最终是否禁用
+ *
+ * 表单级 disabled 要能穿透到每个控件，所以在这里合并一次，
+ * 控件只要读 formItem.disabled 就够了，不用各自再找 form。
+ */
+const isDisabled = computed(() => props.disabled || (form?.disabled.value ?? false))
+
 provide(SR_FORM_ITEM_KEY, {
   status,
   messageId,
   labelId,
+  disabled: isDisabled,
   notify,
 })
 

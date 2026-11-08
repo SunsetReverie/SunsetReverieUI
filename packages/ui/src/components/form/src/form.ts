@@ -73,6 +73,8 @@ export interface SrFormItemContext {
   messageId: string
   /** 标签元素 id，供 aria-labelledby 使用 */
   labelId: string
+  /** 是否禁用：自身 disabled 或表单级 disabled */
+  disabled: Ref<boolean>
   /** 通知表单项：字段发生了某种交互 */
   notify: (trigger: SrFormTrigger) => void
 }
@@ -159,6 +161,11 @@ export const formItemProps = {
   labelWidth: {
     type: [String, Number] as PropType<string | number>,
     default: undefined,
+  },
+  /** 单独禁用这一项，与表单级 disabled 取或 */
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 } as const
 

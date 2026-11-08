@@ -226,7 +226,7 @@ const rules = {
 | `labelPosition` | `'top' \| 'left' \| 'right'` | `'top'` | 标签位置 |
 | `hideRequiredMark` | `boolean` | `false` | 隐藏必填项标签后的星号 |
 | `size` | `SrSize` | 继承配置 | 表单级尺寸，下发给子控件 |
-| `disabled` | `boolean` | `false` | 整表禁用 |
+| `disabled` | `boolean` | `false` | 整表禁用，下发给所有子控件 |
 | `showMessage` | `boolean` | `true` | 是否显示错误文案 |
 
 ## Props（SrFormItem）
@@ -252,6 +252,28 @@ const rules = {
 | 插槽 | 说明 |
 | --- | --- |
 | `default` | 表单项与操作按钮 |
+
+## 整表禁用
+
+`disabled` 会通过 `SrFormItem` 下发到每个控件，不需要逐个加：
+
+```vue
+<SrForm :model="model" disabled>
+  <SrFormItem label="备注" prop="note">
+    <SrInput v-model="model.note" />
+  </SrFormItem>
+</SrForm>
+```
+
+覆盖的控件：`SrInput`、`SrInputNumber`、`SrSelect`、`SrSwitch`、`SrCheckbox`、`SrRadio`、`SrDatePicker`、`SrUpload`。
+
+单项想单独禁用，用 `SrFormItem` 的 `disabled`，两者取「或」：
+
+```vue
+<SrFormItem label="只读字段" prop="id" disabled>
+```
+
+典型用法是「查看模式」：一个开关控制整页表单是只读还是可编辑。
 
 ## 注意事项
 

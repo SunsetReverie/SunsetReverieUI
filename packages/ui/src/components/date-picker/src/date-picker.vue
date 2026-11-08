@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 
 import SrIcon from '../../icon/src/icon.vue'
 import { srComputeFloating, srGetRect } from '../../../utils/floating'
@@ -21,6 +22,13 @@ import { datePickerProps, type SrDatePickerShortcut, type SrDatePickerValue } fr
 defineOptions({ name: 'SrDatePicker' })
 
 const props = defineProps(datePickerProps)
+
+/** 表单项上下文：表单级 disabled 从这里下发 */
+const formItem = inject(SR_FORM_ITEM_KEY, null)
+
+/** 最终是否禁用：表单级 disabled 也要生效 */
+/** 整体是否禁用：自身或表单级任一为真（与 isDisabled(date) 区分） */
+const pickerDisabled = computed(() => props.disabled || (formItem?.disabled?.value ?? false))
 
 const emit = defineEmits<{
   /** 值变化，配合 v-model */
@@ -150,7 +158,7 @@ const shortcuts = computed(() => (props.showShortcuts ? (props.shortcuts ?? []) 
 
 /** 某个日期是否禁用 */
 function isDisabled(date: Date): boolean {
-  if (props.disabled || props.readonly) return true
+  if (pickerDisabled.value || props.readonly) return true
   if (isOutOfRange(date, minDate.value, maxDate.value)) return true
   return props.disabledDate?.(date) ?? false
 }
@@ -221,7 +229,7 @@ function updatePosition(): void {
 
 /** 打开面板 */
 async function open(): Promise<void> {
-  if (props.disabled || props.readonly || visible.value) return
+  if (pickerDisabled.value || props.readonly || visible.value) return
 
   visible.value = true
   draft.value = inner.value
@@ -248,7 +256,7 @@ function toggle(): void {
   if (visible.value) close()
   else void open()
 
-  if (props.disabled || props.readonly) return
+  if (pickerDisabled.value || props.readonly) return
 }
 
 /** 提交值 */
@@ -549,7 +557,7 @@ defineExpose({ open, close, toggle })
 </script>
 
 <template>
-  <div class="sr-date-picker" :class="{ 'is-disabled': disabled }">
+  <div class="sr-date-picker" :class="{ 'is-disabled': pickerDisabled }">
     <div
       ref="triggerRef"
       class="sr-input sr-date-picker__trigger"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, ref, useAttrs, watchEffect } from 'vue'
+import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 
 import { useSrConfig } from '../../../composables/use-sr-config'
 import { srOmit } from '../../../utils/attrs'
@@ -8,6 +9,9 @@ import { SR_CHECKBOX_GROUP_KEY, checkboxProps, type SrCheckboxValue } from './ch
 defineOptions({ name: 'SrCheckbox', inheritAttrs: false })
 
 const props = defineProps(checkboxProps)
+
+/** 表单项上下文：表单级 disabled 从这里下发 */
+const formItem = inject(SR_FORM_ITEM_KEY, null)
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -39,7 +43,9 @@ const checked = computed(() => {
 })
 
 /** 是否禁用：组级与自身任一为真 */
-const isDisabled = computed(() => props.disabled || Boolean(group?.disabled.value))
+const isDisabled = computed(
+  () => props.disabled || Boolean(group?.disabled.value) || (formItem?.disabled?.value ?? false),
+)
 
 /** 尺寸：自身 > 组 > 全局配置 */
 const resolvedSize = computed(() => props.size ?? config.value.size)

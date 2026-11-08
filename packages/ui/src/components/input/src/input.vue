@@ -28,6 +28,13 @@ const config = useSrConfig()
 // 表单内使用时由 SrFormItem 提供校验态，自身 status 优先级更高
 const formItem = inject(SR_FORM_ITEM_KEY, null)
 
+/**
+ * 最终是否禁用
+ *
+ * 表单级 disabled 通过 SrFormItem 下发，控件自身也可以单独指定。
+ */
+const isDisabled = computed(() => props.disabled || (formItem?.disabled?.value ?? false))
+
 /** 原生输入元素 */
 const inputRef = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
 /** 密码是否明文显示 */
@@ -93,11 +100,11 @@ const stringValue = computed(() => (props.modelValue === undefined ? '' : String
 const hasValue = computed(() => stringValue.value.length > 0)
 
 /** 是否显示清空按钮 */
-const showClear = computed(() => props.clearable && hasValue.value && !props.disabled && !props.readonly)
+const showClear = computed(() => props.clearable && hasValue.value && !isDisabled.value && !props.readonly)
 
 /** 是否显示自定义拖拽手柄：autosize 时高度自动，不需要手动拉 */
 const showResizeHandle = computed(
-  () => isTextarea.value && !props.autosize && !props.disabled && !props.readonly,
+  () => isTextarea.value && !props.autosize && !isDisabled.value && !props.readonly,
 )
 
 /** 是否显示密码切换按钮 */
@@ -116,7 +123,7 @@ const countText = computed(() => {
 const rootClass = computed(() => [
   `sr-input--${resolvedStatus.value}`,
   {
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled,
     'is-readonly': props.readonly,
     'is-textarea': isTextarea.value,
     // 高度自适应的文本域永远不需要滚动条，直接禁掉避免系统占位条常驻
@@ -275,7 +282,7 @@ watch(
       :value="stringValue"
       :rows="rows"
       :placeholder="placeholder"
-      :disabled="disabled"
+      :disabled="isDisabled"
       :readonly="readonly"
       :maxlength="maxlength"
       :aria-invalid="resolvedStatus === 'error' ? 'true' : undefined"
@@ -297,7 +304,7 @@ watch(
       :type="actualType"
       :value="stringValue"
       :placeholder="placeholder"
-      :disabled="disabled"
+      :disabled="isDisabled"
       :readonly="readonly"
       :maxlength="maxlength"
       :aria-invalid="resolvedStatus === 'error' ? 'true' : undefined"

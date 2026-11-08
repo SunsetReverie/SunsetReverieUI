@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
+import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 
 import SrIcon from '../../icon/src/icon.vue'
 import SrProgress from '../../progress/src/progress.vue'
@@ -8,6 +9,13 @@ import { uploadProps, type SrUploadFile } from './upload'
 defineOptions({ name: 'SrUpload' })
 
 const props = defineProps(uploadProps)
+
+/** 表单项上下文：表单级 disabled 从这里下发 */
+const formItem = inject(SR_FORM_ITEM_KEY, null)
+
+/** 最终是否禁用：表单级 disabled 也要生效 */
+/** 最终是否禁用：自身或表单级任一为真 */
+const isDisabled = computed(() => props.disabled || (formItem?.disabled?.value ?? false))
 
 const emit = defineEmits<{
   /** 文件列表变化，配合 v-model:files */
@@ -298,7 +306,7 @@ defineExpose({ submit, clear, files })
 <template>
   <div
     class="sr-upload"
-    :class="[`sr-upload--${listType}`, `sr-upload--${triggerType}`, { 'is-disabled': disabled }]"
+    :class="[`sr-upload--${listType}`, `sr-upload--${triggerType}`, { 'is-disabled': isDisabled }]"
   >
     <input
       ref="inputRef"

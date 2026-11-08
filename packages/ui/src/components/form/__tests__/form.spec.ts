@@ -40,6 +40,45 @@ function mountForm(
 }
 
 describe('SrForm / SrFormItem', () => {
+  it('表单级 disabled 下发给输入框', () => {
+    const model = reactive({ name: '' })
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(SrForm, { model, disabled: true }, () => [
+              h(SrFormItem, { prop: 'name', label: '用户名' }, () => h(SrInput, { modelValue: model.name })),
+            ])
+        },
+      }),
+      { attachTo: document.body },
+    )
+
+    expect(wrapper.find('input').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('.sr-input').classes()).toContain('is-disabled')
+    wrapper.unmount()
+  })
+
+  it('表单项单独 disabled 也生效', () => {
+    const model = reactive({ name: '' })
+    const wrapper = mount(
+      defineComponent({
+        setup() {
+          return () =>
+            h(SrForm, { model }, () => [
+              h(SrFormItem, { prop: 'name', label: '用户名', disabled: true }, () =>
+                h(SrInput, { modelValue: model.name }),
+              ),
+            ])
+        },
+      }),
+      { attachTo: document.body },
+    )
+
+    expect(wrapper.find('input').attributes('disabled')).toBeDefined()
+    wrapper.unmount()
+  })
+
   it('hideRequiredMark 在根元素上加类名', () => {
     const wrapper = mount(SrForm, { props: { model: {}, hideRequiredMark: true } })
     expect(wrapper.classes()).toContain('is-hide-required-mark')
