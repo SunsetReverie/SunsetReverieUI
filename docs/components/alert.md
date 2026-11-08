@@ -81,7 +81,7 @@ const showAgain = ref(false)
 
 ## 居中
 
-`center` 让图标与文字水平居中，适合放在空状态或结果页上方：
+`center` 让图标、标题、描述纵向排列并整体居中：
 
 <div class="sr-demo is-block">
   <SrAlert type="info" center title="暂无数据" description="调整筛选条件后再试一次。" />

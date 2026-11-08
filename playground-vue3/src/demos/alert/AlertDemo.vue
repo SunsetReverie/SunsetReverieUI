@@ -85,7 +85,7 @@ function update(text: string): void {
         type="info"
         center
         title="居中排版"
-        description="图标和文字在同一行水平居中，适合空状态上方的提示。"
+        description="图标、标题、描述纵向排列并整体居中，适合放在空状态或结果页上方。"
       />
     </section>
 
