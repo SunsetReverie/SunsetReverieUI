@@ -9,8 +9,18 @@ export const treeProps = {
     type: Array as PropType<SrTreeNode[]>,
     default: () => [],
   },
-  /** 选中的 key，配合 v-model */
+  /**
+   * 选中的 key，配合 v-model
+   *
+   * 不传就是非受控：组件自己维护勾选状态，点击依然有效。
+   * 只支持受控的话，「checkable 但忘了绑 v-model」会变成点了没反应。
+   */
   modelValue: {
+    type: Array as PropType<SrTreeKey[]>,
+    default: undefined,
+  },
+  /** 非受控时的初始勾选 */
+  defaultCheckedKeys: {
     type: Array as PropType<SrTreeKey[]>,
     default: () => [],
   },

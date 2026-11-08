@@ -155,8 +155,20 @@ async function loadChildrenInto(key: SrTreeKey, children: SrTreeNode[]): Promise
 
 /* ---------- 选中状态 ---------- */
 
+/** 非受控时的选中集合 */
+const innerChecked = ref<SrTreeKey[]>([...props.defaultCheckedKeys])
+
+/** 实际生效的选中集合：受控优先 */
+const checkedKeys = computed(() => props.modelValue ?? innerChecked.value)
+
+/** 写入选中集合 */
+function setChecked(keys: SrTreeKey[]): void {
+  if (props.modelValue === undefined) innerChecked.value = keys
+  emit('update:modelValue', keys)
+}
+
 /** 当前选中的集合 */
-const selectedSet = computed(() => new Set(props.modelValue))
+const selectedSet = computed(() => new Set(checkedKeys.value))
 
 /**
  * 选中某个节点
@@ -177,13 +189,13 @@ function selectNode(node: SrTreeNode): void {
     set.add(node.key)
   }
 
-  emit('update:modelValue', [...set])
+  setChecked([...set])
 }
 
 /* ---------- 勾选状态 ---------- */
 
 /** 每个节点的勾选状态 */
-const checkStates = computed(() => computeCheckStates(innerData.value, props.modelValue))
+const checkStates = computed(() => computeCheckStates(innerData.value, checkedKeys.value))
 
 /**
  * 勾选 / 取消
@@ -195,14 +207,14 @@ function handleCheck(node: SrTreeNode, checked: boolean): void {
 
   const next = props.checkStrictly
     ? (() => {
-        const set = new Set(props.modelValue)
+        const set = new Set(checkedKeys.value)
         if (checked) set.add(node.key)
         else set.delete(node.key)
         return [...set]
       })()
-    : toggleCheck(innerData.value, props.modelValue, node, checked)
+    : toggleCheck(innerData.value, checkedKeys.value, node, checked)
 
-  emit('update:modelValue', next)
+  setChecked(next)
   emit('check', next, {
     checked,
     node,
@@ -226,7 +238,7 @@ function findNodeIn(nodes: SrTreeNode[], key: SrTreeKey): SrTreeNode | undefined
 }
 
 /** 叶子层面的勾选 */
-const leafCheckedKeys = computed(() => getLeafCheckedKeys(innerData.value, props.modelValue))
+const leafCheckedKeys = computed(() => getLeafCheckedKeys(innerData.value, checkedKeys.value))
 
 /* ---------- 扁平化与虚拟滚动 ---------- */
 

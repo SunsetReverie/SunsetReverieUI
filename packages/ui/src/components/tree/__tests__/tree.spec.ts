@@ -215,6 +215,28 @@ describe('SrTree', () => {
     wrapper.unmount()
   })
 
+  it('不绑 v-model 时也能勾选（非受控）', async () => {
+    const wrapper = mountTree({ checkable: true, defaultExpandAll: true })
+    const box = wrapper.findAll('input[type="checkbox"]')[0]
+
+    Object.defineProperty(box.element, 'checked', { value: true, configurable: true })
+    await box.trigger('change')
+    await wrapper.vm.$nextTick()
+
+    // 内部状态更新后，勾选态要反映到 DOM 上
+    expect(wrapper.findAll('.sr-checkbox.is-checked').length).toBeGreaterThan(0)
+    // 同时仍然派发事件，方便外部监听
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+    wrapper.unmount()
+  })
+
+  it('defaultCheckedKeys 提供初始勾选', () => {
+    const wrapper = mountTree({ checkable: true, defaultExpandAll: true, defaultCheckedKeys: ['a1'] })
+
+    expect(wrapper.findAll('.sr-checkbox.is-checked')).toHaveLength(1)
+    wrapper.unmount()
+  })
+
   it('复选框用组件库自己的 SrCheckbox', () => {
     const wrapper = mountTree({ checkable: true })
     expect(wrapper.findAll('.sr-checkbox').length).toBeGreaterThan(0)

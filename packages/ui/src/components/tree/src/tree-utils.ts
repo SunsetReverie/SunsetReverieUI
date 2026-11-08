@@ -48,6 +48,8 @@ export interface SrFlatNode {
   hasChildren: boolean
   /** 是否展开 */
   expanded: boolean
+  /** 是否是同级里的最后一个（画连接线时决定竖线是否只画一半） */
+  isLast: boolean
 }
 
 /**
@@ -70,11 +72,21 @@ export function flattenTree(
   const expanded = new Set(expandedKeys)
   const rows: SrFlatNode[] = []
 
-  for (const node of data) {
+  for (let index = 0; index < data.length; index += 1) {
+    const node = data[index]
+    if (!node) continue
+
     const hasChildren = Array.isArray(node.children) && node.children.length > 0
     const isExpanded = expanded.has(node.key)
 
-    rows.push({ node, level, parentKey, hasChildren, expanded: isExpanded })
+    rows.push({
+      node,
+      level,
+      parentKey,
+      hasChildren,
+      expanded: isExpanded,
+      isLast: index === data.length - 1,
+    })
 
     if (hasChildren && isExpanded) {
       rows.push(...flattenTree(node.children ?? [], expandedKeys, level + 1, node.key))

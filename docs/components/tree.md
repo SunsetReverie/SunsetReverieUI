@@ -275,7 +275,8 @@ function move({ dragKey, overKey, type, fromListId, toListId }) {
 | 名称 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `data` | `SrTreeNode[]` | `[]` | 树数据 |
-| `modelValue` | `SrTreeKey[]` | `[]` | 选中的 key |
+| `modelValue` | `SrTreeKey[]` | — | 选中的 key；**不传就是非受控**，组件自己维护 |
+| `defaultCheckedKeys` | `SrTreeKey[]` | `[]` | 非受控时的初始勾选 |
 | `expandedKeys` | `SrTreeKey[]` | — | 展开的 key，受控时用它 |
 | `defaultExpandedKeys` | `SrTreeKey[]` | `[]` | 默认展开 |
 | `defaultExpandAll` | `boolean` | `false` | 默认展开全部 |
@@ -331,6 +332,7 @@ function move({ dragKey, overKey, type, fromListId, toListId }) {
 ## 注意事项
 
 - **`key` 必须唯一且稳定**。用数组下标当 key，增删节点后选中态会错乱。
+- **不传 `v-model` 也能勾选**。组件内部维护一份状态，只在传了 `modelValue` 时才要求你更新它。所以「`checkable` 但忘了绑 `v-model`」不会变成点了没反应。
 - **`check` 事件里的 `keys` 含父节点**。勾选一个父节点会把它自己的 key 也加进去，业务方通常只关心叶子——用 `halfCheckedKeys` 判断半选，或用暴露的 `leafCheckedKeys`。
 - 虚拟滚动下如果自定义了行高，`itemHeight` 必须同步，否则可视区计算和实际渲染对不上。
 - **拖拽在触屏上需要长按**。按住约 260ms 才开始，太快会被识别成滚动或点击。

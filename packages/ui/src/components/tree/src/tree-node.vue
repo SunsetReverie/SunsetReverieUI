@@ -55,10 +55,19 @@ const emit = defineEmits<{
 const rowRef = ref<HTMLElement>()
 
 /** 行内边距：层级越深缩进越大 */
-const rowStyle = computed<Record<string, string>>(() => ({
-  paddingLeft: `${8 + props.row.level * props.indent}px`,
-  height: `${props.itemHeight}px`,
-}))
+const rowStyle = computed<Record<string, string>>(() => {
+  const left = 8 + props.row.level * props.indent
+  // 竖线的横坐标：上一层箭头所在的位置
+  const lineX = 8 + (props.row.level - 1) * props.indent + 8
+
+  return {
+    paddingLeft: `${left}px`,
+    height: `${props.itemHeight}px`,
+    '--sr-tree-line-x': `${lineX}px`,
+    // 横线从竖线画到箭头左侧
+    '--sr-tree-line-w': `${Math.max(0, left - lineX - 4)}px`,
+  }
+})
 
 /** 是否显示展开箭头（异步节点在加载完之前也要显示，否则没法点开） */
 const hasArrow = computed(() => {
@@ -111,6 +120,8 @@ defineExpose({ rowRef })
         'is-leaf': !row.hasChildren,
         'is-disabled': row.node.disabled,
         'is-dragging': draggingKey === row.node.key,
+        'is-child': row.level > 0,
+        'is-last': row.isLast,
       },
       dropClass,
     ]"

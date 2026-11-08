@@ -61,6 +61,14 @@ describe('flattenTree', () => {
     expect(rows.find((row) => row.node.key === 'a2-1')?.level).toBe(2)
   })
 
+  it('标记同级最后一个节点', () => {
+    const rows = flattenTree(tree, ['b'])
+    expect(rows.find((row) => row.node.key === 'b1')?.isLast).toBe(false)
+    expect(rows.find((row) => row.node.key === 'b2')?.isLast).toBe(true)
+    // 顶层的 c 是最后一个
+    expect(rows.find((row) => row.node.key === 'c')?.isLast).toBe(true)
+  })
+
   it('记录父节点 key 与是否有子节点', () => {
     const rows = flattenTree(tree, ['a'])
     const a1 = rows.find((row) => row.node.key === 'a1')

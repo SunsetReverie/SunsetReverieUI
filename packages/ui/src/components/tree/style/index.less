@@ -188,9 +188,28 @@
     position: relative;
   }
 
-  &.is-line &__arrow::before {
+  // 连接线：竖线由行的 ::before 画（贯穿整行），横线由 ::after 画（指向箭头）
+  // 最后一个子节点的竖线只画到中线，形成 └ 形
+  &.is-line &__row.is-child::before {
     position: absolute;
-    width: 10px;
+    top: 0;
+    bottom: 0;
+    left: var(--sr-tree-line-x, 8px);
+    width: 1px;
+    background: var(--sr-color-border);
+    content: '';
+  }
+
+  &.is-line &__row.is-child.is-last::before {
+    bottom: 50%;
+  }
+
+  // 横线：从竖线位置连到箭头的左边缘
+  &.is-line &__row.is-child::after {
+    position: absolute;
+    top: 50%;
+    left: var(--sr-tree-line-x, 8px);
+    width: var(--sr-tree-line-w, 8px);
     height: 1px;
     background: var(--sr-color-border);
     content: '';
