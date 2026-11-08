@@ -53,7 +53,8 @@
   &--light {
     --sr-tooltip-bg: var(--sr-tooltip-bg-light);
     --sr-tooltip-fg: #1c2027;
-    --sr-tooltip-ring: 0 0 0 1px var(--sr-tooltip-border-light);
+    // 浅色气泡不描边：半透明的玻璃上再画一圈线会显得很像一个白框
+    --sr-tooltip-ring: 0 0 0 0 transparent;
     --sr-tooltip-highlight: var(--sr-glass-highlight);
   }
 

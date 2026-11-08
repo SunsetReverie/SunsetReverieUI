@@ -358,8 +358,10 @@ export const qualityGlass: Record<string, string> = {
   // 气泡面积小，0.7+ 的不透明度会把模糊完全盖住，只显得「颜色变浅」。
   // 放到 0.55 左右并配强模糊，才能看到背后被磨砂的内容
   // 黑气泡太透会发灰、文字发虚；收实到 0.82，玻璃感交给模糊 / 高光 / 反光
-  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.82)',
-  'tooltip-bg-light': 'rgba(255, 255, 255, 0.72)',
+  // 深色气泡在白底上本来就有对比，可以实一点；浅色气泡压在浅色页面上
+  // 必须更透才能看出玻璃，否则就是一块白
+  'tooltip-bg-dark': 'rgba(22, 26, 33, 0.78)',
+  'tooltip-bg-light': 'rgba(255, 255, 255, 0.44)',
   // 白气泡叠在浅色页面上时白亮边会整个融掉，改用可见的深色细线
   'tooltip-border-light': 'rgba(16, 20, 26, 0.2)',
   'tooltip-radius': '6px',
@@ -385,11 +387,13 @@ export const glassSurfaceLight: Record<string, string> = {
   'color-bg-container': 'rgba(255, 255, 255, 0.72)',
   'color-bg-elevated': 'rgba(255, 255, 255, 0.84)',
   'color-bg-sunken': 'rgba(237, 239, 243, 0.55)',
-  // 浮层比容器更透，才看得到背后被模糊的内容
+  // 浮层比容器更透，才看得到背后被模糊的内容。
+  // 这一档是基准：下拉菜单用它，效果最接近「玻璃」。
   'color-bg-popover': 'rgba(255, 255, 255, 0.42)',
-  // 弹窗面积大、内容多，比下拉更实一点；背后是遮罩，太透会把文字压灰
-  'color-bg-modal': 'rgba(255, 255, 255, 0.8)',
-  'feedback-bg': 'rgba(255, 255, 255, 0.6)',
+  // 弹窗面积大、内容多，比下拉实一档，但仍要能看出被模糊的背景
+  'color-bg-modal': 'rgba(255, 255, 255, 0.68)',
+  // 提示类向 popover 靠：它们只是小块浮层，太实就没有玻璃感了
+  'feedback-bg': 'rgba(255, 255, 255, 0.48)',
 }
 
 /** 玻璃质感 · 暗色表面 */
@@ -398,8 +402,8 @@ export const glassSurfaceDark: Record<string, string> = {
   'color-bg-elevated': 'rgba(43, 48, 56, 0.74)',
   'color-bg-sunken': 'rgba(11, 14, 18, 0.6)',
   'color-bg-popover': 'rgba(38, 43, 51, 0.52)',
-  'color-bg-modal': 'rgba(38, 43, 51, 0.76)',
-  'feedback-bg': 'rgba(38, 43, 51, 0.6)',
+  'color-bg-modal': 'rgba(38, 43, 51, 0.7)',
+  'feedback-bg': 'rgba(38, 43, 51, 0.56)',
 }
 
 /**

@@ -85,10 +85,9 @@
     padding: 14px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-lg);
-    // 面板底色与描边集中成局部变量，暗色只覆盖这两个值，
-    // 避免同一个魔法数字散落在两处、改一处漏一处
-    --sr-date-picker-panel-bg: rgb(255 255 255 / 62%);
-    --sr-date-picker-panel-border: rgb(255 255 255 / 55%);
+    // 和下拉菜单同一档：浮层里它是最接近「玻璃」的基准
+    --sr-date-picker-panel-bg: var(--sr-color-bg-popover);
+    --sr-date-picker-panel-border: var(--sr-glass-border-color);
 
     background: var(--sr-date-picker-panel-bg);
     border-color: var(--sr-date-picker-panel-border);
@@ -130,11 +129,6 @@
     &:hover {
       background: var(--sr-color-primary-alpha-12);
     }
-  }
-
-  [data-sr-theme='dark'] &__panel {
-    --sr-date-picker-panel-bg: rgb(38 42 50 / 68%);
-    --sr-date-picker-panel-border: rgb(255 255 255 / 14%);
   }
 
   // ---------- 主体 ----------
