@@ -15,6 +15,7 @@
   --sr-emoji-font-size: 22px;
   --sr-emoji-item-size: 34px;
   --sr-emoji-tab-radius: 8px;
+  --sr-emoji-item-radius: 8px;
   --sr-emoji-border: 1px solid var(--sr-color-border-subtle);
 
   display: flex;
@@ -118,7 +119,8 @@
     height: var(--sr-emoji-item-size);
     padding: 0;
     border: 0;
-    border-radius: var(--sr-radius-sm);
+    // 不用 --sr-radius-sm：glass 下它只有 2px，hover 浮出的底色几乎是方的
+    border-radius: var(--sr-emoji-item-radius);
     background: transparent;
     cursor: pointer;
     // 轻微回弹：表情是「点着玩」的控件，标准缓动会显得太沉

@@ -161,6 +161,18 @@ onBeforeUnmount(() => {
 })
 
 /**
+ * 切到某个分类
+ *
+ * @remarks 同时退出「最近」视图。模板里用一条表达式写两个赋值会用到分号，
+ * 而 Vue 模板表达式不支持多语句，所以收在这里。
+ * @param key 分类 key
+ */
+function selectPack(key: string): void {
+  viewingRecent.value = false
+  activeTab.value = key
+}
+
+/**
  * 搜索输入
  * @param event 输入事件
  */
@@ -274,10 +286,7 @@ watch(isSearching, (on, off) => {
         type="button"
         role="tab"
         :aria-selected="activeKey === pack.key"
-        @click="
-          viewingRecent = false
-          activeTab = pack.key
-        "
+        @click="selectPack(pack.key)"
       >
         {{ pack.name }}
       </button>
