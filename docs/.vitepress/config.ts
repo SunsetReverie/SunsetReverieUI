@@ -22,9 +22,10 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
 
-  // 规划文档是内部材料（4900+ 行），不参与文档站渲染。
-  // 它留在 docs/ 根目录供评审使用，README 的链接也指向那里。
-  srcExclude: ['夕梦UI组件库开发规划.md'],
+  // 规划文档是内部材料，不参与文档站渲染。
+  // 它们留在 docs/ 根目录供评审使用；正文里的 `{{...}}` 短代码示例
+  // 会被 Vue 模板编译器当成插值，放进站点会直接构建失败。
+  srcExclude: ['夕梦UI组件库开发规划.md', 'SrMarkdown组件规划.md'],
 
   head: [
     ['link', { rel: 'icon', href: '/logo.svg' }],
@@ -81,6 +82,7 @@ export default defineConfig({
           items: [
             { text: '快速开始', link: '/guide/getting-started' },
             { text: '拖拽排序', link: '/guide/drag-sort' },
+            { text: 'Markdown 渲染样式定制', link: '/guide/markdown-theming' },
           ],
         },
       ],

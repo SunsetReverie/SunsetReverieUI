@@ -96,6 +96,9 @@ const blockExt = {
 | 块 | `--sr-md-quote-*` / `--sr-md-marker-color` / `--sr-md-code-*` / `--sr-md-table-*` / `--sr-md-hr-bg` |
 | 图片 | `--sr-md-img-radius` / `--sr-md-img-shadow` |
 
+> **完整的变量参考、六个实战案例、作用域与优先级、排查清单**见
+> [Markdown 渲染样式定制指南](/guide/markdown-theming)。换品牌色、打印样式、暗色主题适配、从零做第五套模板都在那篇里。
+
 ### 为什么用标准标签选择器
 
 样式挂在 `h1` / `p` / `blockquote` / `table` / `pre` 这些**标准标签**上，而不是 `.sr-md__*` 类名。
