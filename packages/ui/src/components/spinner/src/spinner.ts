@@ -18,10 +18,24 @@ export const spinnerProps = {
     type: String,
     default: '',
   },
-  /** 线条粗细（px） */
+  /** 线条粗细（px），只对 `ring` 与 `gradient` 生效 */
   strokeWidth: {
     type: Number,
     default: 2,
+  },
+  /**
+   * 动画样式 @default 'ring'
+   *
+   * - `ring` 圆环旋转（默认）
+   * - `dots` 三点跳动
+   * - `pulse` 同心圆扩散
+   * - `bars` 竖条起伏
+   * - `orbit` 小球绕轨
+   * - `gradient` 渐变环旋转
+   */
+  variant: {
+    type: String as PropType<'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'>,
+    default: 'ring',
   },
 } as const
 

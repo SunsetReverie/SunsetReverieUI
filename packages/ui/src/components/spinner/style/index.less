@@ -1,7 +1,10 @@
 // 加载指示器
 //
-// 两段弧而非单段：底环提供「轨道」参照，让 1/4 圈的旋转看起来是在轨道上跑，
-// 而不是一个孤零零的弧在虚空中转。
+// 六种动画全部用 CSS 绘制，不依赖图标库或图片：
+// 颜色走 currentcolor（默认主色），尺寸由外层宽高驱动，内部元素一律用百分比，
+// 所以同一套样式在 12px 和 48px 下都不会走形。
+//
+// 选择器顺序：基础(1) → 子元素(1) → 变体(1) → 变体内的子元素(2) → 降级。
 
 @keyframes sr-spinner-rotate {
   from {
@@ -13,11 +16,50 @@
   }
 }
 
+// 三点跳动：垂直位移 + 轻微压扁，落地时有重量感
+@keyframes sr-spinner-bounce {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+
+  35% {
+    transform: translateY(-45%) scaleY(1.08);
+  }
+}
+
+// 竖条起伏：只改高度，基准线固定，像均衡器
+@keyframes sr-spinner-stretch {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+// 同心圆扩散：放大 + 淡出，形成水波
+@keyframes sr-spinner-pulse {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
 .sr-spinner {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  gap: 12%;
   vertical-align: middle;
   color: var(--sr-color-primary);
 
@@ -37,11 +79,125 @@
     transform-origin: center;
     transform: rotate(-90deg);
   }
+
+  // ---------- 基础子元素 ----------
+  &__dot {
+    display: block;
+    flex: 0 0 auto;
+    width: 22%;
+    height: 22%;
+    border-radius: 50%;
+    background: currentcolor;
+    animation: sr-spinner-bounce 1.2s ease-in-out infinite;
+  }
+
+  &__bar {
+    display: block;
+    flex: 0 0 auto;
+    width: 10%;
+    height: 100%;
+    border-radius: 999px;
+    background: currentcolor;
+    animation: sr-spinner-stretch 1s ease-in-out infinite;
+  }
+
+  &__pulse {
+    position: absolute;
+    inset: 0;
+    border: var(--sr-spinner-stroke, 1.5px) solid currentcolor;
+    border-radius: 50%;
+    animation: sr-spinner-pulse 1.6s ease-out infinite;
+  }
+
+  &__orbit-track {
+    position: absolute;
+    inset: 0;
+    border: var(--sr-spinner-stroke, 1.5px) solid currentcolor;
+    border-radius: 50%;
+    opacity: 0.22;
+  }
+
+  &__orbit-spin {
+    position: absolute;
+    inset: 0;
+    animation: sr-spinner-rotate 1.1s linear infinite;
+  }
+
+  &__gradient {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 8%, currentcolor 92%);
+    // 挖空中心，只留一圈环
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--sr-spinner-stroke, 2px)),
+      #000 calc(100% - var(--sr-spinner-stroke, 2px))
+    );
+    animation: sr-spinner-rotate 0.9s linear infinite;
+  }
+
+  // ---------- 变体 ----------
+  &--pulse,
+  &--orbit {
+    position: relative;
+  }
+
+  // ---------- 变体内的子元素 ----------
+
+  // 三点：错开延迟，形成「依次落下」
+  &--dots &__dot:nth-child(2) {
+    animation-delay: 0.14s;
+  }
+
+  &--dots &__dot:nth-child(3) {
+    animation-delay: 0.28s;
+  }
+
+  // 竖条：错开延迟，形成左右扫过的波
+  &--bars &__bar:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+
+  &--bars &__bar:nth-child(3) {
+    animation-delay: 0.24s;
+  }
+
+  &--bars &__bar:nth-child(4) {
+    animation-delay: 0.36s;
+  }
+
+  // 扩散：第二圈延迟半个周期，形成连续水波
+  &--pulse &__pulse:nth-child(2) {
+    animation-delay: 0.8s;
+  }
+
+  // 绕轨小球：用伪元素画在旋转容器的顶端
+  &--orbit &__orbit-spin::before {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 26%;
+    height: 26%;
+    border-radius: 50%;
+    background: currentcolor;
+    content: '';
+    transform: translateX(-50%);
+  }
 }
 
+// ---------- 减少动态效果 ----------
 @media (prefers-reduced-motion: reduce) {
   // 降速而非停止：完全静止会被误认为卡死
-  .sr-spinner__svg {
+  .sr-spinner__svg,
+  .sr-spinner__gradient,
+  .sr-spinner__orbit-spin {
     animation-duration: 2.6s;
+  }
+
+  .sr-spinner__dot,
+  .sr-spinner__bar,
+  .sr-spinner__pulse {
+    animation-duration: 3.2s;
   }
 }

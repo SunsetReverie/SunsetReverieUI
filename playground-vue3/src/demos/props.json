@@ -2149,6 +2149,13 @@
         "type": "SrSize",
         "default": "undefined",
         "description": "尺寸档位"
+      },
+      {
+        "from": "loadingProps",
+        "name": "variant",
+        "type": "'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'",
+        "default": "'ring'",
+        "description": "动画样式 @default 'ring' 与 `SrSpinner` 的 `variant` 一致：ring / dots / pulse / bars / orbit / gradient。"
       }
     ],
     "sources": ["loading"],
@@ -3327,7 +3334,14 @@
         "name": "strokeWidth",
         "type": "number",
         "default": "2",
-        "description": "线条粗细（px）"
+        "description": "线条粗细（px），只对 `ring` 与 `gradient` 生效"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "variant",
+        "type": "'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'",
+        "default": "'ring'",
+        "description": "动画样式 @default 'ring' - `ring` 圆环旋转（默认） - `dots` 三点跳动 - `pulse` 同心圆扩散 - `bars` 竖条起伏 - `orbit` 小球绕轨 - `gradient` 渐变环旋转"
       }
     ],
     "sources": ["spinner"],

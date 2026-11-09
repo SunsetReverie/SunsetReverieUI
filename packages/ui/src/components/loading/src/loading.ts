@@ -49,6 +49,15 @@ export const loadingProps = {
     type: String as PropType<SrSize>,
     default: undefined,
   },
+  /**
+   * 动画样式 @default 'ring'
+   *
+   * 与 `SrSpinner` 的 `variant` 一致：ring / dots / pulse / bars / orbit / gradient。
+   */
+  variant: {
+    type: String as PropType<'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'>,
+    default: 'ring',
+  },
 } as const
 
 export type SrLoadingProps = ExtractPropTypes<typeof loadingProps>

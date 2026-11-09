@@ -52,6 +52,34 @@ function simulate(target, ms = 1200) {
 <SrLoading text="加载中" />
 ```
 
+## 动画样式
+
+`variant` 与 `SrSpinner` 一致，六种可选：
+
+| `variant` | 观感 |
+| --- | --- |
+| `ring`（默认） | 经典圆环 |
+| `gradient` | 渐变环 |
+| `dots` | 三点跳动 |
+| `bars` | 竖条起伏 |
+| `pulse` | 同心圆扩散 |
+| `orbit` | 小球绕轨 |
+
+```vue
+<SrLoading :loading="saving" variant="dots" text="保存中…" />
+```
+
+<div class="sr-demo is-block">
+  <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap">
+    <div v-for="v in ['ring', 'gradient', 'dots', 'bars', 'pulse', 'orbit']" :key="v" style="display: flex; align-items: center; flex-direction: column; gap: 6px">
+      <SrLoading :variant="v" :text="''" />
+      <span style="font-size: 11px; color: var(--vp-c-text-3)">{{ v }}</span>
+    </div>
+  </div>
+</div>
+
+选哪种看气质：`ring` 最通用，`dots` 适合小空间，`bars` 适合科技类产品，`pulse` 适合需要「安静等待」的场景。
+
 ## 延迟显示（delay）
 
 ```vue
@@ -100,6 +128,7 @@ function simulate(target, ms = 1200) {
 | `mask` | `boolean` | `true` | 显示遮罩 |
 | `delay` | `number` | `0` | 延迟显示（毫秒） |
 | `size` | `SrSize` | — | 转圈尺寸 |
+| `variant` | `'ring' \| 'dots' \| 'pulse' \| 'bars' \| 'orbit' \| 'gradient'` | `'ring'` | 动画样式 |
 
 ## 插槽
 

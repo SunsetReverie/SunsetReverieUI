@@ -84,7 +84,7 @@ onBeforeUnmount(() => {
     <Transition name="sr-loading-fade">
       <div v-if="visible" class="sr-loading__overlay" :class="{ 'is-mask': mask }">
         <div class="sr-loading__body">
-          <SrSpinner :size="size ?? 'md'" />
+          <SrSpinner :size="size ?? 'md'" :variant="variant" />
           <span v-if="text || $slots.text" class="sr-loading__text">
             <slot name="text">{{ text }}</slot>
           </span>
@@ -97,7 +97,7 @@ onBeforeUnmount(() => {
     <Transition name="sr-loading-fade">
       <div v-if="visible" class="sr-loading sr-loading--fullscreen" :class="{ 'is-mask': mask }">
         <div class="sr-loading__body">
-          <SrSpinner :size="size ?? 'lg'" />
+          <SrSpinner :size="size ?? 'lg'" :variant="variant" />
           <span v-if="text || $slots.text" class="sr-loading__text">
             <slot name="text">{{ text }}</slot>
           </span>
@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
   <Transition v-else name="sr-loading-fade">
     <div v-if="visible" class="sr-loading sr-loading--inline" :class="{ 'is-mask': mask }">
       <div class="sr-loading__body">
-        <SrSpinner :size="size ?? 'md'" />
+        <SrSpinner :size="size ?? 'md'" :variant="variant" />
         <span v-if="text || $slots.text" class="sr-loading__text">
           <slot name="text">{{ text }}</slot>
         </span>

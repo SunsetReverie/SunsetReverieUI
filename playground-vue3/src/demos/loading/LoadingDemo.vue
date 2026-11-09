@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrButton, SrLoading, SrTag } from '@sunset-reverie/ui'
+import { SrButton, SrLoading, SrSegmented, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'LoadingDemo' })
 
@@ -15,6 +15,19 @@ const delayed = ref(false)
 
 /** 无遮罩 */
 const bare = ref(false)
+
+/** 当前动画样式 */
+const variant = ref<'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'>('ring')
+
+/** 动画样式选项 */
+const variantOptions = [
+  { label: '圆环', value: 'ring' },
+  { label: '三点', value: 'dots' },
+  { label: '扩散', value: 'pulse' },
+  { label: '竖条', value: 'bars' },
+  { label: '绕轨', value: 'orbit' },
+  { label: '渐变', value: 'gradient' },
+]
 
 /**
  * 模拟请求
@@ -36,6 +49,24 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
         <SrLoading />
         <SrTag size="sm">独立使用时不需要包裹内容</SrTag>
       </div>
+    </section>
+
+    <section>
+      <h3>动画样式（variant）</h3>
+      <div class="row" style="margin-bottom: 14px">
+        <SrSegmented v-model="variant" :options="variantOptions" size="sm" />
+      </div>
+      <div class="row">
+        <SrLoading :variant="variant" text="加载中…" />
+        <div class="wrap-box">
+          <SrLoading :loading="true" :variant="variant" text="提交中…">
+            <div class="content content--slim">
+              <p class="content__title">被遮住的内容</p>
+            </div>
+          </SrLoading>
+        </div>
+      </div>
+      <p class="hint">六种样式全部由 CSS 绘制，不引图标或图片；同一套代码在 12px 和 48px 下都不会走形</p>
     </section>
 
     <section>
@@ -175,6 +206,14 @@ h3 {
 
 .content {
   padding: 16px;
+}
+
+/* 遮罩会盖在这上面，内容保持单行，避免和提示文字叠得看不清 */
+.content--slim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96px;
 }
 
 .content__title {
