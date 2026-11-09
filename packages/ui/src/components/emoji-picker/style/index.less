@@ -4,10 +4,15 @@
  * 面板本身不带浮层定位——它只负责内容，弹层由调用方（如
  * SrMarkdownEditor 的表情按钮）用 Teleport + 定位逻辑包起来。
  * 这样它可以被放进弹层、抽屉、行内展开区，形态不受限。
+ *
+ * 结构固定为「分类栏 + 内容区」两个兄弟节点，靠 CSS order 决定
+ * 分类栏在上还是在下：模板只写一份，`tabPosition` 只影响类名。
  */
 
 .sr-emoji-picker {
-  --sr-emoji-font-size: 20px;
+  --sr-emoji-gap: 2px;
+  --sr-emoji-font-size: 22px;
+  --sr-emoji-item-size: 34px;
 
   display: flex;
   flex-direction: column;
@@ -15,15 +20,15 @@
   min-width: 0;
   background: var(--sr-color-bg-popover);
 
-  // ---------- tab ----------
+  // ---------- 分类栏 ----------
+  // 药丸式：选中的项带浅色底，不用下划线——
+  // 下划线要和分割线配合才不悬空，位置一换就容易穿帮
   &__tabs {
     display: flex;
     flex: 0 0 auto;
     gap: 2px;
-    padding: 4px 6px 0;
-    border-bottom: 1px solid var(--sr-color-border-subtle);
+    padding: 8px;
     overflow-x: auto;
-    // tab 超宽时横向滚动，但不显示滚动条
     scrollbar-width: none;
   }
 
@@ -33,23 +38,19 @@
 
   &__tab {
     flex: 0 0 auto;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border: 0;
-    // 只给上圆角：下边缘要和分割线贴合
-    border-radius: var(--sr-radius-sm) var(--sr-radius-sm) 0 0;
+    border-radius: var(--sr-radius-full);
     background: transparent;
     color: var(--sr-color-text-tertiary);
     font-family: inherit;
-    font-size: 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
     white-space: nowrap;
     cursor: pointer;
     transition:
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-  }
-
-  &__tab:hover {
-    color: var(--sr-color-text);
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__tab:focus-visible {
@@ -60,15 +61,15 @@
   // ---------- 内容区 ----------
   &__panel {
     flex: 1 1 auto;
-    padding: 8px;
+    padding: 4px 10px 10px;
     overflow-y: auto;
-    // 面板内滚到底后不要带动外层页面
+    // 面板内滚到底不要带动外层页面
     overscroll-behavior: contain;
   }
 
   &__grid {
     display: grid;
-    gap: 2px;
+    gap: var(--sr-emoji-gap);
   }
 
   &__item {
@@ -76,18 +77,13 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    // 正方形格子：图片和字符都能放得下
-    aspect-ratio: 1;
+    height: var(--sr-emoji-item-size);
     padding: 0;
     border: 0;
     border-radius: var(--sr-radius-sm);
     background: transparent;
     cursor: pointer;
     transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-  }
-
-  &__item:hover {
-    background: var(--sr-color-bg-sunken);
   }
 
   &__item:focus-visible {
@@ -111,26 +107,62 @@
 
   &__empty {
     margin: 0;
-    padding: 20px 0;
+    padding: 24px 0;
     color: var(--sr-color-text-tertiary);
     font-size: 12px;
     text-align: center;
   }
 
+  // ---------- 变体：tab 位置 ----------
+  // 用 order 换位置，模板不用写两遍
+  &.is-tab-bottom &__tabs {
+    order: 2;
+    padding: 6px 8px 8px;
+    border-top: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &.is-tab-bottom &__panel {
+    order: 1;
+    padding: 10px 10px 4px;
+  }
+
+  &.is-tab-top &__tabs {
+    order: 1;
+    padding: 8px 8px 6px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &.is-tab-top &__panel {
+    order: 2;
+  }
+
   // ---------- 变体：尺寸 ----------
   &--sm {
-    --sr-emoji-font-size: 16px;
+    --sr-emoji-font-size: 18px;
+    --sr-emoji-item-size: 30px;
   }
 
   &--lg {
-    --sr-emoji-font-size: 24px;
+    --sr-emoji-font-size: 26px;
+    --sr-emoji-item-size: 40px;
   }
 
   // ---------- 状态：激活 tab ----------
   &__tab.is-active {
+    // alpha-12 在浅色主题下几乎看不见，用 25 才有「被选中」的感觉
+    background: var(--sr-color-primary-alpha-25);
+    color: var(--sr-color-primary-text);
+    font-weight: var(--sr-font-weight-medium);
+  }
+
+  &__item:hover {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  // ---------- 状态：悬停（3 级，放最后）----------
+  &__tab:hover:not(.is-active) {
     background: var(--sr-color-bg-sunken);
     color: var(--sr-color-text);
-    font-weight: var(--sr-font-weight-medium);
   }
 
   // ---------- 状态：禁用 ----------

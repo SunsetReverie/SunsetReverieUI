@@ -27,6 +27,18 @@ const packages = computed(() => (props.packages.length ? props.packages : DEFAUL
 const hasRecent = computed(() => props.showRecent && recent.value.length > 0)
 
 /**
+ * 实际高亮的 tab
+ *
+ * @remarks `activeTab` 为空串时表示「最近」，但最近为空时没有这个 tab，
+ * 此时应当高亮第一个包——直接用 `activeTab === pack.key` 会导致
+ * 初始状态下没有任何 tab 处于选中态。
+ */
+const activeKey = computed(() => {
+  if (activeTab.value) return activeTab.value
+  return hasRecent.value ? '__recent__' : (packages.value[0]?.key ?? '')
+})
+
+/**
  * 当前 tab 的表情列表
  *
  * 找不到 tab 时退回第一个包，避免数据变化后出现空白面板。
@@ -70,15 +82,18 @@ watch(
 </script>
 
 <template>
-  <div class="sr-emoji-picker" :class="[`sr-emoji-picker--${size}`, { 'is-disabled': disabled }]">
-    <div class="sr-emoji-picker__tabs" role="tablist">
+  <div
+    class="sr-emoji-picker"
+    :class="[`sr-emoji-picker--${size}`, `is-tab-${tabPosition}`, { 'is-disabled': disabled }]"
+  >
+    <div class="sr-emoji-picker__tabs" role="tablist" :class="`is-${tabPosition}`">
       <button
         v-if="hasRecent"
         class="sr-emoji-picker__tab"
-        :class="{ 'is-active': !activeTab }"
+        :class="{ 'is-active': activeKey === '__recent__' }"
         type="button"
         role="tab"
-        :aria-selected="!activeTab"
+        :aria-selected="activeKey === '__recent__'"
         @click="activeTab = ''"
       >
         最近
@@ -88,10 +103,10 @@ watch(
         v-for="pack in packages"
         :key="pack.key"
         class="sr-emoji-picker__tab"
-        :class="{ 'is-active': activeTab === pack.key }"
+        :class="{ 'is-active': activeKey === pack.key }"
         type="button"
         role="tab"
-        :aria-selected="activeTab === pack.key"
+        :aria-selected="activeKey === pack.key"
         @click="activeTab = pack.key"
       >
         {{ pack.name }}

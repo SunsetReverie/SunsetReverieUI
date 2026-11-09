@@ -67,6 +67,16 @@ export const emojiPickerProps = {
     default: 8,
   },
   /**
+   * 分类 tab 的位置 @default 'bottom'
+   *
+   * - `bottom`：tab 贴在面板底部，像微信、飞书的输入框表情面板
+   * - `top`：tab 在顶部，适合嵌在弹层里空间受限的场景
+   */
+  tabPosition: {
+    type: String as PropType<'top' | 'bottom'>,
+    default: 'bottom',
+  },
+  /**
    * 显示「最近使用」 @default true
    *
    * 会话级，不持久化——组件不该替宿主决定存哪。

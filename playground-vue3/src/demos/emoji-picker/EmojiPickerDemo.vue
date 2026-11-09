@@ -27,6 +27,15 @@ function onSelect(item: SrEmojiItem, mark: string): void {
 /** 尺寸 */
 const size = ref<'sm' | 'md' | 'lg'>('md')
 
+/** tab 位置 */
+const tabPosition = ref<'top' | 'bottom'>('bottom')
+
+/** tab 位置选项 */
+const tabOptions = [
+  { label: '底部', value: 'bottom' },
+  { label: '顶部', value: 'top' },
+]
+
 /** 尺寸选项 */
 const sizeOptions = [
   { label: '小', value: 'sm' },
@@ -88,13 +97,16 @@ const segments = computed(() => parseEmojiText(sourceText.value, buildEmojiMap(c
 <template>
   <div class="demo">
     <section>
-      <h3>基础</h3>
-      <div class="panel">
-        <SrEmojiPicker @select="onSelect" />
+      <h3>内置表情（五个分类）</h3>
+      <div class="row" style="margin-bottom: 12px">
+        <SrSegmented v-model="tabPosition" :options="tabOptions" size="sm" />
+      </div>
+      <div class="panel panel--tall">
+        <SrEmojiPicker :tab-position="tabPosition" @select="onSelect" />
       </div>
       <p class="hint">
-        不传 <code>packages</code> 时用内置的字符表情包。面板本身不带浮层定位，
-        被放进弹层、抽屉还是行内展开区都可以
+        不传 <code>packages</code> 时用内置的五个分类，共 130 多个字符表情。
+        <code>tab-position</code> 控制分类栏在底部还是顶部
       </p>
     </section>
 
@@ -177,6 +189,10 @@ h3 {
 }
 
 .panel--wide {
+  max-width: 340px;
+}
+
+.panel--tall {
   max-width: 340px;
 }
 

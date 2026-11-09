@@ -29,7 +29,7 @@ describe('SrEmojiPicker', () => {
 
     const tabs = wrapper.findAll('.sr-emoji-picker__tab')
     expect(tabs).toHaveLength(DEFAULT_EMOJI_PACKAGES.length)
-    expect(tabs[0]?.text()).toBe('常用')
+    expect(tabs[0]?.text()).toBe('表情')
     wrapper.unmount()
   })
 
@@ -138,6 +138,28 @@ describe('SrEmojiPicker', () => {
     expect(wrapper.emitted('select')).toBeUndefined()
     expect(wrapper.classes()).toContain('is-disabled')
     wrapper.unmount()
+  })
+
+  it('tab 默认在底部', () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+    expect(wrapper.classes()).toContain('is-tab-bottom')
+    wrapper.unmount()
+  })
+
+  it('tabPosition 可切到顶部', () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, tabPosition: 'top' } })
+
+    expect(wrapper.classes()).toContain('is-tab-top')
+    expect(wrapper.find('.sr-emoji-picker__tabs').classes()).toContain('is-top')
+    wrapper.unmount()
+  })
+
+  it('内置表情包覆盖五个分类且每类都有量', () => {
+    expect(DEFAULT_EMOJI_PACKAGES.map((pack) => pack.name)).toEqual(['表情', '手势', '心情', '动物', '食物'])
+
+    for (const pack of DEFAULT_EMOJI_PACKAGES) {
+      expect(pack.emojis.length).toBeGreaterThanOrEqual(20)
+    }
   })
 
   it('maxHeight 作用在面板上', () => {

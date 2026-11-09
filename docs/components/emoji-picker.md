@@ -40,7 +40,7 @@ const customPackages = [
 <SrEmojiPicker @select="onSelect" />
 ```
 
-不传 `packages` 时使用内置的字符表情包（常用 / 手势 / 符号三组）。
+不传 `packages` 时使用内置的五个分类：表情 / 手势 / 心情 / 动物 / 食物，共 200 多个字符表情。
 
 ```ts
 function onSelect(item: SrEmojiItem, mark: string) {
@@ -49,6 +49,19 @@ function onSelect(item: SrEmojiItem, mark: string) {
 ```
 
 `select` 事件同时给出**表情项**和**标记文本**——调用方多半是往输入框里插入，让它自己拼 `[名称]` 只是多一步且容易拼错。
+
+## 分类栏位置
+
+```vue
+<SrEmojiPicker tab-position="bottom" />
+```
+
+| 值 | 效果 | 适合 |
+| --- | --- | --- |
+| `bottom`（默认） | 分类栏贴底 | 输入框旁的表情面板，和微信、飞书一致 |
+| `top` | 分类栏在顶 | 弹层里空间受限，或紧挨着标题 |
+
+分类栏是**药丸式**的：选中的项带浅色底 + 主题色文字。不用下划线式 tab——那种样式依赖分割线定位，位置一换就容易穿帮，药丸在哪都成立。
 
 ## 自定义表情包
 
@@ -134,6 +147,7 @@ const segments = parseEmojiText('今天[微笑]了', map)
 | --- | --- | --- | --- |
 | `packages` | `SrEmojiPackage[]` | `[]` | 表情包列表，不传用内置 |
 | `columns` | `number` | `8` | 每行几个 |
+| `tabPosition` | `'top' \| 'bottom'` | `'bottom'` | 分类栏位置 |
 | `showRecent` | `boolean` | `true` | 显示「最近」tab |
 | `size` | `SrSize` | `'md'` | 尺寸档位 |
 | `maxHeight` | `number` | `260` | 面板最大高度（px） |
