@@ -372,6 +372,67 @@ describe('SrAnchor', () => {
     wrapper.unmount()
   })
 
+  it('手动折叠后不会被自动展开覆盖', async () => {
+    const wrapper = mountAnchor({
+      collapsible: true,
+      defaultExpandAll: false,
+      autoExpand: true,
+      activeKey: 'intro',
+    })
+    await nextTick()
+    await nextTick()
+
+    // 先让 fold 展开：切到子项 install
+    await wrapper.setProps({ activeKey: 'install' })
+    await nextTick()
+    await nextTick()
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+
+    // 手动收起
+    await wrapper.find('.sr-anchor__toggle').trigger('click')
+    await nextTick()
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
+
+    // 再切到另一个子项，不应被 autoExpand 撑开
+    await wrapper.setProps({ activeKey: 'config' })
+    await nextTick()
+    await nextTick()
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
+
+    wrapper.unmount()
+  })
+
+  it('不同父级互不影响', async () => {
+    const twoBranches: SrAnchorItem[] = [
+      { key: 'p1', title: '父一', children: [{ key: 'c1', title: '子一' }] },
+      { key: 'p2', title: '父二', children: [{ key: 'c2', title: '子二' }] },
+    ]
+
+    const wrapper = mount(SrAnchor, {
+      props: {
+        items: twoBranches,
+        collapsible: true,
+        defaultExpandAll: false,
+        activeKey: 'c1',
+      },
+    })
+    await nextTick()
+    await nextTick()
+
+    let toggles = wrapper.findAll('.sr-anchor__toggle')
+    expect(toggles[0]?.attributes('aria-expanded')).toBe('true')
+    expect(toggles[1]?.attributes('aria-expanded')).toBe('false')
+
+    await wrapper.setProps({ activeKey: 'c2' })
+    await nextTick()
+    await nextTick()
+
+    toggles = wrapper.findAll('.sr-anchor__toggle')
+    expect(toggles[0]?.attributes('aria-expanded')).toBe('true')
+    expect(toggles[1]?.attributes('aria-expanded')).toBe('true')
+    wrapper.unmount()
+  })
+
   it('当前项带 aria-current', async () => {
     const wrapper = mountAnchor({ activeKey: 'faq' })
     await nextTick()

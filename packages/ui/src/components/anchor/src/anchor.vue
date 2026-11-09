@@ -35,6 +35,14 @@ const innerActive = ref('')
  */
 const innerExpanded = ref<Set<string>>(new Set())
 
+/**
+ * 被用户手动折叠过的父级
+ *
+ * `autoExpand` 每次激活项变化都会把祖先撑开，用户刚收起又被自动打开，
+ * 用起来就像「根本折不了」。这里记住手动折叠的项，自动展开时跳过。
+ */
+const manuallyCollapsed = ref<Set<string>>(new Set())
+
 /** 当前展开集合（受控优先） */
 const expandedSet = computed(() => new Set(props.expandedKeys ?? Array.from(innerExpanded.value)))
 
@@ -227,9 +235,18 @@ watch(
     const next = new Set(expandedSet.value)
     let changed = false
 
+    // 离开视线的父级不再保留「手动折叠」标记，下次滚回来还能自动展开
+    const collapsed = new Set(manuallyCollapsed.value)
+    for (const key of collapsed) {
+      if (!path.has(key)) collapsed.delete(key)
+    }
+    manuallyCollapsed.value = collapsed
+
     for (const key of path) {
       // 只展开「有子项的祖先」，叶子本身不需要展开
       if (!parents.has(key) || next.has(key)) continue
+      // 用户手动收起过就不动它
+      if (collapsed.has(key)) continue
       next.add(key)
       changed = true
     }
@@ -248,9 +265,17 @@ watch(
  */
 function toggle(key: string): void {
   const next = new Set(expandedSet.value)
+  const collapsed = new Set(manuallyCollapsed.value)
 
-  if (next.has(key)) next.delete(key)
-  else next.add(key)
+  if (next.has(key)) {
+    next.delete(key)
+    collapsed.add(key)
+  } else {
+    next.add(key)
+    collapsed.delete(key)
+  }
+
+  manuallyCollapsed.value = collapsed
 
   if (props.expandedKeys === undefined) innerExpanded.value = next
 
@@ -285,13 +310,17 @@ function setActive(key: string): void {
 /**
  * 让滑块对齐当前项
  *
+ * 取的是整行（`__row`）的矩形而不是文字（`__link`）的：
+ * 底色加在整行上，滑块要贴住整行的左边缘。
+ *
  * 不用 `offsetTop`：它是相对最近的定位祖先算的，而每个 `__item`
  * 都是 relative，所以永远是 0。用两个矩形的差值最稳。
  */
 function updateMarker(): void {
   if (!props.showMarker) return
 
-  const el = activeLink.value
+  // 行元素：底色和滑块都挂在整行上
+  const el = activeLink.value?.parentElement ?? null
   const root = rootRef.value
 
   if (!el || !root) {
