@@ -614,6 +614,109 @@ describe('SrMarkdownEditor', () => {
     wrapper.unmount()
   })
 
+  it('shortcodeMenu=group：只放一个入口，点开列出全部短代码', async () => {
+    const docExt: SrMarkdownExtension = {
+      name: 'doc',
+      inline: /\{\{doc\s+id=([\w-]+)\}\}/g,
+      render: () => '<span></span>',
+      insert: { label: '插入文档', template: '{{doc id=$1}}' },
+    }
+    const sheetExt: SrMarkdownExtension = {
+      name: 'sheet',
+      inline: /\{\{sheet\s+id=([\w-]+)\}\}/g,
+      render: () => '<span></span>',
+      insert: { label: '插入表格', template: '{{sheet id=$1}}' },
+    }
+
+    const wrapper = mountEditor({
+      modelValue: '',
+      extensions: [docExt, sheetExt],
+      toolbar: ['bold'],
+      shortcodeMenu: 'group',
+    })
+
+    // 平铺的扩展按钮不再出现，只剩一个分类入口
+    expect(wrapper.find('.sr-mde__tool[aria-label="插入文档"]').exists()).toBe(false)
+    expect(wrapper.find('.sr-mde__tool[aria-label="插入短代码"]').exists()).toBe(true)
+
+    await wrapper.find('.sr-mde__tool[aria-label="插入短代码"]').trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.sr-mde__menu').exists()).toBe(true)
+    expect(wrapper.findAll('.sr-mde__menu-item')).toHaveLength(2)
+
+    await wrapper.findAll('.sr-mde__menu-item')[0]?.trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.sr-mde__menu').exists()).toBe(false)
+    expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toContain('{{doc id=1}}')
+    wrapper.unmount()
+  })
+
+  it('shortcodeMenu=group：菜单项仍然走参数面板', async () => {
+    const ext: SrMarkdownExtension = {
+      name: 'article',
+      inline: /\{\{article\s+id=([\w-]+)\}\}/g,
+      render: () => '<span></span>',
+      insert: {
+        label: '插入文章',
+        template: '{{article id={id}}}',
+        fields: [
+          {
+            key: 'id',
+            label: '文章',
+            type: 'select',
+            default: 'a01',
+            options: [{ label: 'A', value: 'a01' }],
+          },
+        ],
+      },
+    }
+
+    const wrapper = mountEditor({
+      modelValue: '',
+      extensions: [ext],
+      toolbar: ['bold'],
+      shortcodeMenu: 'group',
+    })
+
+    await wrapper.find('.sr-mde__tool[aria-label="插入短代码"]').trigger('click')
+    await nextTick()
+    await wrapper.find('.sr-mde__menu-item').trigger('click')
+    await nextTick()
+
+    // 下拉收起，参数面板接棒
+    expect(wrapper.find('.sr-mde__menu').exists()).toBe(false)
+    expect(wrapper.find('.sr-mde-insert').exists()).toBe(true)
+    expect(wrapper.find('.sr-mde-insert__title').text()).toBe('插入文章')
+    wrapper.unmount()
+  })
+
+  it('shortcodeMenu=group：Esc 收起下拉', async () => {
+    const ext: SrMarkdownExtension = {
+      name: 'doc',
+      inline: /\{\{doc\s+id=([\w-]+)\}\}/g,
+      render: () => '<span></span>',
+      insert: { label: '插入文档', template: '{{doc id=$1}}' },
+    }
+
+    const wrapper = mountEditor({
+      modelValue: '',
+      extensions: [ext],
+      toolbar: ['bold'],
+      shortcodeMenu: 'group',
+    })
+
+    await wrapper.find('.sr-mde__tool[aria-label="插入短代码"]').trigger('click')
+    await nextTick()
+    expect(wrapper.find('.sr-mde__menu').exists()).toBe(true)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await nextTick()
+    expect(wrapper.find('.sr-mde__menu').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('ref 暴露的 API 可插入文本', async () => {
     const wrapper = mountEditor({ modelValue: '' })
     await setSelection(wrapper, 0)

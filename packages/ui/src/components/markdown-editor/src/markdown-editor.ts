@@ -204,6 +204,19 @@ export const markdownEditorProps = {
     default: () => [],
   },
   /**
+   * 短代码插入按钮的摆放方式 @default 'inline'
+   *
+   * - `inline`：每个短代码一个按钮，平铺在工具栏末尾（默认，兼容旧写法）
+   * - `group`：只放一个「短代码」按钮，点开下拉列出全部
+   *
+   * 短代码是扩展能力，跟加粗、列表这类基础格式不是一回事；数量一多，
+   * 平铺会撑满工具栏、也容易和内置按钮混淆，因此推荐 `group`。
+   */
+  shortcodeMenu: {
+    type: String as PropType<'inline' | 'group'>,
+    default: 'inline',
+  },
+  /**
    * 图片上传
    *
    * 提供后工具栏的图片按钮改为「选文件 → 调用它 → 插入返回的地址」。

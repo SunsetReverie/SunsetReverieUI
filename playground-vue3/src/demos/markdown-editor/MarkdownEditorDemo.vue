@@ -69,6 +69,24 @@ const tipOptions = [
   { label: '关闭', value: 'off' },
 ]
 
+/** 短代码在工具栏里的摆放方式 */
+const menuMode = ref<'inline' | 'group'>('group')
+
+/** 摆放方式选项 */
+const menuModeOptions = [
+  { label: '分组下拉', value: 'group' },
+  { label: '平铺', value: 'inline' },
+]
+
+/** 摆放方式对比用的正文 */
+const menuContent = ref(`## 工具栏里的短代码
+
+短代码是扩展能力，不该和内置格式抢位置。
+
+:::note 提示
+点工具栏末尾的「插入短代码」，下拉里是这个编辑器注册的全部短代码。
+:::`)
+
 /**
  * 短代码参数统一用 `key=value|key=value` 格式。
  * 值里可以有空格，但不能有 `|` 和 `}`（会破坏短代码边界）。
@@ -591,6 +609,23 @@ async function fakeUpload(file: File): Promise<string> {
         <code>render</code> 返回的 HTML 会直接插入 DOM，所以用户填的值一律经
         <code>ctx.escape()</code> 处理，链接经 <code>ctx.safeUrl()</code> 校验
       </p>
+
+      <h4>工具栏摆放方式</h4>
+      <p class="hint">
+        短代码是扩展能力，平铺在工具栏里会和加粗、列表这些内置格式混在一起，数量一多就认不出来。 推荐
+        <code>shortcode-menu="group"</code>：只留一个入口，点开再选。 下面切换两种方式，看工具栏末尾的变化
+      </p>
+      <div class="row" style="margin-bottom: 10px">
+        <SrSegmented v-model="menuMode" :options="menuModeOptions" size="sm" />
+        <SrTag size="sm">{{ menuMode === 'group' ? '推荐' : '旧写法' }}</SrTag>
+      </div>
+      <SrMarkdownEditor
+        v-model="menuContent"
+        :extensions="extensions"
+        :shortcode-menu="menuMode"
+        theme="vivid"
+        :height="240"
+      />
 
       <pre v-pre class="code-block">
 const extensions = [{

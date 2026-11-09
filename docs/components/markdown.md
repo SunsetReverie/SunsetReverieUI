@@ -218,6 +218,8 @@ const extensions = [
 
 这一步发生在**渲染之前**，所以本组件完全不参与——它只负责把最终文本渲染成 HTML。完整示例和字段说明见 [SrMarkdownEditor · 短代码按钮](/components/markdown-editor#短代码按钮参数面板)。
 
+短代码按钮摆在工具栏里时，建议用 `shortcode-menu="group"` 收进一个下拉，别和加粗、列表抢同一排——详见 [工具栏摆放方式](/components/markdown-editor#工具栏摆放方式)。
+
 
 ## 渲染上下文
 

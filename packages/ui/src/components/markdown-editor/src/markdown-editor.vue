@@ -483,26 +483,31 @@ const toolbarItems = computed<SrMarkdownToolbarItem[]>(() => {
 
   const base = [...(props.toolbar ?? SR_MARKDOWN_DEFAULT_TOOLBAR)]
 
-  // 扩展自带的插入按钮
-  for (const extension of props.extensions) {
-    const insertConfig = extension.insert
-    if (!insertConfig) continue
+  // 扩展自带的插入按钮：平铺到工具栏，或收进一个下拉
+  const insertable = props.extensions.filter((extension) => extension.insert)
 
+  if (insertable.length && props.shortcodeMenu === 'group') {
     base.push({
-      key: `ext-${extension.name}`,
-      label: insertConfig.label,
-      icon: insertConfig.icon,
+      key: 'shortcodes',
+      label: '插入短代码',
+      icon: 'lucide:braces',
+      // 实际由 onToolbarClick 的 key 分支接管
       action: () => {
-        // action / 插槽 / fields 走面板；都没有则维持「直接插模板」的旧行为
-        if (insertConfig.action || insertConfig.fields?.length || slots[`insert-${extension.name}`]) {
-          handleInsertClick(insertConfig, extension.name)
-          return
-        }
-
-        const placeholder = insertConfig.placeholder ?? '1'
-        insertWithSelection(insertConfig.template.replace(/\$1/g, placeholder), placeholder)
+        void toggleShortcodes()
       },
     })
+  } else {
+    for (const extension of insertable) {
+      const insertConfig = extension.insert
+      if (!insertConfig) continue
+
+      base.push({
+        key: `ext-${extension.name}`,
+        label: insertConfig.label,
+        icon: insertConfig.icon,
+        action: () => insertExtension(insertConfig, extension.name),
+      })
+    }
   }
 
   // 配了表情包才有表情按钮
@@ -561,6 +566,15 @@ function itemKey(item: SrMarkdownToolbarItem, index: number): string {
  */
 function isEmojiButton(item: SrMarkdownToolbarItem): boolean {
   return typeof item === 'object' && item.key === 'emoji'
+}
+
+/**
+ * 是否短代码下拉按钮
+ * @param item 工具栏项
+ * @returns 结果
+ */
+function isShortcodeButton(item: SrMarkdownToolbarItem): boolean {
+  return typeof item === 'object' && item.key === 'shortcodes'
 }
 
 /**
@@ -627,6 +641,11 @@ function onToolbarClick(item: SrMarkdownToolbarItem): void {
 
   if (item.key === 'emoji') {
     void toggleEmoji()
+    return
+  }
+
+  if (item.key === 'shortcodes') {
+    void toggleShortcodes()
     return
   }
 
@@ -769,6 +788,83 @@ function onEditScroll(): void {
   target.scrollTop = ratio * (target.scrollHeight - target.clientHeight)
 }
 
+// ============================ 短代码菜单 ============================
+
+/** 下拉里可选的短代码 */
+const shortcodeEntries = computed(() => {
+  const list: { name: string; config: InsertConfig }[] = []
+
+  for (const extension of props.extensions) {
+    if (extension.insert) list.push({ name: extension.name, config: extension.insert })
+  }
+
+  return list
+})
+
+/** 下拉触发按钮与面板 */
+const shortcodeButtonRef = ref<HTMLElement | null>(null)
+const shortcodePanelRef = ref<HTMLElement | null>(null)
+const shortcodeOpen = ref(false)
+const shortcodePos = ref({ top: 0, left: 0 })
+
+/**
+ * 执行一次短代码插入
+ *
+ * action / 插槽 / fields 走面板；都没有则维持「直接插模板」的旧行为。
+ * @param config 插入配置
+ * @param name 扩展名
+ */
+function insertExtension(config: InsertConfig, name: string): void {
+  if (config.action || config.fields?.length || slots[`insert-${name}`]) {
+    handleInsertClick(config, name)
+    return
+  }
+
+  const placeholder = config.placeholder ?? '1'
+  insertWithSelection(config.template.replace(/\$1/g, placeholder), placeholder)
+}
+
+/** 打开/关闭短代码下拉 */
+async function toggleShortcodes(): Promise<void> {
+  if (props.readonly) return
+
+  shortcodeOpen.value = !shortcodeOpen.value
+  if (!shortcodeOpen.value) return
+
+  await nextTick()
+  updateShortcodePosition()
+}
+
+/** 计算下拉位置（与表情浮层同一套定位逻辑） */
+function updateShortcodePosition(): void {
+  const trigger = shortcodeButtonRef.value
+  const panel = shortcodePanelRef.value
+  if (!trigger || !panel) return
+
+  const result = srComputeFloating({
+    reference: srGetRect(trigger),
+    floating: { width: panel.offsetWidth || 220, height: panel.offsetHeight || 200 },
+    placement: 'bottom-start',
+    offset: 6,
+    viewport: { width: window.innerWidth, height: window.innerHeight },
+    padding: 8,
+  })
+
+  shortcodePos.value = { top: result.top, left: result.left }
+}
+
+/**
+ * 选中一个短代码
+ * @param entry 下拉项
+ */
+function onShortcodeSelect(entry: { name: string; config: InsertConfig }): void {
+  shortcodeOpen.value = false
+  insertExtension(entry.config, entry.name)
+}
+
+/** 下拉是否展开 */
+const shortcodeMenuOpen = computed(() => shortcodeOpen.value && shortcodeEntries.value.length > 0)
+
 // ============================ 表情浮层 ============================
 
 /** 打开/关闭表情浮层 */
@@ -820,19 +916,34 @@ function onEmojiSelect(item: SrEmojiItem, mark: string): void {
  * @param event 指针事件
  */
 function onDocumentPointerDown(event: PointerEvent): void {
-  if (!emojiOpen.value) return
+  if (!emojiOpen.value && !shortcodeOpen.value) return
 
   const target = event.target as Node | null
   if (!target) return
-  if (emojiPanelRef.value?.contains(target)) return
-  if (emojiButtonRef.value?.contains(target)) return
 
-  emojiOpen.value = false
+  if (emojiOpen.value) {
+    if (!emojiPanelRef.value?.contains(target) && !emojiButtonRef.value?.contains(target)) {
+      emojiOpen.value = false
+    }
+  }
+
+  if (shortcodeOpen.value) {
+    if (!shortcodePanelRef.value?.contains(target) && !shortcodeButtonRef.value?.contains(target)) {
+      shortcodeOpen.value = false
+    }
+  }
 }
 
 /** 视口变化时重新定位 */
 function onViewportChange(): void {
   if (emojiOpen.value) updateEmojiPosition()
+  if (shortcodeOpen.value) updateShortcodePosition()
+}
+
+/** 浮层打开时按 Esc 收起短代码下拉 */
+function onFloatingKeydown(event: KeyboardEvent): void {
+  if (event.key !== 'Escape') return
+  if (shortcodeOpen.value) shortcodeOpen.value = false
 }
 
 /** 浮层打开时才挂全局监听 */
@@ -841,16 +952,18 @@ function toggleGlobalListeners(on: boolean): void {
 
   if (on) {
     document.addEventListener('pointerdown', onDocumentPointerDown, true)
+    document.addEventListener('keydown', onFloatingKeydown)
     window.addEventListener('resize', onViewportChange)
     window.addEventListener('scroll', onViewportChange, true)
   } else {
     document.removeEventListener('pointerdown', onDocumentPointerDown, true)
+    document.removeEventListener('keydown', onFloatingKeydown)
     window.removeEventListener('resize', onViewportChange)
     window.removeEventListener('scroll', onViewportChange, true)
   }
 }
 
-watch(emojiOpen, toggleGlobalListeners)
+watch([emojiOpen, shortcodeOpen], () => toggleGlobalListeners(emojiOpen.value || shortcodeOpen.value))
 
 onBeforeUnmount(() => {
   toggleGlobalListeners(false)
@@ -932,7 +1045,13 @@ defineExpose({
               :disabled="!tooltips"
             >
               <button
-                :ref="isEmojiButton(item) ? (el) => (emojiButtonRef = el as HTMLElement | null) : undefined"
+                :ref="
+                  isEmojiButton(item)
+                    ? (el) => (emojiButtonRef = el as HTMLElement | null)
+                    : isShortcodeButton(item)
+                      ? (el) => (shortcodeButtonRef = el as HTMLElement | null)
+                      : undefined
+                "
                 class="sr-mde__tool"
                 type="button"
                 :title="tooltips ? undefined : describe(item).label"
@@ -1077,6 +1196,31 @@ defineExpose({
             </button>
           </div>
         </div>
+      </div>
+    </Teleport>
+
+    <!-- 短代码下拉：把扩展收进一个分类菜单，避免和内置按钮混淆 -->
+    <Teleport to="body">
+      <div
+        v-if="shortcodeMenuOpen"
+        ref="shortcodePanelRef"
+        class="sr-mde__menu"
+        :style="{ top: `${shortcodePos.top}px`, left: `${shortcodePos.left}px` }"
+        role="menu"
+        aria-label="插入短代码"
+      >
+        <p class="sr-mde__menu-title">插入短代码</p>
+        <button
+          v-for="entry in shortcodeEntries"
+          :key="entry.name"
+          class="sr-mde__menu-item"
+          type="button"
+          role="menuitem"
+          @click="onShortcodeSelect(entry)"
+        >
+          <SrIcon v-if="entry.config.icon" :name="entry.config.icon" :size="14" />
+          <span class="sr-mde__menu-label">{{ entry.config.label }}</span>
+        </button>
       </div>
     </Teleport>
 

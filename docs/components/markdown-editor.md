@@ -257,6 +257,27 @@ const toolbar = [
 
 **关掉 tips 后退回原生 `title`**，按钮不会完全失去说明。开启时不会同时挂 `title`，避免出现原生提示和气泡两层。
 
+## 工具栏摆放方式
+
+短代码是扩展能力——不是每个人都用，每个人用的还不一样。全部平铺进工具栏，会和加粗、列表这类内置格式混在一起，扩展一多就认不过来。
+
+`shortcodeMenu` 决定怎么摆：
+
+| 值 | 工具栏末尾 | 适合 |
+| --- | --- | --- |
+| `inline` | 每个短代码一个按钮（默认，兼容旧写法） | 只有一两个短代码 |
+| `group` | 一个「插入短代码」按钮，点开是下拉（**推荐**） | 短代码超过两个，或要和内置按钮区分开 |
+
+```vue
+<SrMarkdownEditor v-model="content" :extensions="extensions" shortcode-menu="group" />
+```
+
+下拉按扩展注册顺序列出所有配了 `insert` 的短代码。点其中一项和点平铺按钮完全等价：参数面板、`#insert-{name}` 插槽、`insert.action` 都会照常走。按 `Esc` 或点面板外收起。
+
+演示页「短代码：博客后台场景」末尾有平铺 / 分组两种方式的即时对比。
+
+> 默认保留 `inline` 是为了不打断已有写法。新项目建议直接开 `group`——短代码始终是自己的扩展，不该和 `**加粗**` 这种基础格式抢同一排按钮。
+
 ## 短代码按钮：参数面板
 
 扩展里配 `insert.fields` 后，点击工具栏按钮会**先弹出参数面板**，设好参数再插入正文。这是短代码在后台写作场景里的主要用法——写作者不需要记语法，也不用手动拼参数。
@@ -517,6 +538,7 @@ async function uploadFile(file: File) {
 | `maxLength` | `number` | `0` | 最大字数，0 不限 |
 | `showCount` | `boolean` | `true` | 显示字数 |
 | `modeToggle` | `'text' \| 'both' \| 'icon'` | `'both'` | 视图切换的显示形式 |
+| `shortcodeMenu` | `'inline' \| 'group'` | `'inline'` | 短代码按钮平铺还是收进一个下拉 |
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包，传了才显示表情按钮 |
 | `upload` | `(file: File) => Promise<string>` | — | 图片上传 |
 | `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板，透传给预览区 |
