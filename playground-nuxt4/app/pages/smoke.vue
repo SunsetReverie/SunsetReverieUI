@@ -332,6 +332,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">Markdown</span>
+        <div class="cell__body cell__body--column">
+          <sr-markdown source="**粗体** 与 [链接](https://example.com)" engine="builtin" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">CodeBlock</span>
         <div class="cell__body cell__body--column">
           <sr-code-block code="const a = 1" lang="ts" title="a.ts" line-numbers />

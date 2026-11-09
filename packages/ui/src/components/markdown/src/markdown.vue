@@ -1,0 +1,115 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+
+import { parseMarkdownBuiltin } from './builtin-parser'
+import { srPreprocess } from './extensions'
+import { markdownProps, SR_MARKDOWN_BUILTIN } from './markdown'
+
+defineOptions({ name: 'SrMarkdown', inheritAttrs: false })
+
+const props = defineProps(markdownProps)
+
+/** 渲染结果 */
+const rendered = ref('')
+
+/** 异步引擎是否还在渲染 */
+const pending = ref(false)
+
+/**
+ * 渲染批次号
+ *
+ * @remarks 异步引擎下连续改 `source` 会并发多个 Promise，
+ * 先发的可能后到。用递增的批次号丢弃过期结果，避免内容倒退。
+ */
+let batch = 0
+
+/**
+ * 最终输出前的收尾：先还原短代码占位符，再交给外部清洗
+ * @param html 引擎产出的 HTML
+ * @returns 可插入 DOM 的 HTML
+ */
+function finalize(html: string): string {
+  return props.sanitize ? props.sanitize(html) : html
+}
+
+/**
+ * 执行一次渲染
+ */
+function run(): void {
+  const current = ++batch
+  const { text, restore } = srPreprocess(props.source, props.extensions)
+
+  // 内置解析器是同步的，直接出结果
+  if (props.engine === SR_MARKDOWN_BUILTIN) {
+    rendered.value = finalize(restore(parseMarkdownBuiltin(text)))
+    pending.value = false
+    return
+  }
+
+  // 没传引擎：原样展示源码，不去猜用户想用什么
+  if (!props.engine) {
+    if (import.meta.env?.DEV) {
+      console.warn('[SrMarkdown] 未传 engine，已原样展示源码。传 "builtin" 或 markdown-it 实例。')
+    }
+    rendered.value = finalize(`<pre class="sr-md__pre-body"><code>${escapeSource(text)}</code></pre>`)
+    pending.value = false
+    return
+  }
+
+  let output: string | Promise<string>
+
+  try {
+    output = props.engine.render(text)
+  } catch {
+    // 引擎同步抛错时不要让整块内容消失
+    rendered.value = finalize(restore(''))
+    pending.value = false
+    return
+  }
+
+  if (typeof output === 'string') {
+    rendered.value = finalize(restore(output))
+    pending.value = false
+    return
+  }
+
+  pending.value = true
+  output
+    .then((html) => {
+      if (current !== batch) return
+      rendered.value = finalize(restore(html))
+      pending.value = false
+    })
+    .catch(() => {
+      if (current !== batch) return
+      pending.value = false
+    })
+}
+
+/**
+ * 把源码转义成可见文本（无引擎时的兜底）
+ * @param text 源码
+ * @returns 转义结果
+ */
+function escapeSource(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// setup 阶段同步跑一次：同步引擎在 SSR 时就能产出内容，
+// 不会出现「服务端空、客户端才填充」的水合不一致
+run()
+
+watch(() => [props.source, props.extensions, props.engine, props.sanitize] as const, run, { deep: true })
+</script>
+
+<template>
+  <div class="sr-md" :class="[`sr-md--${size}`, { 'is-pending': pending }]">
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div class="sr-md__content" v-html="rendered" />
+  </div>
+</template>

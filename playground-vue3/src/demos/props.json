@@ -2457,6 +2457,49 @@
     "emits": [],
     "slots": []
   },
+  "markdown": {
+    "name": "markdown",
+    "options": [
+      {
+        "from": "markdownProps",
+        "name": "source",
+        "type": "string",
+        "default": "''",
+        "description": "Markdown 源码"
+      },
+      {
+        "from": "markdownProps",
+        "name": "engine",
+        "type": "SrMarkdownEngine | typeof SR_MARKDOWN_BUILTIN",
+        "default": "undefined",
+        "description": "渲染引擎 传 `'builtin'` 用内置的精简解析器（只覆盖常用语法，见文档）； 传对象则调用它的 `render`。**不传会原样显示源码**—— 静默降级比报错更安全，但控制台会给出提示。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "extensions",
+        "type": "SrMarkdownExtension[]",
+        "default": "() => []",
+        "description": "短代码扩展 在 Markdown 解析**之前**执行，把自定义语法替换成 HTML。 支持内联（`{{名字 参数}}`）与块级（`:::名字 ... :::`）两种形态。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "sanitize",
+        "type": "(html: string) =",
+        "default": "undefined",
+        "description": "HTML 后处理钩子 引擎渲染完成后、插入 DOM 之前调用一次。 接了 DOMPurify 之类的清洗库时用它： ```ts :sanitize=\"(html) => DOMPurify.sanitize(html)\" ```"
+      },
+      {
+        "from": "markdownProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "渲染尺寸 @default 'md'"
+      }
+    ],
+    "sources": ["markdown"],
+    "emits": [],
+    "slots": []
+  },
   "message": {
     "name": "message",
     "options": [

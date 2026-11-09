@@ -29,6 +29,7 @@ import {
   SrInputNumber,
   SrLoadMore,
   SrLoading,
+  SrMarkdown,
   SrCarousel,
   SrCascader,
   SrCodeBlock,
@@ -417,6 +418,14 @@ describe('导航与数据组件的 SSR 渲染', () => {
 
     expect(html).toContain('sr-emoji-picker')
     expect(html).toContain('微笑')
+  })
+
+  it('SrMarkdown 服务端同步产出 HTML', async () => {
+    const html = await render(SrMarkdown, { source: '# 标题', engine: 'builtin' })
+
+    // 同步引擎在 setup 阶段就渲染完，SSR 输出的是最终结构而不是空容器
+    expect(html).toContain('sr-md__h--1')
+    expect(html).toContain('标题')
   })
 
   it('SrPagination', async () => {

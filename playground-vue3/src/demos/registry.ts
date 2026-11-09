@@ -246,6 +246,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./divider/DividerDemo.vue'),
       },
       {
+        key: 'markdown',
+        name: 'SrMarkdown',
+        description: 'Markdown 渲染器。四种扩展方式，短代码支持内联与块级两种语法。',
+        demo: () => import('./markdown/MarkdownDemo.vue'),
+      },
+      {
         key: 'emoji-picker',
         name: 'SrEmojiPicker',
         description: '表情选择器。字符与图片表情，标记文本可还原。',

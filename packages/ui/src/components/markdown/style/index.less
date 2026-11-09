@@ -1,0 +1,231 @@
+/**
+ * Markdown 渲染样式
+ *
+ * 内容由 `v-html` 插入，所以**不能用 scoped**：scoped 靠给模板元素打
+ * `data-v-xxx` 实现，而运行时插入的节点拿不到这个属性，选择器一条都
+ * 匹配不上，结果是「有 class 没样式」的裸 HTML。
+ *
+ * 隔离性由选择器本身保证——全部以 `.sr-md` 开头，不会外溢到宿主页面。
+ */
+
+.sr-md {
+  --sr-md-font-size: 14px;
+  --sr-md-line-height: 1.75;
+  --sr-md-gap: 14px;
+
+  color: var(--sr-color-text);
+  font-size: var(--sr-md-font-size);
+  line-height: var(--sr-md-line-height);
+  // 长英文单词与 URL 不要撑破容器
+  overflow-wrap: break-word;
+
+  // ---------- 首尾去边距 ----------
+  // 容器内第一个和最后一个块级元素不留外距，否则会和父级的间距叠加
+  &__content > :first-child {
+    margin-top: 0;
+  }
+
+  &__content > :last-child {
+    margin-bottom: 0;
+  }
+
+  // ---------- 标题 ----------
+  &__h {
+    margin: calc(var(--sr-md-gap) * 1.6) 0 calc(var(--sr-md-gap) * 0.7);
+    color: var(--sr-color-text);
+    font-weight: var(--sr-font-weight-semibold);
+    line-height: 1.35;
+    // 标题紧跟在标题后面时收窄间距
+    scroll-margin-top: 80px;
+  }
+
+  &__h--1 {
+    font-size: 1.6em;
+  }
+
+  &__h--2 {
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+    font-size: 1.32em;
+  }
+
+  &__h--3 {
+    font-size: 1.15em;
+  }
+
+  &__h--4 {
+    font-size: 1em;
+  }
+
+  &__h--5 {
+    color: var(--sr-color-text-secondary);
+    font-size: 0.94em;
+  }
+
+  &__h--6 {
+    color: var(--sr-color-text-tertiary);
+    font-size: 0.9em;
+  }
+
+  &__h + &__h {
+    margin-top: calc(var(--sr-md-gap) * 0.6);
+  }
+
+  // ---------- 段落 ----------
+  &__p {
+    margin: 0 0 var(--sr-md-gap);
+  }
+
+  // ---------- 列表 ----------
+  &__list {
+    margin: 0 0 var(--sr-md-gap);
+    padding-left: 1.6em;
+  }
+
+  &__li {
+    margin: 0.25em 0;
+  }
+
+  // 列表项里的段落不要额外撑开间距
+  &__li > &__p:last-child {
+    margin-bottom: 0;
+  }
+
+  &__list--ul > &__li {
+    list-style: disc;
+  }
+
+  &__list--ol > &__li {
+    list-style: decimal;
+  }
+
+  // ---------- 引用 ----------
+  &__quote {
+    margin: 0 0 var(--sr-md-gap);
+    padding: 0.2em 0 0.2em 1em;
+    border-left: 3px solid var(--sr-color-primary-alpha-25);
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__quote > &__p:last-child {
+    margin-bottom: 0;
+  }
+
+  // ---------- 分割线 ----------
+  &__hr {
+    height: 1px;
+    margin: calc(var(--sr-md-gap) * 1.6) 0;
+    border: 0;
+    background: var(--sr-color-border-subtle);
+  }
+
+  // ---------- 链接 ----------
+  &__link {
+    color: var(--sr-color-primary-text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--sr-color-primary-alpha-25);
+    transition: border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__link:hover {
+    border-bottom-color: var(--sr-color-primary);
+  }
+
+  // ---------- 图片 ----------
+  &__img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--sr-radius-sm);
+    vertical-align: middle;
+  }
+
+  // ---------- 行内代码 ----------
+  &__code {
+    padding: 0.15em 0.4em;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: 0.88em;
+    // 行内代码里的空格要保留，但不换行
+    white-space: break-spaces;
+  }
+
+  // ---------- 代码块 ----------
+  &__pre {
+    margin: 0 0 var(--sr-md-gap);
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-color-bg-sunken);
+    overflow: hidden;
+  }
+
+  &__pre-bar {
+    padding: 5px 12px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+    color: var(--sr-color-text-tertiary);
+    font-family: var(--sr-font-family-mono);
+    font-size: 11.5px;
+  }
+
+  &__pre-body {
+    margin: 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    // 代码块横滚，不要带动外层页面
+    overscroll-behavior-x: contain;
+  }
+
+  &__pre-body code {
+    font-family: inherit;
+    font-size: inherit;
+    white-space: pre;
+  }
+
+  // ---------- 表格 ----------
+  &__table-wrap {
+    margin: 0 0 var(--sr-md-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.94em;
+  }
+
+  &__th {
+    padding: 7px 12px;
+    border: 1px solid var(--sr-color-border-subtle);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text);
+    font-weight: var(--sr-font-weight-semibold);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  &__td {
+    padding: 7px 12px;
+    border: 1px solid var(--sr-color-border-subtle);
+    color: var(--sr-color-text-secondary);
+    vertical-align: top;
+  }
+
+  // ---------- 尺寸 ----------
+  &--sm {
+    --sr-md-font-size: 13px;
+    --sr-md-gap: 11px;
+  }
+
+  &--lg {
+    --sr-md-font-size: 15.5px;
+    --sr-md-line-height: 1.8;
+    --sr-md-gap: 16px;
+  }
+}

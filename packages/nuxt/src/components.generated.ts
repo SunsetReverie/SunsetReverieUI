@@ -41,6 +41,7 @@ export const SR_COMPONENT_NAMES = [
   'InputNumber',
   'LoadMore',
   'Loading',
+  'Markdown',
   'Modal',
   'Nav',
   'Pagination',

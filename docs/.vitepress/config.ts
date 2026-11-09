@@ -125,6 +125,7 @@ export default defineConfig({
             { text: 'SrEmojiPicker', link: '/components/emoji-picker' },
             { text: 'SrQRCode', link: '/components/qrcode' },
             { text: 'SrCodeBlock', link: '/components/code-block' },
+            { text: 'SrMarkdown', link: '/components/markdown' },
             { text: 'SrInputNumber', link: '/components/input-number' },
             { text: 'SrCheckbox', link: '/components/checkbox' },
             { text: 'SrRadio', link: '/components/radio' },
