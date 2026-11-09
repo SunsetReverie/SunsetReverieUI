@@ -9,7 +9,7 @@ import {
   type SrMarkdownExtension,
   type SrMarkdownToolbarItem,
 } from '@sunset-reverie/ui'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 defineOptions({ name: 'MarkdownEditorDemo' })
 

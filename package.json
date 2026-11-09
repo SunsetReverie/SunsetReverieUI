@@ -18,7 +18,7 @@
     "build": "pnpm run build:ui && pnpm --filter @sunset-reverie/resolver build && pnpm --filter @sunset-reverie/nuxt build",
     "typecheck": "pnpm run build:tokens && pnpm -r --filter \"./packages/*\" typecheck",
     "test": "pnpm run build:tokens && pnpm -r --filter \"./packages/*\" test",
-    "lint": "eslint . --max-warnings=0 && stylelint \"packages/**/*.less\" --allow-empty-input && node scripts/check-template-tags.mjs && node scripts/check-demo-classes.mjs && node scripts/check-ref-unwrap.mjs && node scripts/check-docs.mjs",
+    "lint": "eslint . --max-warnings=0 && stylelint \"packages/**/*.less\" --allow-empty-input && node scripts/check-template-tags.mjs && node scripts/check-demo-classes.mjs && node scripts/check-ref-unwrap.mjs && node scripts/check-demo-imports.mjs && node scripts/check-docs.mjs",
     "lint:naming": "node scripts/check-naming.mjs",
     "lint:icons": "node scripts/check-icons.mjs",
     "gen:icons": "node packages/icons/scripts/gen-offline-icons.mjs",
