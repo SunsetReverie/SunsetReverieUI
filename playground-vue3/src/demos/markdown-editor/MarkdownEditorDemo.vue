@@ -58,7 +58,7 @@ const galleryExt: SrMarkdownExtension = {
   name: 'gallery',
   inline: /\{\{gallery\s+id=(\d+)\}\}/g,
   render: (match) => `<a class="sc-gallery" href="#g-${match[1]}">查看图集 #${match[1]}</a>`,
-  insert: { label: '插入图集', icon: 'lucide:images', template: '{{gallery id=$1}}' },
+  insert: { label: '插入图集', icon: 'lucide:layout-grid', template: '{{gallery id=$1}}' },
 }
 
 /** 块级短代码扩展 */
@@ -254,10 +254,12 @@ async function fakeUpload(file: File): Promise<string> {
               <td>插入 <code>[文字](https://)</code></td>
             </tr>
             <tr>
-              <td>🖼</td>
+              <td>⬆</td>
               <td><code>image</code></td>
               <td>预设</td>
-              <td>配了 <code>upload</code> 就选文件上传，否则插模板</td>
+              <td>
+                配了 <code>upload</code> 变成「上传图片」+ 上传图标；没配是「插入图片（外链）」+ 图片图标
+              </td>
             </tr>
             <tr>
               <td>—</td>
@@ -278,10 +280,10 @@ async function fakeUpload(file: File): Promise<string> {
               <td>执行自己的 <code>action(api)</code></td>
             </tr>
             <tr>
-              <td>ℹ / 🖼</td>
+              <td>ℹ / ▦</td>
               <td>自动追加</td>
               <td><code>extension.insert</code></td>
-              <td>插入短代码模板并选中占位</td>
+              <td>插入短代码模板并选中占位，用扩展自己的图标与文案</td>
             </tr>
             <tr>
               <td>🙂</td>
@@ -296,7 +298,8 @@ async function fakeUpload(file: File): Promise<string> {
       <p class="hint">
         鼠标移到任意按钮上会显示功能说明（跟随明暗主题）；
         <code>Cmd/Ctrl + B / I / K / S</code> 是快捷键。
-        <strong>自动追加的两类按钮不用写进 toolbar 数组</strong>，配置好数据就会出现
+        <strong>自动追加的两类按钮不用写进 toolbar 数组</strong>，配置好数据就会出现。 图片类按钮容易撞：配了
+        <code>upload</code> 的预设按钮是「上传图片」（⬆）， 图集短代码是「插入图集」（▦），图标和 tips 都不同
       </p>
 
       <pre v-pre class="code-block">

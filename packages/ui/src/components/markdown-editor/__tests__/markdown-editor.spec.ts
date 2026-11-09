@@ -276,6 +276,42 @@ describe('SrMarkdownEditor', () => {
     wrapper.unmount()
   })
 
+  it('没配 upload 时图片按钮是「插入图片（外链）」', () => {
+    const wrapper = mountEditor()
+    const btn = wrapper.findAll('.sr-mde__tool').find((b) => b.attributes('aria-label')?.includes('图片'))
+
+    expect(btn?.attributes('aria-label')).toBe('插入图片（外链）')
+    expect(wrapper.html()).toContain('lucide:image')
+    wrapper.unmount()
+  })
+
+  it('配了 upload 后图标与提示都变成「上传图片」', () => {
+    const wrapper = mountEditor({ upload: async () => 'https://e.com/a.png' })
+    const btn = wrapper.findAll('.sr-mde__tool').find((b) => b.attributes('aria-label')?.includes('图片'))
+
+    expect(btn?.attributes('aria-label')).toBe('上传图片')
+    expect(wrapper.html()).toContain('lucide:upload')
+    expect(wrapper.html()).not.toContain('lucide:image')
+    wrapper.unmount()
+  })
+
+  it('短代码按钮保留自己的图标与提示，不和图片按钮撞', () => {
+    const ext = {
+      name: 'gallery',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: { label: '插入图集', icon: 'lucide:layout-grid', template: '{{gallery id=$1}}' },
+    }
+    const wrapper = mountEditor({ extensions: [ext], upload: async () => 'x' })
+    const labels = wrapper.findAll('.sr-mde__tool').map((b) => b.attributes('aria-label'))
+
+    expect(labels).toContain('上传图片')
+    expect(labels).toContain('插入图集')
+    expect(new Set(labels).size).toBe(labels.length)
+    expect(wrapper.html()).toContain('lucide:layout-grid')
+    wrapper.unmount()
+  })
+
   it('自定义工具栏项也带同名 tips', () => {
     const wrapper = mountEditor({
       toolbar: [{ key: 'x', label: '插入日期', action: () => undefined }],

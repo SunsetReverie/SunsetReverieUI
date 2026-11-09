@@ -142,7 +142,7 @@ const PRESET_LABELS: Record<string, string> = {
   code: '行内代码',
   'code-block': '代码块',
   link: '链接',
-  image: '图片',
+  image: '插入图片（外链）',
   hr: '分割线',
   emoji: '表情',
 }
@@ -338,6 +338,13 @@ const showToolbar = computed(() => props.toolbar !== false && toolbarItems.value
  */
 function describe(item: SrMarkdownToolbarItem): { icon?: string; label: string; disabled?: boolean } {
   if (typeof item === 'string') {
+    // 同一个按钮在两种配置下是两件事：配了 upload 是「选文件上传」，
+    // 没配是「贴一个外链地址」。图标与提示都跟着变，不能都叫「图片」——
+    // 工具栏里往往还有图集这类短代码按钮，含糊的文案会让人分不清点哪个。
+    if (item === 'image' && props.upload) {
+      return { icon: 'lucide:upload', label: '上传图片' }
+    }
+
     return { icon: PRESET_ICONS[item], label: PRESET_LABELS[item] ?? item }
   }
 

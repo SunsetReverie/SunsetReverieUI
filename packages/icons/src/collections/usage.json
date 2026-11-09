@@ -30,6 +30,7 @@
   "lucide:inbox",
   "lucide:info",
   "lucide:italic",
+  "lucide:layout-grid",
   "lucide:link",
   "lucide:list",
   "lucide:list-ordered",
@@ -56,6 +57,7 @@
   "lucide:tag",
   "lucide:trash",
   "lucide:triangle-exclamation-point",
+  "lucide:upload",
   "lucide:user",
   "lucide:x",
   "v-model:expanded-keys"
