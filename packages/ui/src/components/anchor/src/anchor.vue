@@ -210,32 +210,35 @@ watch(
   (list) => {
     if (!props.collapsible || !props.defaultExpandAll) return
     if (props.expandedKeys !== undefined) return
+    // 自动跟随模式下由 activePath 接管，这里不参与
+    if (props.autoExpand) return
 
     innerExpanded.value = new Set(collectParents(list))
   },
   { immediate: true, deep: true },
 )
 
-// 自动展开：滚到子章节时，把它所在的父级打开。
-// 要 immediate，否则「初始就带 activeKey」的场景不会展开
+// 自动开合：跟随当前章节，只保留它所在路径上的父级展开。
+//
+// 这是「手风琴」语义——滚到「安装」时，「配置」那一支会自动收起，
+// 目录始终只展示当前所在的那条线，不会越滚越长。
+// 代价是手动展开的其他分支也会被收起，这符合「跟随阅读位置」的预期。
 watch(
   activePath,
   (path) => {
     if (!props.collapsible || !props.autoExpand) return
 
     const parents = new Set(collectParents(props.items))
-    const next = new Set(expandedSet.value)
-    let changed = false
+    const next = new Set<string>()
 
-    // 只做「展开」，从不「折叠」：
-    // 滚出某个章节后保持展开，不然目录会随着滚动反复开合，很难跟读
+    // 只留路径上有子项的祖先
     for (const key of path) {
-      if (!parents.has(key) || next.has(key)) continue
-      next.add(key)
-      changed = true
+      if (parents.has(key)) next.add(key)
     }
 
-    if (!changed) return
+    const current = expandedSet.value
+    const same = next.size === current.size && Array.from(next).every((key) => current.has(key))
+    if (same) return
 
     if (props.expandedKeys === undefined) innerExpanded.value = next
     emit('update:expandedKeys', Array.from(next))
@@ -498,6 +501,8 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
         :collapsible="collapsible"
         :expanded-keys="expandedSet"
         :toggle="toggle"
+        :show-toggle="showToggle"
+        :toggle-position="togglePosition"
         @click="onClick"
       />
     </ul>

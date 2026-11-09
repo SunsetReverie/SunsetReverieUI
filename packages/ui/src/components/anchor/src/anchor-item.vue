@@ -25,6 +25,10 @@ const props = defineProps<{
   expandedKeys: Set<string>
   /** 切换折叠 */
   toggle: (key: string) => void
+  /** 是否显示箭头 */
+  showToggle: boolean
+  /** 箭头位置 */
+  togglePosition: 'left' | 'right'
 }>()
 
 const emit = defineEmits<{
@@ -43,7 +47,7 @@ const canRenderChildren = computed(() => {
 })
 
 /** 是否显示折叠箭头 */
-const showToggle = computed(() => props.collapsible && hasChildren.value)
+const toggleVisible = computed(() => props.collapsible && props.showToggle && hasChildren.value)
 
 /** 当前是否展开 */
 const expanded = computed(() => props.expandedKeys.has(props.item.key))
@@ -59,7 +63,7 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
   >
     <div class="sr-anchor__row">
       <button
-        v-if="showToggle"
+        v-if="toggleVisible && togglePosition === 'left'"
         class="sr-anchor__toggle"
         :class="{ 'is-expanded': expanded }"
         type="button"
@@ -79,6 +83,18 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
       >
         {{ item.title }}
       </a>
+
+      <button
+        v-if="toggleVisible && togglePosition === 'right'"
+        class="sr-anchor__toggle sr-anchor__toggle--right"
+        :class="{ 'is-expanded': expanded }"
+        type="button"
+        :aria-expanded="expanded"
+        :aria-label="expanded ? '折叠' : '展开'"
+        @click="toggle(item.key)"
+      >
+        <SrIcon name="lucide:chevron-right" :size="12" />
+      </button>
     </div>
 
     <!-- 折叠时用 v-show 而非 v-if：保留子级已测量的位置，展开后滑块不用重算 -->
@@ -95,6 +111,8 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
         :collapsible="collapsible"
         :expanded-keys="expandedKeys"
         :toggle="toggle"
+        :show-toggle="showToggle"
+        :toggle-position="togglePosition"
         @click="(target, event) => emit('click', target, event)"
       />
     </ul>

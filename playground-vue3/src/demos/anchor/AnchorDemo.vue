@@ -251,6 +251,37 @@ const flatItems: SrAnchorItem[] = [
         </label>
       </div>
 
+      <div class="row" style="margin-bottom: 14px; align-items: flex-start">
+        <div class="mini-box">
+          <span class="tag">箭头在右（toggle-position="right"）</span>
+          <SrAnchor
+            :items="foldItems"
+            :container="CONTAINER"
+            :offset-top="24"
+            :auto-expand="false"
+            :active-key="'fold-a-1'"
+            collapsible
+            toggle-position="right"
+          />
+        </div>
+        <div class="mini-box">
+          <span class="tag">不显示箭头（:show-toggle="false"）</span>
+          <SrAnchor
+            :items="foldItems"
+            :container="CONTAINER"
+            :offset-top="24"
+            :auto-expand="false"
+            :active-key="'fold-a-1'"
+            :show-toggle="false"
+            collapsible
+          />
+        </div>
+        <p class="hint" style="margin: 0; max-width: 220px">
+          两个都是展开态。不显示箭头时仍可通过
+          <code>v-model:expanded-keys</code> 控制展开
+        </p>
+      </div>
+
       <div class="doc">
         <article class="doc__body doc__body--fold">
           <h4 id="fold-a">一、安装</h4>
@@ -562,6 +593,17 @@ h3 {
   border: 1px solid var(--sr-color-border-subtle);
   border-radius: var(--sr-radius-base);
   background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+}
+
+.mini-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 200px;
+}
+
+.mini-box .tag {
+  margin-bottom: 0;
 }
 
 .switch {

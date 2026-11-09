@@ -19,7 +19,7 @@
   // 激活项的三要素：文字色、底色、字重
   --sr-anchor-active-color: var(--sr-color-text);
   --sr-anchor-active-bg: transparent;
-  --sr-anchor-active-weight: var(--sr-font-weight-medium);
+  --sr-anchor-active-weight: var(--sr-font-weight-semibold);
   --sr-anchor-active-radius: var(--sr-radius-sm);
 
   // 左侧竖线留给文字的间距；竖线本身 3px 宽、起点 2px
@@ -123,6 +123,12 @@
   // 展开时箭头朝下，收起时朝右
   &__toggle.is-expanded {
     transform: rotate(90deg);
+  }
+
+  // 箭头靠右：文字占满剩余宽度，箭头被推到末尾
+  &__toggle--right {
+    margin-right: -4px;
+    margin-left: auto;
   }
 
   // ---------- 当前项竖线 ----------
@@ -244,7 +250,8 @@
   &.is-affix {
     position: sticky;
     z-index: var(--sr-z-index-sticky, 20);
-    padding: 6px 12px 6px 4px;
+    // 左侧不留 padding：竖线要贴在容器边缘上
+    padding: 6px 8px 6px 0;
     border-radius: var(--sr-radius-base);
     // 透明度压到 55% 才能看出背后的内容在动；
     // 太不透明就成了实心块，模糊完全看不出来

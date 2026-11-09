@@ -309,8 +309,8 @@ describe('SrAnchor', () => {
     wrapper.unmount()
   })
 
-  it('默认全部展开', () => {
-    const wrapper = mountAnchor({ collapsible: true })
+  it('autoExpand 关闭时按 defaultExpandAll 全展开', () => {
+    const wrapper = mountAnchor({ collapsible: true, autoExpand: false })
 
     const toggle = wrapper.find('.sr-anchor__toggle')
     expect(toggle.attributes('aria-expanded')).toBe('true')
@@ -318,7 +318,7 @@ describe('SrAnchor', () => {
   })
 
   it('点击箭头可折叠子级', async () => {
-    const wrapper = mountAnchor({ collapsible: true })
+    const wrapper = mountAnchor({ collapsible: true, autoExpand: false })
 
     await wrapper.find('.sr-anchor__toggle').trigger('click')
     await nextTick()
@@ -390,26 +390,25 @@ describe('SrAnchor', () => {
     wrapper.unmount()
   })
 
-  it('离开该章节后不会自动折叠', async () => {
+  it('离开该章节后自动收起父级', async () => {
     const wrapper = mountAnchor({
       collapsible: true,
-      defaultExpandAll: false,
       activeKey: 'install',
     })
     await nextTick()
     await nextTick()
     expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
 
-    // 切到一个完全无关的顶层项，父级应保持展开
+    // 切到一个完全无关的顶层项，父级应收起——目录只留当前这条线
     await wrapper.setProps({ activeKey: 'faq' })
     await nextTick()
     await nextTick()
-    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
 
     wrapper.unmount()
   })
 
-  it('手动折叠后仍是展开状态，直到用户再点一次', async () => {
+  it('手动折叠后不被立即重开（激活项没变）', async () => {
     const wrapper = mountAnchor({
       collapsible: true,
       defaultExpandAll: false,
@@ -423,16 +422,14 @@ describe('SrAnchor', () => {
     await nextTick()
     expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
 
-    // 再切子项，会被自动展开（这是预期：只展开不折叠）
-    await wrapper.setProps({ activeKey: 'config' })
+    // 激活项没变时不会重开
     await nextTick()
-    await nextTick()
-    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
 
     wrapper.unmount()
   })
 
-  it('不同父级互不影响', async () => {
+  it('不同父级之间是互斥的（手风琴）', async () => {
     const twoBranches: SrAnchorItem[] = [
       { key: 'p1', title: '父一', children: [{ key: 'c1', title: '子一' }] },
       { key: 'p2', title: '父二', children: [{ key: 'c2', title: '子二' }] },
@@ -457,8 +454,9 @@ describe('SrAnchor', () => {
     await nextTick()
     await nextTick()
 
+    // 切到另一个父级后，前一个自动收起，只留当前这条线
     toggles = wrapper.findAll('.sr-anchor__toggle')
-    expect(toggles[0]?.attributes('aria-expanded')).toBe('true')
+    expect(toggles[0]?.attributes('aria-expanded')).toBe('false')
     expect(toggles[1]?.attributes('aria-expanded')).toBe('true')
     wrapper.unmount()
   })

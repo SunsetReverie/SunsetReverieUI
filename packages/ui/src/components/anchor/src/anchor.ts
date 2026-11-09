@@ -131,9 +131,29 @@ export const anchorProps = {
     default: false,
   },
   /**
+   * 显示折叠箭头 @default true
+   *
+   * 关掉后仍然可以折叠，只是没有箭头——用 `v-model:expanded-keys` 控制。
+   * 有些设计里目录本身就很窄，箭头会显得多余。
+   */
+  showToggle: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 箭头位置 @default 'left'
+   *
+   * `right` 时箭头靠右，标题从左侧对齐，视觉更接近「文档目录」。
+   */
+  togglePosition: {
+    type: String as PropType<'left' | 'right'>,
+    default: 'left',
+  },
+  /**
    * 默认全部展开 @default true
    *
-   * 只在 `collapsible` 打开时有意义。
+   * 只在 `collapsible` 打开、且 `autoExpand` 关闭时有意义：
+   * 开了自动跟随的话，展开状态由当前章节决定。
    */
   defaultExpandAll: {
     type: Boolean,

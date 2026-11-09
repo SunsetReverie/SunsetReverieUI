@@ -193,15 +193,34 @@ const el = document.querySelector('.layout__body')
 
 | 参数 | 默认 | 说明 |
 | --- | --- | --- |
-| `collapsible` | `false` | 显示折叠箭头 |
-| `defaultExpandAll` | `true` | 初始全部展开 |
-| `autoExpand` | `true` | 滚到子章节时自动展开父级 |
+| `collapsible` | `false` | 父级可折叠 |
+| `showToggle` | `true` | 显示折叠箭头 |
+| `togglePosition` | `'left'` | 箭头位置，`right` 靠右对齐 |
+| `defaultExpandAll` | `true` | 初始全部展开（仅在 `autoExpand: false` 时生效） |
+| `autoExpand` | `true` | 跟随当前章节自动开合 |
+
+### 自动开合是「手风琴」语义
+
+滚到某个子章节时，只保留它所在的那条路径展开，**其他分支自动收起**：
+
+```vue
+<SrAnchor collapsible :items="items" />
+```
+
+比如目录是「一、安装」和「二、配置」两支，滚到「1.1 依赖」时：
+
+- 「一、安装」展开
+- 「二、配置」收起
+
+这样目录始终只展示当前所在的这一条线，不会随着滚动越变越长。
+
+**如果想要「只展开、不收起」**，把 `autoExpand` 关掉，改用 `defaultExpandAll` 控制初始状态——但那样多滚几节之后，所有分支都会处于展开态，目录会很长。
 
 **`autoExpand` 是折叠功能的关键**：默认收起时，用户往下滚动经过一个子章节，那个子章节的父级要自动打开，否则高亮点了却看不见它。
 
-**只做展开，从不折叠。** 滚出某个章节后，它的父级继续保持展开——否则目录会随滚动反复开合，读起来会跟丢。收起只能由你点箭头触发。
+**会自动收起其他分支。** 这是 `autoExpand` 的完整语义：跟随当前章节重新计算展开集合，只留当前路径。
 
-手动收起后，如果再滚到同一父级下的另一个子章节，它会重新展开（这是 `autoExpand` 的预期行为）。不需要自动展开时把它关掉即可。
+手动折叠后，只要激活项没变化就不会被重开；一旦滚到别的章节，展开集合会按新的位置重算。
 
 受控用法：
 
@@ -245,6 +264,8 @@ const el = document.querySelector('.layout__body')
 | `ariaLabel` | `string` | `'页面导航'` | 无障碍标签 |
 | `activeVariant` | `'line' \| 'block' \| 'pill' \| 'dot' \| 'bold'` | `'line'` | 激活项样式 |
 | `collapsible` | `boolean` | `false` | 父级可折叠 |
+| `showToggle` | `boolean` | `true` | 显示折叠箭头 |
+| `togglePosition` | `'left' \| 'right'` | `'left'` | 箭头位置 |
 | `defaultExpandAll` | `boolean` | `true` | 初始全部展开 |
 | `autoExpand` | `boolean` | `true` | 子项激活时自动展开父级 |
 | `expandedKeys` | `string[]` | — | 展开的父级（受控） |
