@@ -131,18 +131,19 @@ const el = document.querySelector('.layout__body')
 
 | `activeVariant` | 观感 | 适合 |
 | --- | --- | --- |
-| `background`（默认） | 底色块 + 主色文字 | 通用 |
-| `bar` | 只有左侧竖条，无底色 | 不压正文，适合正文紧凑的排版 |
+| `line`（默认） | 左侧竖线 + 文字加深 | 通用。目录只是「指路」，不该和正文抢注意力 |
+| `block` | 底色块 + 主色文字 | 需要强调当前项时 |
 | `pill` | 圆角胶囊 | 圆润风格、偏移动端 |
-| `bold` | 只变粗变色，**连滑块也不显示** | 最轻，几乎无干扰 |
 | `dot` | 左侧小圆点 | 克制，有指示感 |
+| `bold` | 只变粗变色，**连竖线也不要** | 最轻，几乎无干扰 |
+
+**默认是 `line`**。锚点导航在页面里通常处于次要地位，大块底色会不断吸走视线——只有竖线和文字深浅的变化就够了。
 
 三个行为细节：
 
-- **底色块挂在整行上**（箭头 + 文字），不是只有文字。这样箭头属于选中区域的一部分，滑块也贴在整行左边缘，不会出现「竖线夹在箭头和文字中间」。
-- **底色块会向左延伸到轨道**，左侧滑块正好压在它的左边缘上。否则滑块孤零零留在轨道、块从 13px 处才开始，看着像两个东西。
-- **`bar` 的竖条就是那个滑块**，不是额外画的。两套竖条叠在一起会错位，而且伪元素占的是文字空间、会把文字挤偏。
-- **`bold` 会隐藏滑块**。它的定位是「最轻」，多一根竖线就自相矛盾了。
+- **底色块挂在整行上**（箭头 + 文字），不是只有文字。这样箭头属于选中区域的一部分，竖线也贴在整行左边缘，不会出现「竖线夹在箭头和文字中间」。
+- **`block` / `pill` 的底色从竖线位置开始**，覆盖竖线所在的区域，两者不会分离。
+- **`bold` 会隐藏竖线**。它的定位是「最轻」，多一根线就自相矛盾了。
 
 ## 完全自定义激活样式
 
@@ -171,9 +172,9 @@ const el = document.querySelector('.layout__body')
 | `--sr-anchor-indicator-r` | 指示器圆角 | `0` |
 | `--sr-anchor-indicator-gap` | 指示器左边距 | `0` |
 | `--sr-anchor-rail` | 轨道线颜色 | `border-subtle` |
-| `--sr-anchor-marker` | 滑块颜色 | 主色 |
-| `--sr-anchor-link-pad-left` | 文字左内边距 | `8px` |
-| `--sr-anchor-active-radius` | 激活块圆角 | `--sr-radius-sm` |
+| `--sr-anchor-marker` | 竖线颜色 | 主色 |
+| `--sr-anchor-line-gap` | 竖线到文字的间距 | `12px` |
+| `--sr-anchor-active-radius` | 底色块圆角 | `--sr-radius-sm` |
 
 > 用深色底做自定义时记得同时改 `--sr-anchor-marker`，否则主色滑块压在深色块上会很突兀。
 
@@ -198,7 +199,9 @@ const el = document.querySelector('.layout__body')
 
 **`autoExpand` 是折叠功能的关键**：默认收起时，用户往下滚动经过一个子章节，那个子章节的父级要自动打开，否则高亮点了却看不见它。
 
-**手动收起的项不会被自动撑开。** 否则会出现「刚点收起、稍微一滚又开了」的情况，用起来像根本折不了。组件记住你的手动收起动作，直到你滚离这个父级的范围，下次回来才会重新自动展开。
+**只做展开，从不折叠。** 滚出某个章节后，它的父级继续保持展开——否则目录会随滚动反复开合，读起来会跟丢。收起只能由你点箭头触发。
+
+手动收起后，如果再滚到同一父级下的另一个子章节，它会重新展开（这是 `autoExpand` 的预期行为）。不需要自动展开时把它关掉即可。
 
 受控用法：
 
@@ -240,7 +243,7 @@ const el = document.querySelector('.layout__body')
 | `showMarker` | `boolean` | `true` | 高亮滑块 |
 | `syncHash` | `boolean` | `false` | 同步地址栏 hash |
 | `ariaLabel` | `string` | `'页面导航'` | 无障碍标签 |
-| `activeVariant` | `'background' \| 'bar' \| 'pill' \| 'bold' \| 'dot'` | `'background'` | 激活项样式 |
+| `activeVariant` | `'line' \| 'block' \| 'pill' \| 'dot' \| 'bold'` | `'line'` | 激活项样式 |
 | `collapsible` | `boolean` | `false` | 父级可折叠 |
 | `defaultExpandAll` | `boolean` | `true` | 初始全部展开 |
 | `autoExpand` | `boolean` | `true` | 子项激活时自动展开父级 |
@@ -287,12 +290,6 @@ const el = document.querySelector('.layout__body')
 **吸顶后看不出毛玻璃**
 
 目录下方没有内容经过（两栏布局里正文不会流到目录那一列）。这是布局决定的，模糊没有可模糊的对象——边框和投影能补足「浮层感」，但真正的毛玻璃需要目录压在内容上。
-
-**激活块和左侧竖线看起来是分开的两个东西**
-
-老版本确实有这个问题。现在底色块会向左延伸到轨道、滑块跟着块的左边缘走，两者是贴合的。
-
-如果覆盖了 `--sr-anchor-indent`，需要保证它和 `.sr-anchor__list` 的 `padding-left` 一致，否则延伸量算不对。
 
 **折叠后高亮位置偏了**
 

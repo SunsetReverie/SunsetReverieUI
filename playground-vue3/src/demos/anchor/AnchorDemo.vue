@@ -77,11 +77,11 @@ const autoExpandOn = ref(true)
 
 /** 激活样式 */
 const activeVariants = [
-  { key: 'background', name: '底色块', desc: '默认，最常见' },
-  { key: 'bar', name: '左侧竖条', desc: '轻，不压正文' },
+  { key: 'line', name: '竖线', desc: '默认，最干净' },
+  { key: 'block', name: '底色块', desc: '强调当前项' },
   { key: 'pill', name: '胶囊', desc: '圆润，偏移动端' },
-  { key: 'bold', name: '仅加粗', desc: '最轻，几乎无干扰' },
   { key: 'dot', name: '小圆点', desc: '克制，有指示感' },
+  { key: 'bold', name: '仅加粗', desc: '最轻，无任何附加' },
 ] as const
 
 /** 横向目录 */
@@ -534,9 +534,7 @@ h3 {
   --sr-anchor-active-bg: #1f7a4d;
   --sr-anchor-active-weight: 600;
   --sr-anchor-active-radius: 6px;
-  --sr-anchor-indicator-w: 0;
-  --sr-anchor-indicator-gap: 0;
-  /* 深色底时滑块要单独指定，否则还是主色，压在块上很突兀 */
+  /* 深色底时竖线要单独指定，否则还是主色，压在块上很突兀 */
   --sr-anchor-marker: #4ade80;
 }
 

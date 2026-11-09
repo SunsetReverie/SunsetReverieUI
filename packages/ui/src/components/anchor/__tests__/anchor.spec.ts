@@ -372,32 +372,62 @@ describe('SrAnchor', () => {
     wrapper.unmount()
   })
 
-  it('手动折叠后不会被自动展开覆盖', async () => {
+  it('activate 子项时自动展开父级', async () => {
     const wrapper = mountAnchor({
       collapsible: true,
       defaultExpandAll: false,
-      autoExpand: true,
       activeKey: 'intro',
     })
     await nextTick()
     await nextTick()
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
 
-    // 先让 fold 展开：切到子项 install
     await wrapper.setProps({ activeKey: 'install' })
     await nextTick()
     await nextTick()
     expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+
+    wrapper.unmount()
+  })
+
+  it('离开该章节后不会自动折叠', async () => {
+    const wrapper = mountAnchor({
+      collapsible: true,
+      defaultExpandAll: false,
+      activeKey: 'install',
+    })
+    await nextTick()
+    await nextTick()
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+
+    // 切到一个完全无关的顶层项，父级应保持展开
+    await wrapper.setProps({ activeKey: 'faq' })
+    await nextTick()
+    await nextTick()
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+
+    wrapper.unmount()
+  })
+
+  it('手动折叠后仍是展开状态，直到用户再点一次', async () => {
+    const wrapper = mountAnchor({
+      collapsible: true,
+      defaultExpandAll: false,
+      activeKey: 'install',
+    })
+    await nextTick()
+    await nextTick()
 
     // 手动收起
     await wrapper.find('.sr-anchor__toggle').trigger('click')
     await nextTick()
     expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
 
-    // 再切到另一个子项，不应被 autoExpand 撑开
+    // 再切子项，会被自动展开（这是预期：只展开不折叠）
     await wrapper.setProps({ activeKey: 'config' })
     await nextTick()
     await nextTick()
-    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
 
     wrapper.unmount()
   })

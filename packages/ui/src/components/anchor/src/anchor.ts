@@ -109,17 +109,17 @@ export const anchorProps = {
     default: '页面导航',
   },
   /**
-   * 激活项样式 @default 'background'
+   * 激活项样式 @default 'line'
    *
-   * - `background` 底色块 + 主色文字（默认）
-   * - `bar` 左侧竖条，无底色
+   * - `line` 左侧竖线 + 文字加深（默认，最干净）
+   * - `block` 底色块 + 主色文字
    * - `pill` 圆角胶囊
-   * - `bold` 只变粗变色，最轻
    * - `dot` 左侧小圆点
+   * - `bold` 只变粗变色，连竖线都不要
    */
   activeVariant: {
-    type: String as PropType<'background' | 'bar' | 'pill' | 'bold' | 'dot'>,
-    default: 'background',
+    type: String as PropType<'line' | 'block' | 'pill' | 'dot' | 'bold'>,
+    default: 'line',
   },
   /**
    * 父级可折叠 @default false

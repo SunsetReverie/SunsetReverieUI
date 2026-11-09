@@ -1,36 +1,29 @@
 /**
  * 锚点导航
  *
- * 激活样式由一组 CSS 变量驱动（--sr-anchor-active-*），
- * 所以「换一种内置样式」和「完全自定义」用的是同一套机制：
- * 内置变体只负责给变量赋值，你在外部覆盖变量即可。
+ * 默认是极简的 `line` 风格：左侧一根竖线 + 文字加深，不加底色块。
+ * 目录本身的职责是「指路」，任何大块视觉都会和正文抢注意力。
  *
- * 关键结构：底色加在 __row（整行）而不是 __link（只有文字），
- * 这样折叠箭头和文字同属一个块，滑块也贴在块的左边缘，
- * 不会出现「竖线夹在箭头和文字中间」的情况。
+ * 激活样式由 CSS 变量驱动（--sr-anchor-active-*），
+ * 内置变体只负责给变量赋值，你在外部覆盖变量即可自定义。
  *
  * 选择器按特异性分组：基础(1) → 子元素(1) → 变体(1) → 变体内子元素(2)
- *   → 子级缩进(2/3) → 状态(2) → 激活(3) → 子级激活(4/5)。
+ *   → 子级缩进(2) → 状态(2) → 激活(3) → 变体激活(4)。
  */
 
 @import '../../../styles/mixins/index.less';
 
 .sr-anchor {
-  --sr-anchor-rail: var(--sr-color-border-subtle);
   --sr-anchor-marker: var(--sr-color-primary);
 
-  // 激活项的四要素：文字色、底色、字重、圆角
-  --sr-anchor-active-color: var(--sr-color-primary-text);
-  --sr-anchor-active-bg: var(--sr-color-primary-alpha-12);
+  // 激活项的三要素：文字色、底色、字重
+  --sr-anchor-active-color: var(--sr-color-text);
+  --sr-anchor-active-bg: transparent;
   --sr-anchor-active-weight: var(--sr-font-weight-medium);
   --sr-anchor-active-radius: var(--sr-radius-sm);
-  // 左侧指示器（dot 用；bar 直接用滑块）
-  --sr-anchor-indicator-w: 0;
-  --sr-anchor-indicator-h: 0;
-  --sr-anchor-indicator-r: 0;
-  --sr-anchor-indicator-gap: 0;
-  // 轨道到内容的缩进，激活块向左延伸到轨道要用它
-  --sr-anchor-indent: 13px;
+
+  // 左侧竖线留给文字的间距；竖线本身 3px 宽、起点 2px
+  --sr-anchor-line-gap: 12px;
 
   position: relative;
   display: block;
@@ -43,12 +36,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 2px;
     margin: 0;
-    padding: 0 0 0 var(--sr-anchor-indent);
+    padding: 0;
     list-style: none;
-    // 轨道线：整条左侧的浅色基线，滑块覆盖在上面
-    border-left: 1px solid var(--sr-anchor-rail);
   }
 
   &__item {
@@ -57,20 +47,19 @@
   }
 
   &__sub {
-    --sr-anchor-indent: 13px;
-
-    margin: 2px 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  // 一行：折叠箭头 + 文字。整行是激活底色的载体
+  // 一行：箭头 + 文字
   &__row {
     position: relative;
     display: flex;
     align-items: center;
     min-width: 0;
-    padding: 4px 8px 4px 0;
+    // 竖向留白撑出行高；左侧留出竖线的位置
+    padding: 6px 8px 6px var(--sr-anchor-line-gap);
     border-radius: var(--sr-radius-sm);
     transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
@@ -108,22 +97,23 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 18px;
-    height: 18px;
-    margin-right: 2px;
+    width: 16px;
+    height: 16px;
     padding: 0;
     border: 0;
     border-radius: var(--sr-radius-sm);
     background: transparent;
+    // 箭头刻意做得很淡：它是辅助操作的入口，不该和标题一样抢眼
     color: var(--sr-color-text-tertiary);
+    opacity: 0.7;
     cursor: pointer;
     transition:
       transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__toggle:hover {
-    color: var(--sr-color-text);
+    opacity: 1;
   }
 
   &__toggle:focus-visible {
@@ -135,56 +125,52 @@
     transform: rotate(90deg);
   }
 
-  // ---------- 滑块 ----------
+  // ---------- 当前项竖线 ----------
   &__marker {
     position: absolute;
     z-index: 1;
     top: 0;
-    // left 由内联样式跟随当前行的左边缘
+    // left 由内联样式跟随当前行的左边缘，这里给竖线的起点偏移
     left: 0;
-    width: 2px;
+    width: 3px;
     height: 0;
     border-radius: var(--sr-radius-full);
     background: var(--sr-anchor-marker);
     pointer-events: none;
-    transform: translateX(-50%);
     transition:
       top var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
       height var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
       left var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
-      width var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
       opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   // ---------- 变体：激活样式 ----------
 
-  // 只有左侧竖条：竖条就是滑块，不再额外画伪元素
-  &--active-bar {
-    --sr-anchor-active-bg: transparent;
-  }
-
-  // 最轻：只变粗变色，连滑块也不要
-  &--active-bold {
-    --sr-anchor-active-bg: transparent;
-  }
-
-  &--active-bold &__marker {
-    display: none;
+  // 底色块
+  &--active-block {
+    --sr-anchor-active-color: var(--sr-color-primary-text);
+    --sr-anchor-active-bg: var(--sr-color-primary-alpha-12);
   }
 
   // 圆角胶囊
   &--active-pill {
+    --sr-anchor-active-color: var(--sr-color-primary-text);
     --sr-anchor-active-bg: var(--sr-color-primary-alpha-12);
     --sr-anchor-active-radius: var(--sr-radius-full);
   }
 
-  // 左侧小圆点
+  // 小圆点：竖线换成圆点，靠伪元素画
   &--active-dot {
-    --sr-anchor-active-bg: transparent;
-    --sr-anchor-indicator-w: 5px;
-    --sr-anchor-indicator-h: 5px;
-    --sr-anchor-indicator-r: 50%;
-    --sr-anchor-indicator-gap: 6px;
+    --sr-anchor-active-color: var(--sr-color-primary-text);
+  }
+
+  // 只变粗变色，连竖线也不要
+  &--active-bold {
+    --sr-anchor-active-color: var(--sr-color-text);
+  }
+
+  &--active-bold &__marker {
+    display: none;
   }
 
   // ---------- 变体：横向 ----------
@@ -195,11 +181,8 @@
   &--horizontal &__list {
     flex-direction: row;
     gap: 4px;
-    padding: 0 0 6px;
-    border-bottom: 1px solid var(--sr-anchor-rail);
-    border-left: 0;
+    padding-bottom: 6px;
     overflow-x: auto;
-    // 内容超宽时横向滚动，但不显示滚动条
     scrollbar-width: none;
   }
 
@@ -235,14 +218,13 @@
     left: 0;
     width: 0;
     height: 2px;
-    transform: none;
+    border-radius: var(--sr-radius-full);
   }
 
   // ---------- 子级缩进 ----------
-  // 缩进 + 小字号，层级关系靠这两点区分，不额外加符号
-
+  // 缩进 + 更小更淡，层级关系靠这两点区分，不额外加符号
   &__sub &__row {
-    padding-left: 6px;
+    padding-left: calc(var(--sr-anchor-line-gap) + 12px);
   }
 
   &__sub &__link {
@@ -251,7 +233,7 @@
   }
 
   &__sub &__sub &__row {
-    padding-left: 12px;
+    padding-left: calc(var(--sr-anchor-line-gap) + 24px);
   }
 
   &__sub &__sub &__link {
@@ -262,7 +244,7 @@
   &.is-affix {
     position: sticky;
     z-index: var(--sr-z-index-sticky, 20);
-    padding: 4px 10px 4px 0;
+    padding: 6px 12px 6px 4px;
     border-radius: var(--sr-radius-base);
     // 透明度压到 55% 才能看出背后的内容在动；
     // 太不透明就成了实心块，模糊完全看不出来
@@ -276,59 +258,48 @@
   }
 
   // ---------- 状态：当前项 ----------
-  // 底色加在整行上，向左延伸到轨道，滑块正好压在它的左边缘
-  &__item.is-current > &__row {
-    margin-left: calc(-1 * var(--sr-anchor-indent));
-    padding-left: var(--sr-anchor-indent);
-    border-radius: var(--sr-anchor-active-radius);
-    background: var(--sr-anchor-active-bg);
-  }
-
   &__item.is-current > &__row > &__link {
     color: var(--sr-anchor-active-color);
     font-weight: var(--sr-anchor-active-weight);
   }
 
-  // 祖先项：只变色，不铺底色、不加粗。
-  // 否则「父章节 + 子章节」两块底色连在一起，看不出是哪一层
+  // 祖先项：只变色，不加粗、不铺底色
   &__item.is-active > &__row > &__link {
     color: var(--sr-anchor-active-color);
   }
 
-  // dot 变体的圆点，画在整行的左边缘
-  &__item.is-current > &__row::before {
+  // ---------- 变体激活态（4 个 class）----------
+
+  // 有底色的变体：底色挂在整行上，向左延伸到竖线位置
+  &--active-block &__item.is-current > &__row,
+  &--active-pill &__item.is-current > &__row {
+    margin-left: 2px;
+    padding-left: calc(var(--sr-anchor-line-gap) - 2px);
+    border-radius: var(--sr-anchor-active-radius);
+    background: var(--sr-anchor-active-bg);
+  }
+
+  // dot 变体：竖线换成圆点
+  &--active-dot &__marker {
+    display: none;
+  }
+
+  &--active-dot &__item.is-current > &__row::before {
     position: absolute;
     top: 50%;
-    left: var(--sr-anchor-indicator-gap);
-    width: var(--sr-anchor-indicator-w);
-    height: var(--sr-anchor-indicator-h);
-    border-radius: var(--sr-anchor-indicator-r);
-    background: var(--sr-anchor-active-color);
+    left: 3px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--sr-color-primary);
     content: '';
     transform: translateY(-50%);
   }
 
-  // 有圆点时给文字留出位置
-  &--active-dot &__item.is-current > &__row {
-    padding-left: calc(var(--sr-anchor-indent) + 8px);
-  }
-
-  // ---------- 子级激活 ----------
-  // 子级不向左延伸，保持缩进；底色也更淡
+  // 子级的激活态不铺底色，只变色——父子同时命中时两块底色会连成一片
   &__sub &__item.is-current > &__row {
     margin-left: 0;
-    padding-left: 6px;
-    background: color-mix(in srgb, var(--sr-anchor-active-bg) 55%, transparent);
-  }
-
-  // 横向没有左侧轨道，激活块不该负向延伸
-  &--horizontal &__item.is-current > &__row {
-    margin-left: 0;
-    padding-left: 10px;
-  }
-
-  &__sub &__sub &__item.is-current > &__row {
-    padding-left: 12px;
+    background: transparent;
   }
 }
 
