@@ -246,6 +246,18 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./divider/DividerDemo.vue'),
       },
       {
+        key: 'emoji-picker',
+        name: 'SrEmojiPicker',
+        description: '表情选择器。字符与图片表情，标记文本可还原。',
+        demo: () => import('./emoji-picker/EmojiPickerDemo.vue'),
+      },
+      {
+        key: 'code-block',
+        name: 'SrCodeBlock',
+        description: '代码块。行号、复制、语言标签与可接入的高亮。',
+        demo: () => import('./code-block/CodeBlockDemo.vue'),
+      },
+      {
         key: 'tile',
         name: 'SrTile',
         description: '图标砖。图标 + 标题的方块入口，可选态用于图标选择器。',

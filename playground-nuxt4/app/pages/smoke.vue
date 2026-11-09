@@ -332,6 +332,20 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">CodeBlock</span>
+        <div class="cell__body cell__body--column">
+          <sr-code-block code="const a = 1" lang="ts" title="a.ts" line-numbers />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">EmojiPicker</span>
+        <div class="cell__body cell__body--column">
+          <sr-emoji-picker :columns="6" :max-height="120" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Statistic / Tile</span>
         <div class="cell__body cell__body--column">
           <sr-statistic title="总用户" :value="1280" />

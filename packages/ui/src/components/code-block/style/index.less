@@ -1,0 +1,162 @@
+/**
+ * 代码块
+ *
+ * 结构分三层：顶栏（标题 + 复制）、行号列、代码区。
+ *
+ * 行号是**独立一列**而不是按行拆进代码里：按行拆分高亮结果会切断
+ * 块注释和多行字符串的着色。代价是两者行高必须严格一致，
+ * 所以行高、字号、上下内边距全部走同一组变量。
+ *
+ * 不内置高亮 token 的配色——那是高亮器的样式表职责。
+ * 使用方接 hljs 就要引 `highlight.js/styles/*.css`，
+ * 用 shiki 则用它的主题内联样式。
+ */
+
+.sr-code {
+  --sr-code-font-size: 12.5px;
+  --sr-code-line-height: 1.7;
+  --sr-code-pad-y: 12px;
+  --sr-code-pad-x: 14px;
+  --sr-code-gutter-width: 36px;
+
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-sunken);
+
+  // ---------- 顶栏 ----------
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px var(--sr-code-pad-x);
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--sr-color-text-tertiary);
+    font-family: var(--sr-font-family-mono);
+    font-size: 11.5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__copy {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 4px;
+    // 固定宽度：文案在「复制 / 已复制 / 复制失败」之间变，宽度不能跟着跳
+    min-width: 58px;
+    justify-content: center;
+    padding: 2px 8px;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    font-family: inherit;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__copy:hover {
+    border-color: var(--sr-color-primary);
+    color: var(--sr-color-primary-text);
+  }
+
+  &__copy:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: 1px;
+  }
+
+  // ---------- 代码区 ----------
+  &__body {
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+    // 代码块内部横滚，不要带动外层页面
+    overscroll-behavior-x: contain;
+  }
+
+  &__gutter {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    flex: 0 0 auto;
+    width: var(--sr-code-gutter-width);
+    padding: var(--sr-code-pad-y) 8px var(--sr-code-pad-y) 0;
+    // 背景必须实色：横滚时它得盖住滑到下面的代码
+    background: var(--sr-color-bg-sunken);
+    border-right: 1px solid var(--sr-color-border-subtle);
+    color: var(--sr-color-text-tertiary);
+    font-family: var(--sr-font-family-mono);
+    font-size: var(--sr-code-font-size);
+    line-height: var(--sr-code-line-height);
+    text-align: right;
+    white-space: pre;
+    user-select: none;
+    opacity: 0.7;
+  }
+
+  &__pre {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: var(--sr-code-pad-y) var(--sr-code-pad-x);
+    overflow: visible;
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: var(--sr-code-font-size);
+    line-height: var(--sr-code-line-height);
+    white-space: pre;
+    // 代码里的等宽字符宽度固定，关掉连字避免 `=>` 被渲染成箭头
+    font-variant-ligatures: none;
+  }
+
+  &__code {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  // ---------- 变体：折行 ----------
+  // 折行时不再显示行号（由模板控制），这里只管代码本身的换行方式
+  &.is-wrap &__pre {
+    white-space: pre-wrap;
+    // 长串（URL、hash）不断行会撑破容器
+    overflow-wrap: anywhere;
+  }
+
+  // ---------- 变体：尺寸 ----------
+  &--sm {
+    --sr-code-font-size: 11.5px;
+    --sr-code-pad-y: 8px;
+    --sr-code-pad-x: 10px;
+    --sr-code-gutter-width: 30px;
+  }
+
+  &--lg {
+    --sr-code-font-size: 13.5px;
+    --sr-code-pad-y: 16px;
+    --sr-code-pad-x: 18px;
+    --sr-code-gutter-width: 42px;
+  }
+
+  // ---------- 状态：复制结果 ----------
+  &.is-copied &__copy {
+    border-color: var(--sr-color-success);
+    color: var(--sr-color-success);
+  }
+
+  &.is-copy-fail &__copy {
+    border-color: var(--sr-color-danger);
+    color: var(--sr-color-danger);
+  }
+}

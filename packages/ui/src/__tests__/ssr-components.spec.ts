@@ -19,6 +19,7 @@ import {
   SrDivider,
   SrDrawer,
   SrDropdown,
+  SrEmojiPicker,
   SrEmpty,
   SrForm,
   SrFormItem,
@@ -30,6 +31,7 @@ import {
   SrLoading,
   SrCarousel,
   SrCascader,
+  SrCodeBlock,
   SrCollapse,
   SrContextMenu,
   SrColorPicker,
@@ -399,6 +401,22 @@ describe('导航与数据组件的 SSR 渲染', () => {
     expect(html).toContain('aria-label')
     expect(html).toContain('第一节')
     expect(html).toContain('子节')
+  })
+
+  it('SrCodeBlock 服务端输出代码与行号', async () => {
+    const html = await render(SrCodeBlock, { code: 'a = 1', lang: 'ts', lineNumbers: true })
+
+    expect(html).toContain('a = 1')
+    expect(html).toContain('sr-code__gutter')
+  })
+
+  it('SrEmojiPicker 服务端输出表情按钮', async () => {
+    const html = await render(SrEmojiPicker, {
+      packages: [{ key: 'p', name: '包', emojis: [{ name: '微笑', char: '🙂' }] }],
+    })
+
+    expect(html).toContain('sr-emoji-picker')
+    expect(html).toContain('微笑')
   })
 
   it('SrPagination', async () => {

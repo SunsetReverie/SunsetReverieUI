@@ -1,4 +1,5 @@
 export { srOmit } from './attrs'
+export { srCopyText } from './clipboard'
 export { srWithInstall } from './with-install'
 export { srDerivePrimaryScale, srHexToHsl, srHslToHex, srAdjustLightness } from './color'
 export {

@@ -927,6 +927,70 @@
     ],
     "slots": ["default"]
   },
+  "code-block": {
+    "name": "code-block",
+    "options": [
+      {
+        "from": "codeBlockProps",
+        "name": "code",
+        "type": "string",
+        "default": "''",
+        "description": "代码内容（原始文本，不要预先转义）"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "lang",
+        "type": "string",
+        "default": "'text'",
+        "description": "语言标识 @default 'text' 支持别名（`js` / `ts` / `yml` / `sh`），由 `highlight` 决定怎么解析。 不认识的语言应当原样返回，不要抛错。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "highlight",
+        "type": "SrCodeHighlight",
+        "default": "undefined",
+        "description": "高亮函数 不传则按纯文本展示（内部会做 HTML 转义）。 **返回值会被直接插入 DOM**，所以函数里必须自己处理转义—— highlight.js 的 `highlight()` 和 shiki 的 `codeToHtml()` 返回的 都是已转义的 HTML，可以直接用。自己写高亮器时要记得这一点。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "lineNumbers",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否显示行号 @default false"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "copyable",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示复制按钮 @default true 与 `lineNumbers` 相互独立：行号是阅读辅助，复制是操作辅助， 两者的取舍理由不同。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "顶栏左侧的文件名，如 `main.ts`；不传则显示语言名"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "wrap",
+        "type": "boolean",
+        "default": "false",
+        "description": "长行折行 @default false 默认不折行，超出时横向滚动——代码的换行位置有语义， 自动折行会让缩进层级看不清。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      }
+    ],
+    "sources": ["codeBlock"],
+    "emits": [],
+    "slots": []
+  },
   "col": {
     "name": "col",
     "options": [
@@ -1654,6 +1718,61 @@
       }
     ],
     "slots": ["default", "menu"]
+  },
+  "emoji-picker": {
+    "name": "emoji-picker",
+    "options": [
+      {
+        "from": "emojiPickerProps",
+        "name": "packages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包列表 不传则使用内置的字符表情包。 **必须与渲染端用同一份数据**——否则编辑器里插的表情在正文里查不到， 会显示成一串 `[表情名]` 纯文本。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "columns",
+        "type": "number",
+        "default": "8",
+        "description": "每行几个 @default 8"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "showRecent",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示「最近使用」 @default true 会话级，不持久化——组件不该替宿主决定存哪。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "maxHeight",
+        "type": "number",
+        "default": "260",
+        "description": "面板最大高度（px） @default 260"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      }
+    ],
+    "sources": ["emojiPicker"],
+    "emits": [
+      {
+        "name": "select",
+        "params": ["item", "mark"]
+      }
+    ],
+    "slots": []
   },
   "empty": {
     "name": "empty",
