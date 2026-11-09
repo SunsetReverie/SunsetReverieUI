@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from 'vue'
 
 import SrAnchorItemRow from './anchor-item.vue'
-import { anchorProps, type SrAnchorItem, type SrAnchorTitleScope } from './anchor'
+import { anchorProps, type SrAnchorItem, type SrAnchorTitleScope, type SrAnchorToggleScope } from './anchor'
 
 defineOptions({ name: 'SrAnchor', inheritAttrs: false })
 
@@ -12,6 +12,9 @@ const slots = useSlots()
 
 /** `#title` 插槽函数，原样下传给每一层 */
 const titleSlot = computed(() => slots.title as ((scope: SrAnchorTitleScope) => unknown) | undefined)
+
+/** `#toggle` 插槽函数，同样以函数形式下传 */
+const toggleSlot = computed(() => slots.toggle as ((scope: SrAnchorToggleScope) => unknown) | undefined)
 
 const emit = defineEmits<{
   /** 激活项变化 */
@@ -535,6 +538,7 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
         :show-toggle="showToggle"
         :toggle-position="togglePosition"
         :title-slot="titleSlot"
+        :toggle-slot="toggleSlot"
         @click="onClick"
       />
     </ul>

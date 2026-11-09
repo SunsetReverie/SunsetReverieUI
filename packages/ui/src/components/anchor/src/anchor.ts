@@ -26,6 +26,12 @@ export interface SrAnchorTitleScope {
   current: boolean
 }
 
+/** `#toggle` 插槽的作用域 */
+export interface SrAnchorToggleScope {
+  /** 当前父级是否已展开 */
+  expanded: boolean
+}
+
 export const anchorProps = {
   /** 锚点数据 */
   items: {

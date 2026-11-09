@@ -228,7 +228,7 @@
         "params": ["key", "expanded"]
       }
     ],
-    "slots": ["title"]
+    "slots": ["title", "toggle"]
   },
   "avatar": {
     "name": "avatar",

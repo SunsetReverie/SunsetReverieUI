@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 import SrIcon from '../../icon/src/icon.vue'
-import type { SrAnchorItem, SrAnchorTitleScope } from './anchor'
+import type { SrAnchorItem, SrAnchorTitleScope, SrAnchorToggleScope } from './anchor'
 
 defineOptions({ name: 'SrAnchorItem' })
 
@@ -39,6 +39,12 @@ const props = defineProps<{
    * 递归组件里会无限重渲染、把页面卡死。
    */
   titleSlot?: (scope: SrAnchorTitleScope) => unknown
+  /**
+   * `#toggle` 插槽函数
+   *
+   * 同样以函数形式下传，理由与 `titleSlot` 一致。
+   */
+  toggleSlot?: (scope: SrAnchorToggleScope) => unknown
 }>()
 
 const emit = defineEmits<{
@@ -61,6 +67,9 @@ const toggleVisible = computed(() => props.collapsible && props.showToggle && ha
 
 /** 当前是否展开 */
 const expanded = computed(() => props.expandedKeys.has(props.item.key))
+
+/** `#toggle` 插槽参数 */
+const toggleScope = computed<SrAnchorToggleScope>(() => ({ expanded: expanded.value }))
 
 /** `#title` 插槽参数 */
 const titleScope = computed<SrAnchorTitleScope>(() => ({
@@ -90,7 +99,8 @@ const titleScope = computed<SrAnchorTitleScope>(() => ({
         :aria-label="expanded ? '折叠' : '展开'"
         @click="toggle(item.key)"
       >
-        <SrIcon name="lucide:chevron-right" :size="12" />
+        <component :is="toggleSlot" v-if="toggleSlot" v-bind="toggleScope" />
+        <SrIcon v-else name="lucide:chevron-right" :size="12" />
       </button>
 
       <a
@@ -113,7 +123,8 @@ const titleScope = computed<SrAnchorTitleScope>(() => ({
         :aria-label="expanded ? '折叠' : '展开'"
         @click="toggle(item.key)"
       >
-        <SrIcon name="lucide:chevron-right" :size="12" />
+        <component :is="toggleSlot" v-if="toggleSlot" v-bind="toggleScope" />
+        <SrIcon v-else name="lucide:chevron-right" :size="12" />
       </button>
     </div>
 
@@ -135,6 +146,7 @@ const titleScope = computed<SrAnchorTitleScope>(() => ({
         :show-toggle="showToggle"
         :toggle-position="togglePosition"
         :title-slot="titleSlot"
+        :toggle-slot="toggleSlot"
         @click="(target, event) => emit('click', target, event)"
       />
     </ul>

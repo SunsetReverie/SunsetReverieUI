@@ -408,7 +408,21 @@ const el = document.querySelector('.layout__body')
 
 **只替换文字内容**：外层 `<a>`、点击行为、`aria-current`、滚动跳转都保持不变。
 
-> 任意层级都能用。组件内部把插槽函数作为 prop 逐层下传，而不是用 `<template>` 递归转发——后者在递归组件里会让 Vue 判定插槽不稳定、反复触发子组件更新，最终把页面卡死。
+### #toggle 自定义折叠图标
+
+```vue
+<template #toggle="{ expanded }">
+  <SrIcon :name="expanded ? 'lucide:minus' : 'lucide:plus'" :size="12" />
+</template>
+```
+
+只替换图标本身：按钮尺寸、`aria-expanded`、展开时的旋转动画都保留。
+
+### 实现说明
+
+两个插槽都**逐层下传**，所以任意层级都能用。
+
+内部用的是「把插槽函数当 prop 往下传」而不是 `<template #xxx>` 递归转发——后者在递归组件里每次渲染都会新建插槽函数，Vue 会判定插槽不稳定并强制子组件更新，子组件再传给下一层，最终无限重渲染把页面卡死。这一点写在组件注释里，改这个文件时别退回去。
 
 ## Props
 
