@@ -454,6 +454,89 @@ const engine = {
 
 ---
 
+### 7.5 配套组件：SrCodeBlock 与 SrEmojiPicker
+
+两者都作为**独立组件**提供，Markdown 只是复用它们。
+
+#### SrCodeBlock
+
+```ts
+{
+  code?: string
+  lang?: string          // 默认 'text'，不做高亮
+  lineNumbers?: boolean  // 默认 false
+  copyable?: boolean     // 默认 true
+  title?: string         // 顶栏文件名，如 'main.ts'
+  wrap?: boolean         // 长行折行，默认 false
+}
+```
+
+**为什么独立**：
+
+- 文档站、示例页、MDX 场景都要单独展示代码块，不该为此引入整个 Markdown 渲染器
+- `SrMarkdown` 内部渲染代码块时复用它的结构，避免两套逻辑漂移
+
+**渲染结构**（来自旧库实践）：
+
+```html
+<div class="sr-code">
+  <div class="sr-code__bar">        <!-- 顶栏：语言 / 标题 / 复制按钮 -->
+  <span class="sr-code__gutter">    <!-- 行号：独立一列 -->
+  <pre><code>                        <!-- 高亮结果 -->
+```
+
+行号必须是独立一列，**不能按行切分高亮结果**——切分会切断块注释和多行字符串的着色。
+
+#### SrEmojiPicker
+
+```ts
+{
+  packages?: SrEmojiPackage[]   // 不传用内置字符表情包
+  columns?: number
+  showRecent?: boolean
+}
+
+interface SrEmojiPackage { key: string; name: string; emojis: SrEmojiItem[] }
+interface SrEmojiItem { name: string; url?: string; char?: string }
+```
+
+`url` 与 `char` 二选一，不额外加 `type` 字段——多一个字段就多一处可能与实际内容不一致的地方。
+
+**导出的工具函数**：
+
+| 函数 | 作用 |
+| --- | --- |
+| `buildEmojiMap(packages)` | 建「名称 → 表情」查找表，重名以先出现为准 |
+| `parseEmojiText(text, map)` | 把 `[名称]` 切成 segments（文本片段 / 表情片段） |
+| `stringifyEmoji(item)` | 反向：表情项 → 标记文本 |
+| `DEFAULT_EMOJI_PACKAGES` | 内置字符表情包 |
+
+**与 Markdown 的耦合点只有一处**：编辑器插入的是**标记文本** `[微笑]`，渲染时按名称反查。
+
+这样做的好处是**表情包可以整体替换**（字符换成图片、换一套画风），历史内容里存的标记不用动。代价是渲染端必须认识这套标记。
+
+> **必须保证编辑器与渲染器用同一份 `packages`**。否则用户在编辑器里插的表情，预览时查不到，显示成一串 `[表情名]` 纯文本。旧库把这一点写在了 prop 注释里，新实现要在运行时也做一次开发环境告警。
+
+### 7.6 组件间的依赖关系
+
+```
+SrEmojiPicker ──(packages)──┐
+                            ├──▶ SrMarkdownEditor
+SrCodeBlock ─(代码块结构)───┤
+                            │
+                            └──▶ SrMarkdown ──▶ (engine: markdown-it)
+```
+
+| 依赖 | 方向 | 说明 |
+| --- | --- | --- |
+| `SrMarkdownEditor` → `SrMarkdown` | 强 | 预览区就是 `SrMarkdown` |
+| `SrMarkdown` → `SrCodeBlock` 结构 | 弱 | 只复用 HTML 结构与样式，不实例化组件 |
+| `SrMarkdownEditor` → `SrEmojiPicker` | 弱 | 工具栏的表情按钮，可选 |
+
+**`SrMarkdown` 不直接依赖 `SrEmojiPicker`**：它只需要 `emojiMap` 这一个查找表，由宿主或编辑器传进来即可。这样只读渲染场景不必引入整个表情面板。
+
+---
+
 ## 八、工具栏
 
 ### 8.1 可配置
@@ -527,6 +610,17 @@ Markdown 渲染是 XSS 高发区，尤其内容来自用户输入时。以下四
 
 ## 十一、实施阶段
 
+### 阶段零：前置组件
+
+`SrCodeBlock` 与 `SrEmojiPicker` 先落地，它们是 Markdown 体系的零件：
+
+| 组件 | 理由 |
+| --- | --- |
+| `SrCodeBlock` | Markdown 的代码块要复用它的结构与样式；本身也是文档站刚需 |
+| `SrEmojiPicker` | 提供表情数据结构与 `parseEmojiText`，Markdown 的标记渲染依赖它 |
+
+两个都可以独立交付、独立验证，不阻塞主线。
+
 ### 阶段一：`SrMarkdown` + 四层扩展（核心）
 
 这是价值主体。没有它，编辑器只是个带工具栏的 textarea。
@@ -554,18 +648,18 @@ Markdown 渲染是 XSS 高发区，尤其内容来自用户输入时。以下四
 | 3 | 引擎接口 | **同步/异步都支持** | 锁死同步会堵死 shiki 这类异步高亮器（见 4.3） |
 | 4 | 代码高亮 | **不内置**，由使用方经 `highlight` 钩子接入 | 避免与使用方已有的高亮方案冲突（见 5.1） |
 | 5 | 高亮器选型 | **不预设** | 前台技术栈尚未开始开发（见 5.6） |
+| 6 | `SrCodeBlock` | **独立组件** | 文档站/示例页需要单独用；Markdown 复用其结构（见 7.5） |
+| 7 | 表情机制 | **移植 `SrEmojiPicker`** | 标记文本比字符更稳，表情包可整体替换（见 7.5） |
 
 ### 12.2 仍待确认
 
 | # | 决策点 | 选项 | 当前倾向 |
 | --- | --- | --- | --- |
-| 6 | 短代码语法 | `{{gallery id=3}}` / `:::gallery`（围栏） / 自定义 | `{{...}}` |
-| 7 | 内容可信度 | 内部人员写作 / 允许 UGC | 待定 |
-| 8 | 短代码编辑器内是否高亮 | 接受不高亮 / 必须高亮 | 接受不高亮 |
-| 9 | 是否内置最小解析器做默认值 | 提供 / 不提供 | 不提供 |
-| 10 | 异步解析时的占位形态 | 骨架条 / 保留旧内容 | 待定 |
-| 11 | 是否独立出 `SrCodeBlock` 组件 | 独立 / 仅内部渲染 | 待定 |
-| 12 | 是否移植旧库的表情标记机制 | 移植 / 不做 | 倾向移植 |
+| 8 | 短代码语法 | `{{gallery id=3}}` / `:::gallery`（围栏） / 自定义 | `{{...}}` |
+| 9 | 内容可信度 | 内部人员写作 / 允许 UGC | 待定 |
+| 10 | 短代码编辑器内是否高亮 | 接受不高亮 / 必须高亮 | 接受不高亮 |
+| 11 | 是否内置最小解析器做默认值 | 提供 / 不提供 | 不提供 |
+| 12 | 异步解析时的占位形态 | 骨架条 / 保留旧内容 | 待定 |
 
 ---
 
@@ -724,7 +818,7 @@ if (!allow(url)) return matched   // 返回整段原文，不是只留 label
 | props 类型内联 | 实施时验证；能引外部类型就引 |
 | 表情存标记文本 | 保留，纳入扩展机制（作为短代码的一种） |
 
-> 待定：是否把旧库的 `SrCodeBlock` 独立成一个组件（`SrCodeBlock` vs 只在 Markdown 内部渲染代码块）。独立出来的好处是文档站、示例页可以直接复用；代价是两处渲染逻辑要保持一致。
+**`SrCodeBlock` 定为独立组件**（已决）。Markdown 内部渲染代码块时复用它的 HTML 结构与样式类，但不实例化组件——因为 `v-html` 插进来的内容不归 Vue 管，没法在这里挂组件实例。两处共用同一份 `style.less` 保证外观一致。
 
 ---
 
