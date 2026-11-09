@@ -3,6 +3,7 @@ import {
   SrEmojiPicker,
   SrSegmented,
   SrTag,
+  DEFAULT_EMOJI_PACKAGES,
   parseEmojiText,
   buildEmojiMap,
   type SrEmojiItem,
@@ -11,6 +12,26 @@ import {
 import { computed, ref } from 'vue'
 
 defineOptions({ name: 'EmojiPickerDemo' })
+
+/** 12 个表情包：tab 远超面板宽度，用来演示横向滚动 */
+const manyPackages: SrEmojiPackage[] = [
+  '神烦狗',
+  '猫猫',
+  '兔兔',
+  '柴犬',
+  '企鹅',
+  '熊猫',
+  '小熊',
+  '青蛙',
+  '狐狸',
+  '鲸鱼',
+  '蘑菇',
+  '星宝',
+].map((name, i) => ({
+  key: `pack-${i}`,
+  name,
+  emojis: (DEFAULT_EMOJI_PACKAGES[0]?.emojis ?? []).slice((i % 5) * 8, (i % 5) * 8 + 8),
+}))
 
 /** 最近选中 */
 const picked = ref<string[]>([])
@@ -111,6 +132,23 @@ const segments = computed(() => parseEmojiText(storyMarks.value, buildEmojiMap(c
         不传 <code>packages</code> 时用内置的五个分类，共 130 多个字符表情。
         <code>tab-position</code> 控制分类栏在底部还是顶部；
         <code>searchable</code> 打开搜索框，跨分类按名称过滤。 悬停表情时顶部会显示名称
+      </p>
+    </section>
+
+    <section>
+      <h3>多个表情包（tab 横向滚动）</h3>
+      <div class="panel">
+        <SrEmojiPicker :packages="manyPackages" :columns="8" @select="onSelect" />
+      </div>
+      <p class="hint">
+        12 个包远超面板宽度，tab 栏自己横向滚动，<strong>面板宽度保持不变</strong>。
+        滚动条已隐藏：鼠标滚轮悬停在 tab 栏上会横向滚动，也可以按住左右拖动。 拖动超过 4px
+        判定为拖拽，松手不会误切到起手处那个包
+      </p>
+      <p class="hint">
+        两个容易踩空的地方：面板宽度不能是 <code>fit-content</code>（会把 tab 内容宽度算进去，
+        <code>overflow-x: auto</code> 永远触发不了），所以宽度由 <code>columns</code> 算出； tab
+        也不能换行或收缩（换行撑高面板、收缩截断文字认不出包）
       </p>
     </section>
 

@@ -39,11 +39,28 @@ const searchText = ref('')
 /** 当前悬停的表情，用于顶部信息行 */
 const hovered = ref<SrEmojiItem | null>(null)
 
+/** 分类栏滚动容器 */
+const tabsRef = ref<HTMLElement | null>(null)
+
+/** 分类栏是否正在拖拽（只影响光标） */
+const tabsDragging = ref(false)
+
 /** 刚被点选的表情名，用来触发一次短暂的「已选中」动画 */
 const pickedName = ref('')
 
 /** 选中动画的复位定时器 */
 let pickedTimer: ReturnType<typeof setTimeout> | null = null
+
+/** 正在拖拽的指针 id */
+let dragPointer: number | null = null
+/** 拖拽起点 X */
+let dragStartX = 0
+/** 拖拽起点的 scrollLeft */
+let dragStartScroll = 0
+/** 本次按下是否已判定为拖拽（超过 4px） */
+let dragMoved = false
+/** 拖拽结束后抑制紧随其后的 click，避免误切 tab */
+let suppressClick = false
 
 /** 是否正在搜索 */
 const isSearching = computed(() => props.searchable && searchText.value.trim().length > 0)
@@ -117,9 +134,13 @@ const rootStyle = computed(() => {
   }
 
   return {
-    width: toCss(props.width),
+    // 不传 width 时不能让面板宽度跟着内容走：tab 一多，
+    // fit-content 会把 tab 的内容宽度也算进去，overflow-x 永远触发不了。
+    // 改由 columns × 格子宽度算出，tab 超出才真正落到滚动上。
+    width: toCss(props.width) ?? 'var(--sr-emoji-auto-width)',
     height: toCss(props.height),
     minHeight: `${props.minHeight}px`,
+    '--sr-emoji-columns': String(props.columns),
   }
 })
 
@@ -159,6 +180,95 @@ function onSelect(item: SrEmojiItem): void {
 onBeforeUnmount(() => {
   if (pickedTimer) clearTimeout(pickedTimer)
 })
+
+/**
+ * 分类栏滚轮：把纵向滚轮映射成横向滚动
+ *
+ * @remarks 普通鼠标只有纵向滚轮，不接管的话在 tab 上滚轮会让整个页面
+ * 上下跳，完全帮不到用户。触控板的双轴手势（deltaX 更大）交给浏览器。
+ * @param event 滚轮事件
+ */
+function onTabsWheel(event: WheelEvent): void {
+  const el = tabsRef.value
+  if (!el) return
+  if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return
+
+  event.preventDefault()
+  el.scrollLeft += event.deltaY
+}
+
+/**
+ * 开始拖拽分类栏
+ *
+ * @remarks 用 Pointer Events 而不是 mouse / touch 两套：
+ * 鼠标、触摸笔、触屏共用一份代码。捕获指针后拖出 tab 栏也能继续收到 move。
+ * @param event 指针事件
+ */
+function onTabsPointerDown(event: PointerEvent): void {
+  if (event.pointerType === 'mouse' && event.button !== 0) return
+
+  const el = tabsRef.value
+  if (!el) return
+
+  dragPointer = event.pointerId
+  dragStartX = event.clientX
+  dragStartScroll = el.scrollLeft
+  dragMoved = false
+  suppressClick = false
+
+  el.setPointerCapture?.(event.pointerId)
+}
+
+/**
+ * 拖拽中
+ * @param event 指针事件
+ */
+function onTabsPointerMove(event: PointerEvent): void {
+  if (dragPointer !== event.pointerId) return
+
+  const el = tabsRef.value
+  if (!el) return
+
+  const dx = event.clientX - dragStartX
+
+  // 4px 阈值：手抖不算拖拽，正常点击仍能切 tab
+  if (!dragMoved && Math.abs(dx) > 4) {
+    dragMoved = true
+    tabsDragging.value = true
+  }
+  if (!dragMoved) return
+
+  el.scrollLeft = dragStartScroll - dx
+  event.preventDefault()
+}
+
+/**
+ * 结束拖拽
+ * @param event 指针事件
+ */
+function onTabsPointerUp(event: PointerEvent): void {
+  if (dragPointer !== event.pointerId) return
+
+  tabsRef.value?.releasePointerCapture?.(event.pointerId)
+  dragPointer = null
+  tabsDragging.value = false
+
+  // 拖过就不让松手时的 click 切到起手处那个 tab
+  suppressClick = dragMoved
+  dragMoved = false
+}
+
+/**
+ * 捕获阶段拦掉拖拽产生的 click
+ * @param event 点击事件
+ */
+function onTabsClickCapture(event: MouseEvent): void {
+  if (!suppressClick) return
+
+  suppressClick = false
+  event.preventDefault()
+  event.stopPropagation()
+}
 
 /**
  * 切到某个分类
@@ -265,7 +375,19 @@ watch(isSearching, (on, off) => {
     </div>
 
     <!-- 分类栏 -->
-    <div v-if="!isSearching" class="sr-emoji-picker__tabs" role="tablist">
+    <div
+      v-if="!isSearching"
+      ref="tabsRef"
+      class="sr-emoji-picker__tabs"
+      :class="{ 'is-dragging': tabsDragging }"
+      role="tablist"
+      @wheel="onTabsWheel"
+      @pointerdown="onTabsPointerDown"
+      @pointermove="onTabsPointerMove"
+      @pointerup="onTabsPointerUp"
+      @pointercancel="onTabsPointerUp"
+      @click.capture="onTabsClickCapture"
+    >
       <button
         v-if="hasRecent"
         class="sr-emoji-picker__tab"

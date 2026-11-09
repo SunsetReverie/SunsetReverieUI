@@ -12,11 +12,18 @@
 
 .sr-emoji-picker {
   --sr-emoji-gap: 2px;
+  --sr-emoji-pad-x: 10px;
   --sr-emoji-font-size: 22px;
   --sr-emoji-item-size: 34px;
   --sr-emoji-tab-radius: 8px;
   --sr-emoji-item-radius: 8px;
   --sr-emoji-border: 1px solid var(--sr-color-border-subtle);
+  // 面板宽度由 columns × 格子宽度算出，而不是 fit-content：
+  // 后者会把 tab 栏的内容宽度也算进去，overflow-x 永远不触发
+  --sr-emoji-auto-width: calc(
+    var(--sr-emoji-columns, 8) * var(--sr-emoji-item-size) + (var(--sr-emoji-columns, 8) - 1) *
+      var(--sr-emoji-gap) + var(--sr-emoji-pad-x) * 2
+  );
 
   display: flex;
   flex-direction: column;
@@ -162,11 +169,21 @@
   // ---------- 分类栏 ----------
   &__tabs {
     display: flex;
+    // 不换行：换行会把固定高度的面板撑高
+    flex-wrap: nowrap;
     flex: 0 0 auto;
     gap: 2px;
     padding: 8px;
     overflow-x: auto;
+    // 纵向页面滚动仍归浏览器，横向由 Pointer Events 接管
+    touch-action: pan-y;
+    // 拖拽时不要选中文字
+    user-select: none;
     scrollbar-width: none;
+  }
+
+  &__tabs.is-dragging {
+    cursor: grabbing;
   }
 
   &__tabs::-webkit-scrollbar {
@@ -174,6 +191,7 @@
   }
 
   &__tab {
+    // 不收缩：收缩会把文字截断，反而认不出是哪个包
     flex: 0 0 auto;
     padding: 5px 12px;
     border: 0;

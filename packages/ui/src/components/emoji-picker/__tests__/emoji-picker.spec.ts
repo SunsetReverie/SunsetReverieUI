@@ -286,6 +286,71 @@ describe('SrEmojiPicker', () => {
     wrapper.unmount()
   })
 
+  it('12 个表情包时 tab 全部渲染', () => {
+    const many = Array.from({ length: 12 }, (_, i) => ({
+      key: `p-${i}`,
+      name: `包${i}`,
+      emojis: [{ name: `表情${i}`, char: '🙂' }],
+    }))
+    const wrapper = mount(SrEmojiPicker, { props: { packages: many } })
+
+    expect(wrapper.findAll('.sr-emoji-picker__tab')).toHaveLength(12)
+    wrapper.unmount()
+  })
+
+  it('默认宽度由 columns 算出，不跟内容走', () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, columns: 6 } })
+
+    const style = wrapper.attributes('style') ?? ''
+    expect(style).toContain('width: var(--sr-emoji-auto-width)')
+    expect(style).toContain('--sr-emoji-columns: 6')
+    wrapper.unmount()
+  })
+
+  it('纵向滚轮在 tab 栏上转成横向滚动', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+    const tabs = wrapper.find('.sr-emoji-picker__tabs')
+    const el = tabs.element as HTMLElement
+    el.scrollLeft = 0
+
+    await tabs.trigger('wheel', { deltaY: 120, deltaX: 0 })
+    expect(el.scrollLeft).toBe(120)
+    wrapper.unmount()
+  })
+
+  it('横向滚轮不接管', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+    const tabs = wrapper.find('.sr-emoji-picker__tabs')
+    const el = tabs.element as HTMLElement
+    el.scrollLeft = 0
+
+    await tabs.trigger('wheel', { deltaY: 20, deltaX: 100 })
+    expect(el.scrollLeft).toBe(0)
+    wrapper.unmount()
+  })
+
+  it('拖拽超过 4px 才滚动，且松手不误切 tab', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+    const tabs = wrapper.find('.sr-emoji-picker__tabs')
+    const el = tabs.element as HTMLElement
+    el.scrollLeft = 0
+
+    await tabs.trigger('pointerdown', { pointerId: 1, pointerType: 'mouse', button: 0, clientX: 200 })
+    await tabs.trigger('pointermove', { pointerId: 1, clientX: 197 }) // 3px，不判定为拖拽
+    expect(el.scrollLeft).toBe(0)
+
+    await tabs.trigger('pointermove', { pointerId: 1, clientX: 150 })
+    expect(el.scrollLeft).toBe(50)
+
+    await tabs.trigger('pointerup', { pointerId: 1, clientX: 150 })
+
+    // 拖过之后的 click 被捕获阶段拦下，tab 不切换
+    const second = wrapper.findAll('.sr-emoji-picker__tab')[1]
+    await second?.trigger('click')
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('甲包')
+    wrapper.unmount()
+  })
+
   it('maxHeight 作用在面板上', () => {
     const wrapper = mount(SrEmojiPicker, { props: { packages, maxHeight: 180 } })
 
