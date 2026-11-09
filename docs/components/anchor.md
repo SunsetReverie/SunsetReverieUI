@@ -339,6 +339,46 @@ const el = document.querySelector('.layout__body')
 
 只靠文字颜色和底色表达激活态。目录本身已经很显眼时，滑块会显得多余。
 
+## 插槽
+
+### #title 自定义每一项
+
+作用域参数：
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `item` | `SrAnchorItem` | 当前项数据 |
+| `depth` | `number` | 层级，0 是顶层 |
+| `index` | `number` | 同层内的序号，从 1 开始 |
+| `active` | `boolean` | 是否在当前路径上（含祖先） |
+| `current` | `boolean` | 是否是当前项本身 |
+
+```vue
+<SrAnchor :items="items">
+  <template #title="{ item, index, current }">
+    <span class="row" :class="{ 'is-current': current }">
+      <span class="row__idx">{{ String(index).padStart(2, '0') }}</span>
+      <span class="row__text">{{ item.title }}</span>
+      <span v-if="current" class="row__badge">当前</span>
+    </span>
+  </template>
+</SrAnchor>
+```
+
+加序号、图标、角标、阅读进度，都靠这个插槽。`depth` 和 `index` 分开给，所以想做「1.2.3」这种多级编号也能拼出来。
+
+**注意**：插槽只替换内容，链接元素（`<a>`）和点击行为不变，滚动跳转、`aria-current` 都照常工作。
+
+### #toggle 自定义折叠图标
+
+```vue
+<template #toggle="{ expanded }">
+  <SrIcon :name="expanded ? 'lucide:minus' : 'lucide:plus'" :size="12" />
+</template>
+```
+
+只替换图标本身，按钮的尺寸、`aria-expanded`、旋转动画都保留。
+
 ## Props
 
 | 名称 | 类型 | 默认值 | 说明 |

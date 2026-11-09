@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrAnchor, SrTag, type SrAnchorItem } from '@sunset-reverie/ui'
+import { SrAnchor, SrIcon, SrTag, type SrAnchorItem } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'AnchorDemo' })
 
@@ -215,6 +215,45 @@ const flatItems: SrAnchorItem[] = [
         </div>
       </div>
       <p class="hint">五种内置样式都由同一组 CSS 变量驱动，所以也能直接覆盖变量做完全自定义（见下一节）</p>
+    </section>
+
+    <section>
+      <h3>插槽自定义内容</h3>
+      <div class="row">
+        <div class="slot-box">
+          <SrAnchor :items="basicItems" :container="CONTAINER" :offset-top="24">
+            <template #title="{ item, index, current }">
+              <span class="custom-item" :class="{ 'is-cur': current }">
+                <span class="custom-item__idx">{{ String(index).padStart(2, '0') }}</span>
+                <span class="custom-item__text">{{ item.title }}</span>
+                <span v-if="current" class="custom-item__badge">当前</span>
+              </span>
+            </template>
+          </SrAnchor>
+        </div>
+
+        <div class="slot-box">
+          <SrAnchor :items="foldItems" :container="CONTAINER" :offset-top="24" collapsible>
+            <template #toggle="{ expanded }">
+              <SrIcon :name="expanded ? 'lucide:minus' : 'lucide:plus'" :size="12" />
+            </template>
+          </SrAnchor>
+        </div>
+
+        <div>
+          <p class="hint" style="margin: 0 0 8px; max-width: 340px">
+            左：<code>#title</code> 插槽拿到 <code>item</code> / <code>index</code> / <code>depth</code> /
+            <code>active</code> / <code>current</code>，可以加序号、图标、角标。 右：<code>#toggle</code>
+            把箭头换成加减号
+          </p>
+          <pre v-pre class="code-block">
+&lt;template #title="{ item, index, current }"&gt;
+  &lt;span :class="{ 'is-cur': current }"&gt;
+    {{ index }} {{ item.title }}
+  &lt;/span&gt;
+&lt;/template&gt;</pre>
+        </div>
+      </div>
     </section>
 
     <section>
@@ -628,6 +667,47 @@ h3 {
 }
 
 /* 整组变量替换，模拟「前台项目接入自己的设计语言」 */
+.slot-box {
+  width: 200px;
+}
+
+.custom-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.custom-item__idx {
+  flex: 0 0 auto;
+  color: var(--sr-color-text-tertiary);
+  font-family: var(--sr-font-family-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-item__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.custom-item.is-cur .custom-item__idx {
+  color: var(--sr-color-primary);
+}
+
+.custom-item__badge {
+  flex: 0 0 auto;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--sr-color-primary-alpha-12);
+  color: var(--sr-color-primary-text);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
 .themed-anchor {
   width: 240px;
 }
