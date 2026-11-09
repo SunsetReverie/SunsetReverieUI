@@ -4,6 +4,22 @@
 
 比 `position: sticky` 多做了两件关键的事：**知道你在哪**，和**带你去那**。
 
+<script setup>
+const customItems = [
+  { key: 'c-intro', title: '组件简介' },
+  {
+    key: 'c-usage',
+    title: '快速开始',
+    children: [
+      { key: 'c-install', title: '安装' },
+      { key: 'c-import', title: '引入' },
+    ],
+  },
+  { key: 'c-config', title: '配置项' },
+  { key: 'c-faq', title: '常见问题' },
+]
+</script>
+
 ## 基础用法
 
 ```vue
@@ -147,40 +163,115 @@ const el = document.querySelector('.layout__body')
 - **`block` / `pill` 的底色从竖线位置开始**，覆盖竖线所在的区域，两者不会分离。
 - **`bold` 会隐藏竖线**。它的定位是「最轻」，多一根线就自相矛盾了。
 
-## 完全自定义激活样式
+## 完全自定义样式
 
-五种内置样式都是由同一组 CSS 变量驱动的，所以**覆盖变量就能完全自定义**，不需要改组件样式：
+组件所有视觉都通过 CSS 变量下发，默认值只是一套合理的起点。前台项目要贴合自己的设计语言时，覆盖变量即可，不需要碰组件样式：
 
 ```css
-.my-anchor .sr-anchor {
-  --sr-anchor-active-color: #fff;
-  --sr-anchor-active-bg: #1f7a4d;
-  --sr-anchor-active-weight: 600;
-  --sr-anchor-active-radius: 6px;
-  --sr-anchor-indicator-w: 0;
+.article-sidebar .sr-anchor {
+  --sr-anchor-font-size: 15px;
+  --sr-anchor-row-pad-y: 9px;
+  --sr-anchor-line-gap: 18px;
+  --sr-anchor-marker: #7c5cff;
+  --sr-anchor-marker-width: 4px;
+  --sr-anchor-color: #6b7280;
 }
 ```
 
-可用变量：
+<div class="sr-demo is-block">
+  <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">
+    <div style="--sr-anchor-font-size: 15px; --sr-anchor-font-size-sub: 13px; --sr-anchor-row-pad-y: 9px; --sr-anchor-line-gap: 18px; --sr-anchor-sub-indent: 16px; --sr-anchor-marker: #7c5cff; --sr-anchor-marker-width: 4px; --sr-anchor-color: #6b7280; --sr-anchor-color-sub: #9ca3af; width: 220px">
+      <SrAnchor :items="customItems" :container="'.pg__body'" :offset-top="24" :active-key="'c-usage'" />
+    </div>
+    <div style="width: 220px">
+      <SrAnchor :items="customItems" :container="'.pg__body'" :offset-top="24" :active-key="'c-usage'" />
+    </div>
+  </div>
+  <p style="margin: 10px 0 0; font-size: 12px; color: var(--vp-c-text-3)">左：覆盖变量后；右：默认</p>
+</div>
 
-| 变量 | 说明 | 默认 |
+### 尺寸
+
+| 变量 | 默认 | 说明 |
 | --- | --- | --- |
-| `--sr-anchor-active-color` | 激活项文字色 | 跟随 `--sr-anchor-marker` |
-| `--sr-anchor-active-bg` | 激活项底色 | 主色 12% |
-| `--sr-anchor-active-weight` | 激活项字重 | `medium` |
-| `--sr-anchor-active-radius` | 激活项圆角 | `--sr-radius-sm` |
-| `--sr-anchor-indicator-w` | 左侧指示器宽 | `0`（不显示） |
-| `--sr-anchor-indicator-h` | 左侧指示器高 | `0` |
-| `--sr-anchor-indicator-r` | 指示器圆角 | `0` |
-| `--sr-anchor-indicator-gap` | 指示器左边距 | `0` |
-| `--sr-anchor-rail` | 轨道线颜色 | `border-subtle` |
-| `--sr-anchor-marker` | 竖线颜色 | 主色 |
-| `--sr-anchor-line-gap` | 竖线到文字的间距 | `12px` |
-| `--sr-anchor-active-radius` | 底色块圆角 | `--sr-radius-sm` |
+| `--sr-anchor-font-size` | `13px` | 一级项字号 |
+| `--sr-anchor-font-size-sub` | `12px` | 二级项字号 |
+| `--sr-anchor-font-size-sub-deep` | `11.5px` | 三级及更深 |
+| `--sr-anchor-max-width` | `220px` | 最大宽度 |
+| `--sr-anchor-row-pad-y` | `6px` | 行上下内边距（决定行高） |
+| `--sr-anchor-row-pad-right` | `8px` | 行右内边距 |
+| `--sr-anchor-item-gap` | `0` | 项之间的间距 |
+| `--sr-anchor-line-gap` | `12px` | 竖线到文字的间距 |
+| `--sr-anchor-sub-indent` | `12px` | 每深一层的额外缩进 |
+| `--sr-anchor-line-height` | `1.5` | 行高倍率 |
 
-> 用深色底做自定义时记得同时改 `--sr-anchor-marker`，否则主色滑块压在深色块上会很突兀。
+### 颜色
 
-竖条和圆点用的是同一个伪元素，只是宽高圆角不同——所以它们不会同时出现，也不需要额外的类名。
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `--sr-anchor-color` | `text-secondary` | 一级项文字 |
+| `--sr-anchor-color-hover` | `text` | 悬停文字 |
+| `--sr-anchor-color-sub` | `text-tertiary` | 二级项文字 |
+| `--sr-anchor-bg-hover` | `bg-sunken` | 悬停底色 |
+| `--sr-anchor-active-color` | 跟随竖线色 | 当前项文字 |
+| `--sr-anchor-active-bg` | `transparent` | 当前项底色 |
+| `--sr-anchor-active-weight` | `semibold` | 当前项字重 |
+| `--sr-anchor-active-radius` | `radius-sm` | 行圆角 |
+| `--sr-anchor-ancestor-color` | `text` | 祖先项文字 |
+
+### 竖线
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `--sr-anchor-marker` | 主色 | 竖线颜色，同时决定当前项文字色 |
+| `--sr-anchor-marker-width` | `3px` | 竖线宽度 |
+| `--sr-anchor-marker-radius` | `radius-full` | 竖线圆角 |
+| `--sr-anchor-marker-offset` | `0` | 距容器左边缘的偏移 |
+
+### 箭头
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `--sr-anchor-toggle-size` | `16px` | 箭头按钮尺寸 |
+| `--sr-anchor-toggle-color` | `text-tertiary` | 箭头颜色 |
+| `--sr-anchor-toggle-opacity` | `0.7` | 箭头透明度（悬停变 1） |
+
+### 吸顶
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `--sr-anchor-affix-bg` | 55% 容器色 | 吸顶背景 |
+| `--sr-anchor-affix-blur` | `14px` | 毛玻璃模糊半径 |
+| `--sr-anchor-affix-saturate` | `150%` | 毛玻璃饱和度 |
+| `--sr-anchor-affix-shadow` | 细线 + 投影 | 吸顶阴影 |
+| `--sr-anchor-affix-radius` | `radius-base` | 吸顶圆角 |
+| `--sr-anchor-affix-pad-y` | `6px` | 吸顶上下内边距 |
+| `--sr-anchor-affix-pad-right` | `8px` | 吸顶右内边距 |
+
+### 横向
+
+| 变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `--sr-anchor-h-gap` | `4px` | 项之间的水平间距 |
+| `--sr-anchor-h-pad-y` | `4px` | 项上下内边距 |
+| `--sr-anchor-h-pad-x` | `10px` | 项左右内边距 |
+| `--sr-anchor-h-marker-height` | `2px` | 底部横条高度 |
+
+> 覆盖时建议加自己的作用域（如 `.article-sidebar .sr-anchor`），避免影响页面里其他锚点。
+
+### 内置变体也是变量
+
+`activeVariant` 的五个值本质上只是给变量赋了不同的值：
+
+```less
+/* block 变体做的事 */
+&--active-block {
+  --sr-anchor-active-color: var(--sr-color-primary-text);
+  --sr-anchor-active-bg: var(--sr-color-primary-alpha-12);
+}
+```
+
+所以「选内置变体」和「自己写一组变量」是同一套机制，两者可以叠加使用——先选 `line` 打底，再覆盖几个变量微调。
 
 ## 折叠
 

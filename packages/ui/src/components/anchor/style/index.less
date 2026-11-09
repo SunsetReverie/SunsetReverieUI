@@ -1,43 +1,94 @@
 /**
  * 锚点导航
  *
- * 默认是极简的 `line` 风格：左侧一根竖线 + 文字加深，不加底色块。
- * 目录本身的职责是「指路」，任何大块视觉都会和正文抢注意力。
+ * 所有视觉都通过 CSS 变量下发，默认值只是「一套合理的起点」。
+ * 前台项目通常要贴合自己的设计语言，所以从字号、行高、缩进到
+ * 竖线宽度、箭头透明度、吸顶模糊强度都可以直接覆盖，不需要改组件样式。
  *
- * 激活样式由 CSS 变量驱动（--sr-anchor-active-*），
- * 内置变体只负责给变量赋值，你在外部覆盖变量即可自定义。
+ * 变量分六组：尺寸 / 颜色 / 竖线 / 箭头 / 吸顶 / 横向。
+ * 覆盖时建议在自己的作用域里写，例如：
+ *
+ *   .article-sidebar .sr-anchor {
+ *     --sr-anchor-font-size: 14px;
+ *     --sr-anchor-line-gap: 16px;
+ *     --sr-anchor-marker-width: 3px;
+ *   }
  *
  * 选择器按特异性分组：基础(1) → 子元素(1) → 变体(1) → 变体内子元素(2)
- *   → 子级缩进(2) → 状态(2) → 激活(3) → 变体激活(4)。
+ *   → 子级(2) → 状态(2) → 激活(3) → 变体激活(4/5)。
  */
 
 @import '../../../styles/mixins/index.less';
 
 .sr-anchor {
-  --sr-anchor-marker: var(--sr-color-primary);
+  // ---------- 尺寸 ----------
+  --sr-anchor-font-size: 13px;
+  --sr-anchor-font-size-sub: 12px;
+  --sr-anchor-font-size-sub-deep: 11.5px;
+  --sr-anchor-max-width: 220px;
+  // 行程：上、右、下；左侧由 --sr-anchor-line-gap 决定
+  --sr-anchor-row-pad-y: 6px;
+  --sr-anchor-row-pad-right: 8px;
+  --sr-anchor-item-gap: 0px;
+  // 竖线到文字的间距
+  --sr-anchor-line-gap: 12px;
+  // 每深一层的额外缩进
+  --sr-anchor-sub-indent: 12px;
+  --sr-anchor-line-height: 1.5;
 
-  // 激活项的三要素：文字色、底色、字重。
-  // 文字默认和竖线同色（都取 --sr-anchor-marker），
-  // 这样改一个变量两者一起变，不会出现「线是主色、字是黑色」的割裂
+  // ---------- 颜色 ----------
+  --sr-anchor-color: var(--sr-color-text-secondary);
+  --sr-anchor-color-hover: var(--sr-color-text);
+  --sr-anchor-color-sub: var(--sr-color-text-tertiary);
+  --sr-anchor-bg-hover: var(--sr-color-bg-sunken);
+
+  // 激活项：文字、底色、字重、圆角
   --sr-anchor-active-color: var(--sr-anchor-marker);
   --sr-anchor-active-bg: transparent;
   --sr-anchor-active-weight: var(--sr-font-weight-semibold);
   --sr-anchor-active-radius: var(--sr-radius-sm);
+  // 祖先项颜色（当前项的上级链路）
+  --sr-anchor-ancestor-color: var(--sr-color-text);
 
-  // 左侧竖线留给文字的间距；竖线本身 3px 宽、起点 2px
-  --sr-anchor-line-gap: 12px;
+  // ---------- 竖线 ----------
+  --sr-anchor-marker: var(--sr-color-primary);
+  --sr-anchor-marker-width: 3px;
+  --sr-anchor-marker-radius: var(--sr-radius-full);
+  // 距容器左边缘的偏移
+  --sr-anchor-marker-offset: 0px;
+
+  // ---------- 箭头 ----------
+  --sr-anchor-toggle-size: 16px;
+  --sr-anchor-toggle-color: var(--sr-color-text-tertiary);
+  --sr-anchor-toggle-opacity: 0.7;
+
+  // ---------- 吸顶 ----------
+  --sr-anchor-affix-bg: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+  --sr-anchor-affix-blur: 14px;
+  --sr-anchor-affix-saturate: 150%;
+  --sr-anchor-affix-shadow: 0 1px 0 var(--sr-color-border-subtle), 0 8px 24px -12px rgb(0 0 0 / 18%);
+  --sr-anchor-affix-radius: var(--sr-radius-base);
+  --sr-anchor-affix-pad-y: 6px;
+  --sr-anchor-affix-pad-right: 8px;
+
+  // ---------- 横向 ----------
+  --sr-anchor-h-gap: 4px;
+  --sr-anchor-h-pad-y: 4px;
+  --sr-anchor-h-pad-x: 10px;
+  --sr-anchor-h-marker-height: 2px;
 
   position: relative;
   display: block;
-  max-width: 220px;
-  color: var(--sr-color-text-secondary);
-  font-size: 13px;
+  max-width: var(--sr-anchor-max-width);
+  color: var(--sr-anchor-color);
+  font-size: var(--sr-anchor-font-size);
 
   // ---------- 列表 ----------
   &__list {
     position: relative;
     display: flex;
     flex-direction: column;
+    gap: var(--sr-anchor-item-gap);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -60,14 +111,14 @@
     display: flex;
     align-items: center;
     min-width: 0;
-    // 竖向留白撑出行高；左侧留出竖线的位置
-    padding: 6px 8px 6px var(--sr-anchor-line-gap);
-    border-radius: var(--sr-radius-sm);
+    padding: var(--sr-anchor-row-pad-y) var(--sr-anchor-row-pad-right) var(--sr-anchor-row-pad-y)
+      var(--sr-anchor-line-gap);
+    border-radius: var(--sr-anchor-active-radius);
     transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__row:hover {
-    background: var(--sr-color-bg-sunken);
+    background: var(--sr-anchor-bg-hover);
   }
 
   // ---------- 链接 ----------
@@ -77,18 +128,18 @@
     min-width: 0;
     color: inherit;
     text-decoration: none;
-    line-height: 1.5;
+    line-height: var(--sr-anchor-line-height);
     // 长标题换行而不是撑破容器
     overflow-wrap: anywhere;
     transition: color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__link:hover {
-    color: var(--sr-color-text);
+    color: var(--sr-anchor-color-hover);
   }
 
   &__link:focus-visible {
-    border-radius: var(--sr-radius-sm);
+    border-radius: var(--sr-anchor-active-radius);
     outline: 2px solid var(--sr-color-primary-alpha-25);
     outline-offset: 1px;
   }
@@ -99,15 +150,15 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
+    width: var(--sr-anchor-toggle-size);
+    height: var(--sr-anchor-toggle-size);
     padding: 0;
     border: 0;
-    border-radius: var(--sr-radius-sm);
+    border-radius: var(--sr-anchor-active-radius);
     background: transparent;
     // 箭头刻意做得很淡：它是辅助操作的入口，不该和标题一样抢眼
-    color: var(--sr-color-text-tertiary);
-    opacity: 0.7;
+    color: var(--sr-anchor-toggle-color);
+    opacity: var(--sr-anchor-toggle-opacity);
     cursor: pointer;
     transition:
       transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
@@ -127,7 +178,6 @@
     transform: rotate(90deg);
   }
 
-  // 箭头靠右：文字占满剩余宽度，箭头被推到末尾
   &__toggle--right {
     margin-right: -4px;
     margin-left: auto;
@@ -138,17 +188,19 @@
     position: absolute;
     z-index: 1;
     top: 0;
-    // left 由内联样式跟随当前行的左边缘，这里给竖线的起点偏移
+    // left 由内联样式跟随当前行的左边缘
     left: 0;
-    width: 3px;
+    width: var(--sr-anchor-marker-width);
     height: 0;
-    border-radius: var(--sr-radius-full);
+    margin-left: var(--sr-anchor-marker-offset);
+    border-radius: var(--sr-anchor-marker-radius);
     background: var(--sr-anchor-marker);
     pointer-events: none;
     transition:
       top var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
       height var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
       left var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
+      width var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
       opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
@@ -167,7 +219,7 @@
     --sr-anchor-active-radius: var(--sr-radius-full);
   }
 
-  // 小圆点：竖线换成圆点，靠伪元素画
+  // 小圆点
   &--active-dot {
     --sr-anchor-active-color: var(--sr-color-primary-text);
   }
@@ -188,8 +240,8 @@
 
   &--horizontal &__list {
     flex-direction: row;
-    gap: 4px;
-    padding-bottom: 6px;
+    gap: var(--sr-anchor-h-gap);
+    padding-bottom: var(--sr-anchor-h-pad-y);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -211,7 +263,7 @@
   }
 
   &--horizontal &__row {
-    padding: 4px 10px;
+    padding: var(--sr-anchor-h-pad-y) var(--sr-anchor-h-pad-x);
   }
 
   &--horizontal &__link {
@@ -222,54 +274,49 @@
     // top 由内联样式给（当前行的底部），不能用 bottom: 0——
     // 那是 list 的 padding 底边，会比行低出一截
     top: 0;
-    bottom: auto;
-    left: 0;
+    margin-left: 0;
     width: 0;
-    height: 2px;
-    border-radius: var(--sr-radius-full);
+    height: var(--sr-anchor-h-marker-height);
   }
 
-  // ---------- 子级缩进 ----------
+  // ---------- 子级 ----------
   // 缩进 + 更小更淡，层级关系靠这两点区分，不额外加符号
   &__sub &__row {
-    padding-left: calc(var(--sr-anchor-line-gap) + 12px);
+    padding-left: calc(var(--sr-anchor-line-gap) + var(--sr-anchor-sub-indent));
   }
 
   &__sub &__link {
-    color: var(--sr-color-text-tertiary);
-    font-size: 12px;
+    color: var(--sr-anchor-color-sub);
+    font-size: var(--sr-anchor-font-size-sub);
   }
 
   &__sub &__sub &__row {
-    padding-left: calc(var(--sr-anchor-line-gap) + 24px);
+    padding-left: calc(var(--sr-anchor-line-gap) + var(--sr-anchor-sub-indent) * 2);
   }
 
   &__sub &__sub &__link {
-    font-size: 11.5px;
+    font-size: var(--sr-anchor-font-size-sub-deep);
   }
 
   // ---------- 状态：吸顶 ----------
   &.is-affix {
     position: sticky;
     z-index: var(--sr-z-index-sticky, 20);
-    // 左侧不留 padding：竖线要贴在容器边缘上
-    padding: 6px 8px 6px 0;
-    border-radius: var(--sr-radius-base);
+    padding: var(--sr-anchor-affix-pad-y) var(--sr-anchor-affix-pad-right) var(--sr-anchor-affix-pad-y) 0;
+    border-radius: var(--sr-anchor-affix-radius);
     // 透明度压到 55% 才能看出背后的内容在动；
     // 太不透明就成了实心块，模糊完全看不出来
-    background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
-    backdrop-filter: blur(14px) saturate(150%);
-    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    background: var(--sr-anchor-affix-bg);
+    backdrop-filter: blur(var(--sr-anchor-affix-blur)) saturate(var(--sr-anchor-affix-saturate));
+    -webkit-backdrop-filter: blur(var(--sr-anchor-affix-blur)) saturate(var(--sr-anchor-affix-saturate));
     // 边框和阴影补足「这是一层浮层」的边界感
-    box-shadow:
-      0 1px 0 var(--sr-color-border-subtle),
-      0 8px 24px -12px rgb(0 0 0 / 18%);
+    box-shadow: var(--sr-anchor-affix-shadow);
   }
 
-  // 祖先项：只加深到正文色，不跟主色——
-  // 整条链都染成主色会很扎眼，也分不清哪一项才是「当前」
+  // ---------- 状态：祖先项 ----------
+  // 只加深到正文色，不跟主色——整条链都染成主色会分不清哪一项是当前
   &__item.is-active > &__row > &__link {
-    color: var(--sr-color-text);
+    color: var(--sr-anchor-ancestor-color);
   }
 
   // ---------- 状态：当前项 ----------
@@ -280,14 +327,13 @@
     font-weight: var(--sr-anchor-active-weight);
   }
 
-  // ---------- 变体激活态（4 个 class）----------
+  // ---------- 变体激活态 ----------
 
-  // 有底色的变体：底色挂在整行上，向左延伸到竖线位置
+  // 有底色的变体：底色挂在整行上，从竖线位置开始
   &--active-block &__item.is-current > &__row,
   &--active-pill &__item.is-current > &__row {
     margin-left: 2px;
     padding-left: calc(var(--sr-anchor-line-gap) - 2px);
-    border-radius: var(--sr-anchor-active-radius);
     background: var(--sr-anchor-active-bg);
   }
 
@@ -303,12 +349,18 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: var(--sr-color-primary);
+    background: var(--sr-anchor-marker);
     content: '';
     transform: translateY(-50%);
   }
 
-  // 子级的激活态不铺底色，只变色——父子同时命中时两块底色会连成一片
+  // 横向没有左侧竖线，激活块不该负向延伸
+  &--horizontal &__item.is-current > &__row {
+    margin-left: 0;
+    padding-left: var(--sr-anchor-h-pad-x);
+  }
+
+  // 子级激活不铺底色，只变色——父子同时命中时两块底色会连成一片
   &__sub &__item.is-current > &__row {
     margin-left: 0;
     background: transparent;

@@ -218,6 +218,38 @@ const flatItems: SrAnchorItem[] = [
     </section>
 
     <section>
+      <h3>深度自定义（整组变量）</h3>
+      <div class="row">
+        <div class="themed-anchor">
+          <SrAnchor
+            :items="basicItems"
+            :container="CONTAINER"
+            :active-key="'a-usage'"
+            :offset-top="24"
+            :show-toggle="false"
+            collapsible
+          />
+        </div>
+        <div>
+          <p class="hint" style="margin: 0 0 8px; max-width: 340px">
+            下面这组变量同时改了字号、行距、缩进、竖线粗细与颜色， 组件本身一行没动：
+          </p>
+          <pre class="code-block">
+--sr-anchor-font-size: 15px;
+--sr-anchor-font-size-sub: 13px;
+--sr-anchor-row-pad-y: 9px;
+--sr-anchor-line-gap: 18px;
+--sr-anchor-sub-indent: 16px;
+--sr-anchor-marker: #7c5cff;
+--sr-anchor-marker-width: 4px;
+--sr-anchor-color: #6b7280;
+--sr-anchor-color-sub: #9ca3af;
+--sr-anchor-bg-hover: #f3f0ff;</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
       <h3>完全自定义激活样式</h3>
       <div class="row">
         <div class="custom-anchor">
@@ -593,6 +625,24 @@ h3 {
   border: 1px solid var(--sr-color-border-subtle);
   border-radius: var(--sr-radius-base);
   background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+}
+
+/* 整组变量替换，模拟「前台项目接入自己的设计语言」 */
+.themed-anchor {
+  width: 240px;
+}
+
+.themed-anchor :deep(.sr-anchor) {
+  --sr-anchor-font-size: 15px;
+  --sr-anchor-font-size-sub: 13px;
+  --sr-anchor-row-pad-y: 9px;
+  --sr-anchor-line-gap: 18px;
+  --sr-anchor-sub-indent: 16px;
+  --sr-anchor-marker: #7c5cff;
+  --sr-anchor-marker-width: 4px;
+  --sr-anchor-color: #6b7280;
+  --sr-anchor-color-sub: #9ca3af;
+  --sr-anchor-bg-hover: #f3f0ff;
 }
 
 .mini-box {
