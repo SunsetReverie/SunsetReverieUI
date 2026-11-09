@@ -8,6 +8,8 @@
  * 也避免长表单挤在窄工具栏里。
  */
 
+@import '../../../styles/mixins/index.less';
+
 .sr-mde-insert-overlay {
   position: fixed;
   inset: 0;
@@ -17,20 +19,25 @@
   justify-content: center;
   padding: 16px;
   background: var(--sr-color-bg-mask, rgb(0 0 0 / 38%));
+  // 与 SrModal 的遮罩一致：只糊一层薄雾，背景还看得出层次
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .sr-mde-insert {
-  --sr-mde-insert-border: 1px solid var(--sr-color-border-subtle);
-
   display: flex;
   flex-direction: column;
   max-width: 100%;
   max-height: min(80vh, 640px);
   overflow: hidden;
-  border: var(--sr-mde-insert-border);
+  border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
   border-radius: var(--sr-radius-lg, 12px);
-  background: var(--sr-color-bg-popover);
-  box-shadow: var(--sr-shadow-xl);
+  // 用 modal 档而不是 popover 档：这是模态面板，背后压着遮罩和正文，
+  // popover 档（玻璃下只有 42% 不透明度）会让底层文字整段透出来
+  background: var(--sr-color-bg-modal);
+  box-shadow: var(--sr-shadow-xl), var(--sr-glass-highlight);
+  // 面板自身也要模糊，否则「半透明 + 清晰背景」比实底更糊
+  .sr-glass-layer(var(--sr-glass-filter-strong));
 
   &__head {
     display: flex;
@@ -178,9 +185,5 @@
   }
 }
 
-/** 玻璃模式：和表情面板一致，去边框、用阴影塑形 */
-[data-sr-style='glass'] .sr-mde-insert {
-  --sr-mde-insert-border: 0 solid transparent;
-
-  box-shadow: var(--sr-shadow-xl), var(--sr-glass-highlight);
-}
+// 玻璃模式不再单独覆盖：基础样式已统一走 --sr-glass-* 令牌，
+// flat 下这些令牌会退化为实色与 none，无需分支
