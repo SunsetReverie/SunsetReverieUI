@@ -143,6 +143,18 @@
     box-shadow: var(--sr-md-img-shadow, none);
   }
 
+  // 图片表情：要抵消上面 `content img` 的块级排版，权重必须高一级
+  &__content &__emoji {
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    margin: 0 1px;
+    border-radius: 0;
+    box-shadow: none;
+    vertical-align: -0.3em;
+    object-fit: contain;
+  }
+
   // 行内代码：pre 里的 code 后面会重置
   &__content code {
     padding: 0.15em 0.4em;

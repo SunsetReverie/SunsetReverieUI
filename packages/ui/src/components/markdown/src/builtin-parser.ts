@@ -14,18 +14,30 @@
  * 改动本文件时必须保持「先转义、再拼标签」这个顺序。
  */
 
+import type { SrEmojiItem } from '../../emoji-picker/src/emoji-picker'
+
 import { srHighlightCode } from './highlight'
 import { srEscapeHtml, srIsSafeImageUrl, srIsSafeUrl } from './sanitize'
 
-/** 代码块渲染选项 */
-export interface SrMarkdownCodeOptions {
+/** 内置解析器的渲染选项 */
+export interface SrMarkdownBuiltinOptions {
   /** 是否做语法着色 @default true */
   highlight?: boolean
-  /** 是否显示行号 @default false */
+  /** 是否显示行号 @default false（组件层的默认值是 true，由 props 传进来） */
   lineNumbers?: boolean
   /** 是否显示复制按钮 @default true */
   copy?: boolean
+  /**
+   * 表情查找表
+   *
+   * @remarks 用 `buildEmojiMap` 从与编辑器同一份表情包生成。
+   * 不传则 `[名称]` 按普通文本原样输出。
+   */
+  emoji?: Map<string, SrEmojiItem>
 }
+
+/** @deprecated 改用 `SrMarkdownBuiltinOptions` */
+export type SrMarkdownCodeOptions = SrMarkdownBuiltinOptions
 
 /**
  * 给代码块的每一行套一个容器
@@ -54,7 +66,7 @@ function wrapCodeLines(html: string): string {
  * 顺序有讲究：行内代码优先，否则 `` `**a**` `` 里的星号会被粗体规则
  * 先吃掉，代码里就出现了标签。
  */
-function parseInline(text: string): string {
+function parseInline(text: string, emoji?: Map<string, SrEmojiItem>): string {
   let result = text
 
   /**
@@ -107,6 +119,30 @@ function parseInline(text: string): string {
       `<a class="sr-md__link" href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`,
   )
 
+  // 表情标记 `[名称]`。放在链接之后：`[文字](url)` 已经被上面的规则吃掉，
+  // 这里不会再把它的方括号误认成表情。
+  // 命中才替换，没命中原样返回——正文里写 `[注]` 这类方括号不会被误吞。
+  if (emoji) {
+    result = result.replace(/\[([^[\]]+)\]/g, (matched, name: string) => {
+      const item = emoji.get(name)
+      if (!item) return matched
+
+      // 字符表情直接吐 Unicode：不落 img，复制出去也还是表情本身
+      if (item.char) return hold(item.char)
+
+      // 图片表情要过地址校验，不安全就当普通文本，不生成破图。
+      // url 来自 props 没经过源码转义，拼进属性前必须自己转一遍，
+      // 否则带引号的地址能突破属性边界
+      if (item.url && srIsSafeImageUrl(item.url)) {
+        return hold(
+          `<img class="sr-md__emoji" src="${srEscapeHtml(item.url)}" alt="${name}" loading="lazy" />`,
+        )
+      }
+
+      return matched
+    })
+  }
+
   result = result
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/__([^_]+)__/g, '<strong>$1</strong>')
@@ -124,8 +160,11 @@ function parseInline(text: string): string {
  * @param source 原始 Markdown
  * @returns HTML 字符串
  */
-export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOptions = {}): string {
+export function parseMarkdownBuiltin(source: string, options: SrMarkdownBuiltinOptions = {}): string {
   if (!source) return ''
+
+  /** 表情查找表：整篇共用一份，行内解析时逐段查 */
+  const emojiMap = options.emoji
 
   // 先整体转义，后续标签全部由本函数拼出
   const lines = srEscapeHtml(source.replace(/\r\n?/g, '\n')).split('\n')
@@ -208,7 +247,7 @@ export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOpti
     if (heading) {
       const level = (heading[1] ?? '#').length
       html.push(
-        `<h${level} class="sr-md__h sr-md__h--${level}">${parseInline((heading[2] ?? '').trim())}</h${level}>`,
+        `<h${level} class="sr-md__h sr-md__h--${level}">${parseInline((heading[2] ?? '').trim(), emojiMap)}</h${level}>`,
       )
       index += 1
       continue
@@ -226,7 +265,7 @@ export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOpti
       const inner = body
         .join('\n')
         .split(/\n{2,}/)
-        .map((part) => `<p class="sr-md__p">${parseInline(part.replace(/\n/g, '<br />'))}</p>`)
+        .map((part) => `<p class="sr-md__p">${parseInline(part.replace(/\n/g, '<br />'), emojiMap)}</p>`)
         .join('')
 
       html.push(`<blockquote class="sr-md__quote">${inner}</blockquote>`)
@@ -268,14 +307,16 @@ export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOpti
           index += 1
         }
 
-        const headHtml = head.map((cell) => `<th class="sr-md__th">${parseInline(cell)}</th>`).join('')
+        const headHtml = head
+          .map((cell) => `<th class="sr-md__th">${parseInline(cell, emojiMap)}</th>`)
+          .join('')
 
         const bodyHtml = rows
           .map((row) => {
             const cells = head
               .map((_, i) => {
                 const align = aligns[i] ? ` style="text-align: ${aligns[i]}"` : ''
-                return `<td class="sr-md__td"${align}>${parseInline(row[i] ?? '')}</td>`
+                return `<td class="sr-md__td"${align}>${parseInline(row[i] ?? '', emojiMap)}</td>`
               })
               .join('')
             return `<tr class="sr-md__tr">${cells}</tr>`
@@ -302,7 +343,7 @@ export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOpti
         if (!(ordered ? isOl(current) : isUl(current))) break
 
         const text = current.replace(/^\s{0,3}(?:[-*+]|\d+[.)])\s+/, '')
-        items.push(`<li class="sr-md__li">${parseInline(text)}</li>`)
+        items.push(`<li class="sr-md__li">${parseInline(text, emojiMap)}</li>`)
         index += 1
       }
 
@@ -336,14 +377,14 @@ export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOpti
     }
 
     if (paragraph.length) {
-      html.push(`<p class="sr-md__p">${parseInline(paragraph.join('<br />'))}</p>`)
+      html.push(`<p class="sr-md__p">${parseInline(paragraph.join('<br />'), emojiMap)}</p>`)
       continue
     }
 
     // 兜底：上面的循环被「块级语法」判断打断，但那一行最终没被任何块级分支接住
     // （比如 fence 后面跟了非法标识、表格分隔行格式不对）。这时必须强制吃掉一行，
     // 否则 index 原地不动，外层 while 会死循环把整页卡住
-    html.push(`<p class="sr-md__p">${parseInline(line.trim())}</p>`)
+    html.push(`<p class="sr-md__p">${parseInline(line.trim(), emojiMap)}</p>`)
     index += 1
   }
 

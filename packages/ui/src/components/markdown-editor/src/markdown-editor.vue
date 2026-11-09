@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from 'vue'
 
 import { srComputeFloating, srGetRect } from '../../../utils/floating'
+import { DEFAULT_EMOJI_PACKAGES } from '../../emoji-picker/src/data'
 import SrEmojiPicker from '../../emoji-picker/src/emoji-picker.vue'
 import type { SrEmojiItem } from '../../emoji-picker/src/emoji-picker'
 import SrIcon from '../../icon/src/icon.vue'
@@ -60,6 +61,16 @@ const fileRef = ref<HTMLInputElement | null>(null)
 const currentMode = ref<SrMarkdownEditorMode>(props.mode)
 /** 表情浮层是否展开 */
 const emojiOpen = ref(false)
+
+/**
+ * 预览用的表情包
+ *
+ * @remarks 与 `SrEmojiPicker` 的默认行为对齐：不传时退回内置包。
+ * 否则用户从内置包里插入的 `[微笑]` 在预览里查不到，会显示成一串纯文本。
+ */
+const previewEmojiPackages = computed(() =>
+  props.emojiPackages.length ? props.emojiPackages : DEFAULT_EMOJI_PACKAGES,
+)
 /** 表情浮层坐标 */
 const emojiPos = ref({ top: 0, left: 0 })
 /** 上传中 */
@@ -1113,6 +1124,7 @@ defineExpose({
             :code-line-numbers="codeLineNumbers"
             :code-copy="codeCopy"
             :code-copy-notify="codeCopyNotify"
+            :emoji-packages="previewEmojiPackages"
             @copy="emit('copy', $event)"
           />
           <p v-if="!modelValue.trim()" class="sr-mde__empty">{{ placeholder }}</p>
@@ -1242,7 +1254,14 @@ defineExpose({
         class="sr-mde__emoji"
         :style="{ top: `${emojiPos.top}px`, left: `${emojiPos.left}px` }"
       >
-        <SrEmojiPicker :packages="emojiPackages" :size="size" :columns="8" @select="onEmojiSelect" />
+        <SrEmojiPicker
+          :packages="emojiPackages"
+          :size="size"
+          :columns="8"
+          close-on-select
+          @select="onEmojiSelect"
+          @close="emojiOpen = false"
+        />
       </div>
     </Teleport>
   </div>

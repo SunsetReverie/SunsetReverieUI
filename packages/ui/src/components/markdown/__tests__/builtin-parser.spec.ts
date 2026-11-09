@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import { buildEmojiMap } from '../../emoji-picker/src/parse'
 import { parseMarkdownBuiltin, srCountMarkdownText } from '../src/builtin-parser'
 
 describe('parseMarkdownBuiltin', () => {
@@ -193,5 +194,51 @@ describe('srCountMarkdownText', () => {
 
   it('不统计空白', () => {
     expect(srCountMarkdownText('   \n\n  ')).toBe(0)
+  })
+})
+
+describe('表情标记', () => {
+  /** 一份最小的表情包：一个字符表情 + 一个图片表情 + 一个坏地址 */
+  const map = buildEmojiMap([
+    {
+      key: 'test',
+      name: '测试',
+      emojis: [
+        { name: '微笑', char: '🙂' },
+        { name: '狗头', url: 'https://cdn.example.com/dog.png' },
+        { name: '坏图', url: 'javascript:alert(1)' },
+      ],
+    },
+  ])
+
+  it('字符表情直接输出 Unicode，不生成 img', () => {
+    const html = parseMarkdownBuiltin('你好[微笑]', { emoji: map })
+    expect(html).toContain('🙂')
+    expect(html).not.toContain('<img')
+  })
+
+  it('图片表情输出 img，地址不安全时退回原文', () => {
+    const ok = parseMarkdownBuiltin('[狗头]', { emoji: map })
+    expect(ok).toContain('class="sr-md__emoji"')
+    expect(ok).toContain('src="https://cdn.example.com/dog.png"')
+
+    const bad = parseMarkdownBuiltin('[坏图]', { emoji: map })
+    expect(bad).toContain('[坏图]')
+    expect(bad).not.toContain('<img')
+  })
+
+  it('未命中、代码块内、链接文字都不当成表情', () => {
+    expect(parseMarkdownBuiltin('[不存在]', { emoji: map })).toContain('[不存在]')
+    // 代码块里的方括号是代码本身
+    const fenced = '```' + '\n' + '[微笑]' + '\n' + '```'
+    expect(parseMarkdownBuiltin(fenced, { emoji: map })).not.toContain('🙂')
+    // 链接优先：方括号后面跟着 (url) 就是链接
+    const link = parseMarkdownBuiltin('[微笑](https://a.com)', { emoji: map })
+    expect(link).toContain('sr-md__link')
+    expect(link).not.toContain('🙂')
+  })
+
+  it('不传表情表时保持原样', () => {
+    expect(parseMarkdownBuiltin('[微笑]')).toBe('<p class="sr-md__p">[微笑]</p>')
   })
 })

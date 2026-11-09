@@ -230,4 +230,22 @@ describe('SrMarkdown', () => {
     wrapper.unmount()
     Reflect.deleteProperty(navigator, 'clipboard')
   })
+
+  it('正文里的表情标记按内置表情包渲染', async () => {
+    const wrapper = mountMd({ source: '你好[微笑]', engine: 'builtin' })
+    await nextTick()
+
+    // 字符表情直接出 Unicode，不该多出一张图
+    expect(wrapper.html()).toContain('🙂')
+    expect(wrapper.find('img').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('emojiPackages 传空数组时关闭表情解析', async () => {
+    const wrapper = mountMd({ source: '你好[微笑]', engine: 'builtin', emojiPackages: [] })
+    await nextTick()
+
+    expect(wrapper.html()).toContain('[微笑]')
+    wrapper.unmount()
+  })
 })

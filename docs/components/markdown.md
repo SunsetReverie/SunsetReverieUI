@@ -284,6 +284,7 @@ const extensions = [
 | `codeLineNumbers` | `boolean` | `true` | 代码块显示行号 |
 | `codeCopy` | `boolean` | `true` | 代码块显示复制按钮 |
 | `codeCopyNotify` | `boolean` | `false` | 复制成功后弹一条 `srMessage` |
+| `emojiPackages` | `SrEmojiPackage[]` | 内置字符包 | 正文 `[名称]` 的渲染依据，传 `[]` 关闭 |
 | `size` | `SrSize` | `'md'` | 渲染尺寸 |
 | `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板 |
 
@@ -326,6 +327,29 @@ const extensions = [
 <!-- 2. 自己接管，换成 toast / notification -->
 <SrMarkdown source="..." engine="builtin" @copy="(text) => srToast.success('已复制 ' + text.length + ' 字符')" />
 ```
+
+## 表情
+
+正文里的 `[微笑]` 会被渲染成表情，前提是能在表情包里找到同名项：
+
+```vue
+<!-- 默认用内置字符表情包 -->
+<SrMarkdown source="你好[微笑]" engine="builtin" />
+
+<!-- 换成自己的表情包；传 [] 关闭表情解析 -->
+<SrMarkdown source="..." engine="builtin" :emoji-packages="packages" />
+```
+
+| 表情数据 | 渲染结果 |
+| --- | --- |
+| 有 `char` | 直接输出字符（`🙂`），**不生成 `img`**，复制出去还是表情本身 |
+| 只有 `url` | `<img class="sr-md__emoji">`，按字号缩放，地址要过 `srIsSafeImageUrl` |
+
+只替换**命中表情表**的方括号：正文里写 `[注]` 这类内容保持不变；`[文字](url)` 走链接规则，不会被当成表情；代码块里的方括号更不会被动。
+
+::: warning 数据要一致
+`SrEmojiPicker`（插入端）和这里（渲染端）必须用同一份表情包，否则编辑器插进去的标记在正文里查不到，会原样显示成 `[微笑]`。
+:::
 
 ## 事件
 

@@ -365,6 +365,37 @@ const customToolbar: SrMarkdownToolbarItem[] = [
 const emojiPackages = DEFAULT_EMOJI_PACKAGES
 
 /**
+ * 造一个图片表情的 data URI
+ * @param color 底色
+ * @param face 脸谱字符
+ * @returns 可直接塞进 `url` 的地址
+ */
+function svgEmoji(color: string, face: string): string {
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">` +
+    `<circle cx="12" cy="12" r="11" fill="${color}"/>` +
+    `<text x="12" y="17" font-size="12" text-anchor="middle">${face}</text>` +
+    `</svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
+/** 图片表情包：演示 `url` 分支，字符表情不走这条路 */
+const imageEmojiPackages = [
+  {
+    key: 'img',
+    name: '图片表情',
+    emojis: [
+      { name: '点赞', url: svgEmoji('#ffd166', '👍') },
+      { name: '爱心', url: svgEmoji('#ff8fab', '❤') },
+      { name: '星星', url: svgEmoji('#8ecae6', '★') },
+    ],
+  },
+]
+
+/** 图片表情演示内容 */
+const imageEmojiContent = ref('图片表情包里的标记会渲染成 img：[点赞] [爱心] [星星]\n')
+
+/**
  * 保存
  * @param value 当前内容
  */
@@ -722,8 +753,13 @@ const extensions = [{
       </div>
       <SrMarkdownEditor v-model="content" :emoji-packages="withEmoji ? emojiPackages : []" :height="260" />
       <p class="hint">
-        传了 <code>emoji-packages</code> 才出现表情按钮。点击插入的是标记文本
-        <code>[微笑]</code>，预览区按同一份数据查表还原
+        传了 <code>emoji-packages</code> 才出现表情按钮；点一个就插入并收起面板。插入的是标记文本
+        <code>[微笑]</code>，预览区按同一份数据查表还原：字符表情直接出字符，图片表情才生成 <code>img</code>。
+      </p>
+      <SrMarkdownEditor v-model="imageEmojiContent" :emoji-packages="imageEmojiPackages" :height="200" />
+      <p class="hint">
+        后一个是图片表情包（内联 SVG）：同一个包里可以混放字符与图片，按 <code>char</code> /
+        <code>url</code> 各自渲染，图片表情按字号缩放并做基线对齐。
       </p>
     </section>
 

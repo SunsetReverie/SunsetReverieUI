@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
+import { buildEmojiMap } from '../../emoji-picker/src/parse'
 import { srMessage } from '../../message'
 import { parseMarkdownBuiltin } from './builtin-parser'
 import { srPreprocess } from './extensions'
@@ -23,6 +24,15 @@ const rendered = ref('')
 
 /** 异步引擎是否还在渲染 */
 const pending = ref(false)
+
+/**
+ * 表情查找表
+ *
+ * @remarks
+ * 只在表情包变化时重建。输入框每敲一个字都会重渲染，
+ * 若每次都扫一遍几百条表情，长文里会有明显开销。
+ */
+const emojiMap = computed(() => (props.emojiPackages.length ? buildEmojiMap(props.emojiPackages) : undefined))
 
 /**
  * 渲染批次号
@@ -56,6 +66,7 @@ function run(): void {
           highlight: props.codeHighlight,
           lineNumbers: props.codeLineNumbers,
           copy: props.codeCopy,
+          emoji: emojiMap.value,
         }),
       ),
     )
@@ -199,6 +210,8 @@ watch(
       props.codeHighlight,
       props.codeLineNumbers,
       props.codeCopy,
+      props.codeCopyNotify,
+      props.emojiPackages,
     ] as const,
   run,
   { deep: true },

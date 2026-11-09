@@ -1,6 +1,8 @@
 import type { ExtractPropTypes, PropType } from 'vue'
 
 import type { SrSize } from '../../../types/config'
+import type { SrEmojiPackage } from '../../emoji-picker/src/emoji-picker'
+import { DEFAULT_EMOJI_PACKAGES } from '../../emoji-picker/src/data'
 import type { SrMarkdownExtension } from './extensions'
 
 /** 内置解析器哨兵 */
@@ -108,6 +110,20 @@ export const markdownProps = {
   codeCopyNotify: {
     type: Boolean,
     default: false,
+  },
+  /**
+   * 表情包
+   *
+   * @remarks
+   * 正文里的 `[名称]` 按这张表渲染：有 `char` 直接输出字符（不落 `img`），
+   * 有 `url` 才输出图片。必须与插入端（`SrEmojiPicker` / `SrMarkdownEditor`）
+   * 使用同一份数据，否则会显示成 `[名称]` 纯文本。
+   *
+   * 默认使用内置字符表情包；传 `[]` 可以彻底关掉表情解析。
+   */
+  emojiPackages: {
+    type: Array as unknown as PropType<SrEmojiPackage[]>,
+    default: () => DEFAULT_EMOJI_PACKAGES,
   },
   /** 渲染尺寸 @default 'md' */
   size: {
