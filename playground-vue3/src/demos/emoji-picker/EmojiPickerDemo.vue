@@ -102,11 +102,40 @@ const segments = computed(() => parseEmojiText(sourceText.value, buildEmojiMap(c
         <SrSegmented v-model="tabPosition" :options="tabOptions" size="sm" />
       </div>
       <div class="panel panel--tall">
-        <SrEmojiPicker :tab-position="tabPosition" @select="onSelect" />
+        <SrEmojiPicker :tab-position="tabPosition" searchable @select="onSelect" />
       </div>
       <p class="hint">
         不传 <code>packages</code> 时用内置的五个分类，共 130 多个字符表情。
-        <code>tab-position</code> 控制分类栏在底部还是顶部
+        <code>tab-position</code> 控制分类栏在底部还是顶部；
+        <code>searchable</code> 打开搜索框，跨分类按名称过滤。 悬停表情时顶部会显示名称
+      </p>
+    </section>
+
+    <section>
+      <h3>尺寸自定义</h3>
+      <div class="row">
+        <div class="panel">
+          <SrEmojiPicker
+            :width="260"
+            :height="220"
+            :columns="6"
+            :packages="customPackages"
+            @select="onSelect"
+          />
+        </div>
+        <div class="panel">
+          <SrEmojiPicker
+            width="100%"
+            :min-height="180"
+            tab-position="top"
+            :packages="customPackages"
+            @select="onSelect"
+          />
+        </div>
+      </div>
+      <p class="hint">
+        左：固定 <code>width=260</code> / <code>height=220</code>，内容区自动填充并内部滚动。
+        右：宽度占满父容器、<code>min-height=180</code>、分类栏在顶部。 玻璃模式下组件会去掉边框，改用阴影塑形
       </p>
     </section>
 
@@ -182,10 +211,10 @@ h3 {
 }
 
 .panel {
-  max-width: 300px;
-  border: 1px solid var(--sr-color-border-subtle);
+  max-width: 340px;
+  padding: 12px;
+  border: 1px dashed var(--sr-color-border-subtle);
   border-radius: var(--sr-radius-base);
-  overflow: hidden;
 }
 
 .panel--wide {

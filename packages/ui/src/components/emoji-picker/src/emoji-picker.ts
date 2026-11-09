@@ -19,18 +19,9 @@ export interface SrEmojiItem {
    * 重名时以先出现的为准，并在开发环境告警。
    */
   name: string
-  /**
-   * 图片地址。
-   *
-   * @remarks 与 `char` 二选一。可为相对路径（`/emojis/a.png`）或完整 URL；
-   * 存放位置完全由宿主决定，组件不关心。
-   */
+  /** 图片地址，与 `char` 二选一 */
   url?: string
-  /**
-   * 字符表情内容（如 `😀`）。
-   *
-   * @remarks 与 `url` 二选一。两者都缺时该项被忽略。
-   */
+  /** 字符表情内容（如 `😀`），与 `url` 二选一 */
   char?: string
 }
 
@@ -69,12 +60,60 @@ export const emojiPickerProps = {
   /**
    * 分类 tab 的位置 @default 'bottom'
    *
-   * - `bottom`：tab 贴在面板底部，像微信、飞书的输入框表情面板
-   * - `top`：tab 在顶部，适合嵌在弹层里空间受限的场景
+   * - `bottom`：tab 贴在面板底部
+   * - `top`：tab 在顶部
    */
   tabPosition: {
     type: String as PropType<'top' | 'bottom'>,
     default: 'bottom',
+  },
+  /**
+   * 面板宽度
+   *
+   * 数字按像素，字符串原样输出（`'100%'` / `'20rem'` 都行）。
+   * 不传时占满父容器。
+   */
+  width: {
+    type: [Number, String] as PropType<number | string>,
+    default: undefined,
+  },
+  /**
+   * 面板高度
+   *
+   * 传了就是固定高度，内容区自动填充剩余空间并内部滚动。
+   * 不传时由 `minHeight` 与内容共同决定。
+   */
+  height: {
+    type: [Number, String] as PropType<number | string>,
+    default: undefined,
+  },
+  /**
+   * 最小高度（px） @default 240
+   *
+   * 表情少的包不会把面板塌成一条——切换分类时高度不跳。
+   */
+  minHeight: {
+    type: Number,
+    default: 240,
+  },
+  /** 内容区最大高度（px） @default 260，仅在未传 `height` 时生效 */
+  maxHeight: {
+    type: Number,
+    default: 260,
+  },
+  /**
+   * 显示搜索框 @default false
+   *
+   * 搜索跨所有分类按名称过滤，命中结果显示在一个临时「搜索」视图里。
+   */
+  searchable: {
+    type: Boolean,
+    default: false,
+  },
+  /** 搜索框占位文案 */
+  searchPlaceholder: {
+    type: String,
+    default: '搜索表情',
   },
   /**
    * 显示「最近使用」 @default true
@@ -85,15 +124,20 @@ export const emojiPickerProps = {
     type: Boolean,
     default: true,
   },
+  /**
+   * 选中后请求关闭 @default false
+   *
+   * 默认连选（选完面板不关，方便连着插几个表情）。
+   * 打开后 `select` 之外再派发 `close`，由外层浮层决定收起。
+   */
+  closeOnSelect: {
+    type: Boolean,
+    default: false,
+  },
   /** 尺寸档位 @default 'md' */
   size: {
     type: String as PropType<SrSize>,
     default: 'md',
-  },
-  /** 面板最大高度（px） @default 260 */
-  maxHeight: {
-    type: Number,
-    default: 260,
   },
   /** 禁用 @default false */
   disabled: {

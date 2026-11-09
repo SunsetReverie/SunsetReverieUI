@@ -150,7 +150,6 @@ describe('SrEmojiPicker', () => {
     const wrapper = mount(SrEmojiPicker, { props: { packages, tabPosition: 'top' } })
 
     expect(wrapper.classes()).toContain('is-tab-top')
-    expect(wrapper.find('.sr-emoji-picker__tabs').classes()).toContain('is-top')
     wrapper.unmount()
   })
 
@@ -160,6 +159,91 @@ describe('SrEmojiPicker', () => {
     for (const pack of DEFAULT_EMOJI_PACKAGES) {
       expect(pack.emojis.length).toBeGreaterThanOrEqual(20)
     }
+  })
+
+  it('width / height / minHeight 都作用到根节点', () => {
+    const wrapper = mount(SrEmojiPicker, {
+      props: { packages, width: 360, height: '20rem', minHeight: 180 },
+    })
+
+    const style = wrapper.attributes('style') ?? ''
+    expect(style).toContain('width: 360px')
+    expect(style).toContain('height: 20rem')
+    expect(style).toContain('min-height: 180px')
+    wrapper.unmount()
+  })
+
+  it('默认有最小高度', () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+    expect(wrapper.attributes('style')).toContain('min-height: 240px')
+    wrapper.unmount()
+  })
+
+  it('传 height 时内容区不再受 maxHeight 限制', () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, height: 400 } })
+    expect(wrapper.find('.sr-emoji-picker__panel').attributes('style')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('searchable 打开搜索框并跨分类过滤', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, searchable: true } })
+
+    expect(wrapper.find('.sr-emoji-picker__search').exists()).toBe(true)
+
+    const input = wrapper.find('.sr-emoji-picker__search-input')
+    await input.setValue('赞')
+
+    // 「赞」在甲包里，搜索状态下分类栏隐藏
+    expect(wrapper.findAll('.sr-emoji-picker__item')).toHaveLength(1)
+    expect(wrapper.find('.sr-emoji-picker__tabs').exists()).toBe(false)
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('找到 1 个')
+    expect(wrapper.emitted('search-change')?.[0]).toEqual(['赞'])
+    wrapper.unmount()
+  })
+
+  it('搜索无结果时给提示', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, searchable: true } })
+
+    await wrapper.find('.sr-emoji-picker__search-input').setValue('不存在')
+    expect(wrapper.find('.sr-emoji-picker__empty').text()).toBe('没有匹配的表情')
+    wrapper.unmount()
+  })
+
+  it('清空搜索后分类栏回来', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, searchable: true } })
+
+    await wrapper.find('.sr-emoji-picker__search-input').setValue('赞')
+    expect(wrapper.find('.sr-emoji-picker__tabs').exists()).toBe(false)
+
+    await wrapper.find('.sr-emoji-picker__search-clear').trigger('click')
+    expect(wrapper.find('.sr-emoji-picker__tabs').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('悬停时信息行显示表情名称', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('甲包')
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('mouseenter')
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('微笑')
+    wrapper.unmount()
+  })
+
+  it('closeOnSelect 时额外派发 close', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, closeOnSelect: true } })
+
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('click')
+    expect(wrapper.emitted('select')).toBeTruthy()
+    expect(wrapper.emitted('close')).toBeTruthy()
+    wrapper.unmount()
+  })
+
+  it('默认不派发 close，方便连选', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('click')
+    expect(wrapper.emitted('close')).toBeUndefined()
+    wrapper.unmount()
   })
 
   it('maxHeight 作用在面板上', () => {

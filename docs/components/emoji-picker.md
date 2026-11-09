@@ -50,6 +50,25 @@ function onSelect(item: SrEmojiItem, mark: string) {
 
 `select` 事件同时给出**表情项**和**标记文本**——调用方多半是往输入框里插入，让它自己拼 `[名称]` 只是多一步且容易拼错。
 
+## 尺寸与外观
+
+```vue
+<SrEmojiPicker :width="320" :height="280" :min-height="240" />
+```
+
+| prop | 默认 | 说明 |
+| --- | --- | --- |
+| `width` | 占满父容器 | 数字按像素，字符串原样输出（`100%` / `20rem`） |
+| `height` | 由内容决定 | 传了就是固定高度，内容区自动填充并内部滚动 |
+| `minHeight` | `240` | **最小高度**：表情少的分类不会把面板塌成一条，切换时不跳 |
+| `maxHeight` | `260` | 内容区最大高度，仅在未传 `height` 时生效 |
+
+### 玻璃模式
+
+组件自己就是一张卡片：flat 下留一道极细边框，glass 下**去掉边框改用阴影塑形**。
+
+半透明背景上再描一道白边会把面板框得很硬，阴影既能保留「浮起来」的层次，又不切断背景透感。border 置 `0` 而不是 `display: none`，避免尺寸跳变。
+
 ## 分类栏位置
 
 ```vue
@@ -62,6 +81,20 @@ function onSelect(item: SrEmojiItem, mark: string) {
 | `top` | 分类栏在顶 | 弹层里空间受限，或紧挨着标题 |
 
 分类栏是**药丸式**的：选中的项带浅色底 + 主题色文字。不用下划线式 tab——那种样式依赖分割线定位，位置一换就容易穿帮，药丸在哪都成立。
+
+## 搜索
+
+```vue
+<SrEmojiPicker searchable search-placeholder="找表情" />
+```
+
+搜索**跨所有分类**按表情名称过滤，命中时分类栏临时隐藏，顶部信息行显示结果数。关键词变化派发 `search-change`。
+
+表情包多起来之后，翻找不如搜名称快。
+
+## 信息行
+
+面板顶部有一行小字，平时显示当前分类名，鼠标悬停表情时改成该表情的**名称**。键盘 focus 到按钮上也会显示，方便确认 `[标记名]` 具体是什么。
 
 ## 自定义表情包
 
@@ -135,6 +168,16 @@ const segments = parseEmojiText('今天[微笑]了', map)
 
 **查不到的名称原样当作文本**返回，不丢内容——这样正文里写 `[这段是加注]` 这类方括号内容不会被误吞。
 
+## 连选与关闭
+
+默认选中后面板不关，方便连着插几个表情。需要「选一个就收起」时：
+
+```vue
+<SrEmojiPicker close-on-select @close="visible = false" @select="onSelect" />
+```
+
+组件只派发 `close`，**不自己隐藏**——它可能嵌在弹层、抽屉或行内展开区，收起方式由外层决定。
+
 ## 最近使用
 
 `showRecent` 默认开启。选过的表情会进入「最近」tab，最多 16 个，去重后置顶。
@@ -148,9 +191,15 @@ const segments = parseEmojiText('今天[微笑]了', map)
 | `packages` | `SrEmojiPackage[]` | `[]` | 表情包列表，不传用内置 |
 | `columns` | `number` | `8` | 每行几个 |
 | `tabPosition` | `'top' \| 'bottom'` | `'bottom'` | 分类栏位置 |
+| `width` | `number \| string` | — | 面板宽度 |
+| `height` | `number \| string` | — | 面板高度，固定 |
+| `minHeight` | `number` | `240` | 最小高度（px） |
+| `maxHeight` | `number` | `260` | 内容区最大高度（px） |
+| `searchable` | `boolean` | `false` | 显示搜索框 |
+| `searchPlaceholder` | `string` | `'搜索表情'` | 搜索占位文案 |
 | `showRecent` | `boolean` | `true` | 显示「最近」tab |
+| `closeOnSelect` | `boolean` | `false` | 选中后派发 `close` |
 | `size` | `SrSize` | `'md'` | 尺寸档位 |
-| `maxHeight` | `number` | `260` | 面板最大高度（px） |
 | `disabled` | `boolean` | `false` | 禁用 |
 
 ## 事件
@@ -158,6 +207,8 @@ const segments = parseEmojiText('今天[微笑]了', map)
 | 事件 | 参数 | 说明 |
 | --- | --- | --- |
 | `select` | `item, mark` | 选中表情，`mark` 是已经拼好的标记文本 |
+| `close` | — | 请求关闭（仅 `closeOnSelect`） |
+| `search-change` | `keyword` | 搜索关键词变化 |
 
 ## 注意事项
 

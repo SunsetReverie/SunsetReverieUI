@@ -12,6 +12,10 @@ const props = defineProps(emojiPickerProps)
 const emit = defineEmits<{
   /** 选中某个表情 */
   select: [item: SrEmojiItem, mark: string]
+  /** 选中后请求关闭（仅 `closeOnSelect` 时派发） */
+  close: []
+  /** 搜索关键词变化 */
+  'search-change': [keyword: string]
 }>()
 
 /** 最近使用的表情，只在本次会话内保留 */
@@ -20,11 +24,20 @@ const recent = ref<SrEmojiItem[]>([])
 /** 当前 tab 的 key；空字符串表示「最近」 */
 const activeTab = ref('')
 
+/** 搜索关键词 */
+const searchText = ref('')
+
+/** 当前悬停的表情，用于顶部信息行 */
+const hovered = ref<SrEmojiItem | null>(null)
+
+/** 是否正在搜索 */
+const isSearching = computed(() => props.searchable && searchText.value.trim().length > 0)
+
 /** 实际使用的表情包 */
 const packages = computed(() => (props.packages.length ? props.packages : DEFAULT_EMOJI_PACKAGES))
 
 /** 是否显示「最近」tab */
-const hasRecent = computed(() => props.showRecent && recent.value.length > 0)
+const hasRecent = computed(() => props.showRecent && recent.value.length > 0 && !isSearching.value)
 
 /**
  * 实际高亮的 tab
@@ -39,11 +52,38 @@ const activeKey = computed(() => {
 })
 
 /**
- * 当前 tab 的表情列表
+ * 所有表情拉平并去重
  *
+ * @remarks 搜索是跨分类的，所以要先准备一份全集。
+ * 顺序与 `buildEmojiMap` 一致：先出现的优先。
+ */
+const allEmojis = computed(() => {
+  const seen = new Set<string>()
+  const result: SrEmojiItem[] = []
+
+  for (const pack of packages.value) {
+    for (const item of pack.emojis) {
+      if ((!item.char && !item.url) || seen.has(item.name)) continue
+      seen.add(item.name)
+      result.push(item)
+    }
+  }
+
+  return result
+})
+
+/**
+ * 当前应该展示的表情
+ *
+ * 搜索时跨所有分类按名称过滤；否则展示当前 tab。
  * 找不到 tab 时退回第一个包，避免数据变化后出现空白面板。
  */
-const currentEmojis = computed(() => {
+const displayEmojis = computed<SrEmojiItem[]>(() => {
+  if (isSearching.value) {
+    const keyword = searchText.value.trim().toLowerCase()
+    return allEmojis.value.filter((item) => item.name.toLowerCase().includes(keyword))
+  }
+
   if (!activeTab.value) {
     return hasRecent.value ? recent.value : (packages.value[0]?.emojis ?? [])
   }
@@ -51,6 +91,36 @@ const currentEmojis = computed(() => {
   const pack = packages.value.find((item) => item.key === activeTab.value)
   return pack?.emojis ?? packages.value[0]?.emojis ?? []
 })
+
+/** 信息行文案：悬停优先，其次搜索结果数，最后当前分类名 */
+const metaText = computed(() => {
+  if (hovered.value) return hovered.value.name
+  if (isSearching.value) return `找到 ${displayEmojis.value.length} 个`
+  if (!activeTab.value && hasRecent.value) return '最近使用'
+  return packages.value.find((item) => item.key === activeKey.value)?.name ?? ''
+})
+
+/** 根节点样式：宽高都支持数字与字符串 */
+const rootStyle = computed(() => {
+  const toCss = (value: number | string | undefined): string | undefined => {
+    if (value === undefined) return undefined
+    return typeof value === 'number' ? `${value}px` : value
+  }
+
+  return {
+    width: toCss(props.width),
+    height: toCss(props.height),
+    minHeight: `${props.minHeight}px`,
+  }
+})
+
+/** 内容区最大高度：设了固定 height 就交给 flex 分配 */
+const panelStyle = computed(() =>
+  props.height === undefined ? { maxHeight: `${props.maxHeight}px` } : undefined,
+)
+
+/** 网格列数 */
+const gridStyle = computed(() => ({ gridTemplateColumns: `repeat(${props.columns}, 1fr)` }))
 
 /**
  * 选中表情
@@ -62,11 +132,29 @@ const currentEmojis = computed(() => {
 function onSelect(item: SrEmojiItem): void {
   if (props.disabled) return
 
-  // 最近使用去重后置顶，最多留 16 个
   const next = [item, ...recent.value.filter((entry) => entry.name !== item.name)]
   recent.value = next.slice(0, 16)
 
   emit('select', item, stringifyEmoji(item))
+  if (props.closeOnSelect) emit('close')
+}
+
+/**
+ * 搜索输入
+ * @param event 输入事件
+ */
+function onSearchInput(event: Event): void {
+  searchText.value = (event.target as HTMLInputElement).value
+  hovered.value = null
+  emit('search-change', searchText.value)
+}
+
+/**
+ * 清空搜索
+ */
+function clearSearch(): void {
+  searchText.value = ''
+  emit('search-change', '')
 }
 
 // 表情包变化后，如果当前 tab 已不存在，回到第一个
@@ -79,14 +167,70 @@ watch(
   },
   { immediate: true },
 )
+
+// 关闭搜索时清掉关键词，避免下次打开还留着旧条件
+watch(isSearching, (on, off) => {
+  if (!on && off) hovered.value = null
+})
 </script>
 
 <template>
   <div
     class="sr-emoji-picker"
     :class="[`sr-emoji-picker--${size}`, `is-tab-${tabPosition}`, { 'is-disabled': disabled }]"
+    :style="rootStyle"
   >
-    <div class="sr-emoji-picker__tabs" role="tablist" :class="`is-${tabPosition}`">
+    <!-- 搜索框 -->
+    <div v-if="searchable" class="sr-emoji-picker__search">
+      <input
+        class="sr-emoji-picker__search-input"
+        type="search"
+        :value="searchText"
+        :placeholder="searchPlaceholder"
+        :aria-label="searchPlaceholder"
+        @input="onSearchInput"
+      />
+      <button
+        v-if="searchText"
+        class="sr-emoji-picker__search-clear"
+        type="button"
+        aria-label="清空搜索"
+        @click="clearSearch"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- 内容区 -->
+    <div class="sr-emoji-picker__panel" :style="panelStyle" role="tabpanel">
+      <p class="sr-emoji-picker__meta" aria-live="polite">{{ metaText }}</p>
+
+      <div v-if="displayEmojis.length" class="sr-emoji-picker__grid" :style="gridStyle">
+        <button
+          v-for="item in displayEmojis"
+          :key="`${item.name}-${item.url ?? item.char}`"
+          class="sr-emoji-picker__item"
+          type="button"
+          :title="item.name"
+          :aria-label="item.name"
+          @click="onSelect(item)"
+          @mouseenter="hovered = item"
+          @mouseleave="hovered = null"
+          @focus="hovered = item"
+          @blur="hovered = null"
+        >
+          <img v-if="item.url" class="sr-emoji-picker__img" :src="item.url" :alt="item.name" loading="lazy" />
+          <span v-else class="sr-emoji-picker__char">{{ item.char }}</span>
+        </button>
+      </div>
+
+      <p v-else class="sr-emoji-picker__empty">
+        {{ isSearching ? '没有匹配的表情' : '这个表情包是空的' }}
+      </p>
+    </div>
+
+    <!-- 分类栏 -->
+    <div v-if="!isSearching" class="sr-emoji-picker__tabs" role="tablist">
       <button
         v-if="hasRecent"
         class="sr-emoji-picker__tab"
@@ -111,29 +255,6 @@ watch(
       >
         {{ pack.name }}
       </button>
-    </div>
-
-    <div class="sr-emoji-picker__panel" :style="{ maxHeight: `${maxHeight}px` }" role="tabpanel">
-      <div
-        v-if="currentEmojis.length"
-        class="sr-emoji-picker__grid"
-        :style="{ gridTemplateColumns: `repeat(${columns}, 1fr)` }"
-      >
-        <button
-          v-for="item in currentEmojis"
-          :key="item.name"
-          class="sr-emoji-picker__item"
-          type="button"
-          :title="item.name"
-          :aria-label="item.name"
-          @click="onSelect(item)"
-        >
-          <img v-if="item.url" class="sr-emoji-picker__img" :src="item.url" :alt="item.name" loading="lazy" />
-          <span v-else class="sr-emoji-picker__char">{{ item.char }}</span>
-        </button>
-      </div>
-
-      <p v-else class="sr-emoji-picker__empty">这个表情包是空的</p>
     </div>
   </div>
 </template>

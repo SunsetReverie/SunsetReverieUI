@@ -3,68 +3,99 @@
  *
  * 面板本身不带浮层定位——它只负责内容，弹层由调用方（如
  * SrMarkdownEditor 的表情按钮）用 Teleport + 定位逻辑包起来。
- * 这样它可以被放进弹层、抽屉、行内展开区，形态不受限。
  *
- * 结构固定为「分类栏 + 内容区」两个兄弟节点，靠 CSS order 决定
- * 分类栏在上还是在下：模板只写一份，`tabPosition` 只影响类名。
+ * 组件自己就是一张卡片：背景 + 圆角 + 阴影。flat 下留一道极细边框，
+ * glass 下边框反而显脏，改成纯阴影塑形（见文件末尾的全局规则）。
  */
+
+@import '../../../styles/mixins/_surface.less';
 
 .sr-emoji-picker {
   --sr-emoji-gap: 2px;
   --sr-emoji-font-size: 22px;
   --sr-emoji-item-size: 34px;
+  --sr-emoji-border: 1px solid var(--sr-color-border-subtle);
 
   display: flex;
   flex-direction: column;
   width: 100%;
   min-width: 0;
+  overflow: hidden;
+  border: var(--sr-emoji-border);
+  border-radius: var(--sr-radius-base);
   background: var(--sr-color-bg-popover);
+  box-shadow: var(--sr-shadow-sm);
 
-  // ---------- 分类栏 ----------
-  // 药丸式：选中的项带浅色底，不用下划线——
-  // 下划线要和分割线配合才不悬空，位置一换就容易穿帮
-  &__tabs {
+  // ---------- 搜索 ----------
+  &__search {
+    position: relative;
     display: flex;
     flex: 0 0 auto;
-    gap: 2px;
-    padding: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    align-items: center;
+    order: 0;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
   }
 
-  &__tabs::-webkit-scrollbar {
+  &__search-input {
+    width: 100%;
+    padding: 5px 26px 5px 10px;
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text);
+    font-family: inherit;
+    font-size: 12.5px;
+    outline: none;
+  }
+
+  &__search-input:focus-visible {
+    border-color: var(--sr-color-primary);
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+  }
+
+  &__search-input::-webkit-search-cancel-button {
     display: none;
   }
 
-  &__tab {
-    flex: 0 0 auto;
-    padding: 4px 12px;
+  &__search-clear {
+    position: absolute;
+    right: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
     border: 0;
     border-radius: var(--sr-radius-full);
     background: transparent;
     color: var(--sr-color-text-tertiary);
-    font-family: inherit;
-    font-size: 12.5px;
-    line-height: 1.5;
-    white-space: nowrap;
+    font-size: 15px;
+    line-height: 1;
     cursor: pointer;
-    transition:
-      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
-  }
-
-  &__tab:focus-visible {
-    outline: 2px solid var(--sr-color-primary-alpha-25);
-    outline-offset: -2px;
   }
 
   // ---------- 内容区 ----------
   &__panel {
     flex: 1 1 auto;
+    min-height: 0;
     padding: 4px 10px 10px;
     overflow-y: auto;
     // 面板内滚到底不要带动外层页面
     overscroll-behavior: contain;
+  }
+
+  &__meta {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    margin: 0 0 6px;
+    padding: 2px 0 6px;
+    background: var(--sr-color-bg-popover);
+    color: var(--sr-color-text-tertiary);
+    font-size: 11.5px;
+    line-height: 1.4;
   }
 
   &__grid {
@@ -113,8 +144,45 @@
     text-align: center;
   }
 
+  // ---------- 分类栏 ----------
+  &__tabs {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  &__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  &__tab {
+    flex: 0 0 auto;
+    padding: 5px 12px;
+    border: 0;
+    // 普通圆角矩形，不用全椭圆——药丸在小面板里显得太「鼓」
+    border-radius: var(--sr-radius-md);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.5;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__tab:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: -2px;
+  }
+
   // ---------- 变体：tab 位置 ----------
-  // 用 order 换位置，模板不用写两遍
+  // 用 order 换位置，模板只写一份
   &.is-tab-bottom &__tabs {
     order: 2;
     padding: 6px 8px 8px;
@@ -147,11 +215,11 @@
     --sr-emoji-item-size: 40px;
   }
 
-  // ---------- 状态：激活 tab ----------
+  // ---------- 2 级：选中态 ----------
   &__tab.is-active {
-    // alpha-12 在浅色主题下几乎看不见，用 25 才有「被选中」的感觉
-    background: var(--sr-color-primary-alpha-25);
-    color: var(--sr-color-primary-text);
+    background: var(--sr-color-primary-alpha-12);
+    // 用主色而不是 primary-text：后者为对比度做了加深，在浅底上过重
+    color: var(--sr-color-primary);
     font-weight: var(--sr-font-weight-medium);
   }
 
@@ -159,15 +227,29 @@
     background: var(--sr-color-bg-sunken);
   }
 
-  // ---------- 状态：悬停（3 级，放最后）----------
+  // ---------- 3 级：悬停（放最后）----------
   &__tab:hover:not(.is-active) {
     background: var(--sr-color-bg-sunken);
-    color: var(--sr-color-text);
+    color: var(--sr-color-text-secondary);
   }
 
-  // ---------- 状态：禁用 ----------
+  // ---------- 禁用 ----------
   &.is-disabled {
     opacity: 0.5;
     pointer-events: none;
   }
+}
+
+/**
+ * 玻璃模式：不要边框，用阴影塑形
+ *
+ * @remarks 半透明背景上再描一道白边，会把面板框得很硬；
+ * 而阴影能保留「浮起来」的层次，同时不切断背景的透感。
+ * 边框置 0 而不是 display:none，避免 border-box 尺寸跳变。
+ */
+[data-sr-style='glass'] .sr-emoji-picker {
+  --sr-emoji-border: 0 solid transparent;
+
+  box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
+  .sr-glass-layer(var(--sr-glass-filter-strong));
 }
