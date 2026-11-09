@@ -335,6 +335,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./tabs/TabsDemo.vue'),
       },
       {
+        key: 'anchor',
+        name: 'SrAnchor',
+        description: '锚点导航。滚动跟随高亮、平滑跳转、吸顶与多级目录。',
+        demo: () => import('./anchor/AnchorDemo.vue'),
+      },
+      {
         key: 'breadcrumb',
         name: 'SrBreadcrumb',
         description: '面包屑。图标分隔符、超长折叠、禁用项。',

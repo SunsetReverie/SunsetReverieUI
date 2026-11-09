@@ -5,6 +5,7 @@ import { createSSRApp, h, type Component } from 'vue'
 
 import {
   SrAlert,
+  SrAnchor,
   SrAvatar,
   SrBadge,
   SrBreadcrumb,
@@ -385,6 +386,19 @@ describe('导航与数据组件的 SSR 渲染', () => {
   it('SrContextMenu 服务端只渲染插槽', async () => {
     const html = await render(SrContextMenu, { items: [{ key: 'a', label: '复制' }] })
     expect(html).toContain('sr-context-menu')
+  })
+
+  it('SrAnchor 服务端输出目录结构', async () => {
+    const html = await render(SrAnchor, {
+      items: [
+        { key: 'a', title: '第一节' },
+        { key: 'b', title: '第二节', children: [{ key: 'c', title: '子节' }] },
+      ],
+    })
+
+    expect(html).toContain('aria-label')
+    expect(html).toContain('第一节')
+    expect(html).toContain('子节')
   })
 
   it('SrPagination', async () => {

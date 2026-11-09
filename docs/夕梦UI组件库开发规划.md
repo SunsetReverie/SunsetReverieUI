@@ -3013,7 +3013,8 @@ P1 需补充的原子组件：`SrCheckbox`、`SrRadio`、`SrSwitch`、`SrSpinner
 | `SrColorPicker` | 颜色选择 | 待评估（色彩空间转换） |
 | `SrResult` | 结果页 | 待评估 |
 | `SrVirtualList` | 虚拟列表 | 待评估（树的虚拟滚动可抽出来） |
-| `SrAffix` / `SrAnchor` / `SrWatermark` | 固钉 / 锚点 / 水印 | ❌ 不做，见 10.9 |
+| `SrAffix` / `SrWatermark` | 固钉 / 水印 | ❌ 不做，见 10.9 |
+| `SrAnchor` | 锚点导航 | ✅ 已补做（前台需求，见 10.9 的订正） |
 
 ### 10.6 组件依赖图（分期）
 
@@ -3153,6 +3154,16 @@ graph LR
 | `SrAffix` / `SrBacktop` | `position: sticky` + `scroll-behavior: smooth`，不值得抽组件 |
 | `SrWatermark` | canvas 生成 dataURL 铺满，十几行 |
 | `SrQRCode` | 需要实现 Reed-Solomon 编码，会破坏「零运行时依赖」的定位 |
+
+> **订正（W14 之后）**：原判断把 `SrAnchor` 和 `SrAffix` 一起归为「CSS 能解决，不值得抽组件」，
+> 这个判断对 `SrAffix` 成立，对 `SrAnchor` 不成立。
+>
+> `position: sticky` 只解决「跟着滚」，但锚点导航真正的工作量在另外三件事：
+> 滚动时判定当前章节、点击时带偏移地平滑跳转、多级目录的层级与祖先高亮。
+> 这三件事每写一遍都要重新处理边界情况（内容不足一屏、最后一节永远越不过判定线、
+> 独立滚动容器、图片加载后高度变化），抽成组件是划算的。
+>
+> `SrQRCode` 也同理：「必须引第三方库」的预设被推翻了，自研 RS 纠错 + 掩码选择是可行的。
 
 #### 第三批（4 个）✅ 已完成
 

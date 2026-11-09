@@ -79,6 +79,12 @@ const transferData = [
   { value: 'b', label: '选项 B' },
 ]
 
+/** 锚点数据 */
+const anchorItems = [
+  { key: 'intro', title: '简介' },
+  { key: 'usage', title: '用法' },
+]
+
 /** 级联数据 */
 const cascaderOptions = [
   {
@@ -221,6 +227,13 @@ const warningCount = computed(() => hydrationWarnings.length)
           <sr-panel v-model="panelOpen" title="分区面板" collapsible>
             <p>面板内容</p>
           </sr-panel>
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Anchor</span>
+        <div class="cell__body cell__body--column">
+          <sr-anchor :items="anchorItems" active-key="usage" />
         </div>
       </div>
 

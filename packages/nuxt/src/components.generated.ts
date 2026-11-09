@@ -8,6 +8,7 @@
 /** 所有组件的 PascalCase 名（不含 Sr 前缀） */
 export const SR_COMPONENT_NAMES = [
   'Alert',
+  'Anchor',
   'Avatar',
   'Badge',
   'Breadcrumb',

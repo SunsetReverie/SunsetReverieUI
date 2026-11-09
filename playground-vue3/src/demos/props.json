@@ -61,6 +61,111 @@
     ],
     "slots": ["default", "title"]
   },
+  "anchor": {
+    "name": "anchor",
+    "options": [
+      {
+        "from": "anchorProps",
+        "name": "items",
+        "type": "SrAnchorItem[]",
+        "default": "() => []",
+        "description": "锚点数据"
+      },
+      {
+        "from": "anchorProps",
+        "name": "container",
+        "type": "string | HTMLElement",
+        "default": "undefined",
+        "description": "滚动容器 @default window 传 CSS 选择器或元素本身。默认监听整个页面。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "offsetTop",
+        "type": "number",
+        "default": "0",
+        "description": "顶部偏移 @default 0 页面有固定头栏时，把它设为头栏高度，标题才不会被盖住。 判定当前章节和点击滚动都用这个值。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "bounds",
+        "type": "number",
+        "default": "4",
+        "description": "判定边界 @default 4 标题越过判定线多少像素才算「进入视口」。设小一点更灵敏， 但滚动抖动时容易在两节之间反复跳。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "direction",
+        "type": "'vertical' | 'horizontal'",
+        "default": "'vertical'",
+        "description": "排列方向 @default 'vertical'"
+      },
+      {
+        "from": "anchorProps",
+        "name": "affix",
+        "type": "boolean",
+        "default": "false",
+        "description": "吸顶 @default false 打开后用 `position: sticky`，需要父容器有确定高度才会生效。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "affixOffset",
+        "type": "number",
+        "default": "0",
+        "description": "吸顶时的 top 偏移（px） @default 0"
+      },
+      {
+        "from": "anchorProps",
+        "name": "smooth",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击时平滑滚动 @default true 关掉后用瞬时定位，适合「用户系统开了减少动效」或需要精确控制的场景。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "activeKey",
+        "type": "string",
+        "default": "undefined",
+        "description": "当前激活项，配合 `v-model:activeKey` @default '' 不传时自己维护；传了就以外部为准。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "showMarker",
+        "type": "boolean",
+        "default": "true",
+        "description": "高亮滑块 @default true 跟随当前项移动的指示条，让「现在在哪」更明显。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "syncHash",
+        "type": "boolean",
+        "default": "false",
+        "description": "同步地址栏 hash @default false 打开后点击会写入 `#key`，刷新或分享链接能回到同一位置。 前台文章页通常要开。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "ariaLabel",
+        "type": "string",
+        "default": "'页面导航'",
+        "description": "无障碍标签 @default '页面导航'"
+      }
+    ],
+    "sources": ["anchor"],
+    "emits": [
+      {
+        "name": "update:activeKey",
+        "params": ["key"]
+      },
+      {
+        "name": "change",
+        "params": ["key", "item"]
+      },
+      {
+        "name": "click",
+        "params": ["key", "item", "event"]
+      }
+    ],
+    "slots": []
+  },
   "avatar": {
     "name": "avatar",
     "options": [

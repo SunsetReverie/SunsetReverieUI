@@ -179,6 +179,7 @@ export default defineConfig({
             { text: 'SrDropdown', link: '/components/dropdown' },
             { text: 'SrContextMenu', link: '/components/context-menu' },
             { text: 'SrBreadcrumb', link: '/components/breadcrumb' },
+            { text: 'SrAnchor', link: '/components/anchor' },
           ],
         },
         {

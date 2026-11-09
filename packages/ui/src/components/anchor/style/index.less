@@ -1,0 +1,176 @@
+/**
+ * 锚点导航
+ *
+ * 纵向：左侧一条轨道线，滑块是主色粗线，覆盖在轨道上。
+ * 横向：底部一条横线，滑块是横条。
+ *
+ * 选择器按特异性分组：基础(1) → 子元素(1) → 变体(1) → 变体内子元素(2) → 状态(2/3)。
+ */
+
+@import '../../../styles/mixins/index.less';
+
+.sr-anchor {
+  --sr-anchor-rail: var(--sr-color-border-subtle);
+  --sr-anchor-marker: var(--sr-color-primary);
+
+  position: relative;
+  display: block;
+  max-width: 220px;
+  color: var(--sr-color-text-secondary);
+  font-size: 13px;
+
+  // ---------- 列表 ----------
+  &__list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0 0 0 13px;
+    list-style: none;
+    // 轨道线：整条左侧的浅色基线，滑块覆盖在上面
+    border-left: 1px solid var(--sr-anchor-rail);
+  }
+
+  &__item {
+    position: relative;
+    min-width: 0;
+  }
+
+  &__sub {
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // ---------- 链接 ----------
+  &__link {
+    display: block;
+    padding: 4px 8px;
+    border-radius: var(--sr-radius-sm);
+    color: inherit;
+    text-decoration: none;
+    line-height: 1.5;
+    // 长标题换行而不是撑破容器
+    overflow-wrap: anywhere;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__link:hover {
+    color: var(--sr-color-text);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__link:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: -2px;
+  }
+
+  // ---------- 滑块 ----------
+  // 纵向：贴在左轨道上，2px 宽的竖线
+  &__marker {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    // 轨道是 __list 的 1px 左边框，位置在 x=0；滑块 2px 宽，居中压上去
+    left: 0;
+    width: 2px;
+    height: 0;
+    border-radius: var(--sr-radius-full);
+    background: var(--sr-anchor-marker);
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition:
+      top var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
+      height var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
+      left var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
+      width var(--sr-motion-duration-slow, 320ms) var(--sr-motion-easing-spring),
+      opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  // ---------- 变体：横向 ----------
+  &--horizontal {
+    max-width: none;
+  }
+
+  &--horizontal &__list {
+    flex-direction: row;
+    gap: 4px;
+    padding: 0 0 8px;
+    border-bottom: 1px solid var(--sr-anchor-rail);
+    border-left: 0;
+    overflow-x: auto;
+    // 内容超宽时横向滚动，但不显示滚动条
+    scrollbar-width: none;
+  }
+
+  &--horizontal &__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  &--horizontal &__item {
+    flex: 0 0 auto;
+  }
+
+  &--horizontal &__sub {
+    display: none;
+  }
+
+  &--horizontal &__link {
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+
+  &--horizontal &__marker {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    transform: none;
+  }
+
+  // ---------- 子级缩进 ----------
+  // 缩进 + 小字号，层级关系靠这两点区分，不额外加符号
+  &__sub &__link {
+    padding-left: 10px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12.5px;
+  }
+
+  &__sub &__sub &__link {
+    padding-left: 18px;
+    font-size: 12px;
+  }
+
+  // ---------- 状态：当前项 ----------
+  &__item.is-active > &__link {
+    color: var(--sr-color-primary-text);
+    font-weight: var(--sr-font-weight-medium);
+    background: var(--sr-color-primary-alpha-12);
+  }
+
+  // 子级的激活态不铺底色，否则和父级叠加会显得很重
+  &__sub &__item.is-active > &__link {
+    color: var(--sr-color-primary-text);
+    background: transparent;
+  }
+
+  // ---------- 状态：吸顶 ----------
+  &.is-affix {
+    position: sticky;
+    z-index: var(--sr-z-index-sticky, 20);
+    padding-top: 2px;
+    // 半透明底 + 毛玻璃：吸顶后下方的正文透出来不会互相干扰
+    background: color-mix(in srgb, var(--sr-color-bg-container) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sr-anchor__marker {
+    transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+}
