@@ -78,6 +78,36 @@ const noteExt: SrMarkdownExtension = {
 /** 短代码扩展列表 */
 const extensions = [noteExt, galleryExt]
 
+/**
+ * 完整工具栏：默认 12 个预设 + 分隔符 + 1 个自定义动作。
+ * 短代码按钮和表情按钮不需要写在这里——它们由 extensions.insert
+ * 和 emojiPackages 自动追加到末尾。
+ */
+const fullToolbar: SrMarkdownToolbarItem[] = [
+  'bold',
+  'italic',
+  'strike',
+  '|',
+  'heading',
+  'quote',
+  'code',
+  'code-block',
+  '|',
+  'list-ul',
+  'list-ol',
+  '|',
+  'link',
+  'image',
+  'hr',
+  '|',
+  {
+    key: 'date',
+    label: '插入日期',
+    icon: 'lucide:calendar',
+    action: (api: SrMarkdownEditorApi) => api.insert(new Date().toLocaleDateString('zh-CN'), false),
+  },
+]
+
 /** 自定义工具栏：只留几个常用项 + 一个自定义动作 */
 const customToolbar: SrMarkdownToolbarItem[] = [
   'bold',
@@ -127,12 +157,157 @@ async function fakeUpload(file: File): Promise<string> {
 <template>
   <div class="demo">
     <section>
-      <h3>基础</h3>
-      <SrMarkdownEditor v-model="content" :height="340" @save="onSave" />
-      <p class="hint">
-        左侧原生 textarea（输入法、撤销栈都能用），右侧实时预览。 工具栏 15 项，中间用竖线分组。
-        <SrTag v-if="savedAt" size="sm" type="success">已保存 {{ savedAt }}</SrTag>
+      <h3>完整工具栏（全部能力一次看全）</h3>
+      <p class="lead">
+        这一处把<strong>所有工具都打开</strong>了：12 个预设按钮、1 个自定义动作、 2
+        个由短代码扩展自动生成的按钮、表情按钮，以及图片上传。 下面每一节再单独讲某个能力怎么配
       </p>
+
+      <SrMarkdownEditor
+        v-model="content"
+        :toolbar="fullToolbar"
+        :extensions="extensions"
+        :emoji-packages="emojiPackages"
+        :upload="fakeUpload"
+        :height="340"
+        @save="onSave"
+      />
+
+      <div class="full-row">
+        <SrTag size="sm">12 预设</SrTag>
+        <SrTag size="sm">1 自定义</SrTag>
+        <SrTag size="sm">2 短代码（自动）</SrTag>
+        <SrTag size="sm">1 表情（自动）</SrTag>
+        <SrTag size="sm">图片上传</SrTag>
+        <SrTag v-if="savedAt" size="sm" type="success">已保存 {{ savedAt }}</SrTag>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tool-table">
+          <thead>
+            <tr>
+              <th>按钮</th>
+              <th>标识</th>
+              <th>从哪来</th>
+              <th>点击后</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>B</strong></td>
+              <td><code>bold</code></td>
+              <td>预设</td>
+              <td>用 <code>**</code> 包裹选区</td>
+            </tr>
+            <tr>
+              <td><em>I</em></td>
+              <td><code>italic</code></td>
+              <td>预设</td>
+              <td>用 <code>*</code> 包裹选区</td>
+            </tr>
+            <tr>
+              <td><s>S</s></td>
+              <td><code>strike</code></td>
+              <td>预设</td>
+              <td>用 <code>~~</code> 包裹选区</td>
+            </tr>
+            <tr>
+              <td>H</td>
+              <td><code>heading</code></td>
+              <td>预设</td>
+              <td>给当前行加 <code>## </code></td>
+            </tr>
+            <tr>
+              <td>❝</td>
+              <td><code>quote</code></td>
+              <td>预设</td>
+              <td>给当前行加 <code>&gt; </code></td>
+            </tr>
+            <tr>
+              <td>&lt;/&gt;</td>
+              <td><code>code</code></td>
+              <td>预设</td>
+              <td>用反引号包裹选区</td>
+            </tr>
+            <tr>
+              <td>▣</td>
+              <td><code>code-block</code></td>
+              <td>预设</td>
+              <td>插入围栏代码块</td>
+            </tr>
+            <tr>
+              <td>•</td>
+              <td><code>list-ul</code></td>
+              <td>预设</td>
+              <td>给选中行加 <code>- </code></td>
+            </tr>
+            <tr>
+              <td>1.</td>
+              <td><code>list-ol</code></td>
+              <td>预设</td>
+              <td>给选中行加递增序号</td>
+            </tr>
+            <tr>
+              <td>🔗</td>
+              <td><code>link</code></td>
+              <td>预设</td>
+              <td>插入 <code>[文字](https://)</code></td>
+            </tr>
+            <tr>
+              <td>🖼</td>
+              <td><code>image</code></td>
+              <td>预设</td>
+              <td>配了 <code>upload</code> 就选文件上传，否则插模板</td>
+            </tr>
+            <tr>
+              <td>—</td>
+              <td><code>hr</code></td>
+              <td>预设</td>
+              <td>插入 <code>---</code></td>
+            </tr>
+            <tr>
+              <td>│</td>
+              <td><code>'|'</code></td>
+              <td>预设</td>
+              <td>只是分隔线，不是按钮</td>
+            </tr>
+            <tr>
+              <td>📅</td>
+              <td>自定义对象</td>
+              <td>手动配置</td>
+              <td>执行自己的 <code>action(api)</code></td>
+            </tr>
+            <tr>
+              <td>ℹ / 🖼</td>
+              <td>自动追加</td>
+              <td><code>extension.insert</code></td>
+              <td>插入短代码模板并选中占位</td>
+            </tr>
+            <tr>
+              <td>🙂</td>
+              <td>自动追加</td>
+              <td><code>emoji-packages</code></td>
+              <td>打开表情面板，插入标记文本</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="hint">
+        鼠标移到任意按钮上会显示功能说明（跟随明暗主题）；
+        <code>Cmd/Ctrl + B / I / K / S</code> 是快捷键。
+        <strong>自动追加的两类按钮不用写进 toolbar 数组</strong>，配置好数据就会出现
+      </p>
+
+      <pre v-pre class="code-block">
+&lt;SrMarkdownEditor
+  v-model="content"
+  :toolbar="['bold','italic','strike','|','heading','quote','code','code-block','|',
+             'list-ul','list-ol','|','link','image','hr','|', myCustomAction]"
+  :extensions="extensions"
+  :emoji-packages="emojiPackages"
+  :upload="uploadImage"
+/&gt;</pre>
     </section>
 
     <section>
@@ -216,6 +391,70 @@ async function fakeUpload(file: File): Promise<string> {
   display: flex;
   flex-direction: column;
   gap: 26px;
+}
+
+.lead {
+  margin: 0 0 12px;
+  color: var(--sr-color-text-secondary);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.full-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 14px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+}
+
+.tool-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tool-table th,
+.tool-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--sr-color-border-subtle);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tool-table th {
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text-secondary);
+  font-weight: 600;
+}
+
+.tool-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tool-table code {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--sr-color-bg-sunken);
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+}
+
+.code-block {
+  margin: 14px 0 0;
+  padding: 12px;
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text);
+  font-family: var(--sr-font-family-mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  overflow-x: auto;
 }
 
 h3 {
