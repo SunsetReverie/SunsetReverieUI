@@ -268,6 +268,26 @@ const flatItems: SrAnchorItem[] = [
     </section>
 
     <section>
+      <h3>插槽自定义内容（#title）</h3>
+      <div class="row">
+        <div style="width: 200px">
+          <SrAnchor :items="basicItems" :container="CONTAINER" :offset-top="24">
+            <template #title="{ item, index, current }">
+              <span class="custom-row" :class="{ 'is-cur': current }">
+                <span class="custom-row__idx">{{ String(index).padStart(2, '0') }}</span>
+                <span class="custom-row__text">{{ item.title }}</span>
+              </span>
+            </template>
+          </SrAnchor>
+        </div>
+        <p class="hint" style="margin: 0; max-width: 300px">
+          插槽拿到 <code>item</code> / <code>index</code> / <code>depth</code> / <code>active</code> /
+          <code>current</code>，可以加序号、图标、角标。 只替换文字内容，链接与滚动行为不变
+        </p>
+      </div>
+    </section>
+
+    <section>
       <h3>折叠 + 自动展开</h3>
       <p class="hint" style="margin: 0 0 12px">
         左边初始是收起的。往下滚这一段正文，经过「1.1 依赖」「2.1 主题」这类子章节时，
@@ -643,6 +663,33 @@ h3 {
   --sr-anchor-color: #6b7280;
   --sr-anchor-color-sub: #9ca3af;
   --sr-anchor-bg-hover: #f3f0ff;
+}
+
+.custom-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.custom-row__idx {
+  flex: 0 0 auto;
+  color: var(--sr-color-text-tertiary);
+  font-family: var(--sr-font-family-mono);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-row__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.custom-row.is-cur .custom-row__idx {
+  color: var(--sr-color-primary);
 }
 
 .mini-box {

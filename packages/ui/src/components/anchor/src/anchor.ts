@@ -12,6 +12,20 @@ export interface SrAnchorItem {
   children?: SrAnchorItem[]
 }
 
+/** `#title` 插槽的作用域 */
+export interface SrAnchorTitleScope {
+  /** 当前项数据 */
+  item: SrAnchorItem
+  /** 层级，0 是顶层 */
+  depth: number
+  /** 同层内序号，从 1 开始 */
+  index: number
+  /** 是否在当前路径上（含祖先） */
+  active: boolean
+  /** 是否是当前项本身 */
+  current: boolean
+}
+
 export const anchorProps = {
   /** 锚点数据 */
   items: {

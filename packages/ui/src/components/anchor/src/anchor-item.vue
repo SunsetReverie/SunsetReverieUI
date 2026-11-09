@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 import SrIcon from '../../icon/src/icon.vue'
-import type { SrAnchorItem } from './anchor'
+import type { SrAnchorItem, SrAnchorTitleScope } from './anchor'
 
 defineOptions({ name: 'SrAnchorItem' })
 
@@ -11,6 +11,8 @@ const props = defineProps<{
   item: SrAnchorItem
   /** 层级，0 是顶层 */
   depth: number
+  /** 同层内的序号，从 1 开始 */
+  index: number
   /** 激活链路（含祖先） */
   activePath: Set<string>
   /** 当前激活项 key */
@@ -29,6 +31,14 @@ const props = defineProps<{
   showToggle: boolean
   /** 箭头位置 */
   togglePosition: 'left' | 'right'
+  /**
+   * `#title` 插槽函数
+   *
+   * 以函数形式逐层下传，而不是用 `<template #title>` 递归转发：
+   * 后者每次渲染都会新建插槽函数，Vue 会判定插槽不稳定并强制子组件更新，
+   * 递归组件里会无限重渲染、把页面卡死。
+   */
+  titleSlot?: (scope: SrAnchorTitleScope) => unknown
 }>()
 
 const emit = defineEmits<{
@@ -51,6 +61,15 @@ const toggleVisible = computed(() => props.collapsible && props.showToggle && ha
 
 /** 当前是否展开 */
 const expanded = computed(() => props.expandedKeys.has(props.item.key))
+
+/** `#title` 插槽参数 */
+const titleScope = computed<SrAnchorTitleScope>(() => ({
+  item: props.item,
+  depth: props.depth,
+  index: props.index,
+  active: props.activePath.has(props.item.key),
+  current: props.currentKey === props.item.key,
+}))
 </script>
 
 <template>
@@ -81,7 +100,8 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
         :aria-current="currentKey === item.key ? 'location' : undefined"
         @click="emit('click', item, $event)"
       >
-        {{ item.title }}
+        <component :is="titleSlot" v-if="titleSlot" v-bind="titleScope" />
+        <template v-else>{{ item.title }}</template>
       </a>
 
       <button
@@ -100,10 +120,11 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
     <!-- 折叠时用 v-show 而非 v-if：保留子级已测量的位置，展开后滑块不用重算 -->
     <ul v-if="canRenderChildren" v-show="!collapsible || expanded" class="sr-anchor__sub">
       <SrAnchorItem
-        v-for="child in item.children"
+        v-for="(child, i) in item.children"
         :key="child.key"
         :item="child"
         :depth="depth + 1"
+        :index="i + 1"
         :active-path="activePath"
         :current-key="currentKey"
         :set-link-ref="setLinkRef"
@@ -113,6 +134,7 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
         :toggle="toggle"
         :show-toggle="showToggle"
         :toggle-position="togglePosition"
+        :title-slot="titleSlot"
         @click="(target, event) => emit('click', target, event)"
       />
     </ul>

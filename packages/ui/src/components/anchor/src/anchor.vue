@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from 'vue'
 
 import SrAnchorItemRow from './anchor-item.vue'
-import { anchorProps, type SrAnchorItem } from './anchor'
+import { anchorProps, type SrAnchorItem, type SrAnchorTitleScope } from './anchor'
 
 defineOptions({ name: 'SrAnchor', inheritAttrs: false })
 
 const props = defineProps(anchorProps)
+
+const slots = useSlots()
+
+/** `#title` 插槽函数，原样下传给每一层 */
+const titleSlot = computed(() => slots.title as ((scope: SrAnchorTitleScope) => unknown) | undefined)
 
 const emit = defineEmits<{
   /** 激活项变化 */
@@ -515,10 +520,11 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
 
     <ul class="sr-anchor__list">
       <SrAnchorItemRow
-        v-for="item in items"
+        v-for="(item, i) in items"
         :key="item.key"
         :item="item"
         :depth="0"
+        :index="i + 1"
         :active-path="activePath"
         :current-key="currentKey"
         :set-link-ref="setLinkRef"
@@ -528,6 +534,7 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
         :toggle="toggle"
         :show-toggle="showToggle"
         :toggle-position="togglePosition"
+        :title-slot="titleSlot"
         @click="onClick"
       />
     </ul>

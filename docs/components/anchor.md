@@ -379,6 +379,37 @@ const el = document.querySelector('.layout__body')
 
 只替换图标本身，按钮的尺寸、`aria-expanded`、旋转动画都保留。
 
+## 插槽
+
+### #title 自定义每一项
+
+作用域参数：
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `item` | `SrAnchorItem` | 当前项数据 |
+| `depth` | `number` | 层级，0 是顶层 |
+| `index` | `number` | 同层内的序号，从 1 开始 |
+| `active` | `boolean` | 是否在当前路径上（含祖先） |
+| `current` | `boolean` | 是否是当前项本身 |
+
+```vue
+<SrAnchor :items="items">
+  <template #title="{ item, index, current }">
+    <span class="row" :class="{ 'is-current': current }">
+      <span class="row__idx">{{ String(index).padStart(2, '0') }}</span>
+      <span class="row__text">{{ item.title }}</span>
+    </span>
+  </template>
+</SrAnchor>
+```
+
+加序号、图标、角标、阅读进度都靠它。`depth` 和 `index` 分开提供，所以「1.2.3」这种多级编号也能拼出来。
+
+**只替换文字内容**：外层 `<a>`、点击行为、`aria-current`、滚动跳转都保持不变。
+
+> 任意层级都能用。组件内部把插槽函数作为 prop 逐层下传，而不是用 `<template>` 递归转发——后者在递归组件里会让 Vue 判定插槽不稳定、反复触发子组件更新，最终把页面卡死。
+
 ## Props
 
 | 名称 | 类型 | 默认值 | 说明 |
