@@ -308,7 +308,8 @@ function updateMarker(): void {
           opacity: '1',
           left: `${rect.left - rootRect.left}px`,
           width: `${rect.width}px`,
-          top: 'auto',
+          // 横条贴在当前块的底部
+          top: `${rect.bottom - rootRect.top}px`,
           height: '',
         }
       : {

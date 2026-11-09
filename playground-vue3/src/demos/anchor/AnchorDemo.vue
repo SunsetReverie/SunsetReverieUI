@@ -46,6 +46,35 @@ const deepItems: SrAnchorItem[] = [
   },
 ]
 
+/** 折叠演示：数据指向本区块自己的标题 */
+const foldItems: SrAnchorItem[] = [
+  {
+    key: 'fold-a',
+    title: '一、安装',
+    children: [
+      { key: 'fold-a-1', title: '1.1 依赖' },
+      { key: 'fold-a-2', title: '1.2 引入' },
+    ],
+  },
+  {
+    key: 'fold-b',
+    title: '二、配置',
+    children: [
+      { key: 'fold-b-1', title: '2.1 主题' },
+      { key: 'fold-b-2', title: '2.2 国际化' },
+    ],
+  },
+]
+
+/** 折叠演示的展开状态（受控，方便把值显示出来） */
+const foldExpanded = ref<string[]>([])
+
+/** 折叠演示的当前项 */
+const foldActive = ref('')
+
+/** 是否开启自动展开 */
+const autoExpandOn = ref(true)
+
 /** 激活样式 */
 const activeVariants = [
   { key: 'background', name: '底色块', desc: '默认，最常见' },
@@ -207,27 +236,67 @@ const flatItems: SrAnchorItem[] = [
     </section>
 
     <section>
-      <h3>折叠（collapsible）</h3>
-      <div class="row">
-        <div class="side-box">
-          <SrAnchor :items="basicItems" :container="CONTAINER" collapsible :offset-top="24" />
-        </div>
-        <div class="side-box">
-          <SrAnchor
-            :items="basicItems"
-            :container="CONTAINER"
-            collapsible
-            :default-expand-all="false"
-            :offset-top="24"
-          />
-        </div>
-        <p class="hint" style="margin: 0; max-width: 280px">
-          左：默认全展开；右：<code>:default-expand-all="false"</code> 初始收起。 点箭头折叠，点文字仍然跳转
-        </p>
-      </div>
-      <p class="hint">
-        滚到子章节时会自动展开它所在的父级（<code>auto-expand</code>，默认开启）， 不需要用户先手动点开
+      <h3>折叠 + 自动展开</h3>
+      <p class="hint" style="margin: 0 0 12px">
+        左边初始是收起的。往下滚这一段正文，经过「1.1 依赖」「2.1 主题」这类子章节时，
+        对应的父级会<b>自动展开</b>——这是 <code>auto-expand</code> 的作用，不需要手动点箭头
       </p>
+
+      <div class="row" style="margin-bottom: 10px">
+        <SrTag size="sm">当前项：{{ foldActive || '未激活' }}</SrTag>
+        <SrTag size="sm">展开中：{{ foldExpanded.join(', ') || '无' }}</SrTag>
+        <label class="switch">
+          <input v-model="autoExpandOn" type="checkbox" />
+          <span>autoExpand</span>
+        </label>
+      </div>
+
+      <div class="doc">
+        <article class="doc__body doc__body--fold">
+          <h4 id="fold-a">一、安装</h4>
+          <p v-for="i in 2" :key="`fa-${i}`" class="para">
+            安装部分说明依赖与引入方式。现在左侧只展开了父级，子级还在收起的。
+          </p>
+
+          <h5 id="fold-a-1">1.1 依赖</h5>
+          <p v-for="i in 2" :key="`fa1-${i}`" class="para">
+            滚到这一行时，「一、安装」会自动展开，露出「1.1 依赖」并高亮它。
+          </p>
+
+          <h5 id="fold-a-2">1.2 引入</h5>
+          <p v-for="i in 2" :key="`fa2-${i}`" class="para">继续往下，高亮移到「1.2 引入」，父级保持展开。</p>
+
+          <h4 id="fold-b">二、配置</h4>
+          <p v-for="i in 2" :key="`fb-${i}`" class="para">
+            进入第二章，第一个父级「一、安装」不会自动收起——展开是累积的， 只有你点箭头才会收回去。
+          </p>
+
+          <h5 id="fold-b-1">2.1 主题</h5>
+          <p v-for="i in 2" :key="`fb1-${i}`" class="para">
+            到这一节时，「二、配置」展开。把上面的 autoExpand 关掉再滚一次，就不会自动开了。
+          </p>
+
+          <h5 id="fold-b-2">2.2 国际化</h5>
+          <p v-for="i in 3" :key="`fb2-${i}`" class="para">
+            最后一节。滚到这里，「二、配置」下的两个子项都已展开。
+          </p>
+        </article>
+
+        <aside class="doc__side">
+          <SrAnchor
+            v-model:active-key="foldActive"
+            v-model:expanded-keys="foldExpanded"
+            :items="foldItems"
+            :container="CONTAINER"
+            :offset-top="24"
+            :auto-expand="autoExpandOn"
+            :default-expand-all="false"
+            collapsible
+            affix
+            :affix-offset="78"
+          />
+        </aside>
+      </div>
     </section>
 
     <section>
@@ -376,6 +445,11 @@ h3 {
   font-weight: var(--sr-font-weight-medium);
 }
 
+.doc__body--fold {
+  /* 内容短一些，一屏内就能滚完，方便看自动展开 */
+  min-height: 900px;
+}
+
 .doc__body h4 {
   margin: 12px 0 6px;
   color: var(--sr-color-text-secondary);
@@ -490,6 +564,21 @@ h3 {
   border: 1px solid var(--sr-color-border-subtle);
   border-radius: var(--sr-radius-base);
   background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--sr-color-text-tertiary);
+  font-family: var(--sr-font-family-mono);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.switch input {
+  margin: 0;
+  accent-color: var(--sr-color-primary);
 }
 
 .tag {

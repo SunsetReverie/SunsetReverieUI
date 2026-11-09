@@ -121,6 +121,11 @@
     outline-offset: 0;
   }
 
+  // 展开时箭头朝下，收起时朝右
+  &__toggle.is-expanded {
+    transform: rotate(90deg);
+  }
+
   // ---------- 滑块 ----------
   // 纵向：贴在左轨道上，2px 宽的竖线
   &__marker {
@@ -218,8 +223,10 @@
   }
 
   &--horizontal &__marker {
-    top: auto;
-    bottom: 0;
+    // top 由内联样式给（当前块的底部），不能用 bottom: 0——
+    // 那是 list 的 padding 底边，会比块低出 8px
+    top: 0;
+    bottom: auto;
     left: 0;
     width: 0;
     height: 2px;
@@ -289,6 +296,12 @@
     content: '';
     transform: translateY(-50%);
   }
+  // 横向没有左侧轨道，激活块不该负向延伸；内边距也回到横向自己的值
+  &--horizontal &__item.is-current > &__row > &__link {
+    margin-left: 0;
+    padding-left: 10px;
+  }
+
   // 子级激活不向左延伸，保持缩进；底色换成更淡的一层
   &__sub &__item.is-current > &__row > &__link {
     margin-left: 0;
