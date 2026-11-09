@@ -21,19 +21,6 @@ const emit = defineEmits<{
   toggle: [key: string, expanded: boolean]
 }>()
 
-defineSlots<{
-  /** 自定义每一项的内容，`current` 表示是当前项 */
-  title?: (scope: {
-    item: SrAnchorItem
-    depth: number
-    index: number
-    active: boolean
-    current: boolean
-  }) => unknown
-  /** 自定义折叠图标 */
-  toggle?: (scope: { expanded: boolean }) => unknown
-}>()
-
 /** 根节点 */
 const rootRef = ref<HTMLElement | null>(null)
 
@@ -528,11 +515,10 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
 
     <ul class="sr-anchor__list">
       <SrAnchorItemRow
-        v-for="(item, i) in items"
+        v-for="item in items"
         :key="item.key"
         :item="item"
         :depth="0"
-        :index="i + 1"
         :active-path="activePath"
         :current-key="currentKey"
         :set-link-ref="setLinkRef"
@@ -543,14 +529,7 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
         :show-toggle="showToggle"
         :toggle-position="togglePosition"
         @click="onClick"
-      >
-        <template #title="scope">
-          <slot name="title" v-bind="scope" />
-        </template>
-        <template #toggle="scope">
-          <slot name="toggle" v-bind="scope" />
-        </template>
-      </SrAnchorItemRow>
+      />
     </ul>
   </nav>
 </template>

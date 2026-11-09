@@ -11,8 +11,6 @@ const props = defineProps<{
   item: SrAnchorItem
   /** 层级，0 是顶层 */
   depth: number
-  /** 该层内的序号，从 1 开始 */
-  index: number
   /** 激活链路（含祖先） */
   activePath: Set<string>
   /** 当前激活项 key */
@@ -38,20 +36,6 @@ const emit = defineEmits<{
   click: [item: SrAnchorItem, event: MouseEvent]
 }>()
 
-// 显式声明插槽类型：不写的话，递归转发时 scope 会被推断成 any 并报循环引用
-defineSlots<{
-  /** 自定义每一项的内容 */
-  title?: (scope: {
-    item: SrAnchorItem
-    depth: number
-    index: number
-    active: boolean
-    current: boolean
-  }) => unknown
-  /** 自定义折叠图标 */
-  toggle?: (scope: { expanded: boolean }) => unknown
-}>()
-
 /** 有没有子项 */
 const hasChildren = computed(() => Boolean(props.item.children?.length))
 
@@ -67,17 +51,6 @@ const toggleVisible = computed(() => props.collapsible && props.showToggle && ha
 
 /** 当前是否展开 */
 const expanded = computed(() => props.expandedKeys.has(props.item.key))
-
-/** 传给 `#title` 插槽的数据 */
-const titleScope = computed(() => ({
-  item: props.item,
-  depth: props.depth,
-  index: props.index,
-  /** 是否在当前路径上（含祖先） */
-  active: props.activePath.has(props.item.key),
-  /** 是否是当前项本身 */
-  current: props.currentKey === props.item.key,
-}))
 </script>
 
 <template>
@@ -98,9 +71,7 @@ const titleScope = computed(() => ({
         :aria-label="expanded ? '折叠' : '展开'"
         @click="toggle(item.key)"
       >
-        <slot name="toggle" :expanded="expanded">
-          <SrIcon name="lucide:chevron-right" :size="12" />
-        </slot>
+        <SrIcon name="lucide:chevron-right" :size="12" />
       </button>
 
       <a
@@ -110,7 +81,7 @@ const titleScope = computed(() => ({
         :aria-current="currentKey === item.key ? 'location' : undefined"
         @click="emit('click', item, $event)"
       >
-        <slot name="title" v-bind="titleScope">{{ item.title }}</slot>
+        {{ item.title }}
       </a>
 
       <button
@@ -122,20 +93,17 @@ const titleScope = computed(() => ({
         :aria-label="expanded ? '折叠' : '展开'"
         @click="toggle(item.key)"
       >
-        <slot name="toggle" :expanded="expanded">
-          <SrIcon name="lucide:chevron-right" :size="12" />
-        </slot>
+        <SrIcon name="lucide:chevron-right" :size="12" />
       </button>
     </div>
 
     <!-- 折叠时用 v-show 而非 v-if：保留子级已测量的位置，展开后滑块不用重算 -->
     <ul v-if="canRenderChildren" v-show="!collapsible || expanded" class="sr-anchor__sub">
       <SrAnchorItem
-        v-for="(child, i) in item.children"
+        v-for="child in item.children"
         :key="child.key"
         :item="child"
         :depth="depth + 1"
-        :index="i + 1"
         :active-path="activePath"
         :current-key="currentKey"
         :set-link-ref="setLinkRef"
@@ -146,15 +114,7 @@ const titleScope = computed(() => ({
         :show-toggle="showToggle"
         :toggle-position="togglePosition"
         @click="(target, event) => emit('click', target, event)"
-      >
-        <!-- 插槽要逐层转发，否则只有第一层能拿到 -->
-        <template #title="scope">
-          <slot name="title" v-bind="scope" />
-        </template>
-        <template #toggle="scope">
-          <slot name="toggle" v-bind="scope" />
-        </template>
-      </SrAnchorItem>
+      />
     </ul>
   </li>
 </template>
