@@ -72,8 +72,14 @@ let scrollEl: HTMLElement | null = null
 /** 滚动节流标记 */
 let ticking = false
 
+/** 上一次派发出去的激活项，用于打断受控场景的回环 */
+let lastEmitted = ''
+
 /** 尺寸观察器 */
 let resizeObserver: ResizeObserver | null = null
+
+/** 尺寸变化的防抖定时器 */
+let resizeTimer: ReturnType<typeof setTimeout> | null = null
 
 /**
  * 扁平化锚点，带上层级
@@ -283,13 +289,19 @@ function toggle(key: string): void {
 
 /**
  * 设置激活项
+ *
+ * 比「和 currentKey 是否相同」多挡一层：受控时 currentKey 由外部决定，
+ * 如果外部没接住这次更新，下一次滚动还会算出同一个 key 并再次派发，
+ * 形成「emit → 外部重渲染 → 再 emit」的循环。记住上次派发过的值可以打断它。
  * @param key 目标 key
  */
 function setActive(key: string): void {
-  if (key === currentKey.value) {
+  if (key === currentKey.value || key === lastEmitted) {
     updateMarker()
     return
   }
+
+  lastEmitted = key
 
   if (props.activeKey === undefined) innerActive.value = key
 
@@ -392,11 +404,21 @@ function onScroll(): void {
 }
 
 /**
- * 窗口尺寸变化后位置全变了，重新测
+ * 尺寸变化后重新测量
+ *
+ * 必须防抖，否则会形成死循环：
+ * 展开/折叠改变布局 → ResizeObserver 回调 → 重测 → 判出新的激活项
+ * → 自动开合再次改变布局 → ……
+ * 观察的是 documentElement，任何布局变化都会命中，所以这道闸门是必需的。
  */
 function onResize(): void {
-  measure()
-  updateActive()
+  if (resizeTimer) clearTimeout(resizeTimer)
+
+  resizeTimer = setTimeout(() => {
+    resizeTimer = null
+    measure()
+    updateActive()
+  }, 150)
 }
 
 /**
@@ -468,6 +490,9 @@ function onHashChange(): void {
 }
 
 onBeforeUnmount(() => {
+  if (resizeTimer) clearTimeout(resizeTimer)
+  resizeTimer = null
+
   const listener = scrollEl ?? window
   listener.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onResize)
