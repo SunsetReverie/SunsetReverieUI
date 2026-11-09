@@ -14,6 +14,7 @@
   --sr-emoji-gap: 2px;
   --sr-emoji-font-size: 22px;
   --sr-emoji-item-size: 34px;
+  --sr-emoji-tab-radius: 8px;
   --sr-emoji-border: 1px solid var(--sr-color-border-subtle);
 
   display: flex;
@@ -162,8 +163,9 @@
     flex: 0 0 auto;
     padding: 5px 12px;
     border: 0;
-    // 普通圆角矩形，不用全椭圆——药丸在小面板里显得太「鼓」
-    border-radius: var(--sr-radius-md);
+    // 固定的小圆角，不要跟随质感令牌：glass 下 radius-md 是 14px，
+    // 而按钮本身才 29px 高，14px 圆角在视觉上就等于椭圆了
+    border-radius: var(--sr-emoji-tab-radius);
     background: transparent;
     color: var(--sr-color-text-tertiary);
     font-family: inherit;
