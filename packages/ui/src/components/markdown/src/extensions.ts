@@ -66,6 +66,27 @@ export interface SrMarkdownExtension {
    * 所以内容里的用户数据必须经 `ctx.escape()` 处理。
    */
   render: (match: RegExpMatchArray, ctx: SrMarkdownExtensionContext) => string
+  /**
+   * 「插入按钮」的描述
+   *
+   * @remarks
+   * 提供后 `SrMarkdownEditor` 的工具栏会自动多出一个按钮，
+   * 点击插入 `template` 并把光标放在合适位置——
+   * 使用方不需要手动记短代码语法，也不用另外配工具栏项。
+   *
+   * `template` 里的 `$1` 会被替换成占位文字，光标落在占位文字上并选中，
+   * 用户直接输入即可覆盖。
+   */
+  insert?: {
+    /** 按钮提示文案 */
+    label: string
+    /** 图标名，不传则只显示文字 */
+    icon?: string
+    /** 插入的模板，如 `'{{gallery id=$1}}'` */
+    template: string
+    /** `$1` 的占位文字，默认 `'1'` */
+    placeholder?: string
+  }
 }
 
 /** 预处理结果 */

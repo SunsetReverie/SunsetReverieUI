@@ -2500,6 +2500,133 @@
     "emits": [],
     "slots": []
   },
+  "markdown-editor": {
+    "name": "markdown-editor",
+    "options": [
+      {
+        "from": "markdownEditorProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "文本内容（`v-model`）"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "engine",
+        "type": "SrMarkdownEngine | 'builtin'",
+        "default": "'builtin'",
+        "description": "渲染引擎，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "extensions",
+        "type": "SrMarkdownExtension[]",
+        "default": "() => []",
+        "description": "短代码扩展，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "sanitize",
+        "type": "(html: string) =",
+        "default": "undefined",
+        "description": "HTML 后处理钩子，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "mode",
+        "type": "SrMarkdownEditorMode",
+        "default": "'split'",
+        "description": "视图模式 @default 'split'"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "toolbar",
+        "type": "SrMarkdownToolbarItem[] | false",
+        "default": "undefined",
+        "description": "工具栏 @default 默认 15 项 传 `false` 关闭；传数组则完全按数组渲染（预设名 + 自定义对象混用）。 扩展里配了 `insert` 的会自动追加到末尾。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'开始写作…'",
+        "description": "占位提示"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "height",
+        "type": "number | string",
+        "default": "360",
+        "description": "编辑区高度 @default 360"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读 @default false"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "maxLength",
+        "type": "number",
+        "default": "0",
+        "description": "最大字数，0 表示不限"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示字数统计 @default true"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 传了才显示表情按钮。**必须与渲染端用同一份数据**， 否则插进去的标记在正文里查不到。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "upload",
+        "type": "(file: File) =",
+        "default": "undefined",
+        "description": "图片上传 提供后工具栏的图片按钮改为「选文件 → 调用它 → 插入返回的地址」。 不提供则插入 `![](url)` 模板让用户自己贴地址。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      }
+    ],
+    "sources": ["markdownEditor"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "save",
+        "params": ["value"]
+      },
+      {
+        "name": "upload-error",
+        "params": ["error"]
+      },
+      {
+        "name": "mode-change",
+        "params": ["mode"]
+      }
+    ],
+    "slots": ["preview", "toolbar"]
+  },
   "message": {
     "name": "message",
     "options": [

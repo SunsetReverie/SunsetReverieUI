@@ -1,0 +1,236 @@
+/**
+ * Markdown 编辑器
+ *
+ * 三段式：工具栏 / 主体 / 底栏。编辑区是原生 textarea——它自带输入法、
+ * 撤销栈、拼写检查，用 contenteditable 重做要付出很大代价。
+ *
+ * 选择器按特异性分组：1 级（基础与变体）→ 2 级（状态）→ 3 级（组合）。
+ */
+
+.sr-mde {
+  --sr-mde-bar-height: 38px;
+  --sr-mde-font-size: 13px;
+  --sr-mde-pad: 12px;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+  transition: border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  // ---------- 变体：尺寸（1 级）----------
+  &--sm {
+    --sr-mde-font-size: 12px;
+    --sr-mde-pad: 10px;
+    --sr-mde-bar-height: 34px;
+  }
+
+  &--lg {
+    --sr-mde-font-size: 14px;
+    --sr-mde-pad: 14px;
+  }
+
+  // ---------- 工具栏（1 级）----------
+  &__bar {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 8px;
+    min-height: var(--sr-mde-bar-height);
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__tools {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  &__tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-family: inherit;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__tool-text {
+    font-size: 11.5px;
+  }
+
+  &__sep {
+    flex: 0 0 auto;
+    width: 1px;
+    height: 14px;
+    margin: 0 4px;
+    background: var(--sr-color-border-subtle);
+  }
+
+  &__hint {
+    margin-left: 6px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11.5px;
+  }
+
+  &__bar-right {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  // ---------- 主体（1 级）----------
+  &__body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__pane {
+    min-width: 0;
+  }
+
+  &__pane--edit {
+    display: flex;
+    flex: 1 1 50%;
+    border-right: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__pane--preview {
+    flex: 1 1 50%;
+    padding: var(--sr-mde-pad);
+    overflow-y: auto;
+    // 预览区滚到底不要带动外层页面
+    overscroll-behavior: contain;
+  }
+
+  &__textarea {
+    flex: 1 1 auto;
+    width: 100%;
+    padding: var(--sr-mde-pad);
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: var(--sr-mde-font-size);
+    line-height: 1.75;
+    resize: none;
+    outline: none;
+    // 关掉连字：`=>` 在编辑器里就该是两个字符
+    font-variant-ligatures: none;
+    tab-size: 2;
+  }
+
+  &__textarea::placeholder {
+    color: var(--sr-color-text-tertiary);
+  }
+
+  &__empty {
+    margin: 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 13px;
+  }
+
+  // ---------- 底栏（1 级）----------
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    min-height: 26px;
+    padding: 0 10px;
+    border-top: 1px solid var(--sr-color-border-subtle);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__count {
+    color: var(--sr-color-text-tertiary);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__file {
+    display: none;
+  }
+
+  // ---------- 2 级：工具按钮状态 ----------
+  &__tool:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: -2px;
+  }
+
+  &__tool:disabled {
+    color: var(--sr-color-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // ---------- 2 级：字数超限 ----------
+  &__count.is-over {
+    color: var(--sr-color-danger);
+  }
+
+  // ---------- 2 级：容器状态 ----------
+  &:focus-within {
+    border-color: var(--sr-color-primary);
+  }
+
+  &.is-over {
+    border-color: var(--sr-color-danger);
+  }
+
+  // ---------- 2 级：单面板占满 ----------
+  &.is-edit &__pane--edit,
+  &.is-preview &__pane--preview {
+    flex: 1 1 100%;
+    border-right: 0;
+  }
+
+  // ---------- 2 级：只读 ----------
+  &.is-readonly &__textarea {
+    color: var(--sr-color-text-secondary);
+    cursor: default;
+  }
+
+  // ---------- 3 级：悬停 ----------
+  // 放最后：`:hover:not(:disabled)` 比「基础态」重，必须压在它后面
+  &__tool:hover:not(:disabled) {
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text);
+  }
+}
+
+/**
+ * 表情浮层
+ *
+ * 被 Teleport 到 body，不能写进 `.sr-mde` 的嵌套里——
+ * 那样编译出的选择器会带祖先条件，浮层上匹配不到。
+ */
+.sr-mde__emoji {
+  position: fixed;
+  z-index: var(--sr-z-index-popover, 1050);
+  width: 300px;
+  overflow: hidden;
+  border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-popover);
+  box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
+}

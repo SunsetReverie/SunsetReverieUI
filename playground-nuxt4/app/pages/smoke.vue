@@ -332,6 +332,13 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
+        <span class="cell__label">MarkdownEditor</span>
+        <div class="cell__body cell__body--column">
+          <sr-markdown-editor model-value="# 标题" :height="180" />
+        </div>
+      </div>
+
+      <div class="cell">
         <span class="cell__label">Markdown</span>
         <div class="cell__body cell__body--column">
           <sr-markdown source="**粗体** 与 [链接](https://example.com)" engine="builtin" />

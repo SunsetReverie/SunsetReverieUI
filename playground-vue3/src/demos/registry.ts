@@ -246,6 +246,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./divider/DividerDemo.vue'),
       },
       {
+        key: 'markdown-editor',
+        name: 'SrMarkdownEditor',
+        description: 'Markdown 编辑器。分栏实时预览、可配置工具栏、短代码按钮与表情。',
+        demo: () => import('./markdown-editor/MarkdownEditorDemo.vue'),
+      },
+      {
         key: 'markdown',
         name: 'SrMarkdown',
         description: 'Markdown 渲染器。四种扩展方式，短代码支持内联与块级两种语法。',

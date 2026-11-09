@@ -30,6 +30,7 @@ import {
   SrLoadMore,
   SrLoading,
   SrMarkdown,
+  SrMarkdownEditor,
   SrCarousel,
   SrCascader,
   SrCodeBlock,
@@ -426,6 +427,13 @@ describe('导航与数据组件的 SSR 渲染', () => {
     // 同步引擎在 setup 阶段就渲染完，SSR 输出的是最终结构而不是空容器
     expect(html).toContain('sr-md__h--1')
     expect(html).toContain('标题')
+  })
+
+  it('SrMarkdownEditor 服务端输出工具栏与预览', async () => {
+    const html = await render(SrMarkdownEditor, { modelValue: '# 标题' })
+
+    expect(html).toContain('sr-mde__bar')
+    expect(html).toContain('sr-md__h--1')
   })
 
   it('SrPagination', async () => {

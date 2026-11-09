@@ -126,6 +126,7 @@ export default defineConfig({
             { text: 'SrQRCode', link: '/components/qrcode' },
             { text: 'SrCodeBlock', link: '/components/code-block' },
             { text: 'SrMarkdown', link: '/components/markdown' },
+            { text: 'SrMarkdownEditor', link: '/components/markdown-editor' },
             { text: 'SrInputNumber', link: '/components/input-number' },
             { text: 'SrCheckbox', link: '/components/checkbox' },
             { text: 'SrRadio', link: '/components/radio' },
