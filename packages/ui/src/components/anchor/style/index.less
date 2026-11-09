@@ -22,6 +22,11 @@
   --sr-anchor-indicator-h: 0;
   --sr-anchor-indicator-r: 0;
   --sr-anchor-indicator-gap: 0;
+  // 文字左内边距。不写成 calc(8px + gap + w)：
+  // var() 替换出的是无单位 0，整个 calc 会被判为无效、连基础值一起丢掉
+  --sr-anchor-link-pad-left: 8px;
+  // 轨道到文字的缩进，激活块向左延伸到轨道要用它
+  --sr-anchor-indent: 13px;
 
   position: relative;
   display: block;
@@ -67,7 +72,7 @@
     display: block;
     flex: 1 1 auto;
     min-width: 0;
-    padding: 4px 8px;
+    padding: 4px 8px 4px var(--sr-anchor-link-pad-left);
     border-radius: var(--sr-radius-sm);
     color: inherit;
     text-decoration: none;
@@ -122,7 +127,7 @@
     position: absolute;
     z-index: 1;
     top: 0;
-    // 轨道是 __list 的 1px 左边框，位置在 x=0；滑块 2px 宽，居中压上去
+    // left 由内联样式跟随当前块的左边缘，这里只管宽度
     left: 0;
     width: 2px;
     height: 0;
@@ -142,12 +147,11 @@
   // 只改变量，具体渲染交给下面统一的状态规则
 
   // 左侧竖条，去掉底色
+  // 左侧竖条：直接用组件级的滑块来画，不再额外加一条伪元素——
+  // 两套竖条叠在一起会错位，而且伪元素占的是文字空间，会把文字挤偏
   &--active-bar {
     --sr-anchor-active-bg: transparent;
-    --sr-anchor-indicator-w: 2px;
-    --sr-anchor-indicator-h: 100%;
-    --sr-anchor-indicator-r: 1px;
-    --sr-anchor-indicator-gap: 0;
+    --sr-anchor-active-weight: var(--sr-font-weight-medium);
   }
 
   // 圆角胶囊
@@ -156,9 +160,13 @@
     --sr-anchor-active-radius: var(--sr-radius-full);
   }
 
-  // 最轻：只变粗变色
+  // 最轻：只变粗变色，连滑块都不要
   &--active-bold {
     --sr-anchor-active-bg: transparent;
+  }
+
+  &--active-bold &__marker {
+    display: none;
   }
 
   // 左侧小圆点
@@ -167,7 +175,9 @@
     --sr-anchor-indicator-w: 5px;
     --sr-anchor-indicator-h: 5px;
     --sr-anchor-indicator-r: 50%;
-    --sr-anchor-indicator-gap: 14px;
+    // 圆点在 2px 处（贴着块的左边缘），5px 宽，文字从 12px 开始
+    --sr-anchor-indicator-gap: 2px;
+    --sr-anchor-link-pad-left: 12px;
   }
 
   // ---------- 变体：横向 ----------
@@ -248,18 +258,27 @@
   }
 
   // ---------- 状态：激活项 ----------
-  // 所有激活样式都收敛到这一条，变体只负责改上面的变量
-  &__item.is-active > &__row > &__link {
-    padding-left: calc(8px + var(--sr-anchor-indicator-gap) + var(--sr-anchor-indicator-w));
+  // 所有激活样式都收敛到这一条，变体只负责改上面的变量。
+  // 底色块向左延伸到轨道位置，让左侧滑块压在它的左边缘上——
+  // 否则滑块孤零零留在轨道上、块从 13px 处才开始，两者看着像两个东西。
+  &__item.is-current > &__row > &__link {
+    margin-left: calc(-1 * var(--sr-anchor-indent));
+    padding-left: calc(var(--sr-anchor-indent) + var(--sr-anchor-link-pad-left));
     border-radius: var(--sr-anchor-active-radius, var(--sr-radius-sm));
     background: var(--sr-anchor-active-bg);
     color: var(--sr-anchor-active-color);
     font-weight: var(--sr-anchor-active-weight);
   }
 
+  // 祖先项：只变色，不铺底色、不加粗。
+  // 否则「父章节 + 子章节」两块底色连在一起，看不出是哪一层
+  &__item.is-active > &__row > &__link {
+    color: var(--sr-anchor-active-color);
+  }
+
   // 左侧指示器：竖条 / 圆点都用这一个伪元素，
   // 尺寸与间距走变量，是 0 的时候自然不显示
-  &__item.is-active > &__row > &__link::before {
+  &__item.is-current > &__row > &__link::before {
     position: absolute;
     top: 50%;
     left: var(--sr-anchor-indicator-gap);
@@ -269,6 +288,16 @@
     background: var(--sr-anchor-active-color);
     content: '';
     transform: translateY(-50%);
+  }
+  // 子级激活不向左延伸，保持缩进；底色换成更淡的一层
+  &__sub &__item.is-current > &__row > &__link {
+    margin-left: 0;
+    padding-left: 10px;
+    background: color-mix(in srgb, var(--sr-anchor-active-bg) 60%, transparent);
+  }
+
+  &__sub &__sub &__item.is-current > &__row > &__link {
+    padding-left: 18px;
   }
 }
 

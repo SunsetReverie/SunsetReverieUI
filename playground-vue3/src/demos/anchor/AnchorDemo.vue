@@ -462,6 +462,8 @@ h3 {
   --sr-anchor-active-radius: 6px;
   --sr-anchor-indicator-w: 0;
   --sr-anchor-indicator-gap: 0;
+  /* 深色底时滑块要单独指定，否则还是主色，压在块上很突兀 */
+  --sr-anchor-marker: #4ade80;
 }
 
 .code-block {

@@ -50,7 +50,13 @@ const expanded = computed(() => props.expandedKeys.has(props.item.key))
 </script>
 
 <template>
-  <li class="sr-anchor__item" :class="{ 'is-active': activePath.has(item.key) }">
+  <li
+    class="sr-anchor__item"
+    :class="{
+      'is-active': activePath.has(item.key),
+      'is-current': currentKey === item.key,
+    }"
+  >
     <div class="sr-anchor__row">
       <button
         v-if="showToggle"

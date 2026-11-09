@@ -314,8 +314,8 @@ function updateMarker(): void {
       : {
           opacity: '1',
           top: `${rect.top - rootRect.top}px`,
+          left: `${rect.left - rootRect.left}px`,
           height: `${rect.height}px`,
-          left: '',
           width: '',
         }
 }
