@@ -61,12 +61,25 @@ const count = computed(() => srCountMarkdownText(props.modelValue))
 /** 是否超限 */
 const overLimit = computed(() => props.maxLength > 0 && count.value > props.maxLength)
 
-/** 视图选项 */
-const modeOptions = [
-  { label: '编辑', value: 'edit' },
-  { label: '分栏', value: 'split' },
-  { label: '预览', value: 'preview' },
-]
+/** 视图选项的图标：分栏用左右两栏的示意图，比文字更直观 */
+const MODE_ICONS: Record<SrMarkdownEditorMode, string> = {
+  edit: 'lucide:pencil',
+  split: 'lucide:columns-2',
+  preview: 'lucide:eye',
+}
+
+/** 视图选项：text 模式不带图标，其余两种带 */
+const modeOptions = computed(() =>
+  (
+    [
+      { label: '编辑', value: 'edit' },
+      { label: '分栏', value: 'split' },
+      { label: '预览', value: 'preview' },
+    ] as const
+  ).map((option) =>
+    props.modeToggle === 'text' ? { ...option } : { ...option, icon: MODE_ICONS[option.value] },
+  ),
+)
 
 /** 当前生效的明暗主题 */
 const resolvedTheme = ref<'light' | 'dark'>('light')
@@ -757,7 +770,12 @@ defineExpose({
       </slot>
 
       <div class="sr-mde__bar-right">
-        <SrSegmented v-model="currentMode" :options="modeOptions" size="sm" />
+        <SrSegmented
+          v-model="currentMode"
+          :options="modeOptions"
+          :icon-only="modeToggle === 'icon'"
+          size="sm"
+        />
       </div>
     </div>
 

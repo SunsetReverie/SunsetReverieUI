@@ -61,6 +61,24 @@ const customToolbar = [
 
 右上角可以随时切换，`mode-change` 事件同步给外部。
 
+### 切换控件的显示形式
+
+```vue
+<SrMarkdownEditor v-model="content" />                        <!-- 图标 + 文字（默认） -->
+<SrMarkdownEditor v-model="content" mode-toggle="text" />   <!-- 只有文字 -->
+<SrMarkdownEditor v-model="content" mode-toggle="icon" />   <!-- 只有图标 -->
+```
+
+| `modeToggle` | 效果 | 适合 |
+| --- | --- | --- |
+| `both`（默认） | 图标 + 文字 | 最好认，工具栏空间够时用它 |
+| `text` | 只有文字 | 旧版观感，或图标风格不搭时 |
+| `icon` | 只有图标 | 工具栏按钮多、右侧空间紧张 |
+
+三个图标：编辑 `lucide:pencil`、分栏 `lucide:columns-2`（左右两栏示意图）、预览 `lucide:eye`。
+
+`icon` 模式下文案不是被删掉，而是转为视觉隐藏层，同时补上 `title` 与 `aria-label`——鼠标悬停有提示，屏幕阅读器也读得到。这一能力由 `SrSegmented` 的 `icon-only` 提供，其他用到分段控件的地方也能复用。
+
 ## 工具栏
 
 ### 我该配什么（按需求查）
@@ -356,6 +374,7 @@ async function uploadFile(file: File) {
 | `readonly` | `boolean` | `false` | 只读 |
 | `maxLength` | `number` | `0` | 最大字数，0 不限 |
 | `showCount` | `boolean` | `true` | 显示字数 |
+| `modeToggle` | `'text' \| 'both' \| 'icon'` | `'both'` | 视图切换的显示形式 |
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包，传了才显示表情按钮 |
 | `upload` | `(file: File) => Promise<string>` | — | 图片上传 |
 | `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板，透传给预览区 |

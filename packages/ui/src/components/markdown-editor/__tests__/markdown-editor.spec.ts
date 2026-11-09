@@ -187,6 +187,40 @@ describe('SrMarkdownEditor', () => {
     wrapper.unmount()
   })
 
+  it('视图切换默认是图标 + 文字', () => {
+    const wrapper = mountEditor()
+    const seg = wrapper.findComponent({ name: 'SrSegmented' })
+
+    expect(seg.props('options')).toEqual([
+      { label: '编辑', value: 'edit', icon: 'lucide:pencil' },
+      { label: '分栏', value: 'split', icon: 'lucide:columns-2' },
+      { label: '预览', value: 'preview', icon: 'lucide:eye' },
+    ])
+    expect(seg.props('iconOnly')).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('modeToggle=text 时退回纯文字', () => {
+    const wrapper = mountEditor({ modeToggle: 'text' })
+    const seg = wrapper.findComponent({ name: 'SrSegmented' })
+
+    expect(seg.props('options')?.[0]).toEqual({ label: '编辑', value: 'edit' })
+    expect(seg.props('iconOnly')).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('modeToggle=icon 时只显示图标，文案留给无障碍属性', () => {
+    const wrapper = mountEditor({ modeToggle: 'icon' })
+    const seg = wrapper.findComponent({ name: 'SrSegmented' })
+
+    expect(seg.props('iconOnly')).toBe(true)
+    expect(seg.props('options')?.[0]?.icon).toBe('lucide:pencil')
+    const btn = wrapper.findAll('.sr-segmented__item')[0]
+    expect(btn?.attributes('title')).toBe('编辑')
+    expect(btn?.attributes('aria-label')).toBe('编辑')
+    wrapper.unmount()
+  })
+
   it('视图模式下只显示对应面板', async () => {
     const wrapper = mountEditor({ mode: 'edit' })
 

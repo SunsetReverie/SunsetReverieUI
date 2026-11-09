@@ -60,6 +60,18 @@
     line-height: 1;
   }
 
+  // 纯图标模式下文案不显示，但要留给屏幕阅读器
+  &__label.is-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip: rect(0, 0, 0, 0);
+  }
+
   // ---------- 单状态与变体（2 个 class）----------
   &__item:focus-visible {
     outline: 2px solid var(--sr-color-primary-alpha-25);

@@ -53,6 +53,30 @@ const blockValue = ref('grid')
   ]" />
 </div>
 
+## 纯图标
+
+`icon-only` 让带图标的选项只显示图标，适合工具栏、侧边栏这类空间紧张的位置：
+
+```vue
+<SrSegmented v-model="view" icon-only :options="[
+  { label: '编辑', value: 'edit', icon: 'lucide:pencil' },
+  { label: '分栏', value: 'split', icon: 'lucide:columns-2' },
+  { label: '预览', value: 'preview', icon: 'lucide:eye' },
+]" />
+```
+
+<div class="sr-demo is-block">
+  <SrSegmented v-model="view" icon-only :options="[
+    { label: '编辑', value: 'edit', icon: 'lucide:pencil' },
+    { label: '分栏', value: 'split', icon: 'lucide:columns-2' },
+    { label: '预览', value: 'preview', icon: 'lucide:eye' },
+  ]" />
+</div>
+
+文案不会丢弃——它转成视觉隐藏层（屏幕阅读器仍可读），并自动补上 `title` 与 `aria-label`，鼠标悬停也能看到说明。
+
+**没有配 `icon` 的选项仍显示文字**，避免出现空白按钮。因此混用带图标与不带图标的选项时，`icon-only` 只会压缩前者。
+
 ## 禁用
 
 **单项禁用**：
@@ -121,6 +145,7 @@ const blockValue = ref('grid')
 | `block` | `boolean` | `false` | 占满容器宽度 |
 | `disabled` | `boolean` | `false` | 整体禁用 |
 | `size` | `SrSize` | 继承配置 | 尺寸档位 |
+| `iconOnly` | `boolean` | `false` | 只显示图标（仅对带 `icon` 的选项生效） |
 
 ### SrSegmentedOption
 

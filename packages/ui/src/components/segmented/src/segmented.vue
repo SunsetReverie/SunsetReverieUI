@@ -84,10 +84,14 @@ function select(option: SrSegmentedOption): void {
       role="tab"
       :disabled="disabled || option.disabled"
       :aria-selected="option.value === modelValue"
+      :title="iconOnly && option.icon ? option.label : undefined"
+      :aria-label="iconOnly && option.icon ? option.label : undefined"
       @click="select(option)"
     >
-      <SrIcon v-if="option.icon" :name="option.icon" :size="13" />
-      <span class="sr-segmented__label">{{ option.label }}</span>
+      <SrIcon v-if="option.icon" :name="option.icon" :size="iconOnly ? 15 : 13" />
+      <span class="sr-segmented__label" :class="{ 'is-visually-hidden': iconOnly && option.icon }">{{
+        option.label
+      }}</span>
     </button>
   </div>
 </template>

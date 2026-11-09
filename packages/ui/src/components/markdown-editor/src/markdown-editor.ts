@@ -183,6 +183,17 @@ export const markdownEditorProps = {
     default: true,
   },
   /**
+   * 视图切换控件的显示形式 @default 'both'
+   *
+   * - `text`：只有文字（旧版观感）
+   * - `both`：图标 + 文字，最好认
+   * - `icon`：只有图标，最省空间；文案转为 `title` 与 `aria-label`
+   */
+  modeToggle: {
+    type: String as PropType<'text' | 'both' | 'icon'>,
+    default: 'both',
+  },
+  /**
    * 表情包
    *
    * 传了才显示表情按钮。**必须与渲染端用同一份数据**，

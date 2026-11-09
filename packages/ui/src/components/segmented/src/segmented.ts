@@ -42,6 +42,17 @@ export const segmentedProps = {
     type: Boolean,
     default: false,
   },
+  /**
+   * 只显示图标 @default false
+   *
+   * 仅对带 `icon` 的选项生效；文案会转入视觉隐藏层（屏幕阅读器仍可读），
+   * 并自动补上 `title` 与 `aria-label`。没有图标的选项仍显示文字，
+   * 避免出现空白按钮。
+   */
+  iconOnly: {
+    type: Boolean,
+    default: false,
+  },
   /** 尺寸档位 */
   size: {
     type: String as PropType<SrSize>,

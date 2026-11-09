@@ -132,4 +132,42 @@ describe('SrSegmented', () => {
     expect(buttons[0]?.attributes('aria-selected')).toBe('false')
     wrapper.unmount()
   })
+
+  it('iconOnly 时文案视觉隐藏，但保留 title 与 aria-label', () => {
+    const wrapper = mount(SrSegmented, {
+      props: {
+        modelValue: 'a',
+        iconOnly: true,
+        options: [
+          { label: '编辑', value: 'a', icon: 'lucide:pencil' },
+          { label: '预览', value: 'b', icon: 'lucide:eye' },
+        ],
+      },
+    })
+
+    const buttons = wrapper.findAll('.sr-segmented__item')
+    expect(buttons[0]?.attributes('title')).toBe('编辑')
+    expect(buttons[0]?.attributes('aria-label')).toBe('编辑')
+    expect(buttons[0]?.find('.sr-segmented__label').classes()).toContain('is-visually-hidden')
+    expect(buttons[0]?.find('.sr-segmented__label').text()).toBe('编辑')
+    wrapper.unmount()
+  })
+
+  it('iconOnly 对没有图标的选项仍显示文字', () => {
+    const wrapper = mount(SrSegmented, {
+      props: {
+        modelValue: 'a',
+        iconOnly: true,
+        options: [
+          { label: '编辑', value: 'a', icon: 'lucide:pencil' },
+          { label: '预览', value: 'b' },
+        ],
+      },
+    })
+
+    const buttons = wrapper.findAll('.sr-segmented__item')
+    expect(buttons[1]?.attributes('title')).toBeUndefined()
+    expect(buttons[1]?.find('.sr-segmented__label').classes()).not.toContain('is-visually-hidden')
+    wrapper.unmount()
+  })
 })

@@ -42,6 +42,16 @@ const savedAt = ref('')
 /** 是否显示表情 */
 const withEmoji = ref(true)
 
+/** 视图切换的显示形式 */
+const modeToggleStyle = ref<'text' | 'both' | 'icon'>('both')
+
+/** 视图切换选项 */
+const modeToggleOptions = [
+  { label: '文字', value: 'text' },
+  { label: '图标 + 文字', value: 'both' },
+  { label: '纯图标', value: 'icon' },
+]
+
 /** 工具栏提示模式 */
 const tipMode = ref<'auto' | 'light' | 'dark' | 'off'>('auto')
 
@@ -328,6 +338,19 @@ async function fakeUpload(file: File): Promise<string> {
       <p class="hint">
         默认浅色气泡。键盘 Tab 到按钮上也会显示（不是只靠鼠标）。 关掉后退回原生
         <code>title</code>，按钮不会失去说明
+      </p>
+    </section>
+
+    <section>
+      <h3>视图切换的显示形式</h3>
+      <div class="row" style="margin-bottom: 10px">
+        <SrSegmented v-model="modeToggleStyle" :options="modeToggleOptions" size="sm" />
+        <SrTag size="sm">看右上角</SrTag>
+      </div>
+      <SrMarkdownEditor v-model="content" :mode-toggle="modeToggleStyle" :height="220" />
+      <p class="hint">
+        默认 <strong>图标 + 文字</strong>：编辑 ✏️、分栏用左右两栏示意图、预览 👁。
+        纯图标模式最省空间，文案会转成 <code>title</code> 与 <code>aria-label</code>，屏幕阅读器仍能读出来
       </p>
     </section>
 
