@@ -19,6 +19,12 @@ const bare = ref(false)
 /** 当前动画样式 */
 const variant = ref<'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'>('ring')
 
+/** 同色系：由浅到深，最协调 */
+const warmColors = ['#ffd8a8', '#ffc078', '#ffa94d', '#ff922b']
+
+/** 四色：区分明显 */
+const vividColors = ['#fca5a5', '#fcd34d', '#86efac', '#93c5fd']
+
 /** 动画样式选项 */
 const variantOptions = [
   { label: '圆环', value: 'ring' },
@@ -67,6 +73,58 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
         </div>
       </div>
       <p class="hint">六种样式全部由 CSS 绘制，不引图标或图片；同一套代码在 12px 和 48px 下都不会走形</p>
+    </section>
+
+    <section>
+      <h3>多色（colors）</h3>
+      <div class="grid">
+        <div class="color-card">
+          <div class="color-card__stage">
+            <SrLoading variant="dots" :colors="warmColors" />
+          </div>
+          <p class="color-card__name">同色系（3 点）</p>
+          <p class="color-card__desc">由浅到深，最协调</p>
+        </div>
+        <div class="color-card">
+          <div class="color-card__stage">
+            <SrLoading variant="bars" :colors="warmColors" />
+          </div>
+          <p class="color-card__name">同色系（4 条）</p>
+          <p class="color-card__desc">像一组并列的进度</p>
+        </div>
+        <div class="color-card">
+          <div class="color-card__stage">
+            <SrLoading variant="dots" :colors="vividColors" />
+          </div>
+          <p class="color-card__name">四色（3 点）</p>
+          <p class="color-card__desc">取前 3 个，区分明显</p>
+        </div>
+        <div class="color-card">
+          <div class="color-card__stage">
+            <SrLoading variant="bars" :colors="vividColors" />
+          </div>
+          <p class="color-card__name">四色（4 条）</p>
+          <p class="color-card__desc">适合「多个任务并行」</p>
+        </div>
+        <div class="color-card">
+          <div class="color-card__stage">
+            <SrLoading variant="pulse" :colors="['#fca5a5', '#93c5fd']" />
+          </div>
+          <p class="color-card__name">双色（2 圈）</p>
+          <p class="color-card__desc">两圈不同色，层次更清楚</p>
+        </div>
+        <div class="color-card">
+          <div class="color-card__stage">
+            <SrLoading variant="bars" />
+          </div>
+          <p class="color-card__name">不传（对照）</p>
+          <p class="color-card__desc">全部用主色单色</p>
+        </div>
+      </div>
+      <p class="hint">
+        数量不足会循环取用；<code>ring</code> / <code>gradient</code> /
+        <code>orbit</code> 只有一个元素，仍是单色。配合上面的 <code>variant</code> 切换可以任选组合。
+      </p>
     </section>
 
     <section>
@@ -228,6 +286,44 @@ h3 {
   color: var(--sr-color-text-tertiary);
   font-size: 12px;
   line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.color-card {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 10px 10px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+}
+
+.color-card__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+}
+
+.color-card__name {
+  margin: 2px 0 0;
+  color: var(--sr-color-text);
+  font-size: 12.5px;
+  font-weight: var(--sr-font-weight-medium);
+}
+
+.color-card__desc {
+  margin: 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11px;
+  text-align: center;
 }
 
 .stack-btns {

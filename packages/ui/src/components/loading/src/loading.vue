@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
   </Teleport>
 
   <Transition v-else name="sr-loading-fade">
-    <div v-if="visible" class="sr-loading sr-loading--inline" :class="{ 'is-mask': mask }">
+    <div v-if="visible" class="sr-loading sr-loading--inline">
       <div class="sr-loading__body">
         <SrSpinner :size="size ?? 'md'" :variant="variant" :colors="colors" />
         <span v-if="text || $slots.text" class="sr-loading__text">

@@ -60,10 +60,13 @@
   }
 
   // ---------- 形态：行内 ----------
+  // 只占一个转圈的位置，不铺任何底色：
+  // 它经常被放进卡片或按钮旁边，半透明底会变成一块突兀的白方块
   &--inline {
     display: inline-flex;
     min-height: 0;
     padding: 8px;
+    background: transparent;
   }
 
   // ---------- 遮罩 ----------
