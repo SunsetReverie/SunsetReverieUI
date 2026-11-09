@@ -108,6 +108,64 @@ export const anchorProps = {
     type: String,
     default: '页面导航',
   },
+  /**
+   * 激活项样式 @default 'background'
+   *
+   * - `background` 底色块 + 主色文字（默认）
+   * - `bar` 左侧竖条，无底色
+   * - `pill` 圆角胶囊
+   * - `bold` 只变粗变色，最轻
+   * - `dot` 左侧小圆点
+   */
+  activeVariant: {
+    type: String as PropType<'background' | 'bar' | 'pill' | 'bold' | 'dot'>,
+    default: 'background',
+  },
+  /**
+   * 父级可折叠 @default false
+   *
+   * 打开后每一项前面出现箭头，点击箭头折叠子级、点击文字仍跳转。
+   */
+  collapsible: {
+    type: Boolean,
+    default: false,
+  },
+  /**
+   * 默认全部展开 @default true
+   *
+   * 只在 `collapsible` 打开时有意义。
+   */
+  defaultExpandAll: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 子项激活时自动展开父级 @default true
+   *
+   * 滚动到某个子章节时，它所在的父级会自动展开，不用手动点。
+   */
+  autoExpand: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 展开的父级 key（受控）
+   *
+   * 传了就以外部为准；配合 `v-model:expanded-keys`。
+   */
+  expandedKeys: {
+    type: Array as unknown as PropType<string[]>,
+    default: undefined,
+  },
+  /**
+   * 最多显示的层级 @default 0
+   *
+   * 0 表示不限。设为 2 时只渲染前两层，更深的子级不出现。
+   */
+  maxDepth: {
+    type: Number,
+    default: 0,
+  },
 } as const
 
 export type SrAnchorProps = ExtractPropTypes<typeof anchorProps>

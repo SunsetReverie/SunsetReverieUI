@@ -46,6 +46,15 @@ const deepItems: SrAnchorItem[] = [
   },
 ]
 
+/** 激活样式 */
+const activeVariants = [
+  { key: 'background', name: '底色块', desc: '默认，最常见' },
+  { key: 'bar', name: '左侧竖条', desc: '轻，不压正文' },
+  { key: 'pill', name: '胶囊', desc: '圆润，偏移动端' },
+  { key: 'bold', name: '仅加粗', desc: '最轻，几乎无干扰' },
+  { key: 'dot', name: '小圆点', desc: '克制，有指示感' },
+] as const
+
 /** 横向目录 */
 const flatItems: SrAnchorItem[] = [
   { key: 'a-intro', title: '简介' },
@@ -155,6 +164,89 @@ const flatItems: SrAnchorItem[] = [
           <SrAnchor :items="deepItems" :container="CONTAINER" :offset-top="24" affix :affix-offset="78" />
         </aside>
       </div>
+    </section>
+
+    <section>
+      <h3>激活样式（activeVariant）</h3>
+      <div class="grid">
+        <div v-for="v in activeVariants" :key="v.key" class="variant-card">
+          <div class="variant-card__stage">
+            <SrAnchor
+              :items="flatItems"
+              :container="CONTAINER"
+              :active-variant="v.key"
+              :active-key="'a-usage'"
+              :show-marker="false"
+              :offset-top="24"
+            />
+          </div>
+          <p class="variant-card__name">{{ v.name }}</p>
+          <p class="variant-card__desc">{{ v.desc }}</p>
+          <code class="variant-card__code">{{ v.key }}</code>
+        </div>
+      </div>
+      <p class="hint">五种内置样式都由同一组 CSS 变量驱动，所以也能直接覆盖变量做完全自定义（见下一节）</p>
+    </section>
+
+    <section>
+      <h3>完全自定义激活样式</h3>
+      <div class="row">
+        <div class="custom-anchor">
+          <SrAnchor :items="flatItems" :container="CONTAINER" :active-key="'a-config'" :offset-top="24" />
+        </div>
+        <div>
+          <p class="hint" style="margin: 0 0 8px; max-width: 340px">覆盖这几个变量即可，不需要改组件样式：</p>
+          <pre class="code-block">
+--sr-anchor-active-color: #fff;
+--sr-anchor-active-bg: #1f7a4d;
+--sr-anchor-active-weight: 600;
+--sr-anchor-active-radius: 6px;
+--sr-anchor-indicator-w: 0;</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>折叠（collapsible）</h3>
+      <div class="row">
+        <div class="side-box">
+          <SrAnchor :items="basicItems" :container="CONTAINER" collapsible :offset-top="24" />
+        </div>
+        <div class="side-box">
+          <SrAnchor
+            :items="basicItems"
+            :container="CONTAINER"
+            collapsible
+            :default-expand-all="false"
+            :offset-top="24"
+          />
+        </div>
+        <p class="hint" style="margin: 0; max-width: 280px">
+          左：默认全展开；右：<code>:default-expand-all="false"</code> 初始收起。 点箭头折叠，点文字仍然跳转
+        </p>
+      </div>
+      <p class="hint">
+        滚到子章节时会自动展开它所在的父级（<code>auto-expand</code>，默认开启）， 不需要用户先手动点开
+      </p>
+    </section>
+
+    <section>
+      <h3>限制显示层级（maxDepth）</h3>
+      <div class="row">
+        <div class="side-box">
+          <SrAnchor :items="deepItems" :container="CONTAINER" :max-depth="1" :offset-top="24" />
+          <p class="hint" style="margin: 6px 0 0; text-align: center">maxDepth = 1</p>
+        </div>
+        <div class="side-box">
+          <SrAnchor :items="deepItems" :container="CONTAINER" :max-depth="2" :offset-top="24" />
+          <p class="hint" style="margin: 6px 0 0; text-align: center">maxDepth = 2</p>
+        </div>
+        <div class="side-box">
+          <SrAnchor :items="deepItems" :container="CONTAINER" :offset-top="24" />
+          <p class="hint" style="margin: 6px 0 0; text-align: center">不限（默认 0）</p>
+        </div>
+      </div>
+      <p class="hint">目录太长时只显示前两层，内容和层级都能收敛住</p>
     </section>
 
     <section>
@@ -313,6 +405,76 @@ h3 {
 
 .side-box {
   width: 200px;
+}
+
+.variant-card {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 10px 10px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
+}
+
+.variant-card__stage {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  min-height: 130px;
+}
+
+.variant-card__name {
+  margin: 4px 0 0;
+  color: var(--sr-color-text);
+  font-size: 12.5px;
+  font-weight: var(--sr-font-weight-medium);
+}
+
+.variant-card__desc {
+  margin: 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11px;
+  text-align: center;
+}
+
+.variant-card__code {
+  margin-top: 4px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text-tertiary);
+  font-family: var(--sr-font-family-mono);
+  font-size: 10.5px;
+}
+
+/* 用变量做完全自定义的示例 */
+.custom-anchor {
+  width: 200px;
+}
+
+.custom-anchor :deep(.sr-anchor) {
+  --sr-anchor-active-color: #fff;
+  --sr-anchor-active-bg: #1f7a4d;
+  --sr-anchor-active-weight: 600;
+  --sr-anchor-active-radius: 6px;
+  --sr-anchor-indicator-w: 0;
+  --sr-anchor-indicator-gap: 0;
+}
+
+.code-block {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text-secondary);
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+  line-height: 1.8;
+  white-space: pre;
+  overflow-x: auto;
 }
 
 .grid {

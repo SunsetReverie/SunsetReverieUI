@@ -237,7 +237,7 @@ describe('SrAnchor', () => {
     await nextTick()
 
     const activeTexts = wrapper
-      .findAll('.sr-anchor__item.is-active > .sr-anchor__link')
+      .findAll('.sr-anchor__item.is-active > .sr-anchor__row > .sr-anchor__link')
       .map((el) => el.text())
 
     expect(activeTexts).toContain('用法')
@@ -261,6 +261,114 @@ describe('SrAnchor', () => {
 
     expect(wrapper.element.tagName).toBe('NAV')
     expect(wrapper.attributes('aria-label')).toBe('目录')
+    wrapper.unmount()
+  })
+
+  it('activeVariant 生成对应类名', () => {
+    for (const variant of ['background', 'bar', 'pill', 'bold', 'dot'] as const) {
+      const wrapper = mountAnchor({ activeVariant: variant })
+      expect(wrapper.classes(), variant).toContain(`sr-anchor--active-${variant}`)
+      wrapper.unmount()
+    }
+  })
+
+  it('maxDepth 限制渲染层级', () => {
+    const deep: SrAnchorItem[] = [
+      {
+        key: 'a',
+        title: '一级',
+        children: [{ key: 'b', title: '二级', children: [{ key: 'c', title: '三级' }] }],
+      },
+    ]
+
+    const all = mount(SrAnchor, { props: { items: deep } })
+    expect(all.findAll('.sr-anchor__link')).toHaveLength(3)
+    all.unmount()
+
+    const two = mount(SrAnchor, { props: { items: deep, maxDepth: 2 } })
+    expect(two.findAll('.sr-anchor__link')).toHaveLength(2)
+    expect(two.text()).not.toContain('三级')
+    two.unmount()
+
+    const one = mount(SrAnchor, { props: { items: deep, maxDepth: 1 } })
+    expect(one.findAll('.sr-anchor__link')).toHaveLength(1)
+    one.unmount()
+  })
+
+  it('collapsible 为父级渲染折叠箭头', () => {
+    const wrapper = mountAnchor({ collapsible: true })
+
+    // 只有带子项的「用法」有箭头
+    expect(wrapper.findAll('.sr-anchor__toggle')).toHaveLength(1)
+    wrapper.unmount()
+  })
+
+  it('不传 collapsible 时没有箭头', () => {
+    const wrapper = mountAnchor()
+    expect(wrapper.findAll('.sr-anchor__toggle')).toHaveLength(0)
+    wrapper.unmount()
+  })
+
+  it('默认全部展开', () => {
+    const wrapper = mountAnchor({ collapsible: true })
+
+    const toggle = wrapper.find('.sr-anchor__toggle')
+    expect(toggle.attributes('aria-expanded')).toBe('true')
+    wrapper.unmount()
+  })
+
+  it('点击箭头可折叠子级', async () => {
+    const wrapper = mountAnchor({ collapsible: true })
+
+    await wrapper.find('.sr-anchor__toggle').trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
+    expect(wrapper.emitted('toggle')?.[0]).toEqual(['usage', false])
+    expect(wrapper.emitted('update:expandedKeys')).toBeTruthy()
+    wrapper.unmount()
+  })
+
+  it('defaultExpandAll 为 false 时初始收起', () => {
+    const wrapper = mountAnchor({ collapsible: true, defaultExpandAll: false })
+
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
+    wrapper.unmount()
+  })
+
+  it('子项激活时自动展开父级', async () => {
+    const wrapper = mountAnchor({
+      collapsible: true,
+      defaultExpandAll: false,
+      activeKey: 'install',
+    })
+
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('true')
+    wrapper.unmount()
+  })
+
+  it('autoExpand 为 false 时不自动展开', async () => {
+    const wrapper = mountAnchor({
+      collapsible: true,
+      defaultExpandAll: false,
+      autoExpand: false,
+      activeKey: 'install',
+    })
+
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
+    wrapper.unmount()
+  })
+
+  it('受控 expandedKeys 时以外部为准', async () => {
+    const wrapper = mountAnchor({ collapsible: true, expandedKeys: [] })
+
+    expect(wrapper.find('.sr-anchor__toggle').attributes('aria-expanded')).toBe('false')
     wrapper.unmount()
   })
 

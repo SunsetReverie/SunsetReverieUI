@@ -15,6 +15,10 @@ const emit = defineEmits<{
   change: [key: string, item: SrAnchorItem]
   /** 点击了某一项 */
   click: [key: string, item: SrAnchorItem, event: MouseEvent]
+  /** 展开集合变化 */
+  'update:expandedKeys': [keys: string[]]
+  /** 折叠状态切换 */
+  toggle: [key: string, expanded: boolean]
 }>()
 
 /** 根节点 */
@@ -22,6 +26,17 @@ const rootRef = ref<HTMLElement | null>(null)
 
 /** 内部维护的激活项（非受控时使用） */
 const innerActive = ref('')
+
+/**
+ * 内部维护的展开集合
+ *
+ * 默认全部展开——目录本来就该一眼看到全貌，
+ * 折叠是「内容太长时才收起来」的手段。
+ */
+const innerExpanded = ref<Set<string>>(new Set())
+
+/** 当前展开集合（受控优先） */
+const expandedSet = computed(() => new Set(props.expandedKeys ?? Array.from(innerExpanded.value)))
 
 /** 各锚点的目标元素 */
 const targets = new Map<string, HTMLElement>()
@@ -176,6 +191,77 @@ function updateActive(): void {
   if (!active && containerTop <= props.offsetTop + props.bounds) active = keys[0] ?? ''
 
   setActive(active)
+}
+
+/** 收集所有带子项的 key */
+function collectParents(list: SrAnchorItem[], out: string[] = []): string[] {
+  for (const item of list) {
+    if (item.children?.length) {
+      out.push(item.key)
+      collectParents(item.children, out)
+    }
+  }
+  return out
+}
+
+// 默认展开：跟着 items 走，数据异步到达时也能正确展开
+watch(
+  () => props.items,
+  (list) => {
+    if (!props.collapsible || !props.defaultExpandAll) return
+    if (props.expandedKeys !== undefined) return
+
+    innerExpanded.value = new Set(collectParents(list))
+  },
+  { immediate: true, deep: true },
+)
+
+// 自动展开：滚到子章节时，把它所在的父级打开。
+// 要 immediate，否则「初始就带 activeKey」的场景不会展开
+watch(
+  activePath,
+  (path) => {
+    if (!props.collapsible || !props.autoExpand) return
+
+    const parents = new Set(collectParents(props.items))
+    const next = new Set(expandedSet.value)
+    let changed = false
+
+    for (const key of path) {
+      // 只展开「有子项的祖先」，叶子本身不需要展开
+      if (!parents.has(key) || next.has(key)) continue
+      next.add(key)
+      changed = true
+    }
+
+    if (!changed) return
+
+    if (props.expandedKeys === undefined) innerExpanded.value = next
+    emit('update:expandedKeys', Array.from(next))
+  },
+  { immediate: true },
+)
+
+/**
+ * 切换某个父级的折叠状态
+ * @param key 父级 key
+ */
+function toggle(key: string): void {
+  const next = new Set(expandedSet.value)
+
+  if (next.has(key)) next.delete(key)
+  else next.add(key)
+
+  if (props.expandedKeys === undefined) innerExpanded.value = next
+
+  emit('update:expandedKeys', Array.from(next))
+  emit('toggle', key, next.has(key))
+
+  // 折叠会让上面的项整体上移，位置要重测
+  nextTick(() => {
+    measure()
+    updateMarker()
+  })
 }
 
 /**
@@ -387,7 +473,7 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
   <nav
     ref="rootRef"
     class="sr-anchor"
-    :class="[`sr-anchor--${direction}`, { 'is-affix': affix }]"
+    :class="[`sr-anchor--${direction}`, `sr-anchor--active-${activeVariant}`, { 'is-affix': affix }]"
     :style="rootStyle"
     :aria-label="ariaLabel"
   >
@@ -402,6 +488,10 @@ const rootStyle = computed(() => (props.affix ? { top: `${props.affixOffset}px` 
         :active-path="activePath"
         :current-key="currentKey"
         :set-link-ref="setLinkRef"
+        :max-depth="maxDepth"
+        :collapsible="collapsible"
+        :expanded-keys="expandedSet"
+        :toggle="toggle"
         @click="onClick"
       />
     </ul>

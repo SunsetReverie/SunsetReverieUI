@@ -55,7 +55,9 @@ const items = [
 
 用 `position: sticky` 实现，**需要父容器有确定高度**才会生效——通常放在侧边栏那一列，让它 `align-self: stretch`。
 
-吸顶后的底色是半透明 + 毛玻璃，正文透过来不会互相干扰。
+吸顶后的底色是 55% 半透明 + `blur(14px)` 毛玻璃，另外加了边框和投影补足层次感。
+
+> **一个物理限制**：毛玻璃需要有内容从它**下方**滚过才看得出来。两栏布局里如果目录是独立一列、下方没有内容经过，模糊就没有可模糊的对象——这是布局决定的，不是样式失效。想要明确看出「这是一层浮层」，边框和投影比模糊更有效，所以两者都保留了。
 
 ## 偏移（最容易踩的坑）
 
@@ -117,6 +119,88 @@ const el = document.querySelector('.layout__body')
 
 用于「目录和正文高亮要联动其他 UI」的场景。
 
+## 激活样式
+
+五种内置，用 `activeVariant` 选：
+
+```vue
+<SrAnchor :items="items" active-variant="bar" />
+```
+
+| `activeVariant` | 观感 | 适合 |
+| --- | --- | --- |
+| `background`（默认） | 底色块 + 主色文字 | 通用 |
+| `bar` | 左侧竖条，无底色 | 不压正文，适合正文紧凑的排版 |
+| `pill` | 圆角胶囊 | 圆润风格、偏移动端 |
+| `bold` | 只变粗变色 | 最轻，几乎无干扰 |
+| `dot` | 左侧小圆点 | 克制，有指示感 |
+
+## 完全自定义激活样式
+
+五种内置样式都是由同一组 CSS 变量驱动的，所以**覆盖变量就能完全自定义**，不需要改组件样式：
+
+```css
+.my-anchor .sr-anchor {
+  --sr-anchor-active-color: #fff;
+  --sr-anchor-active-bg: #1f7a4d;
+  --sr-anchor-active-weight: 600;
+  --sr-anchor-active-radius: 6px;
+  --sr-anchor-indicator-w: 0;
+}
+```
+
+可用变量：
+
+| 变量 | 说明 | 默认 |
+| --- | --- | --- |
+| `--sr-anchor-active-color` | 激活项文字色 | 主色深版 |
+| `--sr-anchor-active-bg` | 激活项底色 | 主色 12% |
+| `--sr-anchor-active-weight` | 激活项字重 | `medium` |
+| `--sr-anchor-active-radius` | 激活项圆角 | `--sr-radius-sm` |
+| `--sr-anchor-indicator-w` | 左侧指示器宽 | `0`（不显示） |
+| `--sr-anchor-indicator-h` | 左侧指示器高 | `0` |
+| `--sr-anchor-indicator-r` | 指示器圆角 | `0` |
+| `--sr-anchor-indicator-gap` | 指示器左边距 | `0` |
+| `--sr-anchor-rail` | 轨道线颜色 | `border-subtle` |
+| `--sr-anchor-marker` | 滑块颜色 | 主色 |
+
+竖条和圆点用的是同一个伪元素，只是宽高圆角不同——所以它们不会同时出现，也不需要额外的类名。
+
+## 折叠
+
+```vue
+<SrAnchor :items="items" collapsible />
+```
+
+每个有子项的父级前面会出现箭头：
+
+- **点箭头**折叠 / 展开子级
+- **点文字**仍然跳转（两件事分开，不会误触）
+
+| 参数 | 默认 | 说明 |
+| --- | --- | --- |
+| `collapsible` | `false` | 显示折叠箭头 |
+| `defaultExpandAll` | `true` | 初始全部展开 |
+| `autoExpand` | `true` | 滚到子章节时自动展开父级 |
+
+**`autoExpand` 是折叠功能的关键**：默认收起时，用户往下滚动经过一个子章节，那个子章节的父级要自动打开，否则高亮点了却看不见它。
+
+受控用法：
+
+```vue
+<SrAnchor v-model:expanded-keys="expanded" collapsible :items="items" />
+```
+
+## 限制显示层级
+
+```vue
+<SrAnchor :items="items" :max-depth="2" />
+```
+
+`0`（默认）表示不限。设为 `2` 时只渲染前两层，更深的子级不出现也不参与滚动判定。
+
+目录太长、层级太深时用它能收敛住——三层以上的目录在小屏幕里往往挤成一团。
+
 ## 关闭滑块
 
 ```vue
@@ -141,6 +225,12 @@ const el = document.querySelector('.layout__body')
 | `showMarker` | `boolean` | `true` | 高亮滑块 |
 | `syncHash` | `boolean` | `false` | 同步地址栏 hash |
 | `ariaLabel` | `string` | `'页面导航'` | 无障碍标签 |
+| `activeVariant` | `'background' \| 'bar' \| 'pill' \| 'bold' \| 'dot'` | `'background'` | 激活项样式 |
+| `collapsible` | `boolean` | `false` | 父级可折叠 |
+| `defaultExpandAll` | `boolean` | `true` | 初始全部展开 |
+| `autoExpand` | `boolean` | `true` | 子项激活时自动展开父级 |
+| `expandedKeys` | `string[]` | — | 展开的父级（受控） |
+| `maxDepth` | `number` | `0` | 最多显示的层级，0 不限 |
 
 ### SrAnchorItem
 
@@ -158,6 +248,8 @@ const el = document.querySelector('.layout__body')
 | `update:activeKey` | `key` | 激活项变化（滚动和点击都会触发） |
 | `change` | `key, item` | 同上，带完整数据 |
 | `click` | `key, item, event` | 用户点击 |
+| `update:expandedKeys` | `keys` | 展开集合变化 |
+| `toggle` | `key, expanded` | 某个父级折叠状态切换 |
 
 ## 常见问题
 
@@ -176,6 +268,14 @@ const el = document.querySelector('.layout__body')
 **点击后标题被头栏挡住**
 
 `:offset-top` 没设，或者设的值和头栏实际高度不一致。
+
+**吸顶后看不出毛玻璃**
+
+目录下方没有内容经过（两栏布局里正文不会流到目录那一列）。这是布局决定的，模糊没有可模糊的对象——边框和投影能补足「浮层感」，但真正的毛玻璃需要目录压在内容上。
+
+**折叠后高亮位置偏了**
+
+组件在折叠时会重新测量，但如果你的正文用了高度过渡动画（比如 `max-height` 过渡），测量时机可能早于动画结束。这种情况给 `items` 换一个引用，或者延迟改 `activeKey`。
 
 **吸顶不生效**
 
