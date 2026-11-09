@@ -38,6 +38,9 @@
     box-shadow: var(--sr-tooltip-highlight), var(--sr-tooltip-ring), var(--sr-shadow-lg);
     // 小面积浮层用强模糊档；flat 下 strong 为 none
     .sr-glass-layer(var(--sr-glass-filter-strong));
+    // 提前建立合成层：元素刚从 display:none 出来时，浏览器可能要等一帧
+    // 才开始采样 backdrop，那一帧会直接透出底下的文字
+    will-change: backdrop-filter;
     content: '';
   }
 
@@ -128,4 +131,35 @@
     top: auto;
     bottom: 8px;
   }
+}
+
+/*
+ * Tooltip 专用过渡
+ *
+ * 关键：**进入过程不改 opacity**。
+ * 背景层是半透明 + backdrop-filter，而 opacity < 1 时浏览器不会正常采样
+ * backdrop，于是浮层刚出现那一帧是透明的、能清楚看到下面的正文，等
+ * opacity 到 1 才「突然变模糊」。以前气泡都落在纯色背景上不明显，
+ * 悬在正文文字上就暴露了。
+ *
+ * 进场只做轻微位移/缩放（浮层自身始终 alpha=1），离场才淡出——
+ * 消失时模糊减弱是自然效果，不会造成首帧透字。
+ */
+.sr-tooltip-enter-active {
+  transition: transform var(--sr-motion-duration-fast) var(--sr-motion-easing-decelerate);
+}
+
+.sr-tooltip-enter-from {
+  transform: translateY(2px) scale(0.97);
+}
+
+.sr-tooltip-leave-active {
+  transition:
+    opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate),
+    transform var(--sr-motion-duration-fast) var(--sr-motion-easing-accelerate);
+}
+
+.sr-tooltip-leave-to {
+  opacity: 0;
+  transform: translateY(2px) scale(0.98);
 }

@@ -99,6 +99,24 @@ import { SrTooltip } from '@sunset-reverie/ui'
 
 ## 注意事项
 
+### 进入动画为什么不淡入
+
+气泡背景是**半透明 + `backdrop-filter`** 的玻璃层。如果整个浮层用 opacity 0→1 淡入，opacity 小于 1 期间浏览器不会正常采样 backdrop，于是刚出现那一帧是透明的、能清楚看到下面的正文，等 opacity 到 1 才「突然变模糊」。
+
+气泡落在纯色背景上时不明显，悬在正文文字上就很突兀。
+
+所以 `SrTooltip` 用的是专用过渡 `sr-tooltip`：
+
+| 阶段 | 动画 | 浮层 opacity |
+| --- | --- | --- |
+| 进场 | 轻微位移 + 缩放 | **始终 1** |
+| 离场 | 淡出 + 位移 | 1 → 0 |
+
+离场时模糊减弱是自然效果，不会造成首帧透字。背景层还加了 `will-change: backdrop-filter`，让元素从 `display: none` 出来时提前建立合成层，避免采样晚一帧。
+
+> **改动这个组件时不要换回 `sr-fade` / `sr-zoom`**：两者都是 opacity 淡入，会把这个 bug 带回来。
+
+
 - **浮层被 Teleport 到 body**，所以它的样式不受触发元素的父级选择器影响。
 - 触发元素需要能接受 `mouseenter` / `focus` / `blur` 事件；纯文本节点包一层 `<span>` 更稳妥。
 - 页面滚动时浮层会跟着触发元素重新定位，触发元素滚出视口则自动关闭。

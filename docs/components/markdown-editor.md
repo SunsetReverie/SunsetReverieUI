@@ -231,6 +231,7 @@ const toolbar = [
 
 - **键盘 Tab 到按钮上也会显示**（`focusin` 触发），不是只服务鼠标
 - 带显示/隐藏延迟，鼠标划过按钮缝隙不会闪
+- **进入时不淡入**：玻璃气泡若用 opacity 淡入，首帧模糊还没生效会透出下面的正文。原因见 [Tooltip 注意事项](/components/tooltip#进入动画为什么不淡入)
 - 气泡 Teleport 到 `body`，不会被编辑器的 `overflow: hidden` 裁掉
 - 工具栏贴页面顶部时会自动翻到下方
 

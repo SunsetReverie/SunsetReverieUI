@@ -173,7 +173,7 @@ const floatingStyle = computed(() => ({
   </span>
 
   <Teleport :to="teleportTo">
-    <Transition name="sr-fade" :duration="{ enter: 120, leave: 100 }">
+    <Transition name="sr-tooltip">
       <div
         v-show="visible"
         :id="contentId"
