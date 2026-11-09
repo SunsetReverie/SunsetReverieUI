@@ -53,6 +53,21 @@ export const statisticProps = {
     type: Boolean,
     default: false,
   },
+  /**
+   * 数字滚动动画 @default false
+   *
+   * 挂载时从 0 滚到目标值；之后 `value` 变化则从当前显示值滚到新值。
+   * 尊重系统的「减少动态效果」偏好，开启时也会直接显示最终值。
+   */
+  countUp: {
+    type: Boolean,
+    default: false,
+  },
+  /** 滚动时长（毫秒） @default 1200 */
+  duration: {
+    type: Number,
+    default: 1200,
+  },
   /** 数值颜色，接受任意 CSS 颜色 */
   valueColor: {
     type: String,

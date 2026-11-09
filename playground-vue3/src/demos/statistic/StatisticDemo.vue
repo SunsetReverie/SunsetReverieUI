@@ -12,6 +12,9 @@ const rate = ref(0.856)
 /** 加载状态 */
 const loading = ref(false)
 
+/** 重播计数：变一次就重建组件，动画从头再来 */
+const replayKey = ref(0)
+
 /**
  * 模拟刷新
  */
@@ -80,6 +83,46 @@ function refresh(): void {
     </section>
 
     <section>
+      <h3>数字滚动（countUp）</h3>
+      <div class="row" style="align-items: flex-start">
+        <div class="grid" style="flex: 1 1 420px">
+          <div class="card">
+            <SrStatistic :key="replayKey" title="今日访问" :value="12846" count-up />
+          </div>
+          <div class="card">
+            <SrStatistic
+              :key="`a${replayKey}`"
+              title="成交额"
+              :value="126800.4"
+              :precision="2"
+              prefix="¥"
+              count-up
+            />
+          </div>
+          <div class="card">
+            <SrStatistic
+              :key="`b${replayKey}`"
+              title="转化率"
+              :value="0.856"
+              :precision="1"
+              suffix="%"
+              :formatter="(v: number) => (v * 100).toFixed(1)"
+              count-up
+            />
+          </div>
+          <div class="card">
+            <SrStatistic :key="`c${replayKey}`" title="慢速 3 秒" :value="8642" :duration="3000" count-up />
+          </div>
+        </div>
+        <SrButton size="sm" variant="outline" @click="replayKey += 1">重新播放</SrButton>
+      </div>
+      <p class="hint">
+        <code>count-up</code> 开启后从 0 滚到目标值，默认 1.2 秒；缓动是先快后慢，
+        所以末位数字停下时会自然减速。系统开启「减少动态效果」时自动跳过动画。
+      </p>
+    </section>
+
+    <section>
       <h3>加载中</h3>
       <div class="row" style="align-items: flex-end">
         <SrStatistic title="总用户数" :value="users" :loading="loading" />
@@ -93,7 +136,7 @@ function refresh(): void {
       <h3>实际场景：数据概览卡片</h3>
       <div class="grid">
         <div class="card">
-          <SrStatistic title="今日访问" :value="12846" :loading="loading" />
+          <SrStatistic title="今日访问" :value="12846" :loading="loading" count-up />
         </div>
         <div class="card">
           <SrStatistic title="订单数" :value="864" :loading="loading" />

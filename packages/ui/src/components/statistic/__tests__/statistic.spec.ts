@@ -1,7 +1,26 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 import SrStatistic from '../index'
+
+/**
+ * 把 rAF 换成「一帧到终点」
+ *
+ * 真实 rAF 要等 16ms 一帧、1200ms 才滚完，测试里没法等。
+ * 这里让回调立刻收到一个远超时长的绝对时间，progress 直接是 1。
+ */
+function stubFrame(): void {
+  vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+    cb(performance.now() + 999_999)
+    return 1
+  })
+  vi.stubGlobal('cancelAnimationFrame', () => undefined)
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
 
 describe('SrStatistic', () => {
   it('渲染标题与数值', () => {
@@ -72,6 +91,92 @@ describe('SrStatistic', () => {
     expect(wrapper.find('.sr-statistic__skeleton').exists()).toBe(true)
     expect(wrapper.find('.sr-statistic__number').exists()).toBe(false)
     wrapper.unmount()
+  })
+
+  it('挂载时（未动画）就显示最终值，保证 SSR 一致', () => {
+    const wrapper = mount(SrStatistic, { props: { value: 1280 } })
+    expect(wrapper.find('.sr-statistic__number').text()).toBe('1,280')
+    wrapper.unmount()
+  })
+
+  it('countUp 挂载后从 0 滚到目标值', async () => {
+    stubFrame()
+    const wrapper = mount(SrStatistic, { props: { value: 1280, countUp: true } })
+
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.find('.sr-statistic__number').text()).toBe('1,280')
+    wrapper.unmount()
+  })
+
+  it('duration 为 0 时直接到最终值', async () => {
+    stubFrame()
+    const wrapper = mount(SrStatistic, {
+      props: { value: 500, countUp: true, duration: 0 },
+    })
+
+    await nextTick()
+    expect(wrapper.find('.sr-statistic__number').text()).toBe('500')
+    wrapper.unmount()
+  })
+
+  it('value 变化时滚动到新值', async () => {
+    stubFrame()
+    const wrapper = mount(SrStatistic, { props: { value: 100, countUp: true } })
+    await nextTick()
+
+    await wrapper.setProps({ value: 300 })
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.find('.sr-statistic__number').text()).toBe('300')
+    wrapper.unmount()
+  })
+
+  it('动画跟随 precision 与千分位', async () => {
+    stubFrame()
+    const wrapper = mount(SrStatistic, {
+      props: { value: 1234.56, precision: 2, countUp: true },
+    })
+
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.find('.sr-statistic__number').text()).toBe('1,234.56')
+    wrapper.unmount()
+  })
+
+  it('formatter 收到的是当前显示值', async () => {
+    stubFrame()
+    const formatter = vi.fn((v: number) => `${Math.round(v)}%`)
+    const wrapper = mount(SrStatistic, { props: { value: 88, formatter, countUp: true } })
+
+    await nextTick()
+    await nextTick()
+
+    // 每帧都会调 formatter，最后一次是目标值
+    expect(formatter).toHaveBeenCalled()
+    expect(formatter).toHaveBeenLastCalledWith(88)
+    wrapper.unmount()
+  })
+
+  it('未开启 countUp 时 value 变化直接更新', async () => {
+    const wrapper = mount(SrStatistic, { props: { value: 100 } })
+
+    await wrapper.setProps({ value: 250 })
+    await nextTick()
+
+    expect(wrapper.find('.sr-statistic__number').text()).toBe('250')
+    wrapper.unmount()
+  })
+
+  it('卸载时不会因未取消的动画报错', async () => {
+    stubFrame()
+    const wrapper = mount(SrStatistic, { props: { value: 999, countUp: true } })
+    await nextTick()
+
+    expect(() => wrapper.unmount()).not.toThrow()
   })
 
   it('valueColor 作用在数值上', () => {
