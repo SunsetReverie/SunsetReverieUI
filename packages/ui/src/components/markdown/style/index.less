@@ -202,7 +202,7 @@
     margin: 0 0 var(--sr-md-gap);
     padding: var(--sr-md-code-padding, 12px 14px);
     border: var(--sr-md-code-border, 1px solid var(--sr-color-border-subtle));
-    border-radius: var(--sr-md-code-radius, var(--sr-radius-base));
+    border-radius: var(--sr-md-code-radius, 8px);
     background: var(--sr-md-code-bg);
     box-shadow: var(--sr-md-code-shadow, none);
     color: var(--sr-md-code-color);
@@ -230,7 +230,7 @@
   &__pre {
     margin: 0 0 var(--sr-md-gap);
     border: var(--sr-md-code-border, 1px solid var(--sr-color-border-subtle));
-    border-radius: var(--sr-md-code-radius, var(--sr-radius-base));
+    border-radius: var(--sr-md-code-radius, 8px);
     background: var(--sr-md-code-bg);
     box-shadow: var(--sr-md-code-shadow, none);
     overflow: hidden;
@@ -241,7 +241,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 5px 12px;
+    padding: 8px 12px;
     border-bottom: var(--sr-md-code-bar-border, 1px solid var(--sr-color-border-subtle));
     color: var(--sr-md-code-bar-color, var(--sr-color-text-tertiary));
     font-family: var(--sr-font-family-mono);
@@ -309,12 +309,14 @@
       counter-increment: sr-md-line;
       content: counter(sr-md-line);
       display: inline-block;
-      width: 2.4em;
-      margin-right: 12px;
-      padding-right: 10px;
+      // 宽度只留两位数的余量，数字居中：右对齐会在左侧空出半格，
+      // 叠加 pre 的左内边距后看起来像一大片空白
+      width: 1.7em;
+      margin-right: 10px;
+      padding-right: 8px;
       border-right: 1px solid var(--sr-md-code-bar-border, var(--sr-color-border-subtle));
       color: var(--sr-md-code-line-num, var(--sr-color-text-quaternary));
-      text-align: right;
+      text-align: center;
       user-select: none;
     }
   }
@@ -485,7 +487,7 @@
   --sr-md-code-bg: #1e2330;
   --sr-md-code-color: #e6e9f0;
   --sr-md-code-border: 0;
-  --sr-md-code-radius: var(--sr-radius-md, 8px);
+  --sr-md-code-radius: 8px;
   --sr-md-code-shadow: var(--sr-shadow-md);
   --sr-md-code-bar-border: 1px solid rgb(255 255 255 / 8%);
   --sr-md-code-bar-color: #9aa3b8;
@@ -571,7 +573,7 @@
   --sr-md-code-bg: color-mix(in srgb, var(--sr-color-bg-elevated) 70%, transparent);
   --sr-md-code-color: var(--sr-color-text);
   --sr-md-code-border: 1px solid var(--sr-glass-border-color);
-  --sr-md-code-radius: var(--sr-radius-md, 8px);
+  --sr-md-code-radius: 8px;
   --sr-md-code-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
   --sr-md-table-bg: color-mix(in srgb, var(--sr-color-bg-elevated) 60%, transparent);
   --sr-md-table-head-bg: var(--sr-color-primary-alpha-12);
