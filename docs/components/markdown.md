@@ -287,46 +287,21 @@ const extensions = [
 | `size` | `SrSize` | `'md'` | 渲染尺寸 |
 | `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板 |
 
-## 事件
-
-| 事件 | 参数 | 说明 |
-| --- | --- | --- |
-| `copy` | `text: string` | 代码块复制成功，携带被复制的代码（不含行号） |
-
-只有真正写入剪贴板成功才派发：`navigator.clipboard` 被拒、`execCommand` 返回 false 时都不发，避免外部收到「已复制」的假信号。
-
-## 导出的工具
-
-| 函数 | 说明 |
-| --- | --- |
-| `parseMarkdownBuiltin` | 内置解析器，可单独用于服务端渲染 |
-| `srCountMarkdownText` | 统计纯文本字数，剔除语法符号 |
-| `srIsSafeUrl` / `srIsSafeImageUrl` | 地址校验 |
-| `srPreprocess` | 预处理，可单独用于自定义渲染管线 |
-
-## 注意事项
-
-- **不传 `engine` 时原样展示源码**，并在控制台告警。静默降级比报错安全，但不能让人以为渲染生效了。
-- **引擎同步抛错时不炸整块内容**，只是内容为空。
-- **异步竞态用批次号处理**：连续改 `source` 时，先发的慢结果不会覆盖后发的快结果。
-- **SSR 友好**：同步引擎在 `setup` 阶段就完成渲染，服务端输出的是最终 HTML，不会出现水合不一致。
-- **样式不加 `scoped`**：内容由 `v-html` 插入，拿不到 `data-v-xxx` 属性，隔离靠 `.sr-md` 类名前缀保证。
-- **代码高亮是内置的轻量实现**，零依赖、约 4KB。要 Prism / shiki 那种精度，关掉 `codeHighlight` 后自己接管：用 `sanitize` 钩子把 `<code>` 内的文本替换成高亮输出即可。
-- **代码块的语言标识不限 ASCII**。开头三连反引号后跟 `中文`、`c++`、`C#` 都能开代码块，标识原样写进 `data-lang`；只有带空格的非法标识（如 `js x`）才退化成一整行段落。未知语言照样出场，至少字符串、数字、注释有颜色。
-
 ## 代码块
 
-内置解析器渲染的代码块带顶栏与操作：
+内置解析器渲染的代码块带顶栏与操作，着色、行号、复制三项**默认全开**：
 
 ```vue
-<SrMarkdown
-  source="..."
-  engine="builtin"
-  code-highlight
-  code-line-numbers
-  code-copy
-/>
+<!-- 默认形态，三项都在 -->
+<SrMarkdown source="..." engine="builtin" />
+
+<!-- 只要纯代码：关掉行号和复制 -->
+<SrMarkdown source="..." engine="builtin" :code-line-numbers="false" :code-copy="false" />
 ```
+
+::: tip 和 SrCodeBlock 的分工
+这里的代码块是「正文的一部分」，追求开箱即用、零依赖、不拖包体。要单独展示一段代码、需要 highlight.js / shiki 级别的精度，用 [SrCodeBlock](/components/code-block)——它的 `highlight` 接受任意高亮函数，还多了文件名标题、长行折行等展示项。
+:::
 
 | 能力 | 由谁提供 | 说明 |
 | --- | --- | --- |
@@ -351,3 +326,39 @@ const extensions = [
 <!-- 2. 自己接管，换成 toast / notification -->
 <SrMarkdown source="..." engine="builtin" @copy="(text) => srToast.success('已复制 ' + text.length + ' 字符')" />
 ```
+
+## 事件
+
+| 事件 | 参数 | 说明 |
+| --- | --- | --- |
+| `copy` | `text: string` | 代码块复制成功，携带被复制的代码（不含行号） |
+
+只有真正写入剪贴板成功才派发：`navigator.clipboard` 被拒、`execCommand` 返回 false 时都不发，避免外部收到「已复制」的假信号。
+
+## 导出的工具
+
+| 函数 | 说明 |
+| --- | --- |
+| `parseMarkdownBuiltin` | 内置解析器，可单独用于服务端渲染 |
+| `srCountMarkdownText` | 统计纯文本字数，剔除语法符号 |
+| `srIsSafeUrl` / `srIsSafeImageUrl` | 地址校验 |
+| `srEscapeHtml` | HTML 转义，自写高亮器或渲染管线时复用同一套规则 |
+| `srPreprocess` | 预处理，可单独用于自定义渲染管线 |
+| `SR_MARKDOWN_BUILTIN` | 内置引擎的标识常量，等于 `'builtin'` |
+
+## 已知限制
+
+- **内置高亮是正则级的扫描，不是语法解析**。正则字面量 `/ab+c/`、模板字符串里嵌套的反引号、JSX 的 `{/* */}` 这类边界会判错颜色，但**只影响配色，不影响内容和安全性**——它只决定 `sr-md__tok--*` 包在哪，文本本身早在解析前就转义好了。
+- **行号会跟着横向滚动**。长行溢出时，数字随内容一起左移；这是 `pre` 单一滚动容器的必然结果，除非给行号列做 sticky 背景层。
+- **复制按钮只认 `.sr-md__pre > code` 结构**。自定义引擎产出别的高亮结构时，顶栏和复制按钮不会自动出现。
+
+## 注意事项
+
+- **不传 `engine` 时原样展示源码**，并在控制台告警。静默降级比报错安全，但不能让人以为渲染生效了。
+- **引擎同步抛错时不炸整块内容**，只是内容为空。
+- **异步竞态用批次号处理**：连续改 `source` 时，先发的慢结果不会覆盖后发的快结果。
+- **SSR 友好**：同步引擎在 `setup` 阶段就完成渲染，服务端输出的是最终 HTML，不会出现水合不一致。
+- **样式不加 `scoped`**：内容由 `v-html` 插入，拿不到 `data-v-xxx` 属性，隔离靠 `.sr-md` 类名前缀保证。
+- **代码高亮是内置的轻量实现**，零依赖、约 4KB。要 Prism / shiki 那种精度，关掉 `codeHighlight` 后自己接管：用 `sanitize` 钩子把 `<code>` 内的文本替换成高亮输出即可。
+- **代码块的语言标识不限 ASCII**。开头三连反引号后跟 `中文`、`c++`、`C#` 都能开代码块，标识原样写进 `data-lang`；只有带空格的非法标识（如 `js x`）才退化成一整行段落。未知语言照样出场，至少字符串、数字、注释有颜色。
+
