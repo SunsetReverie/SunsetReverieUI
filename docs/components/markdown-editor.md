@@ -343,6 +343,86 @@ insert: { label: '插入图集', icon: 'lucide:images', template: '{{gallery id=
 
 两种形式可以混用：常用短代码走面板，简单的走直接插入。
 
+### 完全自定义面板
+
+声明式字段适合表单类参数。需要搜索、上传、跨组件选数据时，用下面两种逃生口。
+
+#### ① `#insert-{扩展名}` 插槽（推荐）
+
+组件仍负责遮罩、标题、取消、`Esc` 和底部「插入」按钮；插槽只负责**挑出一段文本**：
+
+```vue
+<SrMarkdownEditor v-model="content" :extensions="extensions">
+  <template #insert-pick="{ setResult, result, close }">
+    <input v-model="query" placeholder="搜索文章" />
+    <button
+      v-for="article in filtered"
+      :key="article.id"
+      :class="{ selected: result === mark(article.id) }"
+      @click="setResult(mark(article.id))"
+    >
+      {{ article.title }}
+    </button>
+    <button @click="close">收起</button>
+  </template>
+</SrMarkdownEditor>
+```
+
+```ts
+// 扩展只需要声明按钮；没有 fields 也不会直接插模板，因为插槽存在
+insert: {
+  label: '挑一篇精选文章',
+  icon: 'lucide:search',
+  panelTitle: '搜索站内文章',
+  panelWidth: 420,
+  template: '',   // 插槽模式下用 setResult 的文本，不需要模板
+}
+```
+
+作用域 `SrMarkdownInsertSlotScope`：
+
+| 字段 | 说明 |
+| --- | --- |
+| `setResult(text)` | 设置最终插入的文本；没设置时「插入」按钮禁用 |
+| `close()` | 关闭面板 |
+| `value` | 当前正文 |
+| `result` | 当前已设置的文本，用来做选中态 |
+
+**插槽名必须和 `extension.name` 对应**：`name: 'pick'` → `#insert-pick`。组件按这个名字查找，找不到就退回声明式字段表单。
+
+演示页第四个短代码就是这种形式：带搜索框和文章列表，选中后由组件的「插入」按钮落地。
+
+#### ② `insert.action` 完全接管
+
+项目里已有统一的 Modal 服务、面板要跨路由、或者需要嵌在别的容器里时，让组件完全不弹面板：
+
+```ts
+insert: {
+  label: '从素材库选择',
+  icon: 'lucide:images',
+  action: ({ insert, close, value }) => {
+    myModal.open({
+      component: AssetPicker,
+      onConfirm: (asset) => insert(`{{asset id=${asset.id}}}`),
+      onCancel: close,
+    })
+  },
+}
+```
+
+`insert(text, block?)` 会恢复到**点按钮那一刻**的光标位置，所以异步等接口、等用户在别处选完再调用也不会插错地方。`value` 是触发时的正文，可用于做「已插入过哪些」之类的判断。
+
+> `action` 提供后，`fields`、模板占位符、插槽都不再生效——这是最高优先级的分支。
+
+### 三种面板形式对照
+
+| 形式 | 配置 | 适合 |
+| --- | --- | --- |
+| 直接插模板 | 无 `fields` / `action` / 插槽 | 单参数、不需要选择 |
+| 声明式字段 | `fields` | 表单类参数（文本、下拉、数字） |
+| 自定义插槽 | `#insert-{name}` | 搜索、列表、预览、上传 |
+| 完全接管 | `action` | 复用项目自己的弹层体系 |
+
 ## 表情
 
 ```vue
@@ -458,6 +538,8 @@ async function uploadFile(file: File) {
 | --- | --- | --- |
 | `toolbar` | `api, items` | 替换左侧工具区 |
 | `preview` | `value` | 替换预览区 |
+| `insertPanel.slotName` | `setResult, close, value, result` | 动态插槽在组件内部的写法；使用方按下面的规则命名 |
+| `insert-{扩展名}` | `setResult, close, value, result` | 自定义某个短代码的参数面板内容，如 `#insert-pick` |
 
 ## 暴露方法
 

@@ -2724,7 +2724,7 @@
         "params": ["mode"]
       }
     ],
-    "slots": ["preview", "toolbar"]
+    "slots": ["insertPanel.slotName", "preview", "toolbar"]
   },
   "message": {
     "name": "message",

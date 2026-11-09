@@ -60,6 +60,39 @@ export interface SrMarkdownInsertField {
   help?: string
 }
 
+/**
+ * `insert.action` 的上下文：完全自定义弹层时用
+ *
+ * @remarks `insert()` 会恢复到「点按钮那一刻」的光标位置，
+ * 所以异步弹窗、等待接口返回之后再调用也不会插错地方。
+ */
+export interface SrMarkdownInsertActionContext {
+  /** 把文本插进编辑器并关闭流程 */
+  insert: (text: string, block?: boolean) => void
+  /** 放弃本次插入 */
+  close: () => void
+  /** 触发时的正文内容 */
+  value: string
+}
+
+/** `#insert-{扩展名}` 插槽的作用域 */
+export interface SrMarkdownInsertSlotScope {
+  /**
+   * 设置最终要插入的文本
+   *
+   * 组件的「插入」按钮会读它；没设置时按钮禁用。
+   * 面板的遮罩、标题、取消、Esc、插入按钮都由组件负责，
+   * 插槽只负责「让用户挑出一段文本」。
+   */
+  setResult: (text: string) => void
+  /** 关闭面板 */
+  close: () => void
+  /** 当前正文内容 */
+  value: string
+  /** 当前已设置的文本 */
+  result: string
+}
+
 /** 短代码扩展 */
 export interface SrMarkdownExtension {
   /** 唯一名称，重复时后者覆盖前者 */
@@ -121,6 +154,14 @@ export interface SrMarkdownExtension {
     panelTitle?: string
     /** 面板宽度（px） @default 360 */
     panelWidth?: number
+    /**
+     * 完全接管：点击按钮时调用它，组件不弹任何面板
+     *
+     * 用于需要自己控制弹层的场景（项目里已有统一的 Modal 服务、
+     * 面板要跨路由、或者要嵌在别的容器里）。
+     * 提供后 `fields`、模板占位符和插槽都不再生效。
+     */
+    action?: (ctx: SrMarkdownInsertActionContext) => void
   }
 }
 

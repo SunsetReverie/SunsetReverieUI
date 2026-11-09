@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch } from 'vue'
 
 import { srComputeFloating, srGetRect } from '../../../utils/floating'
 import SrEmojiPicker from '../../emoji-picker/src/emoji-picker.vue'
 import type { SrEmojiItem } from '../../emoji-picker/src/emoji-picker'
 import SrIcon from '../../icon/src/icon.vue'
 import { srCountMarkdownText } from '../../markdown/src/builtin-parser'
-import type { SrMarkdownInsertField } from '../../markdown/src/extensions'
+import type {
+  SrMarkdownExtension,
+  SrMarkdownInsertField,
+  SrMarkdownInsertSlotScope,
+} from '../../markdown/src/extensions'
 import SrMarkdown from '../../markdown/src/markdown.vue'
 import SrSegmented from '../../segmented/src/segmented.vue'
 import SrTooltip from '../../tooltip/src/tooltip.vue'
@@ -62,10 +66,18 @@ const insertPanel = ref<{
   template: string
   fields: SrMarkdownInsertField[]
   width: number
+  /** 有值时用 `#insert-{扩展名}` 插槽替代默认表单 */
+  slotName?: string
 } | null>(null)
 
 /** 参数面板里各字段的值 */
 const insertValues = ref<Record<string, string>>({})
+
+/** 自定义插槽通过 setResult 交回来的最终文本 */
+const insertResult = ref('')
+
+/** 面板插槽 */
+const slots = useSlots()
 
 /** 打开面板前的光标位置，确认时恢复，避免焦点移走后插错地方 */
 let savedSelection: { start: number; end: number } | null = null
@@ -345,62 +357,111 @@ function setInsertValue(key: string, event: Event): void {
   insertValues.value = { ...insertValues.value, [key]: value }
 }
 
-/** 必填项是否都填了 */
-const canSubmitInsert = computed(() =>
-  (insertPanel.value?.fields ?? []).every(
-    (field) => !field.required || Boolean(insertValues.value[field.key]?.trim()),
-  ),
-)
+/** 自定义插槽的作用域：只负责产出文本，弹层与插入按钮由组件管 */
+const insertSlotScope = computed<SrMarkdownInsertSlotScope>(() => ({
+  setResult: (text: string) => {
+    insertResult.value = text
+  },
+  close: () => closeInsertPanel(),
+  value: props.modelValue,
+  result: insertResult.value,
+}))
 
-/**
- * 打开参数面板
- * @param config 扩展上的 insert 配置
- */
-function openInsertPanel(config: {
-  label: string
-  template: string
-  fields?: SrMarkdownInsertField[]
-  panelTitle?: string
-  panelWidth?: number
-}): void {
-  const fields = config.fields ?? []
-  const values: Record<string, string> = {}
+/** 必填项是否都填了；自定义插槽模式下看有没有 setResult */
+const canSubmitInsert = computed(() => {
+  const panel = insertPanel.value
+  if (!panel) return false
+  if (panel.slotName) return Boolean(insertResult.value.trim())
 
-  for (const field of fields) values[field.key] = field.default ?? ''
+  return panel.fields.every((field) => !field.required || Boolean(insertValues.value[field.key]?.trim()))
+})
 
+/** 记住当前选区，供异步弹窗之后插回原处 */
+function captureSelection(): void {
   const el = textareaRef.value
   savedSelection = el ? { start: el.selectionStart, end: el.selectionEnd } : null
-
-  insertValues.value = values
-  insertPanel.value = {
-    title: config.panelTitle ?? config.label,
-    template: config.template,
-    fields,
-    width: config.panelWidth ?? 360,
-  }
 }
 
-/** 关闭参数面板 */
-function closeInsertPanel(): void {
-  insertPanel.value = null
-  savedSelection = null
-}
-
-/** 确认插入：恢复选区 → 拼模板 → 走统一的插入逻辑 */
-function confirmInsertPanel(): void {
-  const panel = insertPanel.value
-  if (!panel || !canSubmitInsert.value) return
-
-  const text = fillInsertTemplate(panel.template, insertValues.value)
-
+/**
+ * 在「点按钮那一刻」的位置插入文本并收尾
+ * @param text 要插入的内容
+ * @param block 是否补空行
+ */
+function insertAt(text: string, block = true): void {
   const el = textareaRef.value
   if (el && savedSelection) {
     el.focus()
     el.setSelectionRange(savedSelection.start, savedSelection.end)
   }
 
-  insert(text, true)
+  insert(text, block)
   closeInsertPanel()
+}
+
+/** 插入配置的完整形状 */
+type InsertConfig = NonNullable<SrMarkdownExtension['insert']>
+
+/**
+ * 点击短代码按钮时的分派
+ *
+ * 优先级：action（完全自己接管）> `#insert-{name}` 插槽 > 声明式字段表单。
+ */
+function handleInsertClick(config: InsertConfig, extensionName: string): void {
+  if (config.action) {
+    captureSelection()
+    config.action({
+      insert: insertAt,
+      close: () => {
+        savedSelection = null
+      },
+      value: props.modelValue,
+    })
+    return
+  }
+
+  const slotName = `insert-${extensionName}`
+  openInsertPanel(config, slots[slotName] ? slotName : undefined)
+}
+
+/**
+ * 打开参数面板
+ * @param config 扩展上的 insert 配置
+ * @param slotName 自定义插槽名
+ */
+function openInsertPanel(config: InsertConfig, slotName?: string): void {
+  const fields = config.fields ?? []
+  const values: Record<string, string> = {}
+
+  for (const field of fields) values[field.key] = field.default ?? ''
+
+  captureSelection()
+
+  insertValues.value = values
+  insertResult.value = ''
+  insertPanel.value = {
+    title: config.panelTitle ?? config.label,
+    template: config.template ?? '',
+    fields,
+    width: config.panelWidth ?? 360,
+    slotName,
+  }
+}
+
+/** 关闭参数面板 */
+function closeInsertPanel(): void {
+  insertPanel.value = null
+  insertResult.value = ''
+  savedSelection = null
+}
+
+/** 确认插入：自定义插槽用 result，字段模式拼模板 */
+function confirmInsertPanel(): void {
+  const panel = insertPanel.value
+  if (!panel || !canSubmitInsert.value) return
+
+  const text = panel.slotName ? insertResult.value : fillInsertTemplate(panel.template, insertValues.value)
+
+  insertAt(text)
 }
 
 /** Esc 关闭面板 */
@@ -432,9 +493,9 @@ const toolbarItems = computed<SrMarkdownToolbarItem[]>(() => {
       label: insertConfig.label,
       icon: insertConfig.icon,
       action: () => {
-        // 有字段就先弹参数面板，没有则维持「直接插模板」的旧行为
-        if (insertConfig.fields?.length) {
-          openInsertPanel(insertConfig)
+        // action / 插槽 / fields 走面板；都没有则维持「直接插模板」的旧行为
+        if (insertConfig.action || insertConfig.fields?.length || slots[`insert-${extension.name}`]) {
+          handleInsertClick(insertConfig, extension.name)
           return
         }
 
@@ -958,46 +1019,50 @@ defineExpose({
           </div>
 
           <div class="sr-mde-insert__body">
-            <label v-for="field in insertPanel.fields" :key="field.key" class="sr-mde-insert__field">
-              <span class="sr-mde-insert__label">
-                {{ field.label }}
-                <em v-if="field.required" class="sr-mde-insert__required">*</em>
-              </span>
+            <!-- 自定义面板：遮罩、标题、取消、插入按钮仍由组件负责 -->
+            <slot v-if="insertPanel.slotName" :name="insertPanel.slotName" v-bind="insertSlotScope" />
+            <template v-else>
+              <label v-for="field in insertPanel.fields" :key="field.key" class="sr-mde-insert__field">
+                <span class="sr-mde-insert__label">
+                  {{ field.label }}
+                  <em v-if="field.required" class="sr-mde-insert__required">*</em>
+                </span>
 
-              <select
-                v-if="field.type === 'select'"
-                :value="insertValues[field.key]"
-                class="sr-mde-insert__control"
-                :aria-label="field.label"
-                @input="setInsertValue(field.key, $event)"
-              >
-                <option v-for="opt in field.options ?? []" :key="opt.value" :value="opt.value">
-                  {{ opt.label }}
-                </option>
-              </select>
+                <select
+                  v-if="field.type === 'select'"
+                  :value="insertValues[field.key]"
+                  class="sr-mde-insert__control"
+                  :aria-label="field.label"
+                  @input="setInsertValue(field.key, $event)"
+                >
+                  <option v-for="opt in field.options ?? []" :key="opt.value" :value="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
 
-              <textarea
-                v-else-if="field.type === 'textarea'"
-                :value="insertValues[field.key]"
-                class="sr-mde-insert__control sr-mde-insert__control--area"
-                :placeholder="field.placeholder"
-                :aria-label="field.label"
-                rows="3"
-                @input="setInsertValue(field.key, $event)"
-              />
+                <textarea
+                  v-else-if="field.type === 'textarea'"
+                  :value="insertValues[field.key]"
+                  class="sr-mde-insert__control sr-mde-insert__control--area"
+                  :placeholder="field.placeholder"
+                  :aria-label="field.label"
+                  rows="3"
+                  @input="setInsertValue(field.key, $event)"
+                />
 
-              <input
-                v-else
-                :value="insertValues[field.key]"
-                class="sr-mde-insert__control"
-                :type="field.type === 'number' ? 'number' : 'text'"
-                :placeholder="field.placeholder"
-                :aria-label="field.label"
-                @input="setInsertValue(field.key, $event)"
-              />
+                <input
+                  v-else
+                  :value="insertValues[field.key]"
+                  class="sr-mde-insert__control"
+                  :type="field.type === 'number' ? 'number' : 'text'"
+                  :placeholder="field.placeholder"
+                  :aria-label="field.label"
+                  @input="setInsertValue(field.key, $event)"
+                />
 
-              <small v-if="field.help" class="sr-mde-insert__help">{{ field.help }}</small>
-            </label>
+                <small v-if="field.help" class="sr-mde-insert__help">{{ field.help }}</small>
+              </label>
+            </template>
           </div>
 
           <div class="sr-mde-insert__foot">

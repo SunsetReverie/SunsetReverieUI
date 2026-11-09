@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 
 import SrMarkdownEditor from '../index'
 
@@ -527,6 +527,74 @@ describe('SrMarkdownEditor', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
     await nextTick()
     expect(wrapper.find('.sr-mde-insert').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('#insert-{name} 插槽接管面板内容，setResult 决定插入文本', async () => {
+    const ext = {
+      name: 'pick',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: { label: '挑选', template: '' },
+    }
+    const wrapper = mount(SrMarkdownEditor, {
+      props: { modelValue: '', extensions: [ext] },
+      global: { stubs: { SrIcon: true, teleport: true } },
+      slots: {
+        'insert-pick': (scope: { setResult: (text: string) => void }) =>
+          h(
+            'button',
+            {
+              class: 'pick-btn',
+              onClick: () => scope.setResult('{{pick id=a02}}'),
+            },
+            '挑',
+          ),
+      },
+    })
+
+    await wrapper.find('.sr-mde__tool[aria-label="挑选"]').trigger('click')
+    expect(wrapper.find('.pick-btn').exists()).toBe(true)
+    // 自定义模式下不再渲染声明式字段表单
+    expect(wrapper.find('.sr-mde-insert__field').exists()).toBe(false)
+    expect(wrapper.find('.sr-mde-insert__btn--primary').attributes('disabled')).toBeDefined()
+
+    await wrapper.find('.pick-btn').trigger('click')
+    await nextTick()
+    expect(wrapper.find('.sr-mde-insert__btn--primary').attributes('disabled')).toBeUndefined()
+
+    await wrapper.find('.sr-mde-insert__btn--primary').trigger('click')
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toContain('{{pick id=a02}}')
+    expect(wrapper.find('.sr-mde-insert').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('insert.action 完全接管：不弹面板，但 insert 能插回原光标位置', async () => {
+    type ActionCtx = { insert: (text: string) => void; close: () => void; value: string }
+    const box: { current?: ActionCtx } = {}
+    const ext = {
+      name: 'asset',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: {
+        label: '素材库',
+        template: '',
+        action: (ctx: ActionCtx) => {
+          box.current = ctx
+        },
+      },
+    }
+    const wrapper = mountEditor({ modelValue: '原文', extensions: [ext] })
+
+    await wrapper.find('.sr-mde__tool[aria-label="素材库"]').trigger('click')
+    expect(wrapper.find('.sr-mde-insert').exists()).toBe(false)
+    expect(box.current).toBeTruthy()
+    expect(box.current?.value).toBe('原文')
+
+    box.current?.insert('后加的内容')
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toContain('后加的内容')
     wrapper.unmount()
   })
 

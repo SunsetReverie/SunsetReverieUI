@@ -24,10 +24,10 @@ const content = ref(`## 用法说明
 
 > 快捷键：Cmd/Ctrl + B / I / K，Cmd/Ctrl + S 保存。`)
 
-/** 短代码内容：一进来就能看到三种渲染结果 */
+/** 短代码内容：一进来就能看到四种渲染结果 */
 const shortcodeContent = ref(`## 一篇博客文章
 
-正文里插了三种短代码，右侧就是读者最终看到的样子。
+正文里插了四种短代码，右侧就是读者最终看到的样子。
 
 {{article id=a01}}
 
@@ -35,7 +35,9 @@ const shortcodeContent = ref(`## 一篇博客文章
 
 :::note 提示
 参数面板填的值会拼成短代码文本，渲染时再查表还原成卡片。
-:::`)
+:::
+
+{{pick id=a02}}`)
 
 /** 只读内容 */
 const readonlyContent = ref('这是只读模式，工具栏按钮和快捷键都不响应。')
@@ -209,8 +211,45 @@ const noteExt: SrMarkdownExtension = {
   },
 }
 
+/** 自定义面板产出的短代码文本（模板里不直接写花括号，避免被 Vue 当插值） */
+function pickMark(id: string): string {
+  return `{{pick id=${id}}}`
+}
+
+/** 精选文章：由自定义面板挑选，渲染成另一种卡片 */
+const pickExt: SrMarkdownExtension = {
+  name: 'pick',
+  inline: /\{\{pick\s+id=([\w-]+)\}\}/g,
+  render: (match, ctx) => {
+    const article = articleDb.find((entry) => entry.id === match[1])
+    if (!article) return `<span class="sc-missing">找不到文章：${ctx.escape(match[1] ?? '')}</span>`
+
+    return `<a class="sc-pick" href="/posts/${ctx.escape(article.id)}">
+      <span class="sc-pick__star">✦ 编辑精选</span>
+      <strong>${ctx.escape(article.title)}</strong>
+      <span>${ctx.escape(article.summary)}</span>
+    </a>`
+  },
+  insert: {
+    label: '挑一篇精选文章',
+    icon: 'lucide:search',
+    panelTitle: '搜索站内文章',
+    panelWidth: 420,
+    template: '',
+  },
+}
+
+/** 自定义面板里的搜索词与过滤结果 */
+const pickQuery = ref('')
+const filteredArticles = computed(() =>
+  articleDb.filter((entry) => entry.title.includes(pickQuery.value) || entry.tag.includes(pickQuery.value)),
+)
+
 /** 短代码扩展列表：工具栏会自动为每个 insert 生成一个按钮 */
 const extensions = [articleExt, downloadExt, noteExt]
+
+/** 短代码演示区：3 个声明式面板 + 1 个自定义面板 */
+const shortcodeExtensions = [...extensions, pickExt]
 
 /** 完整工具栏：默认 12 个预设 + 分隔符 + 1 个自定义动作 */
 const fullToolbar: SrMarkdownToolbarItem[] = [
@@ -475,11 +514,48 @@ async function fakeUpload(file: File): Promise<string> {
     <section>
       <h3>短代码：博客后台场景</h3>
       <p class="lead">
-        点工具栏末尾的三个按钮，会<strong>先弹出参数面板</strong>，设好参数再插入正文；
-        右侧预览立刻渲染成卡片。正文里存的始终是短代码文本，不是卡片本身
+        点工具栏末尾的四个按钮，会<strong>先弹出参数面板</strong>，设好参数再插入正文；
+        右侧预览立刻渲染成卡片。正文里存的始终是短代码文本，不是卡片本身。 前三个用声明式字段，第四个用
+        <code>#insert-pick</code> 插槽自定义面板
       </p>
 
-      <SrMarkdownEditor v-model="shortcodeContent" :extensions="extensions" theme="vivid" :height="400" />
+      <SrMarkdownEditor
+        v-model="shortcodeContent"
+        :extensions="shortcodeExtensions"
+        theme="vivid"
+        :height="400"
+      >
+        <template #insert-pick="{ setResult, result, close }">
+          <div class="picker">
+            <input
+              v-model="pickQuery"
+              class="picker__search"
+              type="search"
+              placeholder="按标题或标签搜索…"
+              aria-label="搜索文章"
+            />
+            <div class="picker__list">
+              <button
+                v-for="entry in filteredArticles"
+                :key="entry.id"
+                class="picker__item"
+                :class="{ 'is-selected': result === pickMark(entry.id) }"
+                type="button"
+                @click="setResult(pickMark(entry.id))"
+              >
+                <span class="picker__tag">{{ entry.tag }}</span>
+                <span class="picker__title">{{ entry.title }}</span>
+                <span class="picker__date">{{ entry.date }}</span>
+              </button>
+              <p v-if="!filteredArticles.length" class="picker__empty">没有匹配的文章</p>
+            </div>
+            <p class="picker__hint">
+              选中后点下面的「插入」。遮罩、标题、取消、Esc 和插入按钮都由编辑器提供， 这里只负责挑出一段文本
+              <button class="picker__close" type="button" @click="close">收起</button>
+            </p>
+          </div>
+        </template>
+      </SrMarkdownEditor>
 
       <div class="flow" style="margin-top: 14px">
         <div class="flow__col">
@@ -500,6 +576,13 @@ async function fakeUpload(file: File): Promise<string> {
           <p class="flow__step"><span class="flow__num">3</span>提示块（块级）</p>
           <p class="flow__note">
             用 <code>textarea</code> 填内容，插入 <code>:::note</code> 围栏。 演示块级短代码也能由面板生成
+          </p>
+        </div>
+        <div class="flow__col">
+          <p class="flow__step"><span class="flow__num">4</span>自定义搜索面板</p>
+          <p class="flow__note">
+            点「挑一篇精选文章」：用 <code>#insert-pick</code> 插槽接管面板，带搜索框和文章列表。 选中后调
+            <code>setResult</code>，底部插入按钮仍由组件负责
           </p>
         </div>
       </div>
@@ -728,6 +811,127 @@ h3 {
 .flow__note code {
   font-family: var(--sr-font-family-mono);
   font-size: 11px;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.picker__search {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text);
+  font-family: inherit;
+  font-size: 12.5px;
+  outline: none;
+}
+
+.picker__list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.picker__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: transparent;
+  color: var(--sr-color-text);
+  font-family: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+.picker__item.is-selected {
+  border-color: var(--sr-color-primary);
+  background: var(--sr-color-primary-alpha-12);
+}
+
+.picker__tag {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text-tertiary);
+  font-size: 10.5px;
+}
+
+.picker__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picker__date {
+  flex: 0 0 auto;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11px;
+}
+
+.picker__empty {
+  margin: 0;
+  padding: 16px 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
+  text-align: center;
+}
+
+.picker__hint {
+  margin: 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.picker__close {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--sr-color-primary);
+  font-family: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+:deep(.sc-pick) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--sr-color-primary-alpha-25);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+:deep(.sc-pick__star) {
+  color: var(--sr-color-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+:deep(.sc-pick) span:last-child {
+  color: var(--sr-color-text-secondary);
+  font-size: 12px;
 }
 
 :deep(.sc-article) {

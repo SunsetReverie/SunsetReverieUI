@@ -5,4 +5,9 @@ import MarkdownEditor from './src/markdown-editor.vue'
 export const SrMarkdownEditor = srWithInstall(MarkdownEditor)
 
 export * from './src/markdown-editor'
+export type {
+  SrMarkdownInsertField,
+  SrMarkdownInsertActionContext,
+  SrMarkdownInsertSlotScope,
+} from '../markdown/src/extensions'
 export default SrMarkdownEditor
