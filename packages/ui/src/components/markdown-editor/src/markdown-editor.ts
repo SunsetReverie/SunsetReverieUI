@@ -96,6 +96,16 @@ export const markdownEditorProps = {
     type: Array as unknown as PropType<SrMarkdownExtension[]>,
     default: () => [],
   },
+  /**
+   * 渲染模板，透传给内部 `SrMarkdown`
+   *
+   * 编辑时的预览必须与前台展示用同一套模板，否则写作者看到的
+   * 和最终发布的不一样。
+   */
+  theme: {
+    type: String as PropType<'plain' | 'vivid' | 'editorial' | 'glass'>,
+    default: 'vivid',
+  },
   /** HTML 后处理钩子，透传给内部 `SrMarkdown` */
   sanitize: {
     type: Function as PropType<(html: string) => string>,

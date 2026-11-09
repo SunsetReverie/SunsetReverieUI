@@ -108,7 +108,7 @@ watch(() => [props.source, props.extensions, props.engine, props.sanitize] as co
 </script>
 
 <template>
-  <div class="sr-md" :class="[`sr-md--${size}`, { 'is-pending': pending }]">
+  <div class="sr-md" :class="[`sr-md--${size}`, `sr-md--theme-${theme}`, { 'is-pending': pending }]">
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="sr-md__content" v-html="rendered" />
   </div>

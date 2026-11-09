@@ -5,6 +5,14 @@
 <script setup>
 import { ref } from 'vue'
 
+const mdTheme = ref('vivid')
+const themeOptions = [
+  { label: '极简', value: 'plain' },
+  { label: '现代', value: 'vivid' },
+  { label: '阅读', value: 'editorial' },
+  { label: '玻璃', value: 'glass' },
+]
+
 const source = `## 这是个渲染示例
 
 正文支持 **加粗**、*斜体*、~~删除线~~ 与 \`行内代码\`。
@@ -41,6 +49,58 @@ const blockExt = {
     `<div class="demo-block-sc"><strong>${ctx.escape(match[1])}</strong><p>${ctx.escape(match[2])}</p></div>`,
 }
 </script>
+
+## 渲染模板
+
+内置四套，用 `theme` 切换：
+
+<div class="sr-demo is-block">
+  <div style="margin-bottom: 12px">
+    <SrSegmented v-model="mdTheme" :options="themeOptions" size="sm" />
+  </div>
+  <SrMarkdown :source="source" engine="builtin" :theme="mdTheme" />
+</div>
+
+```vue
+<SrMarkdown :source="content" theme="vivid" />
+```
+
+| 模板 | 观感 | 主要装饰 |
+| --- | --- | --- |
+| `plain` | 极简中性 | 几乎无装饰，正文保持中性色 |
+| `vivid`（默认） | 现代、年轻 | 标题主色 + 48px 渐变短线、行内代码淡底、引用色条+底色、列表圆点主色、表头底色+斑马纹、渐变分割线、深色代码块 |
+| `editorial` | 阅读 / 杂志 | 衬线标题、细线分隔、引用斜体、表格只留横线 |
+| `glass` | 玻璃拟态 | 半透明表面 + 背景模糊、大圆角、柔光阴影 |
+
+四套共用**同一份 DOM 结构**，切换的只是一组 `--sr-md-*` CSS 变量。装饰的「有无」也用变量控制：宽度或高度为 0 的伪元素自然不可见，不用为每套模板写一份选择器。
+
+### 二次定制
+
+直接覆盖变量即可，不用 fork 样式：
+
+```css
+.my-article .sr-md {
+  --sr-md-accent: #7c5cff;
+  --sr-md-heading-color: #7c5cff;
+  --sr-md-h1-bar-width: 72px;
+  --sr-md-code-bg: #12141c;
+}
+```
+
+变量分组：
+
+| 组 | 变量 |
+| --- | --- |
+| 标题 | `--sr-md-heading-color` / `--sr-md-heading-font` / `--sr-md-heading-weight` / `--sr-md-h1-bar-*` / `--sr-md-h2-underline` |
+| 行内 | `--sr-md-strong-color` / `--sr-md-link-*` / `--sr-md-inline-*` |
+| 块 | `--sr-md-quote-*` / `--sr-md-marker-color` / `--sr-md-code-*` / `--sr-md-table-*` / `--sr-md-hr-bg` |
+| 图片 | `--sr-md-img-radius` / `--sr-md-img-shadow` |
+
+### 为什么用标准标签选择器
+
+样式挂在 `h1` / `p` / `blockquote` / `table` / `pre` 这些**标准标签**上，而不是 `.sr-md__*` 类名。
+
+内置解析器输出的是「带类的标准标签」，markdown-it 输出的是不带类的标准标签。早期版本只认类名，换引擎后整篇样式会静默失效——这是最容易被忽略的一类问题。现在两种引擎表现一致。
 
 ## 交互演示
 
@@ -209,6 +269,7 @@ const extensions = [
 | `extensions` | `SrMarkdownExtension[]` | `[]` | 短代码扩展 |
 | `sanitize` | `(html) => string` | — | HTML 后处理钩子 |
 | `size` | `SrSize` | `'md'` | 渲染尺寸 |
+| `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板 |
 
 ## 导出的工具
 

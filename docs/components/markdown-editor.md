@@ -45,7 +45,7 @@ const customToolbar = [
 
 编辑区是**原生 textarea**，不是 contenteditable——输入法、撤销栈、拼写检查都是系统级能力，重做一遍代价太大。
 
-`engine` 与 `extensions` 透传给内部的 `SrMarkdown`，所以**编辑器里预览的效果和前台展示的完全一致**。这条不能有偏差，否则写作者会不断踩「预览正常、发布出错」的坑。
+`engine` / `extensions` / `theme` 透传给内部的 `SrMarkdown`，所以**编辑器里预览的效果和前台展示的完全一致**。这条不能有偏差，否则写作者会不断踩「预览正常、发布出错」的坑——换成不同模板也算偏差，所以主题也一并透传。
 
 ## 视图模式
 
@@ -211,6 +211,7 @@ async function uploadFile(file: File) {
 | `showCount` | `boolean` | `true` | 显示字数 |
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包，传了才显示表情按钮 |
 | `upload` | `(file: File) => Promise<string>` | — | 图片上传 |
+| `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板，透传给预览区 |
 | `size` | `SrSize` | `'md'` | 尺寸档位 |
 
 ## 事件

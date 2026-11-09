@@ -1738,6 +1738,55 @@
       },
       {
         "from": "emojiPickerProps",
+        "name": "tabPosition",
+        "type": "'top' | 'bottom'",
+        "default": "'bottom'",
+        "description": "分类 tab 的位置 @default 'bottom' - `bottom`：tab 贴在面板底部 - `top`：tab 在顶部"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "width",
+        "type": "number | string",
+        "default": "undefined",
+        "description": "面板宽度 数字按像素，字符串原样输出（`'100%'` / `'20rem'` 都行）。 不传时占满父容器。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "height",
+        "type": "number | string",
+        "default": "undefined",
+        "description": "面板高度 传了就是固定高度，内容区自动填充剩余空间并内部滚动。 不传时由 `minHeight` 与内容共同决定。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "minHeight",
+        "type": "number",
+        "default": "240",
+        "description": "最小高度（px） @default 240 表情少的包不会把面板塌成一条——切换分类时高度不跳。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "maxHeight",
+        "type": "number",
+        "default": "260",
+        "description": "内容区最大高度（px） @default 260，仅在未传 `height` 时生效"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "searchable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示搜索框 @default false 搜索跨所有分类按名称过滤，命中结果显示在一个临时「搜索」视图里。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "searchPlaceholder",
+        "type": "string",
+        "default": "'搜索表情'",
+        "description": "搜索框占位文案"
+      },
+      {
+        "from": "emojiPickerProps",
         "name": "showRecent",
         "type": "boolean",
         "default": "true",
@@ -1745,17 +1794,17 @@
       },
       {
         "from": "emojiPickerProps",
+        "name": "closeOnSelect",
+        "type": "boolean",
+        "default": "false",
+        "description": "选中后请求关闭 @default false 默认连选（选完面板不关，方便连着插几个表情）。 打开后 `select` 之外再派发 `close`，由外层浮层决定收起。"
+      },
+      {
+        "from": "emojiPickerProps",
         "name": "size",
         "type": "SrSize",
         "default": "'md'",
         "description": "尺寸档位 @default 'md'"
-      },
-      {
-        "from": "emojiPickerProps",
-        "name": "maxHeight",
-        "type": "number",
-        "default": "260",
-        "description": "面板最大高度（px） @default 260"
       },
       {
         "from": "emojiPickerProps",
@@ -1770,6 +1819,14 @@
       {
         "name": "select",
         "params": ["item", "mark"]
+      },
+      {
+        "name": "close",
+        "params": []
+      },
+      {
+        "name": "search-change",
+        "params": ["keyword"]
       }
     ],
     "slots": []
@@ -2494,6 +2551,13 @@
         "type": "SrSize",
         "default": "'md'",
         "description": "渲染尺寸 @default 'md'"
+      },
+      {
+        "from": "markdownProps",
+        "name": "theme",
+        "type": "'plain' | 'vivid' | 'editorial' | 'glass'",
+        "default": "'vivid'",
+        "description": "渲染模板 @default 'vivid' - `plain`：极简中性，几乎没有装饰 - `vivid`：主色装饰丰富，标题/引用/表格/代码块都有层次 - `editorial`：阅读型排版，衬线标题、细线、克制留白 - `glass`：玻璃拟态，半透明表面与柔光 模板本质是一组 `--sr-md-*` CSS 变量，可以直接覆盖做二次定制。"
       }
     ],
     "sources": ["markdown"],
@@ -2523,6 +2587,13 @@
         "type": "SrMarkdownExtension[]",
         "default": "() => []",
         "description": "短代码扩展，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "theme",
+        "type": "'plain' | 'vivid' | 'editorial' | 'glass'",
+        "default": "'vivid'",
+        "description": "渲染模板，透传给内部 `SrMarkdown` 编辑时的预览必须与前台展示用同一套模板，否则写作者看到的 和最终发布的不一样。"
       },
       {
         "from": "markdownEditorProps",

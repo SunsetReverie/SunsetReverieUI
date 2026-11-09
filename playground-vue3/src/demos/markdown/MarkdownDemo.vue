@@ -10,6 +10,17 @@ import { ref } from 'vue'
 
 defineOptions({ name: 'MarkdownDemo' })
 
+/** 渲染模板 */
+const theme = ref<'plain' | 'vivid' | 'editorial' | 'glass'>('vivid')
+
+/** 模板选项 */
+const themeOptions = [
+  { label: '极简', value: 'plain' },
+  { label: '现代', value: 'vivid' },
+  { label: '阅读', value: 'editorial' },
+  { label: '玻璃', value: 'glass' },
+]
+
 /** 基础内容 */
 const basic = `# 一级标题
 
@@ -78,6 +89,15 @@ const customEngine: SrMarkdownEngine = {
     ),
 }
 
+/**
+ * 标准标签引擎：把内置解析器输出的类名全部剥掉，
+ * 模拟 markdown-it 那种「不带 sr-md__* 类」的 HTML。
+ * 用来验证样式挂在标准标签上，换引擎不会掉样式。
+ */
+const standardEngine = {
+  render: (source: string) => parseMarkdownBuiltin(source).replace(/ class="sr-md__[^"]*"/g, ''),
+}
+
 /** 异步引擎：模拟 shiki 这类需要初始化的场景 */
 const asyncEngine: SrMarkdownEngine = {
   render: (source: string) =>
@@ -112,9 +132,24 @@ function stripScripts(html: string): string {
 <template>
   <div class="demo">
     <section>
+      <h3>渲染模板（theme）</h3>
+      <div style="margin-bottom: 14px">
+        <SrSegmented v-model="theme" :options="themeOptions" size="sm" />
+      </div>
+      <div class="doc">
+        <SrMarkdown :source="basic" engine="builtin" :theme="theme" />
+      </div>
+      <p class="hint">
+        四套模板共用同一份 DOM，切换的只是一组 <code>--sr-md-*</code> CSS 变量。
+        <strong>vivid</strong> 是默认；标题渐变短线、引用色条、表头底色、斑马纹、
+        深色代码块都由模板决定，可以直接覆盖变量做二次定制
+      </p>
+    </section>
+
+    <section>
       <h3>内置解析器</h3>
       <div class="doc">
-        <SrMarkdown :source="basic" engine="builtin" />
+        <SrMarkdown :source="basic" engine="builtin" :theme="theme" />
       </div>
       <p class="hint">
         <code>engine="builtin"</code> 用内置的精简解析器，覆盖日常语法。 正式使用建议换成
@@ -130,6 +165,17 @@ function stripScripts(html: string): string {
       <p class="hint">
         内联 <code v-pre>{{gallery id=42}}</code> 与块级
         <code>::: note 标题 ... :::</code> 都由扩展在解析前替换。 块级先执行——围栏内部的内容不会被内联规则拆散
+      </p>
+    </section>
+
+    <section>
+      <h3>标准标签引擎（模拟 markdown-it）</h3>
+      <div class="doc">
+        <SrMarkdown :source="basic" :engine="standardEngine" :theme="theme" />
+      </div>
+      <p class="hint">
+        这个引擎把输出里的 <code>class="sr-md__*"</code> 全部剥掉，只剩标准 <code>h1</code> / <code>p</code> /
+        <code>blockquote</code> / <code>table</code>。 样式依然完整——因为选择器挂在标签上，不是类名上
       </p>
     </section>
 

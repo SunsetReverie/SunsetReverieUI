@@ -162,6 +162,20 @@ describe('SrMarkdown', () => {
     wrapper.unmount()
   })
 
+  it('默认是 vivid 模板', () => {
+    const wrapper = mountMd({ source: 'a', engine: 'builtin' })
+    expect(wrapper.classes()).toContain('sr-md--theme-vivid')
+    wrapper.unmount()
+  })
+
+  it('四套模板生成对应类名', () => {
+    for (const theme of ['plain', 'vivid', 'editorial', 'glass'] as const) {
+      const wrapper = mountMd({ source: 'a', engine: 'builtin', theme })
+      expect(wrapper.classes()).toContain(`sr-md--theme-${theme}`)
+      wrapper.unmount()
+    }
+  })
+
   it('size 生成对应类名', async () => {
     for (const size of ['sm', 'md', 'lg'] as const) {
       const wrapper = mountMd({ source: 'a', engine: 'builtin', size })

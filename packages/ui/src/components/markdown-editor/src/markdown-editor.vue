@@ -717,6 +717,7 @@ defineExpose({
             :source="modelValue"
             :engine="engine"
             :extensions="extensions"
+            :theme="theme"
             :sanitize="sanitize"
             :size="size"
           />

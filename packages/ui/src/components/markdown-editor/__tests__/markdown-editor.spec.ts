@@ -257,6 +257,12 @@ describe('SrMarkdownEditor', () => {
     withEmoji.unmount()
   })
 
+  it('theme 透传给预览区', () => {
+    const wrapper = mountEditor({ modelValue: '# 标题', theme: 'editorial' })
+    expect(wrapper.find('.sr-md').classes()).toContain('sr-md--theme-editorial')
+    wrapper.unmount()
+  })
+
   it('预览区渲染 Markdown', async () => {
     const wrapper = mountEditor({ modelValue: '# 标题' })
     await nextTick()

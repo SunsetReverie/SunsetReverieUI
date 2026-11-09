@@ -73,6 +73,20 @@ export const markdownProps = {
     type: String as PropType<SrSize>,
     default: 'md',
   },
+  /**
+   * 渲染模板 @default 'vivid'
+   *
+   * - `plain`：极简中性，几乎没有装饰
+   * - `vivid`：主色装饰丰富，标题/引用/表格/代码块都有层次
+   * - `editorial`：阅读型排版，衬线标题、细线、克制留白
+   * - `glass`：玻璃拟态，半透明表面与柔光
+   *
+   * 模板本质是一组 `--sr-md-*` CSS 变量，可以直接覆盖做二次定制。
+   */
+  theme: {
+    type: String as PropType<'plain' | 'vivid' | 'editorial' | 'glass'>,
+    default: 'vivid',
+  },
 } as const
 
 export type SrMarkdownProps = ExtractPropTypes<typeof markdownProps>
