@@ -38,6 +38,11 @@ const emit = defineEmits<{
   'upload-error': [error: unknown]
   /** 视图模式变化 */
   'mode-change': [mode: SrMarkdownEditorMode]
+  /**
+   * 预览里的代码块复制成功
+   * @param text 被复制的代码文本
+   */
+  copy: [text: string]
 }>()
 
 /** 编辑区 */
@@ -1107,6 +1112,8 @@ defineExpose({
             :code-highlight="codeHighlight"
             :code-line-numbers="codeLineNumbers"
             :code-copy="codeCopy"
+            :code-copy-notify="codeCopyNotify"
+            @copy="emit('copy', $event)"
           />
           <p v-if="!modelValue.trim()" class="sr-mde__empty">{{ placeholder }}</p>
         </slot>

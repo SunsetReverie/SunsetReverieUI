@@ -7,6 +7,11 @@ import SrMarkdown from '../index'
 import type { SrMarkdownExtension } from '../src/extensions'
 import type { SrMarkdownEngine } from '../src/markdown'
 
+/** 消息 API 的替身：测试里不该真的弹出全局消息 */
+const { messageSuccess } = vi.hoisted(() => ({ messageSuccess: vi.fn() }))
+
+vi.mock('../../message', () => ({ srMessage: { success: messageSuccess } }))
+
 /** 同步引擎：把源码包成 h1 */
 const syncEngine: SrMarkdownEngine = {
   render: (source) => `<h1>${source}</h1>`,
@@ -183,5 +188,46 @@ describe('SrMarkdown', () => {
       expect(wrapper.classes()).toContain(`sr-md--${size}`)
       wrapper.unmount()
     }
+  })
+
+  it('代码块默认带行号与复制按钮', async () => {
+    const wrapper = mountMd({ source: '```ts\nconst a = 1\n```', engine: 'builtin' })
+    await nextTick()
+
+    expect(wrapper.findAll('.sr-md__code-line')).toHaveLength(1)
+    expect(wrapper.find('.sr-md__copy').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('codeLineNumbers=false 时不生成行号容器', async () => {
+    const wrapper = mountMd({ source: '```ts\nconst a = 1\n```', engine: 'builtin', codeLineNumbers: false })
+    await nextTick()
+
+    expect(wrapper.find('.sr-md__code-line').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('复制成功后派发 copy 事件并按需弹消息', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+
+    const onCopy = vi.fn()
+    const wrapper = mountMd({
+      source: '```ts\nconst a = 1\n```',
+      engine: 'builtin',
+      codeCopyNotify: true,
+      onCopy,
+    })
+    await nextTick()
+
+    await wrapper.find('.sr-md__copy').trigger('click')
+    await flushPromises()
+
+    // 复制内容不含行号，只有代码本身
+    expect(writeText).toHaveBeenCalledWith('const a = 1')
+    expect(onCopy).toHaveBeenCalledWith('const a = 1')
+    expect(messageSuccess).toHaveBeenCalled()
+    wrapper.unmount()
+    Reflect.deleteProperty(navigator, 'clipboard')
   })
 })

@@ -517,19 +517,35 @@ async function uploadFile(file: File) {
 
 ## 代码块
 
-预览里的代码块自带三项能力，都由 [SrMarkdown](/components/markdown#代码块) 提供，编辑器只做透传：
+预览里的代码块自带四项能力，都由 [SrMarkdown](/components/markdown#代码块) 提供，编辑器只做透传：
 
 | 能力 | 属性 | 默认 |
 | --- | --- | --- |
 | 语法着色 | `codeHighlight` | `true` |
-| 行号 | `codeLineNumbers` | `false` |
+| 行号 | `codeLineNumbers` | `true` |
 | 复制按钮 | `codeCopy` | `true` |
+| 复制反馈 | `codeCopyNotify` | `false` |
 
 ```vue
-<SrMarkdownEditor v-model="content" code-line-numbers />
+<!-- 行号默认就开着，这一行是为了关掉它 -->
+<SrMarkdownEditor v-model="content" :code-line-numbers="false" />
 ```
 
 着色是内置的零依赖实现，认 JS / TS / JSON / HTML / Vue / CSS / Shell / Python / Markdown，写 `typescript`、`bash`、`py` 这类别名也行。行号用 CSS 计数器画，选中代码时不会把数字带走；复制按钮在代码块顶栏，点一下变「已复制」。
+
+### 复制后联动通知
+
+把 `codeCopyNotify` 打开，复制成功会弹一条 `srMessage.success('已复制到剪贴板')`：
+
+```vue
+<SrMarkdownEditor v-model="content" code-copy-notify />
+```
+
+想换成 `srToast` / `srNotification`，用 `copy` 事件自己接管——编辑器会把它从 `SrMarkdown` 透传上来，参数是被复制的代码（不含行号）：
+
+```vue
+<SrMarkdownEditor v-model="content" @copy="(text) => srNotification.success({ message: '已复制 ' + text.length + ' 字符' })" />
+```
 
 要 Prism / shiki 那种精确高亮，关掉 `codeHighlight`，在 `sanitize` 钩子里把 `<code>` 的内容替换成自己的高亮输出——顶栏、行号、复制按钮照常工作，因为它们只依赖 `.sr-md__pre > code` 这个结构。
 
@@ -548,8 +564,9 @@ async function uploadFile(file: File) {
 | `extensions` | `SrMarkdownExtension[]` | `[]` | 短代码扩展 |
 | `sanitize` | `(html) => string` | — | HTML 后处理 |
 | `codeHighlight` | `boolean` | `true` | 预览里的代码块语法着色 |
-| `codeLineNumbers` | `boolean` | `false` | 预览里的代码块显示行号 |
+| `codeLineNumbers` | `boolean` | `true` | 预览里的代码块显示行号 |
 | `codeCopy` | `boolean` | `true` | 预览里的代码块显示复制按钮 |
+| `codeCopyNotify` | `boolean` | `false` | 复制成功后弹一条 `srMessage` |
 | `mode` | `'edit' \| 'split' \| 'preview'` | `'split'` | 视图模式 |
 | `toolbar` | `SrMarkdownToolbarItem[] \| false` | 默认 15 项 | 工具栏配置 |
 | `tooltips` | `boolean` | `true` | 工具栏功能提示 |
@@ -576,6 +593,7 @@ async function uploadFile(file: File) {
 | `save` | `value` | `Cmd/Ctrl + S` |
 | `upload-error` | `error` | 上传失败 |
 | `mode-change` | `mode` | 视图模式变化 |
+| `copy` | `text` | 预览里的代码块复制成功，携带被复制的代码 |
 
 ## 插槽
 

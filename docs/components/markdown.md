@@ -281,10 +281,19 @@ const extensions = [
 | `extensions` | `SrMarkdownExtension[]` | `[]` | 短代码扩展 |
 | `sanitize` | `(html) => string` | — | HTML 后处理钩子 |
 | `codeHighlight` | `boolean` | `true` | 代码块语法着色 |
-| `codeLineNumbers` | `boolean` | `false` | 代码块显示行号 |
+| `codeLineNumbers` | `boolean` | `true` | 代码块显示行号 |
 | `codeCopy` | `boolean` | `true` | 代码块显示复制按钮 |
+| `codeCopyNotify` | `boolean` | `false` | 复制成功后弹一条 `srMessage` |
 | `size` | `SrSize` | `'md'` | 渲染尺寸 |
 | `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板 |
+
+## 事件
+
+| 事件 | 参数 | 说明 |
+| --- | --- | --- |
+| `copy` | `text: string` | 代码块复制成功，携带被复制的代码（不含行号） |
+
+只有真正写入剪贴板成功才派发：`navigator.clipboard` 被拒、`execCommand` 返回 false 时都不发，避免外部收到「已复制」的假信号。
 
 ## 导出的工具
 
@@ -324,8 +333,21 @@ const extensions = [
 | 语法着色 | `codeHighlight` | JS / TS / JSON / HTML / Vue / CSS / Shell / Python / Markdown，别名（`typescript`、`bash`、`py`…）自动归一 |
 | 行号 | `codeLineNumbers` | CSS 计数器绘制，不参与选中，也不会被复制走 |
 | 复制按钮 | `codeCopy` | 顶栏右侧，点击后短暂显示「已复制」；`navigator.clipboard` 不可用时退回 `execCommand` |
+| 复制反馈 | `codeCopyNotify` | 复制成功后调用 `srMessage.success('已复制到剪贴板')`，默认关闭 |
 | 语言标签 | 自动 | 有 `data-lang` 就显示，和复制按钮同排 |
 
 复制走的是**事件委托**：按钮由 `v-html` 插入，拿不到 Vue 事件绑定，所以统一监听 `.sr-md__content` 的点击。这意味着自定义引擎只要产出 `.sr-md__pre > code` 结构，复制按钮同样能用。
 
 行号数字由 `::before` 生成，`user-select: none`——选中代码时不会把数字一起带走。
+
+### 复制后联动通知
+
+复制成功后组件会派发 `copy` 事件，带上被复制的代码（不含行号）。两种接法：
+
+```vue
+<!-- 1. 直接开内置的全局消息 -->
+<SrMarkdown source="..." engine="builtin" code-copy-notify />
+
+<!-- 2. 自己接管，换成 toast / notification -->
+<SrMarkdown source="..." engine="builtin" @copy="(text) => srToast.success('已复制 ' + text.length + ' 字符')" />
+```

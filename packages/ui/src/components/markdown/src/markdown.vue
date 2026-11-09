@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
+import { srMessage } from '../../message'
 import { parseMarkdownBuiltin } from './builtin-parser'
 import { srPreprocess } from './extensions'
 import { markdownProps, SR_MARKDOWN_BUILTIN } from './markdown'
@@ -8,6 +9,14 @@ import { markdownProps, SR_MARKDOWN_BUILTIN } from './markdown'
 defineOptions({ name: 'SrMarkdown', inheritAttrs: false })
 
 const props = defineProps(markdownProps)
+
+const emit = defineEmits<{
+  /**
+   * 代码块复制成功
+   * @param text 被复制的代码文本
+   */
+  copy: [text: string]
+}>()
 
 /** 渲染结果 */
 const rendered = ref('')
@@ -160,6 +169,12 @@ async function onContentClick(event: MouseEvent): Promise<void> {
   if (!text) return
 
   const ok = await writeClipboard(text)
+
+  // 成功才对外发事件：失败时外部不该收到「已复制」的信号
+  if (ok) {
+    emit('copy', text)
+    if (props.codeCopyNotify) srMessage.success('已复制到剪贴板')
+  }
 
   button.textContent = ok ? '已复制' : '复制失败'
   button.classList.toggle('is-copied', ok)

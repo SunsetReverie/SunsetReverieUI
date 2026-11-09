@@ -94,12 +94,21 @@ pnpm --filter playground-vue3 dev
 \`\`\``)
 
 /** 行号开关 */
-const lineNumMode = ref<'off' | 'on'>('off')
+const lineNumMode = ref<'off' | 'on'>('on')
 
 /** 行号选项 */
 const lineNumOptions = [
   { label: '不显示行号', value: 'off' },
   { label: '显示行号', value: 'on' },
+]
+
+/** 复制通知开关 */
+const copyNotifyMode = ref<'off' | 'on'>('off')
+
+/** 复制通知选项 */
+const copyNotifyOptions = [
+  { label: '复制后不提示', value: 'off' },
+  { label: '复制后提示', value: 'on' },
 ]
 
 /** 提示选项 */
@@ -561,13 +570,20 @@ async function fakeUpload(file: File): Promise<string> {
       <h3>代码块：着色、行号、复制</h3>
       <div class="row" style="margin-bottom: 10px">
         <SrSegmented v-model="lineNumMode" :options="lineNumOptions" size="sm" />
-        <SrTag size="sm">顶栏右侧可复制</SrTag>
+        <SrSegmented v-model="copyNotifyMode" :options="copyNotifyOptions" size="sm" />
       </div>
-      <SrMarkdownEditor v-model="codeContent" :code-line-numbers="lineNumMode === 'on'" :height="300" />
+      <SrMarkdownEditor
+        v-model="codeContent"
+        :code-line-numbers="lineNumMode === 'on'"
+        :code-copy-notify="copyNotifyMode === 'on'"
+        :height="300"
+      />
       <p class="hint">
         着色是内置的，零依赖：JS / TS / JSON / HTML / Vue / CSS / Shell / Python 都认，写
-        <code>typescript</code>、<code>bash</code>、<code>py</code> 这类别名也行。行号由 CSS 计数器画，
-        选中代码时不会带走数字；复制按钮在顶栏，点一下变「已复制」。
+        <code>typescript</code>、<code>bash</code>、<code>py</code> 这类别名也行。行号默认就开着，由 CSS
+        计数器画，选中代码时不会带走数字；复制按钮在顶栏，点一下变「已复制」。打开「复制后提示」后，
+        成功复制还会弹一条全局消息——组件派发 <code>copy</code> 事件，内置的只是接了
+        <code>srMessage</code>，换成 toast / notification 自己监听即可。
       </p>
     </section>
 

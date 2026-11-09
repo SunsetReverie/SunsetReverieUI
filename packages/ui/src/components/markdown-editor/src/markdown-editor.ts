@@ -122,13 +122,13 @@ export const markdownEditorProps = {
     default: true,
   },
   /**
-   * 预览里的代码块是否显示行号 @default false
+   * 预览里的代码块是否显示行号 @default true
    *
    * 行号由 CSS 计数器画，复制时不会带上数字。
    */
   codeLineNumbers: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   /**
    * 预览里的代码块是否显示复制按钮 @default true
@@ -136,6 +136,15 @@ export const markdownEditorProps = {
   codeCopy: {
     type: Boolean,
     default: true,
+  },
+  /**
+   * 复制成功后是否弹一条 `srMessage` 提示 @default false
+   *
+   * 关闭时按钮仍会把文案切成「已复制」，只是不走全局消息。
+   */
+  codeCopyNotify: {
+    type: Boolean,
+    default: false,
   },
   /** 视图模式 @default 'split' */
   mode: {

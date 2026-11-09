@@ -79,13 +79,14 @@ export const markdownProps = {
     default: true,
   },
   /**
-   * 代码块是否显示行号 @default false
+   * 代码块是否显示行号 @default true
    *
-   * 行号由 CSS 计数器绘制，不打进复制内容里。
+   * 行号由 CSS 计数器绘制，不打进复制内容里；数字不参与选中，
+   * 手动划选代码时也不会把行号带走。
    */
   codeLineNumbers: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   /**
    * 代码块是否显示复制按钮 @default true
@@ -96,6 +97,17 @@ export const markdownProps = {
   codeCopy: {
     type: Boolean,
     default: true,
+  },
+  /**
+   * 复制成功后是否弹一条 `srMessage` 提示 @default false
+   *
+   * 按钮本身已经会把文案切成「已复制」，这里额外走全局消息，
+   * 适合把复制当成一次正式操作的场景。
+   * 想换成 toast / notification，用 `copy` 事件自己接管即可。
+   */
+  codeCopyNotify: {
+    type: Boolean,
+    default: false,
   },
   /** 渲染尺寸 @default 'md' */
   size: {
