@@ -126,7 +126,9 @@ export function parseMarkdownBuiltin(source: string): string {
     const line = lines[index] ?? ''
 
     // ---------- 代码块 ----------
-    const fence = line.match(/^\s*```\s*([\w-]*)\s*$/)
+    // 语言标识不限于 ASCII：```中文、```c++、```C# 都要能开代码块。
+    // 这里放宽到「任意非空白字符」，否则中文标识会漏到段落分支（见文末兜底）
+    const fence = line.match(/^\s*```\s*([^`\s]*)\s*$/)
     if (fence) {
       const lang = fence[1] ?? ''
       const body: string[] = []
@@ -298,7 +300,14 @@ export function parseMarkdownBuiltin(source: string): string {
 
     if (paragraph.length) {
       html.push(`<p class="sr-md__p">${parseInline(paragraph.join('<br />'))}</p>`)
+      continue
     }
+
+    // 兜底：上面的循环被「块级语法」判断打断，但那一行最终没被任何块级分支接住
+    // （比如 fence 后面跟了非法标识、表格分隔行格式不对）。这时必须强制吃掉一行，
+    // 否则 index 原地不动，外层 while 会死循环把整页卡住
+    html.push(`<p class="sr-md__p">${parseInline(line.trim())}</p>`)
+    index += 1
   }
 
   return html.join('\n')

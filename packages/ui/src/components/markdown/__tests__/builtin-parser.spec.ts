@@ -59,6 +59,22 @@ describe('parseMarkdownBuiltin', () => {
     expect(html).toContain('const a = 1')
   })
 
+  it('语言标识支持中文与符号，且不会卡死', () => {
+    // 曾经的 bug：fence 正则只认 [\w-]，```中文 落到段落分支后被块级判断
+    // 打断，但 index 不前进，外层 while 无限循环，整个页面卡死
+    for (const lang of ['中文', 'c++', 'C#', '日本語']) {
+      const html = parseMarkdownBuiltin('```' + lang + '\ncode\n```')
+      expect(html).toContain(`data-lang="${lang}"`)
+    }
+  })
+
+  it('非法 fence 行降级为段落，不重复消费', () => {
+    // 带空格的多词标识不算合法 fence，要退化成普通段落，且不能死循环
+    const html = parseMarkdownBuiltin('``` js x')
+    expect(html).toContain('sr-md__p')
+    expect(html).toContain('``` js x')
+  })
+
   it('渲染行内代码', () => {
     const html = parseMarkdownBuiltin('用 `code` 表示')
     expect(html).toContain('<code class="sr-md__code">code</code>')
