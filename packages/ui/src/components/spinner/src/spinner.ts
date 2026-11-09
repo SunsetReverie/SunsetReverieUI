@@ -8,10 +8,21 @@ export const spinnerProps = {
     type: [String, Number] as PropType<SrSize | number>,
     default: 'md',
   },
-  /** 颜色，默认跟随主色 */
+  /** 单色，默认跟随主色 */
   color: {
     type: String,
     default: '',
+  },
+  /**
+   * 多色，按顺序分配给子元素 @default []
+   *
+   * 只对由多个元素组成的变体有意义：
+   * `dots` 用前 3 个、`bars` 用前 4 个、`pulse` 用前 2 个。
+   * 数量不足时循环取用；`ring` / `gradient` / `orbit` 仍是单色，会忽略它。
+   */
+  colors: {
+    type: Array as unknown as PropType<string[]>,
+    default: () => [],
   },
   /** 无障碍名称；不传则视为装饰性 */
   label: {

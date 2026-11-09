@@ -113,6 +113,73 @@ describe('SrSpinner', () => {
     }
   })
 
+  it('dots 按 colors 依次着色', () => {
+    const wrapper = mount(SrSpinner, {
+      props: { variant: 'dots', colors: ['#ff0000', '#00ff00', '#0000ff'] },
+    })
+
+    const dots = wrapper.findAll('.sr-spinner__dot')
+    expect(dots[0]?.attributes('style')).toContain('rgb(255, 0, 0)')
+    expect(dots[1]?.attributes('style')).toContain('rgb(0, 255, 0)')
+    expect(dots[2]?.attributes('style')).toContain('rgb(0, 0, 255)')
+    wrapper.unmount()
+  })
+
+  it('bars 按 colors 依次着色', () => {
+    const wrapper = mount(SrSpinner, {
+      props: { variant: 'bars', colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00'] },
+    })
+
+    const bars = wrapper.findAll('.sr-spinner__bar')
+    expect(bars).toHaveLength(4)
+    expect(bars[0]?.attributes('style')).toContain('rgb(255, 0, 0)')
+    expect(bars[3]?.attributes('style')).toContain('rgb(255, 255, 0)')
+    wrapper.unmount()
+  })
+
+  it('颜色不足时循环取用', () => {
+    const wrapper = mount(SrSpinner, {
+      props: { variant: 'bars', colors: ['#ff0000', '#00ff00'] },
+    })
+
+    const bars = wrapper.findAll('.sr-spinner__bar')
+    // 4 根条只有 2 个颜色，第 3、4 根循环回第 1、2 个
+    expect(bars[2]?.attributes('style')).toContain('rgb(255, 0, 0)')
+    expect(bars[3]?.attributes('style')).toContain('rgb(0, 255, 0)')
+    wrapper.unmount()
+  })
+
+  it('pulse 用边框色而不是背景色', () => {
+    const wrapper = mount(SrSpinner, {
+      props: { variant: 'pulse', colors: ['#ff0000', '#0000ff'] },
+    })
+
+    const pulses = wrapper.findAll('.sr-spinner__pulse')
+    expect(pulses[0]?.attributes('style')).toContain('border-color: rgb(255, 0, 0)')
+    expect(pulses[1]?.attributes('style')).toContain('border-color: rgb(0, 0, 255)')
+    wrapper.unmount()
+  })
+
+  it('不传 colors 时子元素没有内联样式', () => {
+    const wrapper = mount(SrSpinner, { props: { variant: 'dots' } })
+
+    for (const dot of wrapper.findAll('.sr-spinner__dot')) {
+      expect(dot.attributes('style')).toBeUndefined()
+    }
+
+    wrapper.unmount()
+  })
+
+  it('单元素变体忽略 colors', () => {
+    const wrapper = mount(SrSpinner, {
+      props: { variant: 'ring', colors: ['#ff0000', '#00ff00'] },
+    })
+
+    // 圆环变体不消费 colors，仍是 currentcolor
+    expect(wrapper.find('circle').attributes('stroke')).toBe('currentColor')
+    wrapper.unmount()
+  })
+
   it('无边距时变体类名与基础类名共存', () => {
     const wrapper = mount(SrSpinner, { props: { variant: 'bars' } })
 

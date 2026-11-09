@@ -58,6 +58,15 @@ export const loadingProps = {
     type: String as PropType<'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'>,
     default: 'ring',
   },
+  /**
+   * 多色，按顺序分配给子元素 @default []
+   *
+   * 只在 `dots` / `bars` / `pulse` 下生效，其余变体是单色。
+   */
+  colors: {
+    type: Array as unknown as PropType<string[]>,
+    default: () => [],
+  },
 } as const
 
 export type SrLoadingProps = ExtractPropTypes<typeof loadingProps>

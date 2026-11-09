@@ -2156,6 +2156,13 @@
         "type": "'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'",
         "default": "'ring'",
         "description": "动画样式 @default 'ring' 与 `SrSpinner` 的 `variant` 一致：ring / dots / pulse / bars / orbit / gradient。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "colors",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "多色，按顺序分配给子元素 @default [] 只在 `dots` / `bars` / `pulse` 下生效，其余变体是单色。"
       }
     ],
     "sources": ["loading"],
@@ -3320,7 +3327,14 @@
         "name": "color",
         "type": "string",
         "default": "''",
-        "description": "颜色，默认跟随主色"
+        "description": "单色，默认跟随主色"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "colors",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "多色，按顺序分配给子元素 @default [] 只对由多个元素组成的变体有意义： `dots` 用前 3 个、`bars` 用前 4 个、`pulse` 用前 2 个。 数量不足时循环取用；`ring` / `gradient` / `orbit` 仍是单色，会忽略它。"
       },
       {
         "from": "spinnerProps",

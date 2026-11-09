@@ -78,6 +78,14 @@ function simulate(target, ms = 1200) {
   </div>
 </div>
 
+`colors` 可以给多元素变体逐个上色（`dots` 用 3 个、`bars` 用 4 个、`pulse` 用 2 个）：
+
+```vue
+<SrLoading :loading="saving" variant="bars" :colors="['#ffd8a8', '#ffc078', '#ffa94d', '#ff922b']" text="保存中…" />
+```
+
+数量不足会循环取用；`ring` / `gradient` / `orbit` 是单元素，会忽略它。
+
 选哪种看气质：`ring` 最通用，`dots` 适合小空间，`bars` 适合科技类产品，`pulse` 适合需要「安静等待」的场景。
 
 ## 延迟显示（delay）
@@ -129,6 +137,7 @@ function simulate(target, ms = 1200) {
 | `delay` | `number` | `0` | 延迟显示（毫秒） |
 | `size` | `SrSize` | — | 转圈尺寸 |
 | `variant` | `'ring' \| 'dots' \| 'pulse' \| 'bars' \| 'orbit' \| 'gradient'` | `'ring'` | 动画样式 |
+| `colors` | `string[]` | `[]` | 多色，只在 dots / bars / pulse 下生效 |
 
 ## 插槽
 

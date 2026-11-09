@@ -54,6 +54,47 @@ import { SrSpinner } from '@sunset-reverie/ui'
 | `pulse` | 同心圆扩散 | 沉稳，像呼吸 |
 | `orbit` | 小球绕轨 | 活泼，有故事感 |
 
+### 多色
+
+由多个元素组成的变体可以逐个上色：`dots` 用前 3 个、`bars` 用前 4 个、`pulse` 用前 2 个。
+
+```vue
+<SrSpinner variant="bars" :colors="['#ffd8a8', '#ffc078', '#ffa94d', '#ff922b']" />
+<SrSpinner variant="dots" :colors="['#fca5a5', '#fcd34d', '#86efac']" />
+```
+
+<div class="sr-demo is-block">
+  <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center">
+    <div style="text-align: center">
+      <SrSpinner variant="dots" :size="36" :colors="['#ffd8a8', '#ffc078', '#ffa94d']" />
+      <p style="margin: 8px 0 0; font-size: 11px; color: var(--vp-c-text-3)">同色系（3 点）</p>
+    </div>
+    <div style="text-align: center">
+      <SrSpinner variant="bars" :size="36" :colors="['#ffd8a8', '#ffc078', '#ffa94d', '#ff922b']" />
+      <p style="margin: 8px 0 0; font-size: 11px; color: var(--vp-c-text-3)">同色系（4 条）</p>
+    </div>
+    <div style="text-align: center">
+      <SrSpinner variant="dots" :size="36" :colors="['#fca5a5', '#fcd34d', '#86efac']" />
+      <p style="margin: 8px 0 0; font-size: 11px; color: var(--vp-c-text-3)">四色（3 点）</p>
+    </div>
+    <div style="text-align: center">
+      <SrSpinner variant="bars" :size="36" :colors="['#fca5a5', '#fcd34d', '#86efac', '#93c5fd']" />
+      <p style="margin: 8px 0 0; font-size: 11px; color: var(--vp-c-text-3)">四色（4 条）</p>
+    </div>
+    <div style="text-align: center">
+      <SrSpinner variant="pulse" :size="36" :colors="['#fca5a5', '#93c5fd']" />
+      <p style="margin: 8px 0 0; font-size: 11px; color: var(--vp-c-text-3)">双色（2 圈）</p>
+    </div>
+  </div>
+</div>
+
+两条规则：
+
+- **数量不足时循环取用**。`bars` 只给 2 个颜色，第 3、4 根会回到第 1、2 个，不会出现一半有色一半透明。
+- **`ring` / `gradient` / `orbit` 只有一个元素**，会忽略 `colors`，仍用 `color` 或主色。
+
+配色建议：**同色系由浅到深**最协调（像进度条的层次）；**四色区分**适合表达「多个任务并行」。两种都比纯单色更有信息量，但也更容易喧宾夺主——页面里已经有主色强调时，保持单色更稳妥。
+
 ### 为什么不用图标库
 
 图标库里的 `loader` 图标大多是一个静态 SVG，要点起来还得自己加旋转；而 spinner 需要的是**动画本身**。用 CSS 画出来：
@@ -94,6 +135,7 @@ import { SrSpinner } from '@sunset-reverie/ui'
 | `label` | `string` | `''` | 无障碍名称；不传则视为装饰性 |
 | `strokeWidth` | `number` | `2` | 线条粗细（px），只对 `ring` / `gradient` 生效 |
 | `variant` | `'ring' \| 'dots' \| 'pulse' \| 'bars' \| 'orbit' \| 'gradient'` | `'ring'` | 动画样式 |
+| `colors` | `string[]` | `[]` | 多色，按顺序分配给子元素 |
 
 ## 注意事项
 
@@ -107,3 +149,5 @@ import { SrSpinner } from '@sunset-reverie/ui'
 - **`strokeWidth` 只对 `ring` 与 `gradient` 生效**。三点、竖条这类变体的粗细由尺寸决定，不是线宽。
 - **减少动态效果时降速而不是停止**。完全静止会被误认为卡死。
 - **`dots` / `bars` 在小尺寸下更清楚**。12~16px 时圆环的线段会糊，点阵反而更利落。
+- **`colors` 只对多元素变体生效**。`dots` / `bars` / `pulse` 用得上，其余是单元素、会忽略它。
+- **`colors` 与 `color` 同时传时，`colors` 优先**于被分配到颜色的子元素。

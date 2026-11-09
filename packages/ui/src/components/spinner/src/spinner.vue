@@ -25,9 +25,37 @@ const CIRCUMFERENCE = 2 * Math.PI * 10
 /** 圆环描边宽度：随尺寸缩放，小尺寸下不糊 */
 const stroke = computed(() => props.strokeWidth)
 
-/** 圆环类的动画数量 */
+/** 各变体的元素数量 */
 const DOT_COUNT = 3
 const BAR_COUNT = 4
+const PULSE_COUNT = 2
+
+/**
+ * 取第几个元素的颜色
+ *
+ * 没传 `colors` 时返回 undefined，元素继续用 currentcolor 的纯色。
+ * 传了但数量不够时循环取用，避免出现一半有色一半没色。
+ * @param index 元素下标
+ * @returns 内联样式
+ */
+function colorAt(index: number): Record<string, string> | undefined {
+  if (!props.colors.length) return undefined
+
+  const color = props.colors[index % props.colors.length]
+  return color ? { backgroundColor: color } : undefined
+}
+
+/**
+ * 取第几圈的边框色（扩散圈用边框而不是背景）
+ * @param index 圆周下标
+ * @returns 内联样式
+ */
+function borderColorAt(index: number): Record<string, string> | undefined {
+  if (!props.colors.length) return undefined
+
+  const color = props.colors[index % props.colors.length]
+  return color ? { borderColor: color } : undefined
+}
 </script>
 
 <template>
@@ -63,18 +91,17 @@ const BAR_COUNT = 4
 
     <!-- 三点跳动 -->
     <template v-else-if="variant === 'dots'">
-      <i v-for="n in DOT_COUNT" :key="n" class="sr-spinner__dot" />
+      <i v-for="(n, i) in DOT_COUNT" :key="n" class="sr-spinner__dot" :style="colorAt(i)" />
     </template>
 
     <!-- 竖条起伏 -->
     <template v-else-if="variant === 'bars'">
-      <i v-for="n in BAR_COUNT" :key="n" class="sr-spinner__bar" />
+      <i v-for="(n, i) in BAR_COUNT" :key="n" class="sr-spinner__bar" :style="colorAt(i)" />
     </template>
 
     <!-- 同心圆扩散 -->
     <template v-else-if="variant === 'pulse'">
-      <i class="sr-spinner__pulse" />
-      <i class="sr-spinner__pulse" />
+      <i v-for="(n, i) in PULSE_COUNT" :key="n" class="sr-spinner__pulse" :style="borderColorAt(i)" />
     </template>
 
     <!-- 小球绕轨 -->
