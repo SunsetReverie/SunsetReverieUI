@@ -24,13 +24,17 @@ const content = ref(`## 用法说明
 
 > 快捷键：Cmd/Ctrl + B / I / K，Cmd/Ctrl + S 保存。`)
 
-/** 短代码内容 */
-const shortcodeContent = ref(`正文里插入一个图集入口：{{gallery id=1}}
+/** 短代码内容：一进来就能看到三种渲染结果 */
+const shortcodeContent = ref(`## 一篇博客文章
 
-试试工具栏最右边的「插入图集」按钮，它会插好模板并把光标停在数字上。
+正文里插了三种短代码，右侧就是读者最终看到的样子。
 
-::: note 提示
-块级短代码也能用，围栏内部的内容会交给扩展处理。
+{{article id=a01}}
+
+{{download driver=baidu|name=设计素材包.zip|url=https://pan.baidu.com/s/demo|size=128MB}}
+
+:::note 提示
+参数面板填的值会拼成短代码文本，渲染时再查表还原成卡片。
 :::`)
 
 /** 只读内容 */
@@ -63,36 +67,152 @@ const tipOptions = [
   { label: '关闭', value: 'off' },
 ]
 
-/** 内联短代码扩展 */
-const galleryExt: SrMarkdownExtension = {
-  name: 'gallery',
-  inline: /\{\{gallery\s+id=(\d+)\}\}/g,
-  render: (match) => `<a class="sc-gallery" href="#g-${match[1]}">查看图集 #${match[1]}</a>`,
-  insert: { label: '插入图集', icon: 'lucide:layout-grid', template: '{{gallery id=$1}}' },
+/**
+ * 短代码参数统一用 `key=value|key=value` 格式。
+ * 值里可以有空格，但不能有 `|` 和 `}`（会破坏短代码边界）。
+ */
+function parseShortParams(raw: string): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const pair of (raw ?? '').split('|')) {
+    const i = pair.indexOf('=')
+    if (i < 0) continue
+    out[pair.slice(0, i).trim()] = pair.slice(i + 1).trim()
+  }
+  return out
 }
 
-/** 块级短代码扩展 */
+/** 站内文章库：面板选项和渲染查表用的是同一份数据 */
+const articleDb = [
+  {
+    id: 'a01',
+    title: '从零搭建 Vue 3 组件库',
+    summary: '目录结构、构建产物与按需加载怎么落地。',
+    date: '2026-03-12',
+    tag: '工程',
+  },
+  {
+    id: 'a02',
+    title: 'Markdown 渲染管线设计',
+    summary: '预处理、引擎、后处理三层的职责边界。',
+    date: '2026-04-08',
+    tag: '设计',
+  },
+  {
+    id: 'a03',
+    title: 'Nuxt 4 前台性能清单',
+    summary: '首屏、字体、图片与按需水合的取舍。',
+    date: '2026-05-21',
+    tag: '前端',
+  },
+]
+
+/** 网盘类型：不同盘渲染不同颜色的下载卡片 */
+const driverDb = [
+  { value: 'baidu', label: '百度网盘', color: '#2b7cf3', badge: 'B' },
+  { value: 'aliyun', label: '阿里云盘', color: '#ff6a00', badge: 'A' },
+  { value: 'quark', label: '夸克网盘', color: '#7c5cff', badge: 'Q' },
+  { value: '123', label: '123 云盘', color: '#16a34a', badge: '1' },
+]
+
+/** 站内文章：存的是 id，渲染时查表出卡片 */
+const articleExt: SrMarkdownExtension = {
+  name: 'article',
+  inline: /\{\{article\s+([^}]+)\}\}/g,
+  render: (match, ctx) => {
+    const params = parseShortParams(match[1] ?? '')
+    const article = articleDb.find((entry) => entry.id === params.id)
+
+    if (!article) {
+      return `<span class="sc-missing">找不到文章：${ctx.escape(params.id ?? '')}</span>`
+    }
+
+    return `<a class="sc-article" href="/posts/${ctx.escape(article.id)}">
+      <span class="sc-article__tag">${ctx.escape(article.tag)}</span>
+      <strong class="sc-article__title">${ctx.escape(article.title)}</strong>
+      <span class="sc-article__summary">${ctx.escape(article.summary)}</span>
+      <span class="sc-article__meta">${ctx.escape(article.date)} · 站内文章</span>
+    </a>`
+  },
+  insert: {
+    label: '插入站内文章',
+    icon: 'lucide:file-text',
+    panelTitle: '选择要插入的文章',
+    template: '{{article id={id}}}',
+    fields: [
+      {
+        key: 'id',
+        label: '文章',
+        type: 'select',
+        required: true,
+        default: 'a01',
+        options: articleDb.map((entry) => ({ label: entry.title, value: entry.id })),
+        help: '插进正文的只有文章 ID；改标题或换链接时历史内容不用动',
+      },
+    ],
+  },
+}
+
+/** 网盘下载：按盘类型渲染不同卡片 */
+const downloadExt: SrMarkdownExtension = {
+  name: 'download',
+  inline: /\{\{download\s+([^}]+)\}\}/g,
+  render: (match, ctx) => {
+    const params = parseShortParams(match[1] ?? '')
+    const driver = driverDb.find((entry) => entry.value === params.driver) ?? driverDb[0]
+    const url = ctx.safeUrl(params.url ?? '')
+
+    return `<a class="sc-download" href="${url}" target="_blank" rel="noopener noreferrer">
+      <span class="sc-download__badge" style="background:${driver?.color}">${driver?.badge}</span>
+      <span class="sc-download__body">
+        <strong>${ctx.escape(params.name ?? '未命名文件')}</strong>
+        <span>${ctx.escape(driver?.label ?? '')} · ${ctx.escape(params.size ?? '')}</span>
+      </span>
+      <span class="sc-download__action">下载 →</span>
+    </a>`
+  },
+  insert: {
+    label: '插入网盘下载',
+    icon: 'lucide:download',
+    panelTitle: '添加下载资源',
+    template: '{{download driver={driver}|name={name}|url={url}|size={size}}}',
+    fields: [
+      {
+        key: 'driver',
+        label: '网盘',
+        type: 'select',
+        required: true,
+        default: 'baidu',
+        options: driverDb.map((entry) => ({ label: entry.label, value: entry.value })),
+      },
+      { key: 'name', label: '文件名', required: true, placeholder: '设计素材包.zip' },
+      { key: 'url', label: '下载链接', required: true, placeholder: 'https://...' },
+      { key: 'size', label: '大小', default: '128MB', placeholder: '128MB' },
+    ],
+  },
+}
+
+/** 提示块：块级围栏，演示 textarea 字段 */
 const noteExt: SrMarkdownExtension = {
   name: 'note',
   block: /^:::\s*note\s+(.*?)\n([\s\S]*?)\n:::\s*$/gm,
   render: (match, ctx) =>
     `<div class="sc-note"><strong>${ctx.escape(match[1] ?? '')}</strong><p>${ctx.escape(match[2] ?? '')}</p></div>`,
   insert: {
-    label: '插入提示',
+    label: '插入提示块',
     icon: 'lucide:info',
-    template: '::: note 提示\n$1\n:::',
-    placeholder: '内容',
+    panelTitle: '写一个提示块',
+    template: ':::note {title}\n{content}\n:::',
+    fields: [
+      { key: 'title', label: '标题', default: '小提示', required: true },
+      { key: 'content', label: '内容', type: 'textarea', required: true, placeholder: '写给读者的话' },
+    ],
   },
 }
 
-/** 短代码扩展列表 */
-const extensions = [noteExt, galleryExt]
+/** 短代码扩展列表：工具栏会自动为每个 insert 生成一个按钮 */
+const extensions = [articleExt, downloadExt, noteExt]
 
-/**
- * 完整工具栏：默认 12 个预设 + 分隔符 + 1 个自定义动作。
- * 短代码按钮和表情按钮不需要写在这里——它们由 extensions.insert
- * 和 emojiPackages 自动追加到末尾。
- */
+/** 完整工具栏：默认 12 个预设 + 分隔符 + 1 个自定义动作 */
 const fullToolbar: SrMarkdownToolbarItem[] = [
   'bold',
   'italic',
@@ -130,9 +250,7 @@ const customToolbar: SrMarkdownToolbarItem[] = [
     key: 'date',
     label: '插入日期',
     icon: 'lucide:calendar',
-    action: (api: SrMarkdownEditorApi) => {
-      api.insert(new Date().toLocaleDateString('zh-CN'), false)
-    },
+    action: (api: SrMarkdownEditorApi) => api.insert(new Date().toLocaleDateString('zh-CN'), false),
   },
 ]
 
@@ -186,7 +304,7 @@ async function fakeUpload(file: File): Promise<string> {
       <div class="full-row">
         <SrTag size="sm">12 预设</SrTag>
         <SrTag size="sm">1 自定义</SrTag>
-        <SrTag size="sm">2 短代码（自动）</SrTag>
+        <SrTag size="sm">3 短代码（自动）</SrTag>
         <SrTag size="sm">1 表情（自动）</SrTag>
         <SrTag size="sm">图片上传</SrTag>
         <SrTag v-if="savedAt" size="sm" type="success">已保存 {{ savedAt }}</SrTag>
@@ -290,10 +408,10 @@ async function fakeUpload(file: File): Promise<string> {
               <td>执行自己的 <code>action(api)</code></td>
             </tr>
             <tr>
-              <td>ℹ / ▦</td>
+              <td>📄 / ⬇ / ℹ</td>
               <td>自动追加</td>
               <td><code>extension.insert</code></td>
-              <td>插入短代码模板并选中占位，用扩展自己的图标与文案</td>
+              <td>弹出参数面板，设好参数后插入短代码模板</td>
             </tr>
             <tr>
               <td>🙂</td>
@@ -355,12 +473,54 @@ async function fakeUpload(file: File): Promise<string> {
     </section>
 
     <section>
-      <h3>短代码扩展</h3>
-      <SrMarkdownEditor v-model="shortcodeContent" :extensions="extensions" :height="320" />
-      <p class="hint">
-        扩展里配 <code>insert</code> 后，工具栏会自动多出「插入图集」「插入提示」两个按钮——
-        不用另外配工具栏，也不会记错语法
+      <h3>短代码：博客后台场景</h3>
+      <p class="lead">
+        点工具栏末尾的三个按钮，会<strong>先弹出参数面板</strong>，设好参数再插入正文；
+        右侧预览立刻渲染成卡片。正文里存的始终是短代码文本，不是卡片本身
       </p>
+
+      <SrMarkdownEditor v-model="shortcodeContent" :extensions="extensions" theme="vivid" :height="400" />
+
+      <div class="flow" style="margin-top: 14px">
+        <div class="flow__col">
+          <p class="flow__step"><span class="flow__num">1</span>站内文章卡片</p>
+          <p class="flow__note">
+            <code>select</code> 选文章 → 插入 <code v-pre>{{article id=a01}}</code
+            >。 渲染时按 ID 查文章库，输出带标签、摘要、日期的卡片。 改标题不用动历史文章
+          </p>
+        </div>
+        <div class="flow__col">
+          <p class="flow__step"><span class="flow__num">2</span>网盘下载卡片</p>
+          <p class="flow__note">
+            面板里选网盘、填文件名/链接/大小。 渲染时按
+            <code>driver</code> 换配色与角标，百度、阿里、夸克、123 各一张脸
+          </p>
+        </div>
+        <div class="flow__col">
+          <p class="flow__step"><span class="flow__num">3</span>提示块（块级）</p>
+          <p class="flow__note">
+            用 <code>textarea</code> 填内容，插入 <code>:::note</code> 围栏。 演示块级短代码也能由面板生成
+          </p>
+        </div>
+      </div>
+
+      <p class="hint">
+        <code>render</code> 返回的 HTML 会直接插入 DOM，所以用户填的值一律经
+        <code>ctx.escape()</code> 处理，链接经 <code>ctx.safeUrl()</code> 校验
+      </p>
+
+      <pre v-pre class="code-block">
+const extensions = [{
+  name: 'article',
+  inline: /\{\{article\s+([^}]+)\}\}/g,
+  render: (match, ctx) => `&lt;article&gt;${ctx.escape(title)}&lt;/article&gt;`,
+  insert: {
+    label: '插入站内文章',
+    icon: 'lucide:file-text',
+    template: '{{article id={id}}}',
+    fields: [{ key: 'id', label: '文章', type: 'select', options, required: true }],
+  },
+}]</pre>
     </section>
 
     <section>
@@ -522,6 +682,155 @@ h3 {
   background: var(--sr-color-primary-alpha-12);
   color: var(--sr-color-primary-text);
   text-decoration: none;
+}
+
+.flow {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.flow__col {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.flow__step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  color: var(--sr-color-text);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.flow__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sr-color-primary-alpha-25);
+  color: var(--sr-color-primary-text);
+  font-size: 11px;
+}
+
+.flow__note {
+  margin: 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11.5px;
+  line-height: 1.65;
+}
+
+.flow__note code {
+  font-family: var(--sr-font-family-mono);
+  font-size: 11px;
+}
+
+:deep(.sc-article) {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-left: 3px solid var(--sr-color-primary);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text);
+  text-decoration: none;
+  transition: box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+:deep(.sc-article:hover) {
+  box-shadow: var(--sr-shadow-md);
+}
+
+:deep(.sc-article__tag) {
+  align-self: flex-start;
+  padding: 1px 7px;
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-primary-alpha-12);
+  color: var(--sr-color-primary-text);
+  font-size: 10.5px;
+}
+
+:deep(.sc-article__title) {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+:deep(.sc-article__summary) {
+  color: var(--sr-color-text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+:deep(.sc-article__meta) {
+  color: var(--sr-color-text-tertiary);
+  font-size: 11px;
+}
+
+:deep(.sc-download) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-text);
+  text-decoration: none;
+  transition: box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+}
+
+:deep(.sc-download:hover) {
+  box-shadow: var(--sr-shadow-md);
+}
+
+:deep(.sc-download__badge) {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--sr-radius-base);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+:deep(.sc-download__body) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 12.5px;
+}
+
+:deep(.sc-download__body) span {
+  color: var(--sr-color-text-tertiary);
+  font-size: 11.5px;
+}
+
+:deep(.sc-download__action) {
+  flex: 0 0 auto;
+  color: var(--sr-color-primary);
+  font-size: 12px;
+}
+
+:deep(.sc-missing) {
+  padding: 2px 6px;
+  border-radius: var(--sr-radius-sm);
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-danger);
+  font-size: 12px;
 }
 
 :deep(.sc-note) {

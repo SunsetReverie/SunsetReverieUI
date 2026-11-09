@@ -1,0 +1,186 @@
+/**
+ * 短代码参数面板
+ *
+ * 被 Teleport 到 body，所以选择器不能写在 `.sr-mde` 嵌套里——
+ * 那样会带上祖先条件，浮层上匹配不到。
+ *
+ * 遮罩 + 居中卡片，比贴着工具栏的 popover 能容纳更多字段，
+ * 也避免长表单挤在窄工具栏里。
+ */
+
+.sr-mde-insert-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--sr-z-index-modal, 2000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--sr-color-bg-mask, rgb(0 0 0 / 38%));
+}
+
+.sr-mde-insert {
+  --sr-mde-insert-border: 1px solid var(--sr-color-border-subtle);
+
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  max-height: min(80vh, 640px);
+  overflow: hidden;
+  border: var(--sr-mde-insert-border);
+  border-radius: var(--sr-radius-lg, 12px);
+  background: var(--sr-color-bg-popover);
+  box-shadow: var(--sr-shadow-xl);
+
+  &__head {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__title {
+    color: var(--sr-color-text);
+    font-size: 13.5px;
+    font-weight: var(--sr-font-weight-semibold);
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__label {
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+    font-weight: var(--sr-font-weight-medium);
+  }
+
+  &__required {
+    color: var(--sr-color-danger);
+    font-style: normal;
+  }
+
+  &__control {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text);
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__control--area {
+    min-height: 68px;
+    resize: vertical;
+  }
+
+  &__help {
+    color: var(--sr-color-text-tertiary);
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+
+  &__foot {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--sr-color-border-subtle);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__btn {
+    padding: 6px 14px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-base);
+    background: var(--sr-color-bg-container);
+    color: var(--sr-color-text-secondary);
+    font-family: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+  }
+
+  &__btn--primary {
+    border-color: transparent;
+    background: var(--sr-color-primary);
+    color: var(--sr-color-text-on-primary, #fff);
+    font-weight: var(--sr-font-weight-medium);
+  }
+
+  // ---------- 2 级：焦点与禁用 ----------
+  &__control:focus-visible {
+    border-color: var(--sr-color-primary);
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+  }
+
+  &__btn:focus-visible,
+  &__close:focus-visible {
+    outline: 2px solid var(--sr-color-primary-alpha-25);
+    outline-offset: 2px;
+  }
+
+  &__btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // ---------- 3 级：悬停（放最后）----------
+  &__close:hover {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__btn:hover:not(:disabled) {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__btn--primary:hover:not(:disabled) {
+    background: var(--sr-color-primary-hover, var(--sr-color-primary));
+    color: var(--sr-color-text-on-primary, #fff);
+  }
+}
+
+/** 玻璃模式：和表情面板一致，去边框、用阴影塑形 */
+[data-sr-style='glass'] .sr-mde-insert {
+  --sr-mde-insert-border: 0 solid transparent;
+
+  box-shadow: var(--sr-shadow-xl), var(--sr-glass-highlight);
+}

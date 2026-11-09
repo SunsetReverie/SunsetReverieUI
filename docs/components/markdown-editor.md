@@ -159,7 +159,7 @@ insert: {
 
 后两类是自动追加的，**不要写进 `toolbar` 数组**。传 `:toolbar="false"` 则整条工具栏关闭，包括自动追加的项；传 `[]` 则只剩自动追加的项。
 
-### 完整配置（16 个按钮）
+### 完整配置（17 个按钮）
 
 ```vue
 <SrMarkdownEditor
@@ -178,7 +178,7 @@ insert: {
 />
 ```
 
-这里 `extensions` 里有 2 个扩展配了 `insert`，所以最终是 12 预设 + 1 自定义 + 2 短代码 + 1 表情 = **16 个按钮**。演示页第一处「完整工具栏」就是这个配置，旁边有逐个按钮的对照表。
+演示页的 `extensions` 里有 3 个扩展配了 `insert`，所以最终是 12 预设 + 1 自定义 + 3 短代码 + 1 表情 = **17 个按钮**。演示页第一处「完整工具栏」就是这个配置，旁边有逐个按钮的对照表。
 
 ### 自定义
 
@@ -257,29 +257,91 @@ const toolbar = [
 
 **关掉 tips 后退回原生 `title`**，按钮不会完全失去说明。开启时不会同时挂 `title`，避免出现原生提示和气泡两层。
 
-## 短代码按钮
+## 短代码按钮：参数面板
 
-扩展里配 `insert` 后，工具栏会**自动多出一个按钮**：
+扩展里配 `insert.fields` 后，点击工具栏按钮会**先弹出参数面板**，设好参数再插入正文。这是短代码在后台写作场景里的主要用法——写作者不需要记语法，也不用手动拼参数。
+
+演示页「短代码：博客后台场景」给了三个完整例子：
+
+| 短代码 | 面板字段 | 渲染结果 |
+| --- | --- | --- |
+| `article` 短代码 | 文章（`select`，从文章库取选项） | 站内文章卡片（标签 / 摘要 / 日期） |
+| `download` 短代码 | 网盘（`select`）、文件名、链接、大小 | 按网盘类型换配色与角标的下载卡片 |
+| `:::note 标题…:::` | 标题（`text`）、内容（`textarea`） | 块级提示块 |
+
+### 声明式字段
+
+字段用 `SrMarkdownInsertField` 描述（可从 `@sunset-reverie/ui` 导入类型），编辑器据此自动生成表单，不用为每个短代码写一套 UI：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `key` | `string` | 参数名，对应模板里的 `{key}` |
+| `label` | `string` | 表单标签 |
+| `type` | `'text' \| 'textarea' \| 'select' \| 'number'` | 控件类型，默认 `text` |
+| `options` | `{ label, value }[]` | `select` 的选项 |
+| `default` | `string` | 默认值 |
+| `placeholder` | `string` | 占位提示 |
+| `required` | `boolean` | 必填；未填时「插入」按钮禁用 |
+| `help` | `string` | 字段下方的说明文字 |
+
+`panelTitle` 改面板标题（默认取 `label`），`panelWidth` 改宽度（默认 360px）。
+
+### 模板占位符
 
 ```ts
-const extensions = [
-  {
-    name: 'gallery',
-    inline: /\{\{gallery\s+id=(\d+)\}\}/g,
-    render: (match) => `<a href="#g-${match[1]}">图集 #${match[1]}</a>`,
-    insert: {
-      label: '插入图集',
-      icon: 'lucide:images',
-      template: '{{gallery id=$1}}',
-      placeholder: '1',
+insert: {
+  label: '插入站内文章',
+  icon: 'lucide:file-text',
+  panelTitle: '选择要插入的文章',
+  template: '{{article id={id}}}',
+  fields: [
+    {
+      key: 'id', label: '文章', type: 'select', required: true, default: 'a01',
+      options: articles.map((a) => ({ label: a.title, value: a.id })),
+      help: '插进正文的只有文章 ID；改标题时历史内容不用动',
     },
-  },
-]
+  ],
+}
 ```
 
-点击后插入模板，并把 `$1` 换成占位文字**选中**——用户直接输入就能覆盖，不用手动删。
+`{key}` 会被替换成面板里对应字段的值。**值里的花括号和换行会被剥离**，因为它们会破坏短代码语法边界（内联短代码的正则以 `}` 收尾）；空格保留，文件名之类的值仍然可读。
 
-好处是使用方不需要记短代码语法，也不用另外配工具栏项。
+配套的渲染端按同一份数据查表：
+
+```ts
+{
+  name: 'article',
+  inline: /\{\{article\s+([^}]+)\}\}/g,
+  render: (match, ctx) => {
+    const id = parseParams(match[1]).id
+    const article = articles.find((a) => a.id === id)
+    return `<a class="card" href="/posts/${ctx.escape(article.id)}">${ctx.escape(article.title)}</a>`
+  },
+  insert: { /* 见上 */ },
+}
+```
+
+> `render` 返回的 HTML 直接插入 DOM，**用户填的值一律要经 `ctx.escape()`**，链接用 `ctx.safeUrl()` 校验。这是短代码最常见的 XSS 入口。
+
+### 面板交互
+
+| 行为 | 说明 |
+| --- | --- |
+| 打开时 | 记住当前光标位置，焦点移到面板后不会插错地方 |
+| 确认 | 恢复选区 → 拼模板 → 走统一的插入逻辑（块级短代码前后补空行） |
+| 取消 / 遮罩 / `Esc` | 关闭且不改动正文 |
+| 必填校验 | 有空值就禁用「插入」，不需要弹错误提示 |
+| 关闭后 | 预览区立即渲染，因为内容变化会走 `SrMarkdown` 的渲染管线 |
+
+### 不配 fields：直接插模板
+
+```ts
+insert: { label: '插入图集', icon: 'lucide:images', template: '{{gallery id=$1}}' }
+```
+
+没有 `fields` 时维持旧行为：直接插入模板，把 `$1` 换成占位文字并**选中**，用户接着输入就能覆盖。适合只有一个参数、不需要面板的轻量短代码。
+
+两种形式可以混用：常用短代码走面板，简单的走直接插入。
 
 ## 表情
 

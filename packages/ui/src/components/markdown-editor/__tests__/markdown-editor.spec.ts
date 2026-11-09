@@ -15,7 +15,7 @@ import type { SrMarkdownToolbarAction } from '../src/markdown-editor'
 function mountEditor(props: Record<string, unknown> = {}) {
   return mount(SrMarkdownEditor, {
     props: { modelValue: '', ...props },
-    global: { stubs: { SrIcon: true } },
+    global: { stubs: { SrIcon: true, teleport: true } },
   })
 }
 
@@ -418,6 +418,115 @@ describe('SrMarkdownEditor', () => {
   it('theme 透传给预览区', () => {
     const wrapper = mountEditor({ modelValue: '# 标题', theme: 'editorial' })
     expect(wrapper.find('.sr-md').classes()).toContain('sr-md--theme-editorial')
+    wrapper.unmount()
+  })
+
+  it('带 fields 的短代码点击后弹出参数面板', async () => {
+    const ext = {
+      name: 'article',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: {
+        label: '插入站内文章',
+        panelTitle: '选择文章',
+        template: '{{article id={id}}}',
+        fields: [
+          {
+            key: 'id',
+            label: '文章',
+            type: 'select' as const,
+            required: true,
+            default: 'a01',
+            options: [
+              { label: '第一篇', value: 'a01' },
+              { label: '第二篇', value: 'a02' },
+            ],
+          },
+        ],
+      },
+    }
+    const wrapper = mountEditor({ extensions: [ext] })
+
+    await wrapper.find('.sr-mde__tool[aria-label="插入站内文章"]').trigger('click')
+    const panel = wrapper.find('.sr-mde-insert')
+    expect(panel.exists()).toBe(true)
+    expect(panel.find('.sr-mde-insert__title').text()).toBe('选择文章')
+    expect(panel.findAll('.sr-mde-insert__field')).toHaveLength(1)
+    expect(panel.find('select').exists()).toBe(true)
+    expect((panel.find('select').element as HTMLSelectElement).value).toBe('a01')
+    wrapper.unmount()
+  })
+
+  it('确认后按模板插入，值里的花括号和换行被清理', async () => {
+    const ext = {
+      name: 'note',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: {
+        label: '插入提示',
+        template: ':::note {title}\n{content}\n:::',
+        fields: [
+          { key: 'title', label: '标题', default: '小提示', required: true },
+          { key: 'content', label: '内容', type: 'textarea' as const, required: true },
+        ],
+      },
+    }
+    const wrapper = mountEditor({ modelValue: '正文', extensions: [ext] })
+    await wrapper.find('.sr-mde__tool[aria-label="插入提示"]').trigger('click')
+
+    const fields = wrapper.findAll('.sr-mde-insert__control')
+    await fields[1]?.setValue('第一行\n第二行{坏字符}')
+    await wrapper.find('.sr-mde-insert__btn--primary').trigger('click')
+    await nextTick()
+
+    const inserted = wrapper.emitted('update:modelValue')?.[0]?.[0] as string
+    expect(inserted).toContain(':::note 小提示')
+    expect(inserted).toContain('第一行 第二行坏字符')
+    expect(inserted).not.toContain('{坏字符}')
+    expect(wrapper.find('.sr-mde-insert').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('必填项没填时插入按钮禁用', async () => {
+    const ext = {
+      name: 'x',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: {
+        label: '插入',
+        template: '{{x v={v}}}',
+        fields: [{ key: 'v', label: '值', required: true }],
+      },
+    }
+    const wrapper = mountEditor({ extensions: [ext] })
+    await wrapper.find('.sr-mde__tool[aria-label="插入"]').trigger('click')
+
+    expect(wrapper.find('.sr-mde-insert__btn--primary').attributes('disabled')).toBeDefined()
+
+    await wrapper.find('.sr-mde-insert__control').setValue('abc')
+    await nextTick()
+    expect(wrapper.find('.sr-mde-insert__btn--primary').attributes('disabled')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('取消与 Esc 都不插入内容', async () => {
+    const ext = {
+      name: 'x',
+      inline: /x/g,
+      render: () => '<div></div>',
+      insert: { label: '插入', template: '{{x v={v}}}', fields: [{ key: 'v', label: '值' }] },
+    }
+    const wrapper = mountEditor({ modelValue: '原文', extensions: [ext] })
+    await wrapper.find('.sr-mde__tool[aria-label="插入"]').trigger('click')
+    await wrapper.findAll('.sr-mde-insert__btn')[0]?.trigger('click')
+
+    expect(wrapper.find('.sr-mde-insert').exists()).toBe(false)
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+
+    await wrapper.find('.sr-mde__tool[aria-label="插入"]').trigger('click')
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await nextTick()
+    expect(wrapper.find('.sr-mde-insert').exists()).toBe(false)
     wrapper.unmount()
   })
 

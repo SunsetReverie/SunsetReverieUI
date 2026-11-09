@@ -212,6 +212,13 @@ const extensions = [
 
 占位符用 Unicode 私有区字符 `U+E000` 包裹，不属于任何语言的正文，不会被任何规则匹配。
 
+### 编辑器里的插入面板
+
+`insert` 除了描述「插什么」，还可以声明 `fields` 让 `SrMarkdownEditor` 自动生成参数面板：点工具 → 填参数 → 插入短代码文本。字段类型支持 `text` / `textarea` / `select` / `number`，模板用 `{key}` 占位。
+
+这一步发生在**渲染之前**，所以本组件完全不参与——它只负责把最终文本渲染成 HTML。完整示例和字段说明见 [SrMarkdownEditor · 短代码按钮](/components/markdown-editor#短代码按钮参数面板)。
+
+
 ## 渲染上下文
 
 `render` 的第二个参数提供三个工具：

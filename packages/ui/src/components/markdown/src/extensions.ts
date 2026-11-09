@@ -36,6 +36,30 @@ export interface SrMarkdownExtensionContext {
   name: string
 }
 
+/**
+ * 插入面板的一个字段
+ *
+ * @remarks 声明式描述，编辑器据此自动生成表单，不需要为每个短代码写 UI。
+ */
+export interface SrMarkdownInsertField {
+  /** 参数名，对应模板里的 `{key}` */
+  key: string
+  /** 表单标签 */
+  label: string
+  /** 控件类型 @default 'text' */
+  type?: 'text' | 'textarea' | 'select' | 'number'
+  /** `type='select'` 时的选项 */
+  options?: { label: string; value: string }[]
+  /** 默认值 */
+  default?: string
+  /** 占位提示 */
+  placeholder?: string
+  /** 是否必填，未填时「插入」按钮禁用 */
+  required?: boolean
+  /** 字段下方的说明文字 */
+  help?: string
+}
+
 /** 短代码扩展 */
 export interface SrMarkdownExtension {
   /** 唯一名称，重复时后者覆盖前者 */
@@ -84,8 +108,19 @@ export interface SrMarkdownExtension {
     icon?: string
     /** 插入的模板，如 `'{{gallery id=$1}}'` */
     template: string
-    /** `$1` 的占位文字，默认 `'1'` */
+    /** `$1` 的占位文字，默认 `'1'`（仅在无 `fields` 时生效） */
     placeholder?: string
+    /**
+     * 参数字段
+     *
+     * 提供后点击按钮会**先弹出参数面板**，确认后按 `template` 插入；
+     * 不提供则维持旧行为——直接插模板并把 `$1` 的占位文字选中。
+     */
+    fields?: SrMarkdownInsertField[]
+    /** 面板标题，默认取 `label` */
+    panelTitle?: string
+    /** 面板宽度（px） @default 360 */
+    panelWidth?: number
   }
 }
 
