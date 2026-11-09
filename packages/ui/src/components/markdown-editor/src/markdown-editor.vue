@@ -1150,7 +1150,7 @@ defineExpose({
                 <select
                   v-if="field.type === 'select'"
                   :value="insertValues[field.key]"
-                  class="sr-mde-insert__control"
+                  class="sr-mde-insert__control sr-mde-insert__select"
                   :aria-label="field.label"
                   @input="setInsertValue(field.key, $event)"
                 >
