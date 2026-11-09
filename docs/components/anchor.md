@@ -131,13 +131,15 @@ const el = document.querySelector('.layout__body')
 
 | `activeVariant` | 观感 | 适合 |
 | --- | --- | --- |
-| `line`（默认） | 左侧竖线 + 文字加深 | 通用。目录只是「指路」，不该和正文抢注意力 |
+| `line`（默认） | 左侧竖线 + 文字同色 | 通用。目录只是「指路」，不该和正文抢注意力 |
 | `block` | 底色块 + 主色文字 | 需要强调当前项时 |
 | `pill` | 圆角胶囊 | 圆润风格、偏移动端 |
 | `dot` | 左侧小圆点 | 克制，有指示感 |
 | `bold` | 只变粗变色，**连竖线也不要** | 最轻，几乎无干扰 |
 
-**默认是 `line`**。锚点导航在页面里通常处于次要地位，大块底色会不断吸走视线——只有竖线和文字深浅的变化就够了。
+**默认是 `line`**。锚点导航在页面里通常处于次要地位，大块底色会不断吸走视线——只有竖线和文字的变化就够了。
+
+`line` 下**当前项的文字和竖线同色**（都取 `--sr-anchor-marker`），改一个变量两者一起变，不会出现「线是主色、字是黑色」的割裂感。祖先项只加深到正文色，不跟主色——整条链都染成主色会分不清哪一项才是当前。
 
 三个行为细节：
 
@@ -163,7 +165,7 @@ const el = document.querySelector('.layout__body')
 
 | 变量 | 说明 | 默认 |
 | --- | --- | --- |
-| `--sr-anchor-active-color` | 激活项文字色 | 主色深版 |
+| `--sr-anchor-active-color` | 激活项文字色 | 跟随 `--sr-anchor-marker` |
 | `--sr-anchor-active-bg` | 激活项底色 | 主色 12% |
 | `--sr-anchor-active-weight` | 激活项字重 | `medium` |
 | `--sr-anchor-active-radius` | 激活项圆角 | `--sr-radius-sm` |

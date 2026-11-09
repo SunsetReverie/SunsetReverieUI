@@ -16,8 +16,10 @@
 .sr-anchor {
   --sr-anchor-marker: var(--sr-color-primary);
 
-  // 激活项的三要素：文字色、底色、字重
-  --sr-anchor-active-color: var(--sr-color-text);
+  // 激活项的三要素：文字色、底色、字重。
+  // 文字默认和竖线同色（都取 --sr-anchor-marker），
+  // 这样改一个变量两者一起变，不会出现「线是主色、字是黑色」的割裂
+  --sr-anchor-active-color: var(--sr-anchor-marker);
   --sr-anchor-active-bg: transparent;
   --sr-anchor-active-weight: var(--sr-font-weight-semibold);
   --sr-anchor-active-radius: var(--sr-radius-sm);
@@ -172,7 +174,7 @@
 
   // 只变粗变色，连竖线也不要
   &--active-bold {
-    --sr-anchor-active-color: var(--sr-color-text);
+    --sr-anchor-active-color: var(--sr-anchor-marker);
   }
 
   &--active-bold &__marker {
@@ -264,15 +266,18 @@
       0 8px 24px -12px rgb(0 0 0 / 18%);
   }
 
+  // 祖先项：只加深到正文色，不跟主色——
+  // 整条链都染成主色会很扎眼，也分不清哪一项才是「当前」
+  &__item.is-active > &__row > &__link {
+    color: var(--sr-color-text);
+  }
+
   // ---------- 状态：当前项 ----------
+  // 放在 is-active 之后：当前项同时带 is-active，两条特异性相同，
+  // 排在后面才不会被祖先规则覆盖
   &__item.is-current > &__row > &__link {
     color: var(--sr-anchor-active-color);
     font-weight: var(--sr-anchor-active-weight);
-  }
-
-  // 祖先项：只变色，不加粗、不铺底色
-  &__item.is-active > &__row > &__link {
-    color: var(--sr-anchor-active-color);
   }
 
   // ---------- 变体激活态（4 个 class）----------
