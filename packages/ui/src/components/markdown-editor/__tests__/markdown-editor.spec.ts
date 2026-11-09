@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 import SrMarkdownEditor from '../index'
@@ -34,6 +34,10 @@ async function setSelection(
   el.setSelectionRange(start, end)
   await nextTick()
 }
+
+afterEach(() => {
+  document.documentElement.removeAttribute('data-sr-theme')
+})
 
 describe('SrMarkdownEditor', () => {
   it('渲染编辑区与预览区', () => {
@@ -198,10 +202,11 @@ describe('SrMarkdownEditor', () => {
     wrapper.unmount()
   })
 
-  it('工具栏按钮默认带浅色 tips', () => {
+  it('工具栏按钮默认跟随主题，浅色主题用浅色 tips', () => {
     const wrapper = mountEditor()
     const tips = wrapper.findAllComponents({ name: 'SrTooltip' })
 
+    expect(wrapper.props('tooltipVariant')).toBe('auto')
     expect(tips.length).toBeGreaterThan(5)
     expect(tips[0]?.props('content')).toBe('粗体')
     expect(tips[0]?.props('variant')).toBe('light')
@@ -210,6 +215,46 @@ describe('SrMarkdownEditor', () => {
 
     // 有气泡时不再挂原生 title，避免双层提示
     expect(wrapper.findAll('.sr-mde__tool')[0]?.attributes('title')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('深色主题下 tips 自动切成深色', async () => {
+    document.documentElement.setAttribute('data-sr-theme', 'dark')
+    const wrapper = mountEditor()
+
+    expect(wrapper.findComponent({ name: 'SrTooltip' }).props('variant')).toBe('dark')
+    wrapper.unmount()
+  })
+
+  it('运行中切换主题，tips 实时跟着变', async () => {
+    document.documentElement.setAttribute('data-sr-theme', 'light')
+    const wrapper = mountEditor()
+
+    expect(wrapper.findComponent({ name: 'SrTooltip' }).props('variant')).toBe('light')
+
+    document.documentElement.setAttribute('data-sr-theme', 'dark')
+    // MutationObserver 回调是微任务
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await nextTick()
+    expect(wrapper.findComponent({ name: 'SrTooltip' }).props('variant')).toBe('dark')
+
+    document.documentElement.setAttribute('data-sr-theme', 'light')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await nextTick()
+    expect(wrapper.findComponent({ name: 'SrTooltip' }).props('variant')).toBe('light')
+    wrapper.unmount()
+  })
+
+  it('显式指定配色时不受主题切换影响', async () => {
+    document.documentElement.setAttribute('data-sr-theme', 'dark')
+    const wrapper = mountEditor({ tooltipVariant: 'light' })
+
+    expect(wrapper.findComponent({ name: 'SrTooltip' }).props('variant')).toBe('light')
+
+    document.documentElement.setAttribute('data-sr-theme', 'light')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await nextTick()
+    expect(wrapper.findComponent({ name: 'SrTooltip' }).props('variant')).toBe('light')
     wrapper.unmount()
   })
 
@@ -223,10 +268,10 @@ describe('SrMarkdownEditor', () => {
   })
 
   it('tips 配色与方位可配置', () => {
-    const wrapper = mountEditor({ tooltipVariant: 'dark', tooltipPlacement: 'bottom' })
+    const wrapper = mountEditor({ tooltipVariant: 'light', tooltipPlacement: 'bottom' })
     const tip = wrapper.findComponent({ name: 'SrTooltip' })
 
-    expect(tip.props('variant')).toBe('dark')
+    expect(tip.props('variant')).toBe('light')
     expect(tip.props('placement')).toBe('bottom')
     wrapper.unmount()
   })

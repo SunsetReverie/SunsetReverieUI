@@ -43,10 +43,11 @@ const savedAt = ref('')
 const withEmoji = ref(true)
 
 /** 工具栏提示模式 */
-const tipMode = ref<'light' | 'dark' | 'off'>('light')
+const tipMode = ref<'auto' | 'light' | 'dark' | 'off'>('auto')
 
 /** 提示选项 */
 const tipOptions = [
+  { label: '跟随主题', value: 'auto' },
   { label: '浅色', value: 'light' },
   { label: '深色', value: 'dark' },
   { label: '关闭', value: 'off' },

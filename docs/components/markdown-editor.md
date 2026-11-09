@@ -112,11 +112,12 @@ const toolbar = [
 
 ## 工具栏提示
 
-每个按钮鼠标移入时会弹出功能说明，**默认浅色气泡**：
+每个按钮鼠标移入时会弹出功能说明，**默认跟随明暗主题**：
 
 ```vue
-<SrMarkdownEditor v-model="content" />                              <!-- light / top -->
-<SrMarkdownEditor v-model="content" tooltip-variant="dark" />      <!-- 深色 -->
+<SrMarkdownEditor v-model="content" />                              <!-- 跟随主题 / top -->
+<SrMarkdownEditor v-model="content" tooltip-variant="light" />     <!-- 锁定浅色 -->
+<SrMarkdownEditor v-model="content" tooltip-variant="dark" />      <!-- 锁定深色 -->
 <SrMarkdownEditor v-model="content" tooltip-placement="bottom" />  <!-- 改方位 -->
 <SrMarkdownEditor v-model="content" :tooltips="false" />          <!-- 关掉 -->
 ```
@@ -124,8 +125,12 @@ const toolbar = [
 | prop | 默认 | 说明 |
 | --- | --- | --- |
 | `tooltips` | `true` | 是否显示气泡 |
-| `tooltipVariant` | `'light'` | `'light'` 白玻璃 / `'dark'` 黑玻璃 |
+| `tooltipVariant` | `'auto'` | `'auto'` 跟随主题 / `'light'` 白玻璃 / `'dark'` 黑玻璃 |
 | `tooltipPlacement` | `'top'` | 期望方位，空间不足时自动翻转 |
+
+`auto` 下浅色主题用白玻璃、深色主题用黑玻璃，**主题切换时实时跟随**。组件观察根元素的 `data-sr-theme` 属性，因此无论是 `useSrTheme()`、首帧主题脚本还是手动修改属性都能响应——`SrTooltip` 自己的两套配色是独立于明暗主题的，所以需要这一层来联动。
+
+显式传 `light` / `dark` 则不受主题切换影响，适合需要固定对比的场景。
 
 提示复用库内的 `SrTooltip`，因此：
 
@@ -233,7 +238,7 @@ async function uploadFile(file: File) {
 | `mode` | `'edit' \| 'split' \| 'preview'` | `'split'` | 视图模式 |
 | `toolbar` | `SrMarkdownToolbarItem[] \| false` | 默认 15 项 | 工具栏配置 |
 | `tooltips` | `boolean` | `true` | 工具栏功能提示 |
-| `tooltipVariant` | `'light' \| 'dark'` | `'light'` | 提示配色 |
+| `tooltipVariant` | `'auto' \| 'light' \| 'dark'` | `'auto'` | 提示配色，auto 跟随明暗主题 |
 | `tooltipPlacement` | `SrPlacement` | `'top'` | 提示方位 |
 | `placeholder` | `string` | `'开始写作…'` | 占位提示 |
 | `height` | `number \| string` | `360` | 主体高度 |

@@ -140,13 +140,17 @@ export const markdownEditorProps = {
     default: true,
   },
   /**
-   * 提示配色 @default 'light'
+   * 提示配色 @default 'auto'
    *
-   * 工具栏通常在浅色条上，浅色气泡比黑玻璃更协调。
+   * - `auto`：跟随明暗主题——浅色主题用白玻璃，深色主题用黑玻璃
+   * - `light` / `dark`：显式指定，不受主题切换影响
+   *
+   * 用 `auto` 时组件会观察 `data-sr-theme` 属性变化，
+   * 无论是 `useSrTheme`、首帧主题脚本还是手动改属性都能跟上。
    */
   tooltipVariant: {
-    type: String as PropType<'light' | 'dark'>,
-    default: 'light',
+    type: String as PropType<'auto' | 'light' | 'dark'>,
+    default: 'auto',
   },
   /** 提示方位 @default 'top' */
   tooltipPlacement: {

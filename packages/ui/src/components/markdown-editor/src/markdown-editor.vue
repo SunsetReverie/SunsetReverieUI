@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import { srComputeFloating, srGetRect } from '../../../utils/floating'
 import SrEmojiPicker from '../../emoji-picker/src/emoji-picker.vue'
@@ -67,6 +67,48 @@ const modeOptions = [
   { label: '分栏', value: 'split' },
   { label: '预览', value: 'preview' },
 ]
+
+/** 当前生效的明暗主题 */
+const resolvedTheme = ref<'light' | 'dark'>('light')
+
+/** 主题属性观察器 */
+let themeObserver: MutationObserver | null = null
+
+/**
+ * 读取根元素上的明暗标记
+ *
+ * @remarks 直接读 DOM 而不是 `useSrTheme().resolved`：演示站与 Nuxt 前台
+ * 可能用首帧主题脚本单独写 `data-sr-theme`，那份状态不经过 composable，
+ * 两边会不同步。以 DOM 属性为准最可靠。
+ */
+function readResolvedTheme(): void {
+  if (typeof document === 'undefined') return
+  resolvedTheme.value = document.documentElement.getAttribute('data-sr-theme') === 'dark' ? 'dark' : 'light'
+}
+
+/**
+ * 实际交给 SrTooltip 的配色
+ *
+ * auto 跟随主题：浅色主题白玻璃、深色主题黑玻璃；
+ * 显式指定 light / dark 时不受主题切换影响。
+ */
+const resolvedTooltipVariant = computed<'light' | 'dark'>(() => {
+  if (props.tooltipVariant !== 'auto') return props.tooltipVariant
+  return resolvedTheme.value === 'dark' ? 'dark' : 'light'
+})
+
+// setup 阶段先读一次：等 onMounted 再读会让首次渲染拿到错误的配色，
+// 主题切换后的组件挂载尤其明显
+readResolvedTheme()
+
+onMounted(() => {
+  if (typeof MutationObserver === 'undefined') return
+  themeObserver = new MutationObserver(readResolvedTheme)
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-sr-theme'],
+  })
+})
 
 /** 编辑区高度 */
 const bodyHeight = computed(() => (typeof props.height === 'number' ? `${props.height}px` : props.height))
@@ -610,7 +652,11 @@ function toggleGlobalListeners(on: boolean): void {
 
 watch(emojiOpen, toggleGlobalListeners)
 
-onBeforeUnmount(() => toggleGlobalListeners(false))
+onBeforeUnmount(() => {
+  toggleGlobalListeners(false)
+  themeObserver?.disconnect()
+  themeObserver = null
+})
 
 // ============================ 对外 API ============================
 
@@ -680,7 +726,7 @@ defineExpose({
             <SrTooltip
               v-else
               :content="describe(item).label"
-              :variant="tooltipVariant"
+              :variant="resolvedTooltipVariant"
               :placement="tooltipPlacement"
               :disabled="!tooltips"
             >
