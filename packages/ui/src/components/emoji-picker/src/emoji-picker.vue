@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 import { DEFAULT_EMOJI_PACKAGES } from './data'
 import { emojiPickerProps, type SrEmojiItem } from './emoji-picker'
@@ -21,14 +21,29 @@ const emit = defineEmits<{
 /** 最近使用的表情，只在本次会话内保留 */
 const recent = ref<SrEmojiItem[]>([])
 
-/** 当前 tab 的 key；空字符串表示「最近」 */
+/** 当前分类的 key；空串表示第一个包 */
 const activeTab = ref('')
+
+/**
+ * 是否正在看「最近」
+ *
+ * @remarks 早期版本用 `activeTab === ''` 兼任「最近」，结果一旦选了表情
+ * 就自动跳到最近视图、面板只剩刚选的那一个，连选根本没法用。
+ * 视图状态和「最近」列表必须分开。
+ */
+const viewingRecent = ref(false)
 
 /** 搜索关键词 */
 const searchText = ref('')
 
 /** 当前悬停的表情，用于顶部信息行 */
 const hovered = ref<SrEmojiItem | null>(null)
+
+/** 刚被点选的表情名，用来触发一次短暂的「已选中」动画 */
+const pickedName = ref('')
+
+/** 选中动画的复位定时器 */
+let pickedTimer: ReturnType<typeof setTimeout> | null = null
 
 /** 是否正在搜索 */
 const isSearching = computed(() => props.searchable && searchText.value.trim().length > 0)
@@ -39,17 +54,13 @@ const packages = computed(() => (props.packages.length ? props.packages : DEFAUL
 /** 是否显示「最近」tab */
 const hasRecent = computed(() => props.showRecent && recent.value.length > 0 && !isSearching.value)
 
-/**
- * 实际高亮的 tab
- *
- * @remarks `activeTab` 为空串时表示「最近」，但最近为空时没有这个 tab，
- * 此时应当高亮第一个包——直接用 `activeTab === pack.key` 会导致
- * 初始状态下没有任何 tab 处于选中态。
- */
-const activeKey = computed(() => {
-  if (activeTab.value) return activeTab.value
-  return hasRecent.value ? '__recent__' : (packages.value[0]?.key ?? '')
-})
+/** 当前分类的 key（空串时回落到第一个包） */
+const currentPackKey = computed(() => activeTab.value || packages.value[0]?.key || '')
+
+/** 实际高亮的 tab */
+const activeKey = computed(() =>
+  viewingRecent.value && hasRecent.value ? '__recent__' : currentPackKey.value,
+)
 
 /**
  * 所有表情拉平并去重
@@ -84,20 +95,18 @@ const displayEmojis = computed<SrEmojiItem[]>(() => {
     return allEmojis.value.filter((item) => item.name.toLowerCase().includes(keyword))
   }
 
-  if (!activeTab.value) {
-    return hasRecent.value ? recent.value : (packages.value[0]?.emojis ?? [])
-  }
+  if (viewingRecent.value && hasRecent.value) return recent.value
 
-  const pack = packages.value.find((item) => item.key === activeTab.value)
-  return pack?.emojis ?? packages.value[0]?.emojis ?? []
+  const pack = packages.value.find((item) => item.key === currentPackKey.value)
+  return pack?.emojis ?? []
 })
 
 /** 信息行文案：悬停优先，其次搜索结果数，最后当前分类名 */
 const metaText = computed(() => {
   if (hovered.value) return hovered.value.name
   if (isSearching.value) return `找到 ${displayEmojis.value.length} 个`
-  if (!activeTab.value && hasRecent.value) return '最近使用'
-  return packages.value.find((item) => item.key === activeKey.value)?.name ?? ''
+  if (viewingRecent.value && hasRecent.value) return '最近使用'
+  return packages.value.find((item) => item.key === currentPackKey.value)?.name ?? ''
 })
 
 /** 根节点样式：宽高都支持数字与字符串 */
@@ -135,9 +144,21 @@ function onSelect(item: SrEmojiItem): void {
   const next = [item, ...recent.value.filter((entry) => entry.name !== item.name)]
   recent.value = next.slice(0, 16)
 
+  // 点下去要有个「收到了」的反馈，否则连选时看不出点中了哪一个
+  pickedName.value = item.name
+  if (pickedTimer) clearTimeout(pickedTimer)
+  pickedTimer = setTimeout(() => {
+    pickedName.value = ''
+    pickedTimer = null
+  }, 420)
+
   emit('select', item, stringifyEmoji(item))
   if (props.closeOnSelect) emit('close')
 }
+
+onBeforeUnmount(() => {
+  if (pickedTimer) clearTimeout(pickedTimer)
+})
 
 /**
  * 搜索输入
@@ -164,6 +185,7 @@ watch(
     if (activeTab.value && !list.some((item) => item.key === activeTab.value)) {
       activeTab.value = ''
     }
+    if (viewingRecent.value && !recent.value.length) viewingRecent.value = false
   },
   { immediate: true },
 )
@@ -210,6 +232,7 @@ watch(isSearching, (on, off) => {
           v-for="item in displayEmojis"
           :key="`${item.name}-${item.url ?? item.char}`"
           class="sr-emoji-picker__item"
+          :class="{ 'is-picked': pickedName === item.name }"
           type="button"
           :title="item.name"
           :aria-label="item.name"
@@ -238,7 +261,7 @@ watch(isSearching, (on, off) => {
         type="button"
         role="tab"
         :aria-selected="activeKey === '__recent__'"
-        @click="activeTab = ''"
+        @click="viewingRecent = true"
       >
         最近
       </button>
@@ -251,7 +274,10 @@ watch(isSearching, (on, off) => {
         type="button"
         role="tab"
         :aria-selected="activeKey === pack.key"
-        @click="activeTab = pack.key"
+        @click="
+          viewingRecent = false
+          activeTab = pack.key
+        "
       >
         {{ pack.name }}
       </button>

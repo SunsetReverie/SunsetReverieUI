@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
 import SrEmojiPicker, { DEFAULT_EMOJI_PACKAGES } from '../index'
@@ -86,19 +86,34 @@ describe('SrEmojiPicker', () => {
     wrapper.unmount()
   })
 
-  it('选中后出现「最近」tab 且置顶该表情', async () => {
+  it('选完不跳到「最近」，可以连着点', async () => {
     const wrapper = mount(SrEmojiPicker, { props: { packages } })
 
-    // 先在甲包里选一个
+    // 连点两个，视图必须一直停在甲包，否则第二个就点不到了
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('click')
+    await nextTick()
     await wrapper.findAll('.sr-emoji-picker__item')[1]?.trigger('click')
     await nextTick()
 
+    expect(wrapper.emitted('select')).toHaveLength(2)
     const tabs = wrapper.findAll('.sr-emoji-picker__tab')
     expect(tabs[0]?.text()).toBe('最近')
+    expect(tabs[0]?.classes()).not.toContain('is-active')
+    expect(tabs[1]?.classes()).toContain('is-active')
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('甲包')
+    wrapper.unmount()
+  })
 
-    // 「最近」是当前激活 tab，网格里第一条就是刚选的
-    const items = wrapper.findAll('.sr-emoji-picker__item')
-    expect(items[0]?.attributes('aria-label')).toBe('开心')
+  it('点「最近」才切过去，且刚选的排在最前', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+
+    await wrapper.findAll('.sr-emoji-picker__item')[1]?.trigger('click')
+    await nextTick()
+    await wrapper.findAll('.sr-emoji-picker__tab')[0]?.trigger('click')
+    await nextTick()
+
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('最近使用')
+    expect(wrapper.findAll('.sr-emoji-picker__item')[0]?.attributes('aria-label')).toBe('开心')
     wrapper.unmount()
   })
 
@@ -236,6 +251,31 @@ describe('SrEmojiPicker', () => {
     expect(wrapper.emitted('select')).toBeTruthy()
     expect(wrapper.emitted('close')).toBeTruthy()
     wrapper.unmount()
+  })
+
+  it('点选后出现短暂选中反馈并自动复位', async () => {
+    vi.useFakeTimers()
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('click')
+    expect(wrapper.findAll('.sr-emoji-picker__item')[0]?.classes()).toContain('is-picked')
+
+    vi.advanceTimersByTime(420)
+    await nextTick()
+    expect(wrapper.findAll('.sr-emoji-picker__item')[0]?.classes()).not.toContain('is-picked')
+
+    vi.useRealTimers()
+    wrapper.unmount()
+  })
+
+  it('卸载时清理选中动画的定时器', async () => {
+    vi.useFakeTimers()
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('click')
+    expect(() => wrapper.unmount()).not.toThrow()
+
+    vi.useRealTimers()
   })
 
   it('默认不派发 close，方便连选', async () => {

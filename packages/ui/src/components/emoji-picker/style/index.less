@@ -48,6 +48,9 @@
     font-family: inherit;
     font-size: 12.5px;
     outline: none;
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__search-input:focus-visible {
@@ -75,6 +78,9 @@
     font-size: 15px;
     line-height: 1;
     cursor: pointer;
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   // ---------- 内容区 ----------
@@ -115,12 +121,18 @@
     border-radius: var(--sr-radius-sm);
     background: transparent;
     cursor: pointer;
-    transition: background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+    // 轻微回弹：表情是「点着玩」的控件，标准缓动会显得太沉
+    transition:
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__item:focus-visible {
+    background: var(--sr-color-primary-alpha-12);
     outline: 2px solid var(--sr-color-primary-alpha-25);
     outline-offset: -2px;
+    transform: translateY(-1px) scale(1.1);
   }
 
   &__char {
@@ -175,7 +187,8 @@
     cursor: pointer;
     transition:
       background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
-      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      transform var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
   &__tab:focus-visible {
@@ -225,20 +238,91 @@
     font-weight: var(--sr-font-weight-medium);
   }
 
+  // ---------- 2 级：表情项悬停 ----------
+  // 背景带一点主题色，比纯灰底更像「可点的对象」；
+  // 整体放大让字符/图片一起跟着动，只换底色会显得很僵硬
   &__item:hover {
-    background: var(--sr-color-bg-sunken);
+    position: relative;
+    z-index: 1;
+    background: var(--sr-color-primary-alpha-12);
+    box-shadow: var(--sr-shadow-sm);
+    transform: translateY(-1px) scale(1.14);
   }
 
-  // ---------- 3 级：悬停（放最后）----------
+  // ---------- 2 级：按下去 ----------
+  &__item:active {
+    background: var(--sr-color-primary-alpha-25);
+    transform: scale(0.94);
+  }
+
+  // ---------- 2 级：选中脉冲（放最后，压过 hover / active）----------
+  &__item.is-picked {
+    animation: sr-emoji-picked var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+  }
+
+  // ---------- 2 级：清空按钮 ----------
+  &__search-clear:hover {
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary);
+    transform: scale(1.1);
+  }
+
+  // ---------- 2 级：tab 按下 ----------
+  &__tab:active {
+    transform: scale(0.96);
+  }
+
+  // ---------- 3 级：tab 悬停（放最后）----------
   &__tab:hover:not(.is-active) {
     background: var(--sr-color-bg-sunken);
     color: var(--sr-color-text-secondary);
+    transform: translateY(-1px);
   }
 
   // ---------- 禁用 ----------
   &.is-disabled {
     opacity: 0.5;
     pointer-events: none;
+  }
+}
+
+/** 点选后的一次性反馈：放大一下再收回，让连选时看得清点中了哪个 */
+@keyframes sr-emoji-picked {
+  0% {
+    background: var(--sr-color-primary-alpha-25);
+    transform: scale(0.9);
+  }
+
+  55% {
+    background: var(--sr-color-primary-alpha-25);
+    transform: scale(1.18);
+  }
+
+  100% {
+    background: transparent;
+    transform: scale(1);
+  }
+}
+
+/**
+ * 减少动态效果：关掉位移与脉冲
+ *
+ * @remarks 令牌里的 duration 在 reduce 下已经是 0.01ms，
+ * 但 transform 仍会瞬间跳变，所以这里把形变整体去掉，
+ * 只保留背景色变化——依然能看出 hover，但不会有跳动感。
+ */
+@media (prefers-reduced-motion: reduce) {
+  .sr-emoji-picker__item:hover,
+  .sr-emoji-picker__item:focus-visible,
+  .sr-emoji-picker__item:active,
+  .sr-emoji-picker__tab:active,
+  .sr-emoji-picker__tab:hover:not(.is-active),
+  .sr-emoji-picker__search-clear:hover {
+    transform: none;
+  }
+
+  .sr-emoji-picker__item.is-picked {
+    animation: none;
   }
 }
 
