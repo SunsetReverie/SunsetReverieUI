@@ -41,7 +41,15 @@ function run(): void {
 
   // 内置解析器是同步的，直接出结果
   if (props.engine === SR_MARKDOWN_BUILTIN) {
-    rendered.value = finalize(restore(parseMarkdownBuiltin(text)))
+    rendered.value = finalize(
+      restore(
+        parseMarkdownBuiltin(text, {
+          highlight: props.codeHighlight,
+          lineNumbers: props.codeLineNumbers,
+          copy: props.codeCopy,
+        }),
+      ),
+    )
     pending.value = false
     return
   }
@@ -100,16 +108,91 @@ function escapeSource(text: string): string {
     .replace(/'/g, '&#39;')
 }
 
+/**
+ * 把文本写进剪贴板
+ *
+ * @param text 待复制文本
+ * @returns 是否复制成功
+ *
+ * @remarks 非安全上下文（http 内网）没有 `navigator.clipboard`，
+ * 退回临时 textarea + `execCommand`，这是唯一还能用的老办法。
+ */
+async function writeClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+  } catch {
+    // 权限被拒，继续走兜底
+  }
+
+  try {
+    const area = document.createElement('textarea')
+    area.value = text
+    area.setAttribute('readonly', '')
+    area.style.position = 'fixed'
+    area.style.opacity = '0'
+    document.body.appendChild(area)
+    area.select()
+    const ok = document.execCommand('copy')
+    area.remove()
+    return ok
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 内容区点击（事件委托）
+ *
+ * @param event 点击事件
+ *
+ * @remarks 复制按钮是 `v-html` 插进来的节点，拿不到 Vue 的事件绑定，
+ * 所以统一在内容区上委托。文案直接改 DOM：重渲染会替换节点，改旧的也无害。
+ */
+async function onContentClick(event: MouseEvent): Promise<void> {
+  const target = event.target as HTMLElement | null
+  const button = target?.closest?.('.sr-md__copy') as HTMLElement | null
+  if (!button) return
+
+  const text = button.closest('.sr-md__pre')?.querySelector('code')?.textContent ?? ''
+  if (!text) return
+
+  const ok = await writeClipboard(text)
+
+  button.textContent = ok ? '已复制' : '复制失败'
+  button.classList.toggle('is-copied', ok)
+
+  window.setTimeout(() => {
+    button.textContent = '复制'
+    button.classList.remove('is-copied')
+  }, 1600)
+}
+
 // setup 阶段同步跑一次：同步引擎在 SSR 时就能产出内容，
 // 不会出现「服务端空、客户端才填充」的水合不一致
 run()
 
-watch(() => [props.source, props.extensions, props.engine, props.sanitize] as const, run, { deep: true })
+watch(
+  () =>
+    [
+      props.source,
+      props.extensions,
+      props.engine,
+      props.sanitize,
+      props.codeHighlight,
+      props.codeLineNumbers,
+      props.codeCopy,
+    ] as const,
+  run,
+  { deep: true },
+)
 </script>
 
 <template>
   <div class="sr-md" :class="[`sr-md--${size}`, `sr-md--theme-${theme}`, { 'is-pending': pending }]">
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div class="sr-md__content" v-html="rendered" />
+    <div class="sr-md__content" @click="onContentClick" v-html="rendered" />
   </div>
 </template>

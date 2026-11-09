@@ -112,6 +112,31 @@ export const markdownEditorProps = {
     type: Function as PropType<(html: string) => string>,
     default: undefined,
   },
+  /**
+   * 预览里的代码块是否做语法着色 @default true
+   *
+   * 透传给 `SrMarkdown`，内置零依赖高亮器。
+   */
+  codeHighlight: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 预览里的代码块是否显示行号 @default false
+   *
+   * 行号由 CSS 计数器画，复制时不会带上数字。
+   */
+  codeLineNumbers: {
+    type: Boolean,
+    default: false,
+  },
+  /**
+   * 预览里的代码块是否显示复制按钮 @default true
+   */
+  codeCopy: {
+    type: Boolean,
+    default: true,
+  },
   /** 视图模式 @default 'split' */
   mode: {
     type: String as PropType<SrMarkdownEditorMode>,

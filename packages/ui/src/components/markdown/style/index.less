@@ -20,6 +20,17 @@
   --sr-md-line-height: 1.75;
   --sr-md-gap: 14px;
 
+  // 代码高亮配色。基础值按「浅底代码块」调，
+  // 深色页面与 vivid 模板（固定深底）在文件末尾覆盖
+  --sr-md-tok-kw: #7c3aed;
+  --sr-md-tok-str: #067a46;
+  --sr-md-tok-num: #a4550a;
+  --sr-md-tok-com: #8b94a4;
+  --sr-md-tok-fn: #1f5fd0;
+  --sr-md-tok-tag: #b4460f;
+  --sr-md-tok-attr: #a4550a;
+  --sr-md-tok-op: #5b6577;
+
   color: var(--sr-color-text);
   font-size: var(--sr-md-font-size);
   line-height: var(--sr-md-line-height);
@@ -226,6 +237,10 @@
   }
 
   &__pre-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     padding: 5px 12px;
     border-bottom: var(--sr-md-code-bar-border, 1px solid var(--sr-color-border-subtle));
     color: var(--sr-md-code-bar-color, var(--sr-color-text-tertiary));
@@ -237,6 +252,38 @@
     padding: 1px 6px;
     border-radius: var(--sr-radius-sm);
     background: var(--sr-md-code-lang-bg, var(--sr-color-bg-sunken));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /** 复制按钮：常驻在顶栏右侧，点击后短暂变成「已复制」 */
+  &__copy {
+    flex: none;
+    padding: 1px 6px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease;
+
+    &:hover {
+      background: var(--sr-md-code-lang-bg, var(--sr-color-bg-sunken));
+    }
+
+    &.is-copied {
+      color: var(--sr-md-tok-str);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sr-color-primary);
+      outline-offset: 1px;
+    }
   }
 
   // 外壳已经画了边框和圆角，内层 pre 不要再来一层
@@ -245,6 +292,65 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+
+  // ---------- 行号 ----------
+  // 计数器挂在 code 上：每行一个 block 的 span，靠 ::before 画数字，
+  // 数字不参与选中与复制
+  &__pre &__pre-body code {
+    counter-reset: sr-md-line;
+  }
+
+  &__code-line {
+    display: block;
+    min-height: 1em;
+
+    &::before {
+      counter-increment: sr-md-line;
+      content: counter(sr-md-line);
+      display: inline-block;
+      width: 2.4em;
+      margin-right: 12px;
+      padding-right: 10px;
+      border-right: 1px solid var(--sr-md-code-bar-border, var(--sr-color-border-subtle));
+      color: var(--sr-md-code-line-num, var(--sr-color-text-quaternary));
+      text-align: right;
+      user-select: none;
+    }
+  }
+
+  // ---------- 语法着色 ----------
+  &__tok--kw {
+    color: var(--sr-md-tok-kw);
+  }
+
+  &__tok--str {
+    color: var(--sr-md-tok-str);
+  }
+
+  &__tok--num {
+    color: var(--sr-md-tok-num);
+  }
+
+  &__tok--com {
+    color: var(--sr-md-tok-com);
+    font-style: italic;
+  }
+
+  &__tok--fn {
+    color: var(--sr-md-tok-fn);
+  }
+
+  &__tok--tag {
+    color: var(--sr-md-tok-tag);
+  }
+
+  &__tok--attr {
+    color: var(--sr-md-tok-attr);
+  }
+
+  &__tok--op {
+    color: var(--sr-md-tok-op);
   }
 
   // ================= 表格 =================
@@ -487,4 +593,33 @@
   .sr-md__table-wrap {
     .sr-glass-layer();
   }
+}
+
+/* ---------- 代码高亮配色：深色页面 ----------
+   plain / editorial / glass 的代码块底色跟着主题走，深色页面上也得换成亮色令牌 */
+[data-sr-theme='dark'] .sr-md {
+  --sr-md-tok-kw: #c3a6ff;
+  --sr-md-tok-str: #8ee6b0;
+  --sr-md-tok-num: #ffcf8a;
+  --sr-md-tok-com: #7c8699;
+  --sr-md-tok-fn: #8ab4ff;
+  --sr-md-tok-tag: #ffab7d;
+  --sr-md-tok-attr: #ffcf8a;
+  --sr-md-tok-op: #a3acbd;
+  --sr-md-code-line-num: rgb(255 255 255 / 26%);
+}
+
+/* ---------- 代码高亮配色：vivid 固定深色代码块 ----------
+   vivid 的代码块明暗主题下都是 #1e2330，所以令牌恒用亮色。
+   权重与上一条相同、位置更靠后，用来覆盖上面那组规则 */
+.sr-md.sr-md--theme-vivid {
+  --sr-md-tok-kw: #c3a6ff;
+  --sr-md-tok-str: #8ee6b0;
+  --sr-md-tok-num: #ffcf8a;
+  --sr-md-tok-com: #7c8699;
+  --sr-md-tok-fn: #8ab4ff;
+  --sr-md-tok-tag: #ffab7d;
+  --sr-md-tok-attr: #ffcf8a;
+  --sr-md-tok-op: #a3acbd;
+  --sr-md-code-line-num: rgb(255 255 255 / 26%);
 }

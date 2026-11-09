@@ -14,7 +14,35 @@
  * 改动本文件时必须保持「先转义、再拼标签」这个顺序。
  */
 
+import { srHighlightCode } from './highlight'
 import { srEscapeHtml, srIsSafeImageUrl, srIsSafeUrl } from './sanitize'
+
+/** 代码块渲染选项 */
+export interface SrMarkdownCodeOptions {
+  /** 是否做语法着色 @default true */
+  highlight?: boolean
+  /** 是否显示行号 @default false */
+  lineNumbers?: boolean
+  /** 是否显示复制按钮 @default true */
+  copy?: boolean
+}
+
+/**
+ * 给代码块的每一行套一个容器
+ *
+ * @param html 已着色的代码 HTML
+ * @returns 每行一个 span 的 HTML
+ *
+ * @remarks
+ * 行号由 CSS 计数器画，所以这里不写数字。
+ * 空行插入零宽空格，否则 `display: block` 的 span 高度会塌成 0。
+ */
+function wrapCodeLines(html: string): string {
+  return html
+    .split('\n')
+    .map((line) => `<span class="sr-md__code-line">${line || '&#8203;'}</span>`)
+    .join('')
+}
 
 /**
  * 行内元素解析。
@@ -96,7 +124,7 @@ function parseInline(text: string): string {
  * @param source 原始 Markdown
  * @returns HTML 字符串
  */
-export function parseMarkdownBuiltin(source: string): string {
+export function parseMarkdownBuiltin(source: string, options: SrMarkdownCodeOptions = {}): string {
   if (!source) return ''
 
   // 先整体转义，后续标签全部由本函数拼出
@@ -141,13 +169,22 @@ export function parseMarkdownBuiltin(source: string): string {
 
       index += 1
 
+      const raw = body.join('\n')
+      // 着色、行号、复制按钮都是可选装饰：全部关掉时输出与旧版逐字节一致
+      const codeHtml = options.highlight === false ? raw : srHighlightCode(raw, lang)
+      const bodyHtml = options.lineNumbers ? wrapCodeLines(codeHtml) : codeHtml
       const langAttr = lang ? ` data-lang="${lang}"` : ''
       const langHtml = lang ? `<span class="sr-md__code-lang">${lang}</span>` : ''
+      const copyHtml =
+        options.copy === false
+          ? ''
+          : `<button type="button" class="sr-md__copy" aria-label="复制代码">复制</button>`
+      const barHtml = langHtml || copyHtml ? `<div class="sr-md__pre-bar">${langHtml}${copyHtml}</div>` : ''
 
       html.push(
         `<div class="sr-md__pre"${langAttr}>` +
-          (langHtml ? `<div class="sr-md__pre-bar">${langHtml}</div>` : '') +
-          `<pre class="sr-md__pre-body"><code>${body.join('\n')}</code></pre>` +
+          barHtml +
+          `<pre class="sr-md__pre-body"><code>${bodyHtml}</code></pre>` +
           `</div>`,
       )
       continue

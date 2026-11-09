@@ -280,6 +280,9 @@ const extensions = [
 | `engine` | `SrMarkdownEngine \| 'builtin'` | — | 渲染引擎 |
 | `extensions` | `SrMarkdownExtension[]` | `[]` | 短代码扩展 |
 | `sanitize` | `(html) => string` | — | HTML 后处理钩子 |
+| `codeHighlight` | `boolean` | `true` | 代码块语法着色 |
+| `codeLineNumbers` | `boolean` | `false` | 代码块显示行号 |
+| `codeCopy` | `boolean` | `true` | 代码块显示复制按钮 |
 | `size` | `SrSize` | `'md'` | 渲染尺寸 |
 | `theme` | `'plain' \| 'vivid' \| 'editorial' \| 'glass'` | `'vivid'` | 渲染模板 |
 
@@ -299,5 +302,30 @@ const extensions = [
 - **异步竞态用批次号处理**：连续改 `source` 时，先发的慢结果不会覆盖后发的快结果。
 - **SSR 友好**：同步引擎在 `setup` 阶段就完成渲染，服务端输出的是最终 HTML，不会出现水合不一致。
 - **样式不加 `scoped`**：内容由 `v-html` 插入，拿不到 `data-v-xxx` 属性，隔离靠 `.sr-md` 类名前缀保证。
-- **不内置代码高亮**。代码块只做结构，配色由高亮器的样式表提供。
-- **代码块的语言标识不限 ASCII**。开头三连反引号后跟 `中文`、`c++`、`C#` 都能开代码块，标识原样写进 `data-lang`；只有带空格的非法标识（如 `js x`）才退化成一整行段落。
+- **代码高亮是内置的轻量实现**，零依赖、约 4KB。要 Prism / shiki 那种精度，关掉 `codeHighlight` 后自己接管：用 `sanitize` 钩子把 `<code>` 内的文本替换成高亮输出即可。
+- **代码块的语言标识不限 ASCII**。开头三连反引号后跟 `中文`、`c++`、`C#` 都能开代码块，标识原样写进 `data-lang`；只有带空格的非法标识（如 `js x`）才退化成一整行段落。未知语言照样出场，至少字符串、数字、注释有颜色。
+
+## 代码块
+
+内置解析器渲染的代码块带顶栏与操作：
+
+```vue
+<SrMarkdown
+  source="..."
+  engine="builtin"
+  code-highlight
+  code-line-numbers
+  code-copy
+/>
+```
+
+| 能力 | 由谁提供 | 说明 |
+| --- | --- | --- |
+| 语法着色 | `codeHighlight` | JS / TS / JSON / HTML / Vue / CSS / Shell / Python / Markdown，别名（`typescript`、`bash`、`py`…）自动归一 |
+| 行号 | `codeLineNumbers` | CSS 计数器绘制，不参与选中，也不会被复制走 |
+| 复制按钮 | `codeCopy` | 顶栏右侧，点击后短暂显示「已复制」；`navigator.clipboard` 不可用时退回 `execCommand` |
+| 语言标签 | 自动 | 有 `data-lang` 就显示，和复制按钮同排 |
+
+复制走的是**事件委托**：按钮由 `v-html` 插入，拿不到 Vue 事件绑定，所以统一监听 `.sr-md__content` 的点击。这意味着自定义引擎只要产出 `.sr-md__pre > code` 结构，复制按钮同样能用。
+
+行号数字由 `::before` 生成，`user-select: none`——选中代码时不会把数字一起带走。

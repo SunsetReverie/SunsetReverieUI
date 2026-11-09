@@ -1104,6 +1104,9 @@ defineExpose({
             :theme="theme"
             :sanitize="sanitize"
             :size="size"
+            :code-highlight="codeHighlight"
+            :code-line-numbers="codeLineNumbers"
+            :code-copy="codeCopy"
           />
           <p v-if="!modelValue.trim()" class="sr-mde__empty">{{ placeholder }}</p>
         </slot>

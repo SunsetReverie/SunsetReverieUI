@@ -68,6 +68,35 @@ export const markdownProps = {
     type: Function as PropType<(html: string) => string>,
     default: undefined,
   },
+  /**
+   * 代码块是否做语法着色 @default true
+   *
+   * 内置一套零依赖的高亮器，覆盖 JS / TS / JSON / HTML / Vue / CSS / Shell / Python / Markdown
+   * 的高频语法。要更精确的高亮可以关掉它，换成 `sanitize` 里接 Prism / shiki 的输出。
+   */
+  codeHighlight: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 代码块是否显示行号 @default false
+   *
+   * 行号由 CSS 计数器绘制，不打进复制内容里。
+   */
+  codeLineNumbers: {
+    type: Boolean,
+    default: false,
+  },
+  /**
+   * 代码块是否显示复制按钮 @default true
+   *
+   * 按钮只在浏览器端生效：`navigator.clipboard` 不可用（非安全上下文）时
+   * 退回 `document.execCommand('copy')`。
+   */
+  codeCopy: {
+    type: Boolean,
+    default: true,
+  },
   /** 渲染尺寸 @default 'md' */
   size: {
     type: String as PropType<SrSize>,

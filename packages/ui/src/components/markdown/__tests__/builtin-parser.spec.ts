@@ -56,7 +56,30 @@ describe('parseMarkdownBuiltin', () => {
 
     expect(html).toContain('data-lang="ts"')
     expect(html).toContain('sr-md__code-lang">ts<')
+    // 默认开着色：关键字与数字各包一层 token，文本被 span 切开属正常
+    expect(html).toContain('sr-md__tok--kw">const<')
+    expect(html).toContain('sr-md__tok--num">1<')
+    expect(html).toContain('sr-md__copy')
+  })
+
+  it('可以关掉着色、行号与复制按钮', () => {
+    const html = parseMarkdownBuiltin('```ts\nconst a = 1\n```', {
+      highlight: false,
+      lineNumbers: false,
+      copy: false,
+    })
+
+    expect(html).not.toContain('sr-md__tok')
+    expect(html).not.toContain('sr-md__copy')
     expect(html).toContain('const a = 1')
+  })
+
+  it('开启行号时每行一个容器', () => {
+    const html = parseMarkdownBuiltin('```ts\na\n\nb\n```', { lineNumbers: true })
+
+    // 3 行 → 3 个容器，空行用零宽空格撑住高度
+    expect(html.match(/sr-md__code-line/g)).toHaveLength(3)
+    expect(html).toContain('&#8203;')
   })
 
   it('语言标识支持中文与符号，且不会卡死', () => {

@@ -22,6 +22,15 @@ const content = ref(`## 用法说明
 - 支持 \`行内代码\` 与代码块
 - 支持 [链接](https://example.com) 与图片
 
+\`\`\`typescript
+const warnings = useState<string[]>('sr-hydration-warnings', () => [])
+
+if (warnings.value.length > 0) {
+  const originalError = console.error
+  console.warn(warnings.value.join('\\n'))
+}
+\`\`\`
+
 > 快捷键：Cmd/Ctrl + B / I / K，Cmd/Ctrl + S 保存。`)
 
 /** 短代码内容：一进来就能看到四种渲染结果 */
@@ -60,6 +69,38 @@ const modeToggleOptions = [
 
 /** 工具栏提示模式 */
 const tipMode = ref<'auto' | 'light' | 'dark' | 'off'>('auto')
+
+/** 代码块演示内容 */
+const codeContent = ref(`### 代码块
+
+内置着色覆盖常见语言，\`typescript\` 这种全称与 \`ts\` 别名等价。
+
+\`\`\`typescript
+export interface Article {
+  id: string
+  title: string
+  tags: string[]
+}
+
+export function pickHot(list: Article[], limit = 3): Article[] {
+  return list
+    .filter((item) => item.tags.includes('热门')) // 只看热门
+    .slice(0, limit)
+}
+\`\`\`
+
+\`\`\`bash
+pnpm --filter playground-vue3 dev
+\`\`\``)
+
+/** 行号开关 */
+const lineNumMode = ref<'off' | 'on'>('off')
+
+/** 行号选项 */
+const lineNumOptions = [
+  { label: '不显示行号', value: 'off' },
+  { label: '显示行号', value: 'on' },
+]
 
 /** 提示选项 */
 const tipOptions = [
@@ -513,6 +554,20 @@ async function fakeUpload(file: File): Promise<string> {
       <p class="hint">
         默认浅色气泡。键盘 Tab 到按钮上也会显示（不是只靠鼠标）。 关掉后退回原生
         <code>title</code>，按钮不会失去说明
+      </p>
+    </section>
+
+    <section>
+      <h3>代码块：着色、行号、复制</h3>
+      <div class="row" style="margin-bottom: 10px">
+        <SrSegmented v-model="lineNumMode" :options="lineNumOptions" size="sm" />
+        <SrTag size="sm">顶栏右侧可复制</SrTag>
+      </div>
+      <SrMarkdownEditor v-model="codeContent" :code-line-numbers="lineNumMode === 'on'" :height="300" />
+      <p class="hint">
+        着色是内置的，零依赖：JS / TS / JSON / HTML / Vue / CSS / Shell / Python 都认，写
+        <code>typescript</code>、<code>bash</code>、<code>py</code> 这类别名也行。行号由 CSS 计数器画，
+        选中代码时不会带走数字；复制按钮在顶栏，点一下变「已复制」。
       </p>
     </section>
 
