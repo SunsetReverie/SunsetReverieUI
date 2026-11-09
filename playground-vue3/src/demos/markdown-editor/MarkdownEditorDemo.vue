@@ -2,6 +2,7 @@
 import {
   SrButton,
   SrMarkdownEditor,
+  SrSegmented,
   SrTag,
   DEFAULT_EMOJI_PACKAGES,
   type SrMarkdownEditorApi,
@@ -40,6 +41,16 @@ const savedAt = ref('')
 
 /** 是否显示表情 */
 const withEmoji = ref(true)
+
+/** 工具栏提示模式 */
+const tipMode = ref<'light' | 'dark' | 'off'>('light')
+
+/** 提示选项 */
+const tipOptions = [
+  { label: '浅色', value: 'light' },
+  { label: '深色', value: 'dark' },
+  { label: '关闭', value: 'off' },
+]
 
 /** 内联短代码扩展 */
 const galleryExt: SrMarkdownExtension = {
@@ -120,6 +131,24 @@ async function fakeUpload(file: File): Promise<string> {
       <p class="hint">
         左侧原生 textarea（输入法、撤销栈都能用），右侧实时预览。 工具栏 15 项，中间用竖线分组。
         <SrTag v-if="savedAt" size="sm" type="success">已保存 {{ savedAt }}</SrTag>
+      </p>
+    </section>
+
+    <section>
+      <h3>工具栏提示</h3>
+      <div class="row" style="margin-bottom: 10px">
+        <SrSegmented v-model="tipMode" :options="tipOptions" size="sm" />
+        <SrTag size="sm">鼠标移到按钮上试试</SrTag>
+      </div>
+      <SrMarkdownEditor
+        v-model="content"
+        :tooltips="tipMode !== 'off'"
+        :tooltip-variant="tipMode === 'dark' ? 'dark' : 'light'"
+        :height="220"
+      />
+      <p class="hint">
+        默认浅色气泡。键盘 Tab 到按钮上也会显示（不是只靠鼠标）。 关掉后退回原生
+        <code>title</code>，按钮不会失去说明
       </p>
     </section>
 

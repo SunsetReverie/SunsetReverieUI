@@ -8,6 +8,7 @@ import SrIcon from '../../icon/src/icon.vue'
 import { srCountMarkdownText } from '../../markdown/src/builtin-parser'
 import SrMarkdown from '../../markdown/src/markdown.vue'
 import SrSegmented from '../../segmented/src/segmented.vue'
+import SrTooltip from '../../tooltip/src/tooltip.vue'
 import {
   markdownEditorProps,
   SR_MARKDOWN_DEFAULT_TOOLBAR,
@@ -671,19 +672,31 @@ defineExpose({
           <template v-for="(item, index) in toolbarItems" :key="itemKey(item, index)">
             <span v-if="item === '|'" class="sr-mde__sep" aria-hidden="true" />
 
-            <button
+            <!--
+              用 Tooltip 的 disabled 开关而不是写两份 button：
+              关掉 tips 时触发层仍在，但退回原生 title，按钮不会失去说明。
+              触发层自己监听 focusin，键盘用户也能看到提示。
+            -->
+            <SrTooltip
               v-else
-              :ref="isEmojiButton(item) ? (el) => (emojiButtonRef = el as HTMLElement | null) : undefined"
-              class="sr-mde__tool"
-              type="button"
-              :title="describe(item).label"
-              :aria-label="describe(item).label"
-              :disabled="readonly || describe(item).disabled || uploading"
-              @click="onToolbarClick(item)"
+              :content="describe(item).label"
+              :variant="tooltipVariant"
+              :placement="tooltipPlacement"
+              :disabled="!tooltips"
             >
-              <SrIcon v-if="describe(item).icon" :name="describe(item).icon ?? ''" :size="14" />
-              <span v-else class="sr-mde__tool-text">{{ describe(item).label }}</span>
-            </button>
+              <button
+                :ref="isEmojiButton(item) ? (el) => (emojiButtonRef = el as HTMLElement | null) : undefined"
+                class="sr-mde__tool"
+                type="button"
+                :title="tooltips ? undefined : describe(item).label"
+                :aria-label="describe(item).label"
+                :disabled="readonly || describe(item).disabled || uploading"
+                @click="onToolbarClick(item)"
+              >
+                <SrIcon v-if="describe(item).icon" :name="describe(item).icon ?? ''" :size="14" />
+                <span v-else class="sr-mde__tool-text">{{ describe(item).label }}</span>
+              </button>
+            </SrTooltip>
           </template>
 
           <span v-if="uploading" class="sr-mde__hint">上传中…</span>

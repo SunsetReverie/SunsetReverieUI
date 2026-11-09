@@ -198,6 +198,49 @@ describe('SrMarkdownEditor', () => {
     wrapper.unmount()
   })
 
+  it('工具栏按钮默认带浅色 tips', () => {
+    const wrapper = mountEditor()
+    const tips = wrapper.findAllComponents({ name: 'SrTooltip' })
+
+    expect(tips.length).toBeGreaterThan(5)
+    expect(tips[0]?.props('content')).toBe('粗体')
+    expect(tips[0]?.props('variant')).toBe('light')
+    expect(tips[0]?.props('placement')).toBe('top')
+    expect(tips[0]?.props('disabled')).toBe(false)
+
+    // 有气泡时不再挂原生 title，避免双层提示
+    expect(wrapper.findAll('.sr-mde__tool')[0]?.attributes('title')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('关掉 tips 后退回原生 title', () => {
+    const wrapper = mountEditor({ tooltips: false })
+
+    const tip = wrapper.findComponent({ name: 'SrTooltip' })
+    expect(tip.props('disabled')).toBe(true)
+    expect(wrapper.findAll('.sr-mde__tool')[0]?.attributes('title')).toBe('粗体')
+    wrapper.unmount()
+  })
+
+  it('tips 配色与方位可配置', () => {
+    const wrapper = mountEditor({ tooltipVariant: 'dark', tooltipPlacement: 'bottom' })
+    const tip = wrapper.findComponent({ name: 'SrTooltip' })
+
+    expect(tip.props('variant')).toBe('dark')
+    expect(tip.props('placement')).toBe('bottom')
+    wrapper.unmount()
+  })
+
+  it('自定义工具栏项也带同名 tips', () => {
+    const wrapper = mountEditor({
+      toolbar: [{ key: 'x', label: '插入日期', action: () => undefined }],
+    })
+    const tip = wrapper.findComponent({ name: 'SrTooltip' })
+
+    expect(tip.props('content')).toBe('插入日期')
+    wrapper.unmount()
+  })
+
   it('自定义工具栏项被渲染并执行', async () => {
     const action = vi.fn()
     const custom: SrMarkdownToolbarAction = { key: 'custom', label: '自定义', action }

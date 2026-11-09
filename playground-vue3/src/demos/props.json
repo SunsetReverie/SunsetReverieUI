@@ -2618,6 +2618,27 @@
       },
       {
         "from": "markdownEditorProps",
+        "name": "tooltips",
+        "type": "boolean",
+        "default": "true",
+        "description": "工具栏按钮的功能提示 @default true 鼠标移入或键盘 focus 时显示气泡。关掉后退回原生 `title`—— 不会让按钮完全失去说明。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "tooltipVariant",
+        "type": "'light' | 'dark'",
+        "default": "'light'",
+        "description": "提示配色 @default 'light' 工具栏通常在浅色条上，浅色气泡比黑玻璃更协调。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "tooltipPlacement",
+        "type": "SrPlacement",
+        "default": "'top'",
+        "description": "提示方位 @default 'top'"
+      },
+      {
+        "from": "markdownEditorProps",
         "name": "placeholder",
         "type": "string",
         "default": "'开始写作…'",

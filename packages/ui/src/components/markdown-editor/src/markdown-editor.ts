@@ -1,5 +1,6 @@
 import type { ExtractPropTypes, PropType } from 'vue'
 
+import type { SrPlacement } from '../../../utils/floating'
 import type { SrSize } from '../../../types/config'
 import type { SrMarkdownExtension } from '../../markdown/src/extensions'
 import type { SrMarkdownEngine } from '../../markdown/src/markdown'
@@ -127,6 +128,30 @@ export const markdownEditorProps = {
   toolbar: {
     type: [Boolean, Array] as unknown as PropType<SrMarkdownToolbarItem[] | false>,
     default: undefined,
+  },
+  /**
+   * 工具栏按钮的功能提示 @default true
+   *
+   * 鼠标移入或键盘 focus 时显示气泡。关掉后退回原生 `title`——
+   * 不会让按钮完全失去说明。
+   */
+  tooltips: {
+    type: Boolean,
+    default: true,
+  },
+  /**
+   * 提示配色 @default 'light'
+   *
+   * 工具栏通常在浅色条上，浅色气泡比黑玻璃更协调。
+   */
+  tooltipVariant: {
+    type: String as PropType<'light' | 'dark'>,
+    default: 'light',
+  },
+  /** 提示方位 @default 'top' */
+  tooltipPlacement: {
+    type: String as PropType<SrPlacement>,
+    default: 'top',
   },
   /** 占位提示 */
   placeholder: {

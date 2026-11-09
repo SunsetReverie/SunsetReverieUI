@@ -110,6 +110,34 @@ const toolbar = [
 <SrMarkdownEditor v-model="content" :toolbar="false" />
 ```
 
+## 工具栏提示
+
+每个按钮鼠标移入时会弹出功能说明，**默认浅色气泡**：
+
+```vue
+<SrMarkdownEditor v-model="content" />                              <!-- light / top -->
+<SrMarkdownEditor v-model="content" tooltip-variant="dark" />      <!-- 深色 -->
+<SrMarkdownEditor v-model="content" tooltip-placement="bottom" />  <!-- 改方位 -->
+<SrMarkdownEditor v-model="content" :tooltips="false" />          <!-- 关掉 -->
+```
+
+| prop | 默认 | 说明 |
+| --- | --- | --- |
+| `tooltips` | `true` | 是否显示气泡 |
+| `tooltipVariant` | `'light'` | `'light'` 白玻璃 / `'dark'` 黑玻璃 |
+| `tooltipPlacement` | `'top'` | 期望方位，空间不足时自动翻转 |
+
+提示复用库内的 `SrTooltip`，因此：
+
+- **键盘 Tab 到按钮上也会显示**（`focusin` 触发），不是只服务鼠标
+- 带显示/隐藏延迟，鼠标划过按钮缝隙不会闪
+- 气泡 Teleport 到 `body`，不会被编辑器的 `overflow: hidden` 裁掉
+- 工具栏贴页面顶部时会自动翻到下方
+
+自定义工具栏项、扩展自动生成的短代码按钮、表情按钮都带同名提示，不需要额外配置。
+
+**关掉 tips 后退回原生 `title`**，按钮不会完全失去说明。开启时不会同时挂 `title`，避免出现原生提示和气泡两层。
+
 ## 短代码按钮
 
 扩展里配 `insert` 后，工具栏会**自动多出一个按钮**：
@@ -204,6 +232,9 @@ async function uploadFile(file: File) {
 | `sanitize` | `(html) => string` | — | HTML 后处理 |
 | `mode` | `'edit' \| 'split' \| 'preview'` | `'split'` | 视图模式 |
 | `toolbar` | `SrMarkdownToolbarItem[] \| false` | 默认 15 项 | 工具栏配置 |
+| `tooltips` | `boolean` | `true` | 工具栏功能提示 |
+| `tooltipVariant` | `'light' \| 'dark'` | `'light'` | 提示配色 |
+| `tooltipPlacement` | `SrPlacement` | `'top'` | 提示方位 |
 | `placeholder` | `string` | `'开始写作…'` | 占位提示 |
 | `height` | `number \| string` | `360` | 主体高度 |
 | `readonly` | `boolean` | `false` | 只读 |
