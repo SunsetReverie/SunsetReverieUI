@@ -336,10 +336,7 @@
     margin-top: var(--sr-space-2);
   }
 
-  // 提交按钮靠右：左侧留给表情与快捷键提示
-  &__submit {
-    margin-left: auto;
-  }
+  // 提示文字与提交按钮一起靠右：表情按钮留在最左，中间的空白由 tip 的 auto 吃掉
 
   &__tool {
     display: inline-flex;
@@ -364,8 +361,11 @@
   }
 
   &__tip {
+    // 和提交按钮一起靠右，表情按钮留在最左
+    margin-left: auto;
     color: var(--sr-color-text-quaternary);
     font-size: 11.5px;
+    white-space: nowrap;
   }
 
   &__error {
