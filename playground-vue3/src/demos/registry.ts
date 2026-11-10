@@ -110,6 +110,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./textarea/TextareaDemo.vue'),
       },
       {
+        key: 'comment',
+        name: 'SrComment',
+        description: '评论。游客/登录双态、一层回复、排序分页、表情标记与插槽定制。',
+        demo: () => import('./comment/CommentDemo.vue'),
+      },
+      {
         key: 'slider',
         name: 'SrSlider',
         description: '滑块。单值或区间、步长吸附、间断点、纵向。',

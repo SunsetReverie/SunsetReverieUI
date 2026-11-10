@@ -1,0 +1,396 @@
+// 评论
+//
+// 三块结构：容器（标题/排序/列表/分页） + 条目（头像 + 正文 + 操作 + 回复） + 表单
+// 层级只做一层：回复的回复并入同一层，用「回复 @某某」标注对象。
+// 无限嵌套在窄屏上会把正文挤成一条竖线。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-comment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-5);
+  color: var(--sr-color-text);
+
+  // ---------- 头部 ----------
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-3);
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--sr-font-size-lg);
+    font-weight: 600;
+  }
+
+  &__count {
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__sorts {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    padding: 2px;
+    border-radius: var(--sr-radius-full, 999px);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__sort {
+    padding: 3px 10px;
+    border: 0;
+    border-radius: var(--sr-radius-full, 999px);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-xs);
+    cursor: pointer;
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease;
+
+    &:hover {
+      color: var(--sr-color-text);
+    }
+
+    &.is-active {
+      background: var(--sr-color-primary);
+      color: var(--sr-color-text-inverse, #fff);
+    }
+  }
+
+  // ---------- 列表 ----------
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sr-space-5);
+  }
+
+  &__loading {
+    padding: var(--sr-space-6) 0;
+  }
+
+  &__reply-editor {
+    margin-top: var(--sr-space-3);
+  }
+
+  // ---------- 分页与加载更多 ----------
+  &__pager {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--sr-space-2);
+  }
+
+  &__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // 按钮与文案切换时不跳动
+    min-height: 40px;
+  }
+
+  &__no-more {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    color: var(--sr-color-text-quaternary);
+    font-size: var(--sr-font-size-xs);
+
+    &::before,
+    &::after {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--sr-color-border-subtle);
+    }
+  }
+}
+
+// ================= 单条 =================
+.sr-comment-item {
+  display: flex;
+  gap: var(--sr-space-3);
+  list-style: none;
+
+  &__avatar {
+    flex: none;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    flex-wrap: wrap;
+    min-height: 20px;
+    margin-bottom: 4px;
+  }
+
+  &__name {
+    color: var(--sr-color-text);
+    font-size: var(--sr-font-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+
+    &[href]:hover {
+      color: var(--sr-color-primary);
+      text-decoration: underline;
+    }
+  }
+
+  &__badge {
+    padding: 0 5px;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary);
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  &__time {
+    color: var(--sr-color-text-tertiary);
+    font-size: var(--sr-font-size-xs);
+  }
+
+  &__tag {
+    padding: 0 5px;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  &__content {
+    margin: 0;
+    color: var(--sr-color-text);
+    font-size: var(--sr-font-size-sm);
+    line-height: 1.7;
+    // 保留换行；长 URL 不顶宽
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  &__reply-to {
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__emoji {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    vertical-align: text-bottom;
+    user-select: none;
+  }
+
+  &__deleted {
+    margin: 0;
+    color: var(--sr-color-text-quaternary);
+    font-size: var(--sr-font-size-sm);
+    font-style: italic;
+  }
+
+  // ---------- 操作区 ----------
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-4);
+    margin-top: var(--sr-space-2);
+  }
+
+  &__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    font-size: var(--sr-font-size-xs);
+    cursor: pointer;
+    transition: color 0.16s ease;
+
+    &:hover {
+      color: var(--sr-color-primary);
+    }
+
+    &.is-liked {
+      color: var(--sr-color-primary);
+    }
+
+    &.is-danger:hover {
+      color: var(--sr-color-danger);
+    }
+  }
+
+  // ---------- 回复区 ----------
+  &__replies {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sr-space-4);
+    margin-top: var(--sr-space-3);
+    padding: var(--sr-space-4);
+    border-radius: var(--sr-radius-md);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__more {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-primary);
+    font-size: var(--sr-font-size-xs);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // 正在回复的条目左侧加一道主色，方便定位
+  &.is-replying > &__body {
+    border-left: 2px solid var(--sr-color-primary);
+    padding-left: var(--sr-space-3);
+  }
+}
+
+// ================= 表单 =================
+.sr-comment-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sr-space-3);
+
+  &__login {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sr-space-3);
+    padding: var(--sr-space-4) var(--sr-space-5);
+    border: 1px dashed var(--sr-color-border);
+    border-radius: var(--sr-radius-md);
+  }
+
+  &__login-text {
+    margin: 0;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-sm);
+  }
+
+  &__reply {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sr-space-2);
+    padding: 4px 10px;
+    border-radius: var(--sr-radius-sm);
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary);
+    font-size: var(--sr-font-size-xs);
+  }
+
+  &__reply-cancel {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__main {
+    display: flex;
+    gap: var(--sr-space-3);
+  }
+
+  &__avatar {
+    flex: none;
+    margin-top: 2px;
+  }
+
+  &__field {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-3);
+    margin-top: var(--sr-space-2);
+  }
+
+  &__tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease;
+
+    &:hover,
+    &.is-active {
+      background: var(--sr-color-bg-sunken);
+      color: var(--sr-color-primary);
+    }
+  }
+
+  &__tip {
+    color: var(--sr-color-text-quaternary);
+    font-size: 11.5px;
+  }
+
+  &__error {
+    margin: 6px 0 0;
+    color: var(--sr-color-danger);
+    font-size: var(--sr-font-size-xs);
+  }
+
+  &__guest {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sr-space-3);
+
+    .sr-breakpoint-down(sm, {
+      grid-template-columns: 1fr;
+    });
+  }
+
+  // 只有两个字段时不要空出一列
+  &__guest:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &__emoji {
+    position: fixed;
+    z-index: var(--sr-z-popover);
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-md);
+    background: var(--sr-color-bg-elevated, var(--sr-color-bg-container));
+    box-shadow: var(--sr-shadow-lg, var(--sr-shadow-md));
+    overflow: hidden;
+  }
+}
