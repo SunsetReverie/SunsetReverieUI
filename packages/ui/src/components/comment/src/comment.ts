@@ -164,6 +164,24 @@ export const commentProps = {
     default: true,
   },
   /**
+   * 正文框初始行数 @default 0
+   *
+   * 0 表示按 `compact` 取默认值（回复框 2 行、顶层 3 行）。
+   */
+  rows: {
+    type: Number,
+    default: 0,
+  },
+  /**
+   * 自动增高的上限行数 @default 0
+   *
+   * 0 表示按 `compact` 取默认值（回复框 6 行、顶层 10 行）。
+   */
+  maxRows: {
+    type: Number,
+    default: 0,
+  },
+  /**
    * 正文框背景图
    *
    * @remarks 透传给内部 `SrTextarea`：`url()`、渐变函数或裸地址都行，
@@ -308,6 +326,24 @@ export const commentEditorProps = {
   compact: {
     type: Boolean,
     default: false,
+  },
+  /**
+   * 正文框初始行数 @default 0
+   *
+   * 0 表示按 `compact` 取默认值（回复框 2 行、顶层 3 行）。
+   */
+  rows: {
+    type: Number,
+    default: 0,
+  },
+  /**
+   * 自动增高的上限行数 @default 0
+   *
+   * 0 表示按 `compact` 取默认值（回复框 6 行、顶层 10 行）。
+   */
+  maxRows: {
+    type: Number,
+    default: 0,
   },
   /** 正文框背景图，透传给 `SrTextarea` */
   backgroundImage: {

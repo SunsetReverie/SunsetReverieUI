@@ -193,6 +193,8 @@ interface SrCommentAuthor {
 
 排序有 `latest` / `oldest` / `hottest`（只按点赞数，不做时间衰减）。切换排序会回到第一页。
 
+排序条的圆角由 `--sr-comment-sort-radius` 控制（默认 `8px`，不是胶囊；不跟随 `--sr-radius-md` 是避免 glass 下被撑成半圆），未激活项 hover 时有底色反馈。
+
 ::: tip 数据要够才看得出效果
 页码模式在顶层评论数不超过 `pageSize` 时不渲染分页条；加载更多模式在 `hasMore=false` 时只显示「没有更多了」。演示或联调时至少准备两页数据（比如 23 条 + 每页 5 条），否则会觉得「分页没生效」。
 :::
@@ -321,6 +323,8 @@ interface SrCommentAuthor {
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包，表单与正文共用 |
 | `emptyText` | `string` | `'还没有评论，来说两句吧'` | 空态文案 |
 | `showEditor` | `boolean` | `true` | 是否显示评论框 |
+| `rows` | `number` | `0` | 正文框初始行数，0 按 compact 取 2 / 3 |
+| `maxRows` | `number` | `0` | 自动增高上限行数，0 按 compact 取 6 / 10 |
 | `backgroundImage` | `string` | `''` | 正文框背景图 |
 | `backgroundText` | `string` | `''` | 正文框水印文字 |
 | `backgroundPosition` | 九宫格 | `'center'` | 背景落点，图片与文字共用 |
@@ -370,6 +374,8 @@ interface SrCommentAuthor {
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包 |
 | `replyTo` | `SrCommentData \| null` | `null` | 回复目标，进入精简态 |
 | `compact` | `boolean` | `false` | 精简样式 |
+| `rows` | `number` | `0` | 初始行数，0 按 compact 取 2 / 3 |
+| `maxRows` | `number` | `0` | 自动增高上限，0 按 compact 取 6 / 10 |
 | `backgroundImage` | `string` | `''` | 正文框背景图 |
 | `backgroundText` | `string` | `''` | 正文框水印文字 |
 | `backgroundPosition` | 九宫格 | `'center'` | 背景落点 |
@@ -396,6 +402,32 @@ interface SrCommentAuthor {
 ```ts
 import '@sunset-reverie/ui/components/comment/style.css'
 ```
+
+## 样式定制
+
+样式分两层，不用改源码：
+
+**组件级变量**（在 `.sr-comment` 或任意祖先上覆盖）：
+
+| 变量 | 默认 | 作用 |
+| --- | --- | --- |
+| `--sr-comment-gap` | `var(--sr-space-5)` | 头部 / 列表 / 分页之间的间距 |
+| `--sr-comment-sort-radius` | `8px` | 排序条圆角，默认**不是胶囊** |
+
+```css
+.my-comments {
+  --sr-comment-gap: 16px;
+  --sr-comment-sort-radius: 4px;   /* 想要更方 */
+}
+
+/* 或者直接改类名 */
+.my-comments .sr-comment__title { font-size: 15px; }
+.my-comments .sr-comment-item__content { line-height: 1.9; }
+```
+
+其余尺寸与颜色都走全局设计令牌（`--sr-space-*` / `--sr-color-*` / `--sr-radius-*`），换主题自动跟随；毛玻璃质感下输入框边框会自动压淡一档，不需要单独处理。
+
+排序条在**未激活项上也有 hover 底色**，不是只换文字颜色。
 
 ## 注意事项
 

@@ -4,6 +4,7 @@ import {
   DEFAULT_EMOJI_PACKAGES,
   SrButton,
   SrComment,
+  SrCommentEditor,
   SrDropdown,
   SrIcon,
   SrInputNumber,
@@ -614,9 +615,18 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
           切换{{ loggedIn ? '游客' : '登录' }}态
         </SrButton>
       </div>
+      <SrCommentEditor
+        :user="user"
+        :emoji-packages="emojiPackages"
+        :rows="5"
+        :max-rows="8"
+        @submit="onSubmit"
+      />
       <p class="hint">
         表单内部复用 <code>SrTextarea</code>：传了表情包就是富文本模式，编辑时表情内联显示，
-        <code>v-model</code> 收到的仍是标记文本。快捷键 <code>Ctrl / ⌘ + Enter</code> 提交。
+        <code>v-model</code> 收到的仍是标记文本。高度用 <code>rows</code> / <code>max-rows</code> 控制（这里 5
+        行起、最高 8 行），快捷键 <code>Ctrl / ⌘ + Enter</code>
+        提交。
       </p>
     </section>
   </div>

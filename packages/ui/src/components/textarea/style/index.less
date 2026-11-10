@@ -18,7 +18,7 @@
   box-sizing: border-box;
   width: 100%;
   overflow: hidden;
-  border: 1px solid var(--sr-color-border);
+  border: 1px solid var(--sr-textarea-border, var(--sr-color-border));
   border-radius: var(--sr-form-radius);
   background: var(--sr-color-bg-container);
   color: var(--sr-color-text);
@@ -31,7 +31,7 @@
 
   // ---------- 状态 ----------
   &:hover:not(.is-disabled) {
-    border-color: var(--sr-color-border-strong, var(--sr-color-border));
+    border-color: var(--sr-textarea-border-hover, var(--sr-color-border-strong, var(--sr-color-border)));
   }
 
   &.is-focused {
@@ -213,4 +213,16 @@
       color: var(--sr-color-danger);
     }
   }
+}
+
+// 毛玻璃质感外边已经叠了一层高光，实线再保持原样会显得生硬，
+// 这里统一压淡一档；想恢复原样覆盖这个变量即可
+[data-sr-style='glass'] .sr-textarea:not(.is-disabled) {
+  // 只改颜色变量，不直接写 border-color：hover 仍能按自己的变量提亮
+  --sr-textarea-border: color-mix(in srgb, var(--sr-color-border) 55%, transparent);
+  --sr-textarea-border-hover: color-mix(
+    in srgb,
+    var(--sr-color-border-strong, var(--sr-color-border)) 75%,
+    transparent
+  );
 }
