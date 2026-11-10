@@ -76,7 +76,7 @@ const errValue = ref('')
 <sr-input v-model="email" status="error" />
 ```
 
-校验态只改变边框与焦点环颜色，`status="error"` 时同时输出 `aria-invalid="true"`。错误文案与布局由 `SrFormItem` 负责（尚未实现）。
+校验态只改变边框与焦点环颜色，`status="error"` 时同时输出 `aria-invalid="true"`。错误文案与布局交给 [`SrFormItem`](/components/form)，组件本身不渲染提示文字。
 
 ## 多行
 
@@ -123,7 +123,8 @@ const errValue = ref('')
 | `change` | `string \| number` | 值变化（中文输入法下等组合结束后才触发） |
 | `clear` | — | 点击清空 |
 | `enter` | `KeyboardEvent` | 单行输入框回车 |
-| `focus` / `blur` | `FocusEvent` | 原生焦点事件 |
+| `focus` | `event: FocusEvent` | 获得焦点 |
+| `blur` | `event: FocusEvent` | 失去焦点 |
 
 | 插槽 | 说明 |
 | --- | --- |

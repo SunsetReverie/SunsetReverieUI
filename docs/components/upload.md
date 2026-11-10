@@ -158,11 +158,23 @@ uploadRef.value?.clear()
 `#trigger` 插槽替换整个拖拽区：
 
 ```vue
-<SrUpload :http-request="upload">
-  <template #trigger>
-    <div class="my-zone">自定义内容</div>
-  </template>
-</SrUpload>
+<script setup lang="ts">
+import { SrUpload } from '@sunset-reverie/ui'
+
+/** 自定义上传：返回地址作为 file.url，抛错则条目显示重试 */
+async function upload(file: File, onProgress: (percent: number) => void): Promise<string> {
+  onProgress(50)
+  return URL.createObjectURL(file)
+}
+</script>
+
+<template>
+  <SrUpload :http-request="upload">
+    <template #trigger>
+      <div style="padding: 16px; border: 1px dashed currentColor">自定义内容</div>
+    </template>
+  </SrUpload>
+</template>
 ```
 
 ## 上传函数

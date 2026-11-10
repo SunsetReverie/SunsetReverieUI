@@ -121,7 +121,7 @@ const customToolbar = [
 | 类型 | 怎么出现 | 说明 |
 | --- | --- | --- |
 | 自定义动作 | `toolbar` 数组里的对象 | `{ key, label, icon?, disabled?, action(api) }` |
-| 短代码按钮 | `extensions[].insert` | 每个配了 `insert` 的扩展自动追加一个，见[短代码按钮](#短代码按钮) |
+| 短代码按钮 | `extensions[].insert` | 每个配了 `insert` 的扩展自动追加一个，见[短代码按钮](#短代码按钮参数面板) |
 | 表情按钮 | 传了 `emojiPackages` | 自动追加在末尾，见[表情](#表情) |
 
 ### 同类按钮怎么区分
@@ -616,6 +616,8 @@ async function uploadFile(file: File) {
 | `preview` | `value` | 替换预览区 |
 | `insertPanel.slotName` | `setResult, close, value, result` | 动态插槽在组件内部的写法；使用方按下面的规则命名 |
 | `insert-{扩展名}` | `setResult, close, value, result` | 自定义某个短代码的参数面板内容，如 `#insert-pick` |
+
+> `insert-{扩展名}` 是**命名约定**，不是源码里声明的固定插槽；组件只有一个动态入口 `insertPanel.slotName`，由扩展名拼出实际插槽名。
 
 ## 暴露方法
 

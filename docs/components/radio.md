@@ -99,6 +99,12 @@ const picked = ref('a')
 | `update:modelValue` | `value` | 选中值变化，配合 `v-model` |
 | `change` | `value` | 同上，提交语义 |
 
+## 插槽
+
+| 插槽 | 说明 |
+| --- | --- |
+| `default` | 单选框右侧的标签内容 |
+
 ## 注意事项
 
 - **组内的 `SrRadio` 必须给 `value`**，否则无法与组的 `modelValue` 比较，点击无效。

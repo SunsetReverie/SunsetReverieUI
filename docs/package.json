@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
-    "build": "vitepress build",
+    "build": "pnpm --dir .. run build:gallery && vitepress build",
     "preview": "vitepress preview"
   },
   "devDependencies": {

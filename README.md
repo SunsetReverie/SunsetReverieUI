@@ -162,6 +162,8 @@ W10 完成后按业务需要提前交付了一批 P2 组件，并对已有的交
 | 概览页开场面板 | 首页第一屏讲清定位与六条卖点（Token 分层、双风格、首帧定稿、主干自带、回归守卫、类型），组件数与注册表联动，玻璃 / 扁平 / 暗色三态自适应 |
 | 演示站可查找 | 搜索框常驻顶栏右侧（侧栏收起 / 窄屏都能用），按名称 / 分类 / 组件说明过滤并在框旁显示命中数；窄屏侧栏改抽屉 + 遮罩，输入时自动展开以露出结果；演示页可展开并复制该页真实源码（Vite `?raw`，不手抄示例） |
 | 演示覆盖守卫 | `check-demo-coverage` 挂进 `pnpm lint`，对齐组件目录 / 注册表 / `props.json` / 孤儿文件；Row 与 Col 的 Props 表在同一页分两组展示 |
+| 文档站守卫 | `pnpm check:docs` 按区块解析 Props / 事件 / 插槽表并与 `props.json` 精确比对，另查侧边栏覆盖、站内链接与锚点、门面数字、未转义插值；旧版只查「字符串有没有出现」 |
+| 主题指南 | `docs/guide/theming.md` 讲清三层 Token、明暗/质感/主色/动效四维切换、SSR 首帧不闪白与三档玻璃强度 |
 | 演示站体检 | `pnpm check:demo` 遍历注册表全部演示页，断言标题渲染、源码入口存在、无控制台错误，失败即非零退出 |
 | 视觉基线 | `pnpm check:visual` 比对开场面板 / pill 标签 / 右键菜单 / 吸附播放器 5 张基线（`visual/__screenshots__`），`pnpm check:visual:update` 重建；固定亮色 + 扁平 + 无动效 |
 | 演示站类型检查 | `pnpm typecheck` 现在也跑 `playground-vue3` 的 `vue-tsc`；模板里不写 TS 断言与反引号模板字符串，复杂表达式收进脚本函数 |
@@ -233,6 +235,8 @@ pnpm build
 | `pnpm dev` | 启动 playground-vue3（直连源码，HMR，端口 5173） |
 | `pnpm check:demo` | 先起 `pnpm dev`，再遍历全部演示页做渲染 / 控制台冒烟；端口不同用 `DEMO_PORT=xxxx` |
 | `pnpm check:visual` | 比对演示站视觉基线（自带 webServer，无需先 `pnpm dev`）；改动 UI 后用 `pnpm check:visual:update` 重建基线 |
+| `pnpm check:docs` | 单独跑文档站守卫；`pnpm lint` 已内置，加 `--verbose` 看数据结构表的提醒明细 |
+| `pnpm --filter @sunset-reverie/docs build` | 先 `build:gallery` 生成 Token 验证页，再构建 VitePress 站（干净检出也能构建） |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |

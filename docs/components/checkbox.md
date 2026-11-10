@@ -101,6 +101,12 @@ const checked = ref(true)
 | `update:modelValue` | `value` | 值变化，配合 `v-model` |
 | `change` | `value` | 同上，提交语义 |
 
+## 插槽
+
+| 插槽 | 说明 |
+| --- | --- |
+| `default` | 勾选框右侧的标签内容 |
+
 ## 注意事项
 
 - **单个使用时绑 `v-model`（布尔），组内使用时绑 `value`**。两种模式互斥：组内给 `modelValue` 会被组忽略。

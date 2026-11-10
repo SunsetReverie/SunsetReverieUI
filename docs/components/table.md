@@ -267,7 +267,7 @@ const columns: SrTableColumn[] = [
 | `update:selectedKeys` | `keys` | 选中集合变化 |
 | `update:expandedKeys` | `keys` | 展开集合变化 |
 | `selection-change` | `keys, rows` | 选中集合变化（带行数据） |
-| `sort-change` | `{ key, order }` | 排序变化，取消时 `order` 为 `null` |
+| `sort-change` | `payload` | 排序变化，`payload` 是 `{ key, order }`，取消时 `order` 为 `null` |
 | `row-click` | `row, index` | 行点击 |
 | `expand-change` | `keys, rows` | 展开集合变化（带行数据） |
 | `update:page` | `page` | 当前页变化 |
@@ -281,6 +281,8 @@ const columns: SrTableColumn[] = [
 | `cell-<key>` | 单元格，作用域 `{ row, value, index, column }` |
 | `expand` | 展开行内容，作用域 `{ row, index }` |
 | `empty` | 空状态，覆盖默认的图标 + 文案 |
+
+> `cell-<key>` 是**命名约定**而不是固定插槽：组件源码里只有一个动态入口 `slotNameOf(column)`，把列配置的 `key` 拼成实际插槽名（列 `status` 对应 `#cell-status`）。
 
 ## 注意事项
 

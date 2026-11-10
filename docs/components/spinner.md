@@ -141,7 +141,7 @@ import { SrSpinner } from '@sunset-reverie/ui'
 
 - **动画会尊重 `prefers-reduced-motion`**：用户开了「减少动效」时停止旋转，但图标仍然显示，避免出现「什么都没有」的空白。
 - 组件本身没有插槽；需要「图标 + 文案」的组合直接写在外面，或使用 `SrButton` 的 `loading` 属性。
-- 全屏或区块级的加载遮罩不要自己用 spinner 拼，`SrTable` 已有 `loading` 属性，其它场景可以用 `SrEmpty` + `SrSpinner` 组合。
+- 全屏或区块级的加载遮罩不要自己用 spinner 拼，`SrTable` 已有 `loading` 属性，其他场景可以用 `SrEmpty` + `SrSpinner` 组合。
 
 ## 注意事项
 

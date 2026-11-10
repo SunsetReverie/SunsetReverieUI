@@ -4,8 +4,8 @@
  * 配色取自 logo 的四个纯色：
  *   #3E3EDC 靛蓝（主色）· #9078FF 紫 · #92ABFF 浅蓝 · #FF88A3 粉
  *
- * 不使用任何渐变。标题、按钮、滚动条全部是纯色。
- * 毛玻璃保留（模糊不是渐变），但背景是纯色而非径向渐变。
+ * 标题、按钮、滚动条用纯色；渐变只用在两处背景：
+ * body 的低透明度光晕（让毛玻璃有东西可糊）与演示舞台，不用在控件表面。
  */
 
 /* ══════════════════════════════════════════════════════════
@@ -97,8 +97,9 @@
   --vp-c-bg-soft: #16162a;
 
   --vp-c-text-1: #e8e8f2;
-  --vp-c-text-2: #a0a0bd;
-  --vp-c-text-3: #70708c;
+  --vp-c-text-2: #b4b4cf;
+  /* 演示说明大量用 text-3，压在深色舞台上要够亮才读得出 */
+  --vp-c-text-3: #9a9ab5;
 
   --vp-c-divider: #26263c;
   --vp-c-border: #31314c;
@@ -750,6 +751,29 @@ body {
 @media (max-width: 768px) {
   .VPNavBar .container {
     padding: 0 16px;
+  }
+}
+
+/* 组件索引表的首列是分类名：不换行，避免「布局与配置」被挤成竖排 */
+.components-index .vp-doc table td:first-child {
+  white-space: nowrap;
+}
+
+/* 极窄屏：特性卡片单列，演示与宽表横向滚动而不是撑破页面 */
+@media (max-width: 480px) {
+  .sr-features {
+    grid-template-columns: 1fr;
+  }
+
+  .sr-demo {
+    flex-wrap: wrap;
+    overflow-x: auto;
+  }
+
+  .vp-doc table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
 

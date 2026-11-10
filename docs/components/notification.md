@@ -11,7 +11,7 @@ import { srNotification } from '@sunset-reverie/ui'
 
 srNotification.success({
   title: '部署完成',
-  message: 'v1.2.0 已发布到生产环境',
+  message: '构建产物已推送到生产环境',
 })
 ```
 
@@ -21,14 +21,14 @@ srNotification.success({
   <SrButton
     size="sm"
     variant="outline"
-    @click="srNotification.info({ title: '新版本可用', message: 'v1.3.0 已发布，包含 8 项改进' })"
+    @click="srNotification.info({ title: '新版本可用', message: '内部预览版已就绪，包含 8 项改进' })"
   >
     info
   </SrButton>
   <SrButton
     size="sm"
     variant="outline"
-    @click="srNotification.success({ title: '部署完成', message: 'v1.2.0 已发布到生产环境' })"
+    @click="srNotification.success({ title: '部署完成', message: '构建产物已推送到生产环境' })"
   >
     success
   </SrButton>

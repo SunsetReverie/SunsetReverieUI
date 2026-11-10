@@ -28,6 +28,7 @@
     "changeset": "changeset",
     "version-packages": "changeset version",
     "prepare": "husky",
+    "check:docs": "node scripts/check-docs.mjs",
     "check:demo": "node scripts/check-demo.mjs --all",
     "check:visual": "playwright test --config playwright.visual.config.ts",
     "check:visual:update": "playwright test --config playwright.visual.config.ts --update-snapshots",

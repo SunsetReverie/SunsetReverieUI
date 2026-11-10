@@ -30,7 +30,7 @@ import { SrCol, SrRow } from '@sunset-reverie/ui'
 
 ## 响应式
 
-`span` 支持按断点分档的对象，也可以直接用具名 prop：
+`span` 支持按断点分档的对象，组件内部按当前断点取值：
 
 <div class="sr-demo is-block">
   <SrRow :gutter="12">
@@ -40,11 +40,8 @@ import { SrCol, SrRow } from '@sunset-reverie/ui'
   </SrRow>
 </div>
 
-两种写法等价：
-
 ```vue
 <SrCol :span="{ xs: 24, md: 8 }" />
-<SrCol xs="24" md="8" />
 ```
 
 窄屏（`xs`）下自动堆成一列，这是中后台表格与表单最常见的响应式需求。

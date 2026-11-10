@@ -65,9 +65,8 @@ export default defineConfig({
     logo: '/logo.svg',
 
     /*
-     * 导航只列**已写完**的页面。
-     * 未写的先不放，否则点进去是 404 —— 宁可少一项，也不要死链。
-     * 每写完一批，把对应项加回来。
+     * 导航与侧边栏覆盖全部已写文档。新增组件文档时两项都要补，
+     * `pnpm lint` 里的 check-docs 会比对侧边栏链接与 docs/components 下的文件。
      */
     nav: [
       { text: '指南', link: '/guide/getting-started', activeMatch: '/guide/' },
@@ -81,6 +80,7 @@ export default defineConfig({
           text: '指南',
           items: [
             { text: '快速开始', link: '/guide/getting-started' },
+            { text: '主题与 Token', link: '/guide/theming' },
             { text: '拖拽排序', link: '/guide/drag-sort' },
             { text: 'Markdown 渲染样式定制', link: '/guide/markdown-theming' },
           ],
@@ -110,7 +110,8 @@ export default defineConfig({
         {
           text: '布局与配置',
           items: [
-            { text: 'SrRow / SrCol', link: '/components/row' },
+            { text: 'SrRow', link: '/components/row' },
+            { text: 'SrCol', link: '/components/col' },
             { text: 'SrConfigProvider', link: '/components/config-provider' },
             { text: 'SrTransition', link: '/components/transition' },
           ],

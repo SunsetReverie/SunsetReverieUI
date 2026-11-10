@@ -233,7 +233,7 @@ const comments = ref([
 | `comment.meta.os` | `os` | 操作系统 |
 | `comment.meta.browser` | `browser` | 浏览器 |
 
-其它键不渲染，只在 `#comment-meta` / `#comment-footer` 的作用域里可读。
+其他键不渲染，只在 `#comment-meta` / `#comment-footer` 的作用域里可读。
 
 ### 时间字段
 
@@ -480,7 +480,7 @@ async function onSubmit(payload: SrCommentSubmitPayload) {
 | `comment-footer` | 同上 | 条目底部 |
 | `editor-toolbar` | `insert, submit` | 评论框工具栏，位于表情按钮右侧 |
 
-`Lv.6` / `浙江` / `macOS` / `Chrome` 这些标签**默认就会渲染**——作者的 `meta.level`、评论的 `meta.region / os / browser` 有值就显示，等级自带主色底以区别于其它标签。上面的槽位只是把它们换成自定义样式，不传也能用。
+`Lv.6` / `浙江` / `macOS` / `Chrome` 这些标签**默认就会渲染**——作者的 `meta.level`、评论的 `meta.region / os / browser` 有值就显示，等级自带主色底以区别于其他标签。上面的槽位只是把它们换成自定义样式，不传也能用。
 
 ```vue
 <SrComment :comments="comments">

@@ -101,7 +101,7 @@
 | `icon` | `string` | `''` | 图标名 |
 | `iconPosition` | `'left' \| 'right'` | `'left'` | 图标位置 |
 
-响应式尺寸除了给 `size` 传对象，也可以直接用具名 prop：`<sr-button xs="sm" md="lg">`，与 `size` 对象等价。
+响应式尺寸只有 `size` 一个对象入口：`:size="{ xs: 'sm', md: 'lg' }"`。组件没有 `xs` / `md` 这类具名 prop，写了只会落到 `$attrs` 上。
 
 | 插槽 | 说明 |
 | --- | --- |

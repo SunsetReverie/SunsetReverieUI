@@ -143,11 +143,14 @@ const selected = ref([])
 ```
 
 ```ts
-const loadChildren = async (node) => {
+/** 示例接口地址，换成你自己的后端；返回的数组会作为该节点的 children */
+async function loadChildren(node) {
   const res = await fetch(`/api/children/${node.key}`)
   return res.json()
 }
 ```
+
+> 上面片段里的 `base` 是前文的基础数据，`/api/children/...` 是占位接口；两者都要换成项目里真实的数据源。
 
 节点**没有 `children` 且未加载过**时，展开会先调用 `loadData`：
 
@@ -176,8 +179,13 @@ const loadChildren = async (node) => {
 **不允许的操作**会自动拒绝：拖到自己身上、拖进自己的子树（会让树变成环）。
 
 ```ts
-function onDrop({ dragNode, dropNode, type }, data) {
-  // data 是移动后的完整新树，直接替换即可
+import { ref } from 'vue'
+import type { SrTreeNode } from '@sunset-reverie/ui'
+
+const tree = ref<SrTreeNode[]>([])
+
+/** 拖放完成后直接替换数据源 */
+function onDrop(detail, data: SrTreeNode[]) {
   tree.value = data
 }
 ```
@@ -253,7 +261,7 @@ import { useSrDragSort } from '@sunset-reverie/ui'
 | `disabled` | `boolean` | 禁用该节点 |
 | `children` | `SrTreeNode[]` | 子节点 |
 | `isLeaf` | `boolean` | 强制标记为叶子（隐藏展开箭头） |
-| 其它字段 | `unknown` | 可以挂任意业务数据，原样带回事件 |
+| 其他字段 | `unknown` | 可以挂任意业务数据，原样带回事件 |
 
 ## 事件
 
@@ -261,11 +269,11 @@ import { useSrDragSort } from '@sunset-reverie/ui'
 | --- | --- | --- |
 | `update:modelValue` | `keys` | 选中变化 |
 | `update:expandedKeys` | `keys` | 展开变化 |
-| `check` | `keys, { checked, node, halfCheckedKeys }` | 勾选变化 |
-| `expand` | `keys, { node, expanded }` | 展开收起 |
+| `check` | `keys, detail` | 勾选变化，`detail` 含 `checked` / `node` / `halfCheckedKeys` |
+| `expand` | `keys, detail` | 展开收起，`detail` 含 `node` / `expanded` |
 | `node-click` | `node` | 点击节点 |
 | `load` | `node, children` | 异步加载完成 |
-| `node-drop` | `{ dragNode, dropNode, type }, data` | 拖放完成，`data` 是移动后的新树 |
+| `node-drop` | `detail, data` | 拖放完成，`detail` 含 `dragNode` / `dropNode` / `type`，`data` 是移动后的新树 |
 
 ## 暴露的方法
 

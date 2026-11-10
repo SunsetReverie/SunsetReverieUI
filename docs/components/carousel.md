@@ -164,7 +164,7 @@ const slides = [{ title: '一' }, { title: '二' }, { title: '三' }]
 | `indicators` | `boolean` | `true` | 显示指示器 |
 | `indicatorPosition` | `'inside' \| 'outside'` | `'inside'` | 指示器位置 |
 | `arrows` | `boolean` | `true` | 显示切换箭头 |
-| `height` | `number \| string` | `240` | 高度；数字与纯数字字符串按 px，其它原样用 |
+| `height` | `number \| string` | `240` | 高度；数字与纯数字字符串按 px，其他原样用 |
 | `draggable` | `boolean` | `true` | 允许鼠标拖动 |
 | `touchable` | `boolean` | `true` | 允许触摸滑动 |
 | `dragThreshold` | `number` | `0.15` | 翻页所需的位移比例 |

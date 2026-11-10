@@ -26,7 +26,7 @@ const bareOpen = ref(false)
   内容多的时候用宽一点的尺寸，内部会自己处理滚动。
 </SrModal>
 
-<SrModal v-model="bareOpen" title="无遮罩" :mask="false" :width="400">
+<SrModal v-model="bareOpen" title="无遮罩" :show-mask="false" :width="400">
   不挡背景，适合不打断操作的场景。
 </SrModal>
 
@@ -50,14 +50,30 @@ const open = ref(false)
 ## 操作区
 
 ```vue
-<sr-modal v-model="open" title="编辑配置">
-  表单内容
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SrButton, SrModal } from '@sunset-reverie/ui'
 
-  <template #footer>
-    <sr-button variant="text" @click="open = false">取消</sr-button>
-    <sr-button variant="primary" @click="save">保存</sr-button>
-  </template>
-</sr-modal>
+const open = ref(false)
+
+/** 保存并关闭；真实项目里这里换成接口请求 */
+function save(): void {
+  open.value = false
+}
+</script>
+
+<template>
+  <SrButton variant="primary" @click="open = true">编辑配置</SrButton>
+
+  <SrModal v-model="open" title="编辑配置">
+    表单内容
+
+    <template #footer>
+      <SrButton variant="text" @click="open = false">取消</SrButton>
+      <SrButton variant="primary" @click="save">保存</SrButton>
+    </template>
+  </SrModal>
+</template>
 ```
 
 面板是三段式布局：头部与底部固定，只有主体区域滚动。内容再长，关闭按钮和底部操作也始终可见。

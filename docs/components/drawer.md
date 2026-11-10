@@ -126,7 +126,7 @@ const open = ref(false)
 | `inset` | `boolean` | `false` | 圆角形态：贴边 + 四角圆角 |
 | `mask` | `boolean` | `true` | 显示遮罩 |
 | `lockScroll` | `boolean` | `true` | 打开时锁定页面滚动 |
-| `zIndex` | `number` | — | 层级，需要盖在其它浮层之上时调大 |
+| `zIndex` | `number` | — | 层级，需要盖在其他浮层之上时调大 |
 
 ## 事件
 

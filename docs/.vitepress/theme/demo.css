@@ -84,8 +84,14 @@
   font-size: 12px;
 }
 
-/* 深色舞台：演示暗色主题下的效果 */
+/* 深色舞台：演示暗色主题下的效果。
+   浅色文档主题下也会出现这块深底，必须就地覆盖文字色，
+   否则 vp-c-text-* 的深色字压在深色舞台上完全读不出。 */
 .sr-demo.is-dark {
+  --vp-c-text-1: #e8e8f2;
+  --vp-c-text-2: #b4b4cf;
+  --vp-c-text-3: #a8a8c2;
+  color: var(--vp-c-text-1);
   background:
     radial-gradient(circle at 20% 10%, rgba(107, 107, 238, 0.18), transparent 50%),
     linear-gradient(168deg, #1a1a2e 0%, #141424 100%);

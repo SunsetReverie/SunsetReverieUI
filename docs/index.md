@@ -42,14 +42,14 @@ hero:
 
 <div class="sr-feature">
 <span class="doc-icon" style="--icon: url(/icons/box.svg)"></span>
-<h3>34 个组件</h3>
-<p>覆盖 P0 / P1 全部能力与大部分 P2：表格固定列与分页、侧边栏导航、标签页四种外观、确认框与加载更多。</p>
+<h3>69 个组件</h3>
+<p>P0–P2 全部落地：表格固定列与分页、侧栏导航与锚点、四种外观的标签页、虚拟列表、拖拽排序、Markdown 编辑器、吸附式音乐播放器。</p>
 </div>
 
 <div class="sr-feature">
 <span class="doc-icon" style="--icon: url(/icons/circle-check.svg)"></span>
 <h3>水合可验证</h3>
-<p>30 个组件的 SSR 冒烟测试 + Nuxt 水合 e2e，断言告警数为 0；新组件漏测会被 lint:smoke 拦下。</p>
+<p>63 个组件进 SSR 冒烟页，另 6 个命令式 / 无 DOM 组件由白名单跳过；Nuxt 水合 e2e 断言告警数为 0，漏测会被 lint:smoke 拦下。</p>
 </div>
 
 <div class="sr-feature">

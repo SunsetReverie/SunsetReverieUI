@@ -5,11 +5,11 @@
 ## 安装
 
 ```bash
-# 锁定到某个版本（推荐）
-pnpm add git+https://your-git-host/sunset-reverie-ui.git#v0.1.0
-
-# 只装核心库时，按需引入的组件样式由子路径提供
+# 私有仓库按 tag 分发，把 <你的 Git 地址> 换成实际仓库地址，锁定到某个版本
+pnpm add git+https://<你的 Git 地址>/sunset-reverie-ui.git#v0.1.0
 ```
+
+> 上面是**安装模板**：`<你的 Git 地址>` 是占位符，需要替换后才能执行。库不在公共 npm 源上；只装核心库时，按需引入的组件样式由子路径提供。
 
 `@sunset-reverie/ui` 的运行时依赖只有 `@iconify/vue`；图标数据在构建时已内联进产物，不需要额外安装图标包。
 

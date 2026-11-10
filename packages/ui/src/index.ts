@@ -1,7 +1,8 @@
 /**
  * SunsetReverie-UI 核心包入口
  *
- * W5 已导出：Token、组合式函数、栅格、配置容器、过渡、图标、按钮、输入框、弹窗、轻提示。
+ * 导出 Token、组合式函数、命令式 API 与全部 69 个组件。
+ * 组件清单由 scripts/build-styles.mjs 与 resolver 同步校验，新增组件别漏了这里。
  */
 
 // ---------- Token ----------
