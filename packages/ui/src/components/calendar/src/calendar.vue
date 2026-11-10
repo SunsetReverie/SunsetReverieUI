@@ -119,17 +119,28 @@ watch(viewDate, (date) => {
 <template>
   <div class="sr-calendar">
     <div class="sr-calendar__header">
-      <button class="sr-calendar__nav" type="button" aria-label="上一月" @click="prevMonth">
-        <SrIcon name="lucide:chevron-left" :size="15" />
-      </button>
+      <!-- 翻月按钮成组放在左侧，标题才能始终居中 -->
+      <div class="sr-calendar__nav-group">
+        <button class="sr-calendar__nav" type="button" aria-label="上一月" @click="prevMonth">
+          <SrIcon name="lucide:chevron-left" :size="15" />
+        </button>
+
+        <button class="sr-calendar__nav" type="button" aria-label="下一月" @click="nextMonth">
+          <SrIcon name="lucide:chevron-right" :size="15" />
+        </button>
+      </div>
 
       <span class="sr-calendar__title">{{ title }}</span>
 
-      <button class="sr-calendar__nav" type="button" aria-label="下一月" @click="nextMonth">
-        <SrIcon name="lucide:chevron-right" :size="15" />
+      <button
+        v-if="showToday"
+        class="sr-calendar__today"
+        type="button"
+        aria-label="回到今天"
+        @click="goToday"
+      >
+        今天
       </button>
-
-      <button v-if="showToday" class="sr-calendar__today" type="button" @click="goToday">今天</button>
     </div>
 
     <div class="sr-calendar__week">
