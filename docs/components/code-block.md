@@ -113,3 +113,5 @@ const highlight = (code, lang) => hljs.highlight(code, { language: lang }).value
 - **`lang` 不认识时不报错**，由高亮器决定是原样返回还是降级。
 - **`wrap` 与 `lineNumbers` 互斥**，同时开启时只保留折行、隐藏行号。
 - **组件不引入高亮主题的 CSS**，代码配色需要自己引对应高亮器的样式表。
+- **深色代码块不是 prop**。给任意祖先加 `data-sr-theme="dark"`，语义变量会整体切到暗色，但高亮 token 得另配一套浅色字，否则深色底上的深色字看不清。演示站用 `[data-sr-theme='dark'] .sr-code` 处理，见 CodeBlock 演示页的「深色代码块」。
+- **复制不派发事件**。按钮只切换自己的文案（已复制 / 复制失败），不会顺手弹全局通知——代码块通常是安静的阅读区。要通知就在业务层调 `srCopyText` + `srNotification`，演示页的「复制后调用通知系统」给了完整写法。
