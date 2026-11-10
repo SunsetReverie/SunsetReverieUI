@@ -117,6 +117,10 @@ function setMiniPlacement(value: string): void {
           进度条与音量用的都是原生 <code>input[type=range]</code>：键盘方向键、无障碍朗读、移动端手势
           全都是白送的。自定义 div 要补一大堆 ARIA 与键盘处理，还容易漏。
         </p>
+        <p class="note">
+          右上角的全局歌词图标在那个角落，默认是关的：图标常驻而不是按 <code>global-lyrics</code>
+          显隐——传参只决定初始状态，运行时的开关归用户，图标时有时无反而让人以为功能丢了。
+        </p>
         <p class="hint">事件：{{ events.length ? events.join(' · ') : '（还没有事件）' }}</p>
       </div>
     </SrPanel>
@@ -146,8 +150,14 @@ function setMiniPlacement(value: string): void {
 
       <div class="notes">
         <p class="note">
-          收起为贴着屏幕边缘的小圆钮，鼠标移入或点击后展开完整播放器。适合做背景音乐——不占地方，需要时才出现。
-          圆钮在播放时会自转，暗示「正在响」；暂停则停住。
+          收起为贴着屏幕边缘的小圆钮，鼠标移入先展开<strong>精简卡片</strong>：封面、歌名、进度、 上一首 /
+          播放 / 下一首，外加右上角的展开按钮。点展开按钮才铺开<strong>完整面板</strong>
+          （循环、歌词、歌单、音量）。圆钮在播放时会自转，暗示「正在响」；暂停则停住。
+        </p>
+        <p class="note">
+          分两段而不是一步到位：悬停是「顺手看一眼、随手暂停」的轻动作，一上来就弹出歌词和 148
+          首歌的歌单太压人；
+          真要看歌词或选歌，多一次点击也明确得多。每次重新悬停都会退回精简卡片，不会记住上次的展开状态。
         </p>
         <p class="note">
           鼠标移出后 320ms

@@ -64,11 +64,13 @@ function log(text) {
 
 ## 吸附模式 attach
 
-收起为贴着屏幕边缘的小圆钮，鼠标移入或点击后展开完整播放器。适合做背景音乐——不占地方，需要时才出现。
+收起为贴着屏幕边缘的小圆钮，鼠标移入先展开**精简卡片**，点卡片右上角的展开按钮才铺开**完整面板**。适合做背景音乐——不占地方，需要时才出现。
 
 ```vue
 <SrMusicPlayer api="..." id="..." mode="attach" placement="bottomRight" :offset="16" />
 ```
+
+精简卡片里是封面、歌名、进度与「上一首 / 播放 / 下一首」——都是完整面板原有的元素，只是把循环、歌词、歌单、音量这些重内容先收起来。悬停本来就是「顺手看一眼、随手暂停」的轻动作，一上来就铺开整块歌词和歌单太压人；每次重新悬停都退回精简阶段，不记忆上次的展开状态。
 
 圆钮在播放时会自转，暗示「正在响」；暂停则停住。
 
@@ -104,7 +106,9 @@ function log(text) {
 <SrMusicPlayer api="..." id="..." mode="attach" global-lyrics />
 ```
 
-面板右上角有同一个开关，可以在运行时临时关掉。这个开关是组件内部状态，只以 `global-lyrics` 为**初始值**——「临时关掉字幕」通常是一次性的观看偏好，没有持久化价值，不该逼着宿主回去改传参。
+面板右上角的歌词图标**常驻**（三种形态铺开成完整面板时都有），默认关闭。它不随 `global-lyrics` 显隐：传参只决定初始状态，运行时的开关归用户，图标时有时无反而让人以为功能丢了。
+
+这个开关是组件内部状态，只以 `global-lyrics` 为**初始值**——「临时关掉字幕」通常是一次性的观看偏好，没有持久化价值，不该逼着宿主回去改传参。
 
 歌词条 `Teleport` 到 `body`，不受父级 `overflow` 影响；并且 `pointer-events: none`——它只是字幕，不该挡住页面上的按钮。
 
@@ -178,7 +182,7 @@ const cover = buildMusicApiUrl('https://meting-api.shurans.cn/', 'netease', 'pic
 | `placement` | 四角 | `'bottomRight'` | 贴边位置，仅紧凑形态生效 |
 | `offset` | `number \| string` | `16` | 距屏幕边缘距离 |
 | `showLyrics` | `boolean` | `true` | 显示歌词面板 |
-| `globalLyrics` | `boolean` | `false` | 底部全局歌词（初始值） |
+| `globalLyrics` | `boolean` | `false` | 底部全局歌词的**初始**开启状态（图标常驻，运行时可切换） |
 | `autoplay` | `boolean` | `false` | 自动播放 |
 | `volume` | `number` | `0.7` | 初始音量 |
 | `loop` | `'list' \| 'one' \| 'random'` | `'list'` | 初始循环模式 |
@@ -237,7 +241,8 @@ import '@sunset-reverie/ui/components/music-player/style.css'
 ## 实现说明
 
 - **只负责播放与展示**：不内置曲库、不依赖任何第三方播放器库，歌单完全由 Meting API 提供。
-- **三种形态共用一套面板**，差别只在外壳：`full` 常驻原地，`attach` / `mini` 收起为贴边元素；写成两套模板的话任何改动都要同步两遍。
+- **三种形态共用一套面板**，差别只在外壳：`full` 常驻原地，`attach` / `mini` 收起为贴边元素；写成两套模板的话任何改动都要同步两遍。`attach` 的两段式展开也不是第二套模板，而是同一个面板少了几个区块。
+- **滚动条写死在组件样式里**。`scrollbar-width` / `scrollbar-color` 是继承属性，紧凑形态 `Teleport` 到 `body` 后继承链变了，不自己声明就会和完整模式长得不一样。
 - **歌词二分查找**：播放期间每秒会查好几次，上百行歌词用线性扫描纯属浪费。
 - **歌词自动居中用 `scrollTo`** 而不是 `scrollIntoView`——后者会连带滚动所有可滚祖先，包括整个页面，用户正在看评论时页面会突然跳一下。位置用两个矩形相减算，不依赖 `offsetTop` 的定位祖先。
 - **`autoplay` 要捕获 Promise**：无用户交互时浏览器会拒绝播放，不捕获会产生未处理的 Promise 警告，按钮状态也会与实际不符。

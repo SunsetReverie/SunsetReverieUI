@@ -70,8 +70,17 @@ const lyricOpen = ref(props.showLyrics)
 /** 歌单面板展开 */
 const playlistOpen = ref(false)
 
-/** 紧凑态是否展开 */
+/** 紧凑态是否展开（展开出面板） */
 const miniExpanded = ref(false)
+
+/**
+ * 面板是否铺开成完整形态
+ *
+ * @remarks 吸附模式改成两段式：悬停圆钮先给一张精简卡片，点卡片右上角的
+ * 展开按钮才铺开歌词、歌单、音量这些重内容。一悬停就弹出完整面板太"砸脸"，
+ * 而多数时候用户只是想暂停或切歌。
+ */
+const panelExpanded = ref(false)
 
 /** 底部全局歌词条是否显示 */
 const globalLyricOpen = ref(props.globalLyrics)
@@ -118,6 +127,9 @@ const isCompact = computed(() => props.mode !== 'full')
 /** 面板是否可见 */
 const showPanel = computed(() => props.mode === 'full' || miniExpanded.value)
 
+/** 是否只显示精简卡片（吸附模式刚展开、还没点展开按钮） */
+const isCompactCard = computed(() => props.mode === 'attach' && miniExpanded.value && !panelExpanded.value)
+
 /** 循环模式信息 */
 const loopInfo = computed(() => MUSIC_LOOP_MAP[loopMode.value])
 
@@ -147,6 +159,7 @@ const anchorStyle = computed(() => {
 /** 面板类名 */
 const panelClass = computed(() => ({
   'sr-music--mini-panel': isCompact.value,
+  'is-compact-card': isCompactCard.value,
   [`sr-music__mini-panel--${anchorSide.value}`]: isCompact.value,
   [`sr-music__mini-panel--${anchorVertical.value}`]: isCompact.value,
   'is-playing': playing.value,
@@ -470,13 +483,31 @@ function handleMiniLeave(): void {
   cancelMiniLeave()
   miniLeaveTimer = setTimeout(() => {
     miniExpanded.value = false
+    panelExpanded.value = false
     miniLeaveTimer = null
   }, MINI_LEAVE_DELAY)
 }
 
-/** 从胶囊展开面板 */
+/**
+ * 从圆钮展开精简卡片
+ *
+ * @remarks 每次展开都回到精简阶段：用户上次点开过完整面板，
+ * 不该让下一次悬停直接铺开一整块歌词与歌单。
+ */
+function openCompactCard(): void {
+  miniExpanded.value = true
+  panelExpanded.value = false
+}
+
+/** 从胶囊展开完整面板（胶囊本身就是精简形态，无需再分两段） */
 function openPanelFromPill(): void {
   miniExpanded.value = true
+  panelExpanded.value = true
+}
+
+/** 精简卡片 → 完整面板 */
+function expandToFull(): void {
+  panelExpanded.value = true
 }
 
 /**
@@ -624,8 +655,8 @@ onBeforeUnmount(() => {
       type="button"
       aria-label="展开播放器"
       :title="currentTrack ? `${currentTrack.name} - ${currentTrack.artist}` : '音乐播放器'"
-      @mouseenter="miniExpanded = true"
-      @click="miniExpanded = true"
+      @mouseenter="openCompactCard"
+      @click="openCompactCard"
     >
       <img v-if="currentTrack?.pic" :src="currentTrack.pic" alt="" />
 
@@ -714,7 +745,20 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="sr-music__top-actions">
-              <SrTooltip v-if="globalLyrics" :content="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'">
+              <!-- 精简卡片阶段只给一个"铺开"入口，铺开后才是完整面板 -->
+              <SrTooltip v-if="isCompactCard" content="展开完整播放器">
+                <button
+                  class="sr-music__btn sr-music__btn--sm"
+                  type="button"
+                  aria-label="展开完整播放器"
+                  @click="expandToFull"
+                >
+                  <SrIcon name="lucide:chevron-up" :size="15" />
+                </button>
+              </SrTooltip>
+
+              <!-- 全局歌词开关常驻：图标一直在，开不开是内部状态 -->
+              <SrTooltip v-else :content="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'">
                 <button
                   class="sr-music__btn sr-music__btn--sm"
                   :class="{ 'is-active': globalLyricOpen }"
@@ -750,7 +794,7 @@ onBeforeUnmount(() => {
 
           <!-- 控制区 -->
           <div class="sr-music__controls">
-            <SrTooltip :content="loopInfo.label">
+            <SrTooltip v-if="!isCompactCard" :content="loopInfo.label">
               <button class="sr-music__btn" type="button" :aria-label="loopInfo.label" @click="cycleLoop">
                 <SrIcon :name="loopInfo.icon" :size="18" />
               </button>
@@ -779,7 +823,7 @@ onBeforeUnmount(() => {
               </button>
             </SrTooltip>
 
-            <SrTooltip v-if="showLyrics" :content="lyricOpen ? '收起歌词' : '展开歌词'">
+            <SrTooltip v-if="showLyrics && !isCompactCard" :content="lyricOpen ? '收起歌词' : '展开歌词'">
               <button
                 class="sr-music__btn"
                 :class="{ 'is-active': lyricOpen }"
@@ -792,7 +836,7 @@ onBeforeUnmount(() => {
               </button>
             </SrTooltip>
 
-            <SrTooltip v-if="showPlaylist" :content="`播放列表（${tracks.length} 首）`">
+            <SrTooltip v-if="showPlaylist && !isCompactCard" :content="`播放列表（${tracks.length} 首）`">
               <button
                 class="sr-music__btn"
                 :class="{ 'is-active': playlistOpen }"
@@ -806,8 +850,8 @@ onBeforeUnmount(() => {
             </SrTooltip>
           </div>
 
-          <!-- 音量：单独一行，和主控制条分开 -->
-          <div class="sr-music__volume">
+          <!-- 音量：单独一行，和主控制条分开（精简卡片里藏起来，先用系统音量） -->
+          <div v-if="!isCompactCard" class="sr-music__volume">
             <SrTooltip :content="muted ? '取消静音' : `音量 ${Math.round(volume * 100)}%`">
               <button
                 class="sr-music__btn"
@@ -833,7 +877,11 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- 歌词面板 -->
-          <div v-if="showLyrics && lyricOpen" ref="lyricBoxRef" class="sr-music__lyrics is-scrollable">
+          <div
+            v-if="showLyrics && lyricOpen && !isCompactCard"
+            ref="lyricBoxRef"
+            class="sr-music__lyrics is-scrollable"
+          >
             <div v-if="lyricLoading" class="sr-music__lyric-empty">歌词加载中…</div>
 
             <div v-else-if="!lyrics.length" class="sr-music__lyric-empty">暂无歌词</div>
@@ -857,7 +905,7 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- 播放列表 -->
-          <div v-if="showPlaylist && playlistOpen" class="sr-music__playlist">
+          <div v-if="showPlaylist && playlistOpen && !isCompactCard" class="sr-music__playlist">
             <button
               v-for="(track, index) in tracks"
               :key="track.id || `${track.name}-${index}`"
