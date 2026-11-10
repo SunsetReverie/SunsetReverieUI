@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrButton, SrLoading, SrSegmented, SrTag } from '@sunset-reverie/ui'
+import { SrButton, SrLoading, SrSegmented, SrSpinner, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'LoadingDemo' })
 
@@ -35,6 +35,16 @@ const variantOptions = [
   { label: '渐变', value: 'gradient' },
 ]
 
+/** 六种动画的展示卡：大尺寸才看得清每种动效的差别 */
+const variantCards = [
+  { key: 'ring', name: '圆环旋转', desc: '最通用，语义最明确' },
+  { key: 'gradient', name: '渐变环', desc: '有品牌感，适合首屏' },
+  { key: 'dots', name: '三点跳动', desc: '轻快，适合按钮内' },
+  { key: 'bars', name: '柱状波动', desc: '横向展开，适合卡片占位' },
+  { key: 'pulse', name: '同心圆扩散', desc: '最安静，不抢注意力' },
+  { key: 'orbit', name: '小球绕轨', desc: '动感最强，适合首屏' },
+] as const
+
 /**
  * 模拟请求
  * @param assign 开关
@@ -49,21 +59,39 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
 <template>
   <div class="demo">
     <section>
+      <h3>六种动画</h3>
+      <div class="variant-grid">
+        <div v-for="card in variantCards" :key="card.key" class="variant-card">
+          <div class="variant-card__stage">
+            <SrSpinner :size="56" :variant="card.key" />
+          </div>
+          <p class="variant-card__title">{{ card.name }}</p>
+          <SrTag size="sm">{{ card.key }}</SrTag>
+          <p class="variant-card__desc">{{ card.desc }}</p>
+        </div>
+      </div>
+      <p class="hint">
+        统一放大到 56px 才看得出每种动效的差别：六种全部由 CSS 绘制，不引图标或图片；
+        内部元素全用百分比，所以同一套代码在 12px 和 56px 下都不会走形。
+      </p>
+    </section>
+
+    <section>
       <h3>基础</h3>
       <div class="row">
-        <SrLoading text="加载中…" />
-        <SrLoading />
+        <SrLoading size="lg" text="加载中…" />
+        <SrLoading size="lg" />
         <SrTag size="sm">独立使用时不需要包裹内容</SrTag>
       </div>
     </section>
 
     <section>
-      <h3>动画样式（variant）</h3>
+      <h3>在 SrLoading 里切换 variant</h3>
       <div class="row" style="margin-bottom: 14px">
         <SrSegmented v-model="variant" :options="variantOptions" size="sm" />
       </div>
       <div class="row">
-        <SrLoading :variant="variant" text="加载中…" />
+        <SrLoading size="lg" :variant="variant" text="加载中…" />
         <div class="wrap-box">
           <SrLoading :loading="true" :variant="variant" text="提交中…">
             <div class="content content--slim">
@@ -72,7 +100,10 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
           </SrLoading>
         </div>
       </div>
-      <p class="hint">六种样式全部由 CSS 绘制，不引图标或图片；同一套代码在 12px 和 48px 下都不会走形</p>
+      <p class="hint">
+        上面那排大图由 <code>SrSpinner</code> 直接渲染（尺寸可以传像素值）；<code>SrLoading</code> 的
+        <code>variant</code> 用的是同一套动画，只是外面多了遮罩、文案与形态。
+      </p>
     </section>
 
     <section>
@@ -80,50 +111,51 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
       <div class="grid">
         <div class="color-card">
           <div class="color-card__stage">
-            <SrLoading variant="dots" :colors="warmColors" />
+            <SrSpinner :size="40" variant="dots" :colors="warmColors" />
           </div>
           <p class="color-card__name">同色系（3 点）</p>
           <p class="color-card__desc">由浅到深，最协调</p>
         </div>
         <div class="color-card">
           <div class="color-card__stage">
-            <SrLoading variant="bars" :colors="warmColors" />
+            <SrSpinner :size="40" variant="bars" :colors="warmColors" />
           </div>
           <p class="color-card__name">同色系（4 条）</p>
           <p class="color-card__desc">像一组并列的进度</p>
         </div>
         <div class="color-card">
           <div class="color-card__stage">
-            <SrLoading variant="dots" :colors="vividColors" />
+            <SrSpinner :size="40" variant="dots" :colors="vividColors" />
           </div>
           <p class="color-card__name">四色（3 点）</p>
           <p class="color-card__desc">取前 3 个，区分明显</p>
         </div>
         <div class="color-card">
           <div class="color-card__stage">
-            <SrLoading variant="bars" :colors="vividColors" />
+            <SrSpinner :size="40" variant="bars" :colors="vividColors" />
           </div>
           <p class="color-card__name">四色（4 条）</p>
           <p class="color-card__desc">适合「多个任务并行」</p>
         </div>
         <div class="color-card">
           <div class="color-card__stage">
-            <SrLoading variant="pulse" :colors="['#fca5a5', '#93c5fd']" />
+            <SrSpinner :size="40" variant="pulse" :colors="['#fca5a5', '#93c5fd']" />
           </div>
           <p class="color-card__name">双色（2 圈）</p>
           <p class="color-card__desc">两圈不同色，层次更清楚</p>
         </div>
         <div class="color-card">
           <div class="color-card__stage">
-            <SrLoading variant="bars" />
+            <SrSpinner :size="40" variant="bars" />
           </div>
           <p class="color-card__name">不传（对照）</p>
           <p class="color-card__desc">全部用主色单色</p>
         </div>
       </div>
       <p class="hint">
-        数量不足会循环取用；<code>ring</code> / <code>gradient</code> /
-        <code>orbit</code> 只有一个元素，仍是单色。配合上面的 <code>variant</code> 切换可以任选组合。
+        放大到 40px 才看得清配色：数量不足会循环取用；<code>ring</code> / <code>gradient</code> /
+        <code>orbit</code> 只有一个元素，仍是单色。<code>colors</code> 在 <code>SrSpinner</code> 与
+        <code>SrLoading</code> 上是同一个 prop，后者原样传给前者。
       </p>
     </section>
 
@@ -309,7 +341,55 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 56px;
+  height: 72px;
+}
+
+/* 六种动画放大展示：舞台足够高，动画不会被卡片挤成一团 */
+.variant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.variant-card {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 16px 12px 14px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-lg);
+  background: var(--sr-color-bg-container);
+  text-align: center;
+}
+
+.variant-card__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 96px;
+}
+
+/* 扩散圈与绕轨默认 1.5px 描边，放大到 56px 后细得几乎看不见。
+   子组件根节点带父级 scope 标记，所以这里不需要 :deep()。 */
+.variant-card__stage .sr-spinner {
+  --sr-spinner-stroke: 3px;
+}
+
+.variant-card__title {
+  margin: 4px 0 0;
+  color: var(--sr-color-text);
+  font-size: 13px;
+  font-weight: var(--sr-font-weight-semibold);
+}
+
+.variant-card__desc {
+  margin: 2px 0 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 11.5px;
+  line-height: 1.5;
 }
 
 .color-card__name {
