@@ -285,8 +285,38 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
+      <!-- 游客身份行：头像与三项身份信息同排，正文单独一行占满宽度 -->
+      <div v-if="showGuestFields" class="sr-comment-editor__guest">
+        <SrAvatar
+          class="sr-comment-editor__avatar"
+          :src="user?.avatar"
+          :alt="displayName"
+          :size="compact ? 'sm' : 'md'"
+        />
+        <SrInput
+          v-model="guestName"
+          :placeholder="namePlaceholder"
+          :maxlength="24"
+          :size="compact ? 'sm' : 'md'"
+        />
+        <SrInput
+          v-model="guestEmail"
+          type="email"
+          :placeholder="emailPlaceholder"
+          :size="compact ? 'sm' : 'md'"
+        />
+        <SrInput
+          v-if="showGuestWebsite"
+          v-model="guestWebsite"
+          type="url"
+          :placeholder="websitePlaceholder"
+          :size="compact ? 'sm' : 'md'"
+        />
+      </div>
+
       <div class="sr-comment-editor__main">
         <SrAvatar
+          v-if="!showGuestFields"
           class="sr-comment-editor__avatar"
           :src="user?.avatar"
           :alt="displayName"
@@ -335,18 +365,6 @@ onBeforeUnmount(() => {
 
           <p v-if="error" class="sr-comment-editor__error">{{ error }}</p>
         </div>
-      </div>
-
-      <div v-if="showGuestFields" class="sr-comment-editor__guest">
-        <SrInput v-model="guestName" :placeholder="namePlaceholder" :maxlength="24" size="sm" />
-        <SrInput v-model="guestEmail" type="email" :placeholder="emailPlaceholder" size="sm" />
-        <SrInput
-          v-if="showGuestWebsite"
-          v-model="guestWebsite"
-          type="url"
-          :placeholder="websitePlaceholder"
-          size="sm"
-        />
       </div>
     </template>
 

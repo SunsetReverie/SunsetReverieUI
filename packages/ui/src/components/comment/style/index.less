@@ -369,19 +369,29 @@
     font-size: var(--sr-font-size-xs);
   }
 
+  // 身份行：头像固定宽度，几项身份信息等分剩余空间——
+  // 用 flex 而不是固定列数的 grid，少填一个网址时不会空出一列
   &__guest {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    align-items: center;
     gap: var(--sr-space-3);
 
-    .sr-breakpoint-down(sm, {
-      grid-template-columns: 1fr;
-    });
-  }
+    .sr-comment-editor__avatar {
+      flex: none;
+    }
 
-  // 只有两个字段时不要空出一列
-  &__guest:has(> :nth-child(2):last-child) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    .sr-input {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .sr-breakpoint-down(sm, {
+      flex-wrap: wrap;
+
+      .sr-input {
+        flex-basis: 100%;
+      }
+    });
   }
 
   &__emoji {
