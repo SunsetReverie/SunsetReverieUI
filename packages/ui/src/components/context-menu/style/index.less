@@ -5,6 +5,8 @@
  * 与下拉菜单的视觉保持一致，但多一层「危险操作」的红色。
  */
 
+@import '../../../styles/mixins/index.less';
+
 .sr-context-menu {
   // 包裹层不产生额外布局，只负责接 contextmenu 事件
   display: contents;
@@ -15,10 +17,13 @@
     min-width: 160px;
     max-width: 260px;
     padding: 4px;
-    border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
+    border: var(--sr-glass-border-width) solid var(--sr-popover-border-color);
     border-radius: var(--sr-radius-base);
     background: var(--sr-color-bg-popover);
     box-shadow: var(--sr-shadow-lg), var(--sr-glass-highlight);
+    // 浮层统一用强模糊档：菜单直接压在正文上，只给半透明底而不糊背景，
+    // 底下的字会一条条透出来——这就是「透明度太高」的来源，不是 alpha 的问题
+    .sr-glass-layer(var(--sr-glass-filter-strong));
     user-select: none;
   }
 

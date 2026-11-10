@@ -143,6 +143,18 @@ function onRowMenu(row, event) {
 | `open(event)` | 在鼠标位置打开 |
 | `close()` | 关闭 |
 
+## 浮层质感
+
+面板不自己调透明度，一律取全局的三档玻璃强度（`data-sr-style` 驱动，`flat` 下三档全为 `none`、面板回到实色底）：
+
+| 档位 | glass 值 | 用于 |
+| --- | --- | --- |
+| `--sr-glass-filter` | `blur(16px) saturate(180%)` | 容器内表面：卡片、分段控件背板、表格吸顶行 |
+| `--sr-glass-filter-strong` | `blur(28px) saturate(200%)` | 悬浮在内容上的小面板：Dropdown / Select / Cascader / ContextMenu |
+| `--sr-glass-filter-hero` | `blur(40px) saturate(220%)` | 内容密集的大面板：DatePicker |
+
+右键菜单用的是 `strong` 档。只给半透明底而漏掉 `backdrop-filter` 时，菜单会像一层保鲜膜贴在正文上，底下的字一条条清楚可见——那看起来像「太透」，根因是少了模糊层，而不是底色 alpha 不够。
+
 ## 注意事项
 
 - **`disabled` 仍会阻止原生菜单**。只是不弹出自己的，避免露出浏览器菜单。
