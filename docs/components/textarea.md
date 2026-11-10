@@ -23,6 +23,17 @@ const dotPattern =
 
 const backgroundImage = computed(() => (bgMode.value === 'image' ? dotPattern : ''))
 const backgroundText = computed(() => (bgMode.value === 'text' ? '说点什么' : ''))
+
+const bgPosition = ref('center')
+const bgTextSize = ref(40)
+
+const bgPositionOptions = [
+  { label: '居中', value: 'center' },
+  { label: '左上', value: 'top-left' },
+  { label: '右上', value: 'top-right' },
+  { label: '左下', value: 'bottom-left' },
+  { label: '右下', value: 'bottom-right' },
+]
 const emojiPackages = DEFAULT_EMOJI_PACKAGES
 const quickEmojis = DEFAULT_EMOJI_PACKAGES[0]?.emojis.slice(0, 10) ?? []
 
@@ -71,6 +82,8 @@ function onSubmit(value) {
 
 字数按**用户看到的字符**算：一个表情标记（`[微笑]`）只算 1 个字，而不是 4 个。
 
+没有 `footer` 插槽时，字数浮在输入区右下角，**不额外占一行**；用了工具栏则同排显示在最右。两种情况编辑区都会自动留出位置，不会压住最后一行文字。
+
 超限只变红、不阻止输入——硬截断会让用户丢失已写内容。
 
 ## 背景图与背景文字
@@ -79,23 +92,45 @@ function onSubmit(value) {
   <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
     <SrSegmented v-model="bgMode" :options="bgOptions" size="sm" />
   </div>
+  <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;">
+    <SrSegmented v-model="bgPosition" :options="bgPositionOptions" size="sm" />
+    <SrInputNumber v-model="bgTextSize" :min="12" :max="120" :step="4" size="sm" style="width: 130px" />
+    <span style="color: var(--sr-color-text-tertiary); font-size: 12px">字号 px</span>
+  </div>
   <SrTextarea
     v-model="withBg"
     :rows="4"
     :background-image="backgroundImage"
     :background-text="backgroundText"
+    :background-position="bgPosition"
+    :background-text-size="bgTextSize"
     placeholder="背景只是装饰，内容照常输入"
   />
 </div>
 
 ```vue
-<!-- 水印文字 -->
-<SrTextarea v-model="content" background-text="说点什么" />
+<!-- 水印文字：右下角、40px -->
+<SrTextarea
+  v-model="content"
+  background-text="说点什么"
+  background-position="bottom-right"
+  :background-text-size="40"
+/>
 
 <!-- 背景图：url() / 渐变函数 / 裸地址都可以 -->
-<SrTextarea v-model="content" background-image="url(/assets/paper.png)" />
+<SrTextarea v-model="content" background-image="url(/assets/paper.png)" background-size="contain" />
 <SrTextarea v-model="content" background-image="linear-gradient(135deg, #eef, #fee)" />
 ```
+
+`backgroundPosition` 是九宫格，**图片与文字共用**：
+
+| 取值 | 位置 |
+| --- | --- |
+| `top-left` / `top` / `top-right` | 上排左中右 |
+| `left` / `center` / `right` | 中排左中右 |
+| `bottom-left` / `bottom` / `bottom-right` | 下排左中右 |
+
+尺寸分两个口子：`backgroundTextSize`（水印字号，px，不传则跟随组件字号）与 `backgroundSize`（背景图尺寸，默认 `cover`，也接受 `120px 80px` 这类 CSS 值）。
 
 背景是**独立的一层**，铺在内容下方：
 
@@ -193,8 +228,11 @@ function onSubmit(value) {
 | `status` | `'default' \| 'error' \| 'warning' \| 'success'` | `'default'` | 校验态 |
 | `resize` | `'none' \| 'vertical'` | `'none'` | 允许用户纵向拖拽 |
 | `backgroundImage` | `string` | `''` | 背景图，`url()` / 渐变 / 裸地址 |
+| `backgroundPosition` | `'top-left' \| 'top' \| 'top-right' \| 'left' \| 'center' \| 'right' \| 'bottom-left' \| 'bottom' \| 'bottom-right'` | `'center'` | 背景九宫格，图片与文字共用 |
+| `backgroundSize` | `string` | `'cover'` | 背景图尺寸，也接受 CSS 值 |
 | `backgroundText` | `string` | `''` | 背景水印文字 |
-| `backgroundTextSize` | `number` | `0` | 水印字号，0 按组件字号自适应 |
+| `backgroundTextSize` | `number` | `0` | 水印字号（px），0 跟随组件字号 |
+| `backgroundTextOpacity` | `number` | `0.06` | 水印不透明度 |
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包，传了才进富文本模式 |
 | `submitOnEnter` | `boolean` | `false` | Enter 提交，Shift+Enter 换行 |
 

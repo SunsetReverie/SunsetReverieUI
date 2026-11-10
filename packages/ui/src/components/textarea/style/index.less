@@ -66,9 +66,12 @@
   }
 
   // ---------- 背景层 ----------
+  // 背景层：自带 flex，背景文字按九宫格对齐；图片的位置与尺寸由行内样式给
   &__bg {
     position: absolute;
     inset: 0;
+    display: flex;
+    padding: 10px 12px;
     border-radius: inherit;
     background-position: center;
     background-repeat: no-repeat;
@@ -77,18 +80,16 @@
   }
 
   &__bg-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    // 默认跟着组件字号放大，字体大小可由 backgroundTextSize 覆盖
+    max-width: 100%;
+    overflow: hidden;
+    // 默认跟着组件字号放大，字号与透明度由 props 覆盖
     font-size: 2.8em;
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0.06em;
     white-space: nowrap;
+    text-overflow: ellipsis;
     color: var(--sr-color-text);
-    opacity: 0.06;
     user-select: none;
   }
 
@@ -162,6 +163,22 @@
     vertical-align: -0.22em;
     object-fit: contain;
     user-select: none;
+  }
+
+  &__count--inline {
+    position: absolute;
+    right: var(--sr-textarea-padding-x);
+    bottom: 6px;
+    z-index: 2;
+    padding: 0 2px;
+    line-height: 1.4;
+    pointer-events: none;
+  }
+
+  // 字数浮在内部时，编辑区要留出它的位置，否则最后一行会被压住
+  &.is-count-inline &__inner,
+  &.is-count-inline &__rich {
+    padding-bottom: calc(var(--sr-textarea-padding-y) + 14px);
   }
 
   // ---------- 底部 ----------

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, useSlots, watch } from 'vue'
 
 import type { SrEmojiItem } from '../../emoji-picker/src/emoji-picker'
 import {
+  BG_POSITION_MAP,
   TEXTAREA_SIZE_MAP,
   srBuildTextareaEmojiMap,
   srCountTextareaText,
@@ -16,6 +17,8 @@ import {
 defineOptions({ name: 'SrTextarea', inheritAttrs: false })
 
 const props = defineProps(textareaProps)
+
+const slots = useSlots()
 
 const emit = defineEmits<{
   /** 内容变化，`v-model` 用 */
@@ -75,16 +78,40 @@ const sizeVars = computed(() => {
   } as Record<string, string>
 })
 
-/** 背景图样式 */
-const bgImageStyle = computed(() => {
+/** 背景落点配置 */
+const bgPosition = computed(() => BG_POSITION_MAP[props.backgroundPosition] ?? BG_POSITION_MAP.center)
+
+/** 背景图层样式：地址 + 位置 + 尺寸 */
+const bgLayerStyle = computed(() => {
   const image = srNormalizeBackgroundImage(props.backgroundImage)
-  return image ? { backgroundImage: image } : undefined
+  if (!image) return undefined
+
+  return {
+    backgroundImage: image,
+    backgroundPosition: bgPosition.value.image,
+    backgroundSize: props.backgroundSize,
+  }
 })
 
+/** 背景层的 flex 对齐：背景文字跟着九宫格走 */
+const bgContentStyle = computed(() => ({
+  alignItems: bgPosition.value.align,
+  justifyContent: bgPosition.value.justify,
+}))
+
 /** 背景文字样式 */
-const bgTextStyle = computed(() =>
-  props.backgroundTextSize > 0 ? { fontSize: `${props.backgroundTextSize}px` } : undefined,
-)
+const bgTextStyle = computed(() => ({
+  ...(props.backgroundTextSize > 0 ? { fontSize: `${props.backgroundTextSize}px` } : {}),
+  opacity: String(props.backgroundTextOpacity),
+}))
+
+/**
+ * 字数是否浮在输入区右下角
+ *
+ * @remarks 有 `footer` 工具栏时跟着工具栏排一行，没有时浮在内部——
+ * 只为一行字数单独占条底栏太浪费垂直空间。
+ */
+const countInline = computed(() => props.showCount && !slots.footer)
 
 /** 根节点类名 */
 const classes = computed(() => [
@@ -96,6 +123,7 @@ const classes = computed(() => [
     'is-readonly': props.readonly,
     'is-rich': rich.value,
     'is-over': overLimit.value,
+    'is-count-inline': countInline.value,
     'is-resizable': props.resize === 'vertical',
   },
 ])
@@ -427,7 +455,7 @@ onMounted(() => {
     <div
       v-if="backgroundImage || backgroundText"
       class="sr-textarea__bg"
-      :style="bgImageStyle"
+      :style="[bgLayerStyle, bgContentStyle]"
       aria-hidden="true"
     >
       <span v-if="backgroundText" class="sr-textarea__bg-text" :style="bgTextStyle">
@@ -471,7 +499,7 @@ onMounted(() => {
       />
     </div>
 
-    <div v-if="showCount || $slots.footer" class="sr-textarea__footer">
+    <div v-if="$slots.footer" class="sr-textarea__footer">
       <div class="sr-textarea__footer-main">
         <slot name="footer" :count="count" :maxlength="maxlength" :submit="submit" />
       </div>
@@ -479,5 +507,12 @@ onMounted(() => {
         {{ count }}<template v-if="maxlength"> / {{ maxlength }}</template>
       </span>
     </div>
+    <span
+      v-else-if="showCount"
+      class="sr-textarea__count sr-textarea__count--inline"
+      :class="{ 'is-over': overLimit }"
+    >
+      {{ count }}<template v-if="maxlength"> / {{ maxlength }}</template>
+    </span>
   </div>
 </template>

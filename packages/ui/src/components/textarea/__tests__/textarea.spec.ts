@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import SrTextarea from '../index'
 import {
+  BG_POSITION_MAP,
   srBuildTextareaEmojiMap,
   srCountTextareaText,
   srNormalizeBackgroundImage,
@@ -171,5 +172,54 @@ describe('SrTextarea', () => {
 
     expect(wrapper.find('.ok').exists()).toBe(true)
     wrapper.unmount()
+  })
+
+  it('没有 footer 时字数浮在输入区，不占独立一行', () => {
+    const wrapper = mountArea({ modelValue: 'hi', maxlength: 10, showCount: true })
+
+    expect(wrapper.classes()).toContain('is-count-inline')
+    expect(wrapper.find('.sr-textarea__count--inline').exists()).toBe(true)
+    expect(wrapper.find('.sr-textarea__footer').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('有 footer 时字数回到工具栏', () => {
+    const wrapper = mount(SrTextarea, {
+      props: { modelValue: 'hi', showCount: true },
+      slots: { footer: '<span class="ok">工具</span>' },
+    })
+
+    expect(wrapper.find('.sr-textarea__footer .sr-textarea__count').exists()).toBe(true)
+    expect(wrapper.find('.sr-textarea__count--inline').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('背景位置映射到九宫格对齐', () => {
+    const wrapper = mountArea({ backgroundText: '水印', backgroundPosition: 'bottom-right' })
+    const bg = wrapper.find('.sr-textarea__bg').element as HTMLElement
+
+    expect(bg.style.justifyContent).toBe('flex-end')
+    expect(bg.style.alignItems).toBe('flex-end')
+    wrapper.unmount()
+  })
+
+  it('背景文字字号与不透明度可按属性覆盖', () => {
+    const wrapper = mountArea({
+      backgroundText: '水印',
+      backgroundTextSize: 40,
+      backgroundTextOpacity: 0.2,
+    })
+    const text = wrapper.find('.sr-textarea__bg-text').element as HTMLElement
+
+    expect(text.style.fontSize).toBe('40px')
+    expect(text.style.opacity).toBe('0.2')
+    wrapper.unmount()
+  })
+})
+
+describe('BG_POSITION_MAP', () => {
+  it('九宫格全都有映射', () => {
+    expect(Object.keys(BG_POSITION_MAP)).toHaveLength(9)
+    expect(BG_POSITION_MAP.center.image).toBe('center center')
   })
 })

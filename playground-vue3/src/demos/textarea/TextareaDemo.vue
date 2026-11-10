@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { DEFAULT_EMOJI_PACKAGES, SrButton, SrSegmented, SrTag, SrTextarea } from '@sunset-reverie/ui'
-import type { SrEmojiItem } from '@sunset-reverie/ui'
+import {
+  DEFAULT_EMOJI_PACKAGES,
+  SrButton,
+  SrInputNumber,
+  SrSegmented,
+  SrTag,
+  SrTextarea,
+} from '@sunset-reverie/ui'
+import type { SrEmojiItem, SrTextareaBackgroundPosition } from '@sunset-reverie/ui'
 import { computed, ref } from 'vue'
 
 defineOptions({ name: 'TextareaDemo' })
@@ -30,6 +37,21 @@ const bgOptions = [
 /** 点阵背景图：内联 SVG，不依赖外网 */
 const dotPattern =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='3' cy='3' r='1.4' fill='%237c3aed' fill-opacity='0.18'/%3E%3C/svg%3E\")"
+
+/** 背景文字字号 */
+const bgTextSize = ref(40)
+
+/** 背景落点 */
+const bgPosition = ref<SrTextareaBackgroundPosition>('center')
+
+/** 九宫格选项：只挑最常用的五个 */
+const bgPositionOptions = [
+  { label: '居中', value: 'center' },
+  { label: '左上', value: 'top-left' },
+  { label: '右上', value: 'top-right' },
+  { label: '左下', value: 'bottom-left' },
+  { label: '右下', value: 'bottom-right' },
+]
 
 /** 背景图 */
 const backgroundImage = computed(() => (bgMode.value === 'image' ? dotPattern : ''))
@@ -80,17 +102,24 @@ function onSubmit(value: string): void {
         <SrSegmented v-model="bgMode" :options="bgOptions" size="sm" />
         <SrTag size="sm">背景层不挡点击</SrTag>
       </div>
+      <div class="row">
+        <SrSegmented v-model="bgPosition" :options="bgPositionOptions" size="sm" />
+        <SrInputNumber v-model="bgTextSize" :min="12" :max="120" :step="4" size="sm" style="width: 130px" />
+        <span class="row-label">字号 px</span>
+      </div>
       <SrTextarea
         v-model="withBg"
         :rows="4"
         :background-image="backgroundImage"
         :background-text="backgroundText"
+        :background-position="bgPosition"
+        :background-text-size="bgTextSize"
         placeholder="背景只是装饰，内容照常输入"
       />
       <p class="hint">
         背景铺在内容下层（<code>pointer-events: none</code>），既不抢焦点也不参与选中。
-        <code>backgroundImage</code> 接受 <code>url()</code>、渐变函数或裸地址，裸地址会先校验协议再包成
-        <code>url()</code>。
+        <code>backgroundPosition</code> 是九宫格（这里演示五个常用角），图片与文字共用；
+        <code>backgroundTextSize</code> 调字号，<code>backgroundSize</code> 调图片尺寸。
       </p>
     </section>
 
@@ -177,6 +206,11 @@ function onSubmit(value: string): void {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.row-label {
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
 }
 
 .emoji-btn {

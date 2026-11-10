@@ -7,6 +7,31 @@ import { buildEmojiMap, parseEmojiText } from '../../emoji-picker/src/parse'
 /** 校验态 */
 export type SrTextareaStatus = 'default' | 'error' | 'warning' | 'success'
 
+/** 背景内容的落点：九宫格 */
+export type SrTextareaBackgroundPosition =
+  'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right'
+
+/**
+ * 九宫格到 CSS 的映射
+ *
+ * @remarks 背景图用 `background-position`，背景文字用 flex 对齐——
+ * 两者共用同一份配置，语义保持一致。
+ */
+export const BG_POSITION_MAP: Record<
+  SrTextareaBackgroundPosition,
+  { image: string; align: string; justify: string }
+> = {
+  'top-left': { image: 'left top', align: 'flex-start', justify: 'flex-start' },
+  top: { image: 'center top', align: 'flex-start', justify: 'center' },
+  'top-right': { image: 'right top', align: 'flex-start', justify: 'flex-end' },
+  left: { image: 'left center', align: 'center', justify: 'flex-start' },
+  center: { image: 'center center', align: 'center', justify: 'center' },
+  right: { image: 'right center', align: 'center', justify: 'flex-end' },
+  'bottom-left': { image: 'left bottom', align: 'flex-end', justify: 'flex-start' },
+  bottom: { image: 'center bottom', align: 'flex-end', justify: 'center' },
+  'bottom-right': { image: 'right bottom', align: 'flex-end', justify: 'flex-end' },
+}
+
 /**
  * 富文本编辑器里的表情节点标记。
  *
@@ -104,6 +129,24 @@ export const textareaProps = {
     default: '',
   },
   /**
+   * 背景内容的落点 @default 'center'
+   *
+   * 同时作用于背景图与背景文字：九宫格任选其一。
+   */
+  backgroundPosition: {
+    type: String as PropType<SrTextareaBackgroundPosition>,
+    default: 'center',
+  },
+  /**
+   * 背景图尺寸 @default 'cover'
+   *
+   * 也接受任意 CSS 值（如 `'120px 80px'`、`'contain'`）。
+   */
+  backgroundSize: {
+    type: String,
+    default: 'cover',
+  },
+  /**
    * 背景文字（水印）
    *
    * 绝对定位在内容下层，`pointer-events: none`，不参与编辑与选中。
@@ -112,10 +155,15 @@ export const textareaProps = {
     type: String,
     default: '',
   },
-  /** 背景文字字号（px） @default 0 表示按容器宽度自适应 */
+  /** 背景文字字号（px） @default 0 表示跟随组件字号（2.8em） */
   backgroundTextSize: {
     type: Number,
     default: 0,
+  },
+  /** 背景文字不透明度 @default 0.06 */
+  backgroundTextOpacity: {
+    type: Number,
+    default: 0.06,
   },
   /**
    * 表情包
