@@ -65,6 +65,7 @@ export const SR_COMPONENT_NAMES = [
   'Table',
   'Tabs',
   'Tag',
+  'Textarea',
   'Tile',
   'Timeline',
   'Tooltip',

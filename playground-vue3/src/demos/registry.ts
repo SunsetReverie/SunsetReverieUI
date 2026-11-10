@@ -104,6 +104,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./input/InputDemo.vue'),
       },
       {
+        key: 'textarea',
+        name: 'SrTextarea',
+        description: '文本域。自适应高度、字数、背景图与背景文字、内联表情渲染。',
+        demo: () => import('./textarea/TextareaDemo.vue'),
+      },
+      {
         key: 'slider',
         name: 'SrSlider',
         description: '滑块。单值或区间、步长吸附、间断点、纵向。',

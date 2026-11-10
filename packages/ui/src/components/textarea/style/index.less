@@ -1,0 +1,196 @@
+// 文本域
+//
+// 结构：外壳（边框 / 状态 / 背景层） + 编辑区（原生 textarea 或 contenteditable） + 底部（工具栏 / 字数）
+// 富文本模式只为「内联渲染表情」存在，其余能力两种模式一致。
+// 背景层用绝对定位铺在外壳里，`pointer-events: none`，不抢焦点也不参与选中。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-textarea {
+  --sr-textarea-padding-x: 12px;
+  --sr-textarea-padding-y: 10px;
+  --sr-textarea-font-size: 14px;
+  --sr-textarea-line-height: 1.7;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--sr-color-border);
+  border-radius: var(--sr-form-radius);
+  background: var(--sr-color-bg-container);
+  color: var(--sr-color-text);
+  font-size: var(--sr-textarea-font-size);
+  .sr-glass-layer();
+  transition:
+    border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+    background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+  // ---------- 状态 ----------
+  &:hover:not(.is-disabled) {
+    border-color: var(--sr-color-border-strong, var(--sr-color-border));
+  }
+
+  &.is-focused {
+    border-color: var(--sr-color-primary);
+    box-shadow: 0 0 0 3px var(--sr-color-primary-alpha-12);
+  }
+
+  &--error {
+    border-color: var(--sr-color-danger);
+
+    &.is-focused {
+      box-shadow: 0 0 0 3px var(--sr-color-danger-alpha-12, var(--sr-color-primary-alpha-12));
+    }
+  }
+
+  &--warning {
+    border-color: var(--sr-color-warning);
+  }
+
+  &--success {
+    border-color: var(--sr-color-success);
+  }
+
+  &.is-disabled {
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-text-quaternary);
+    cursor: not-allowed;
+  }
+
+  &.is-readonly {
+    background: var(--sr-color-bg-sunken);
+  }
+
+  // ---------- 背景层 ----------
+  &__bg {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    pointer-events: none;
+  }
+
+  &__bg-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    // 默认跟着组件字号放大，字体大小可由 backgroundTextSize 覆盖
+    font-size: 2.8em;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--sr-color-text);
+    opacity: 0.06;
+    user-select: none;
+  }
+
+  // ---------- 编辑区 ----------
+  &__body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__inner,
+  &__rich {
+    flex: 1 1 auto;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: var(--sr-textarea-padding-y) var(--sr-textarea-padding-x);
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: var(--sr-textarea-line-height);
+    overflow-y: hidden;
+  }
+
+  &__inner {
+    display: block;
+    width: 100%;
+    resize: none;
+
+    &::placeholder {
+      color: var(--sr-color-text-quaternary);
+    }
+  }
+
+  &__inner:disabled {
+    cursor: not-allowed;
+  }
+
+  &.is-resizable &__inner {
+    resize: vertical;
+  }
+
+  // 富文本编辑区：换行靠 br，所以用 pre-wrap 保住空白
+  &__rich {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    &.is-empty::before {
+      content: attr(data-placeholder);
+      color: var(--sr-color-text-quaternary);
+      pointer-events: none;
+    }
+  }
+
+  // ---------- 内联表情 ----------
+  &__emoji-char {
+    display: inline-block;
+    vertical-align: baseline;
+    user-select: none;
+  }
+
+  &__emoji-img {
+    display: inline-block;
+    width: 1.25em;
+    height: 1.25em;
+    margin: 0 1px;
+    vertical-align: -0.22em;
+    object-fit: contain;
+    user-select: none;
+  }
+
+  // ---------- 底部 ----------
+  &__footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px var(--sr-textarea-padding-x);
+    border-top: 1px solid var(--sr-color-border-subtle);
+  }
+
+  &__footer-main {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__count {
+    flex: none;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+
+    &.is-over {
+      color: var(--sr-color-danger);
+    }
+  }
+}
