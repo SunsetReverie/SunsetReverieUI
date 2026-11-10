@@ -351,8 +351,11 @@ onBeforeUnmount(() => {
             <span class="sr-comment-editor__tip">Ctrl / ⌘ + Enter 发送</span>
 
             <SrButton
+              class="sr-comment-editor__submit"
               size="sm"
               variant="primary"
+              icon="lucide:send"
+              :radius="6"
               :loading="submitting"
               :disabled="!canSubmit"
               @click="submit"
