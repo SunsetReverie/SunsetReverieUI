@@ -160,6 +160,10 @@ function setMiniPlacement(value: string): void {
           真要看歌词或选歌，多一次点击也明确得多。每次重新悬停都会退回精简卡片，不会记住上次的展开状态。
         </p>
         <p class="note">
+          精简卡片的右上角让给了展开按钮，所以这一阶段没有全局歌词开关——同一个角落塞两个图标，位置会随形态左右跳，
+          用户记不住。铺开成完整面板后它就在那儿，且默认关闭。
+        </p>
+        <p class="note">
           鼠标移出后 320ms
           自动收起，无需关闭按钮。不立即收起是因为鼠标从圆钮移向面板、或在面板内部从一个子元素移到另一个时，
           中途会短暂掠出边界，立即收起会让面板不停闪烁；320ms 足够走完这段距离，又短到不觉得拖沓。
@@ -220,9 +224,10 @@ function setMiniPlacement(value: string): void {
           （<code>resolveLyricText</code>），间奏回退等规则一致。
         </p>
         <p class="note">
-          这与 <code>attach</code> 的关键差别在收起态能做什么：<code>attach</code> 收起时只能展开，
-          每次想暂停都得先展开再点；<code>mini</code> 收起时可以直接播放，展开退为备选动作。
-          需要「一眼看到在放什么、随手能暂停」就用 <code>mini</code>。
+          这与 <code>attach</code> 的关键差别在收起态能做什么：<code>attach</code>
+          收起时只是一个圆钮，想暂停得先悬停唤出精简卡片再点；<code>mini</code>
+          收起时就能直接播放，展开退为备选动作。需要「一眼看到在放什么、随手能暂停」就用 <code>mini</code>
+          。
         </p>
         <p class="note">
           悬停封面时只加遮罩、不做缩放——那是圆形按钮的常见手法，但这里封面还在自转，缩放会让「圆形在转」变成「圆形在跳」。
@@ -255,8 +260,13 @@ function setMiniPlacement(value: string): void {
           开启后在屏幕底部固定一条当前歌词，与页面内容无关——滚到哪都能看到，适合做「字幕」。
         </p>
         <p class="note">
-          它只是<strong>初始值</strong>：面板右上角的图标可以随时开关。临时关掉字幕通常是一次性的观看偏好，
+          面板右上角的歌词图标<strong>常驻</strong>，默认关闭，不随传参显隐——传参只决定初始状态，
+          运行时的开关归用户，图标时有时无反而让人以为功能丢了。临时关掉字幕通常是一次性的观看偏好，
           没有持久化价值，不该逼着宿主回去改传参。
+        </p>
+        <p class="note">
+          图标开着也不等于歌词条一直在：条只在<strong>播放中且当前有词</strong>时出现，暂停就整条隐去——
+          静止地挂一句再也不变的词，看着像加载卡住了。
         </p>
         <p class="note">
           歌词条 <code>Teleport</code> 到 <code>body</code>，不受父级 <code>overflow</code> 影响； 并且

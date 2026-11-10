@@ -114,7 +114,7 @@ const lyricIndex = computed(() => findLyricIndex(lyrics.value, currentTime.value
 /** 当前应展示的歌词文本 */
 const activeLyric = computed(() => resolveLyricText(lyrics.value, lyricIndex.value))
 
-/** 底部全局歌词文字：暂停时退回歌名，避免静止地挂一句歌词 */
+/** 底部全局歌词文字：暂停时置空，整条随之隐藏——静止地挂一句不再变化的词反而像卡住 */
 const globalLyricText = computed(() => (playing.value ? activeLyric.value : ''))
 const pillMeta = computed(() => (currentTrack.value ? `${currentTrack.value.name}` : '音乐播放器'))
 
