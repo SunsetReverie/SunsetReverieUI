@@ -369,16 +369,11 @@
     font-size: var(--sr-font-size-xs);
   }
 
-  // 身份行：头像固定宽度，几项身份信息等分剩余空间——
-  // 用 flex 而不是固定列数的 grid，少填一个网址时不会空出一列
+  // 身份行：在正文列内等分，少填一个网址时剩下两项自动平分
   &__guest {
     display: flex;
-    align-items: center;
     gap: var(--sr-space-3);
-
-    .sr-comment-editor__avatar {
-      flex: none;
-    }
+    margin-bottom: var(--sr-space-2);
 
     .sr-input {
       flex: 1 1 0;

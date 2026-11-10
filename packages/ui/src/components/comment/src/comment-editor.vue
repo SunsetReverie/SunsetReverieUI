@@ -285,38 +285,9 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
-      <!-- 游客身份行：头像与三项身份信息同排，正文单独一行占满宽度 -->
-      <div v-if="showGuestFields" class="sr-comment-editor__guest">
-        <SrAvatar
-          class="sr-comment-editor__avatar"
-          :src="user?.avatar"
-          :alt="displayName"
-          :size="compact ? 'sm' : 'md'"
-        />
-        <SrInput
-          v-model="guestName"
-          :placeholder="namePlaceholder"
-          :maxlength="24"
-          :size="compact ? 'sm' : 'md'"
-        />
-        <SrInput
-          v-model="guestEmail"
-          type="email"
-          :placeholder="emailPlaceholder"
-          :size="compact ? 'sm' : 'md'"
-        />
-        <SrInput
-          v-if="showGuestWebsite"
-          v-model="guestWebsite"
-          type="url"
-          :placeholder="websitePlaceholder"
-          :size="compact ? 'sm' : 'md'"
-        />
-      </div>
-
       <div class="sr-comment-editor__main">
+        <!-- 头像始终留在列外：身份行与正文都缩进在它右侧 -->
         <SrAvatar
-          v-if="!showGuestFields"
           class="sr-comment-editor__avatar"
           :src="user?.avatar"
           :alt="displayName"
@@ -324,6 +295,28 @@ onBeforeUnmount(() => {
         />
 
         <div class="sr-comment-editor__field">
+          <div v-if="showGuestFields" class="sr-comment-editor__guest">
+            <SrInput
+              v-model="guestName"
+              :placeholder="namePlaceholder"
+              :maxlength="24"
+              :size="compact ? 'sm' : 'md'"
+            />
+            <SrInput
+              v-model="guestEmail"
+              type="email"
+              :placeholder="emailPlaceholder"
+              :size="compact ? 'sm' : 'md'"
+            />
+            <SrInput
+              v-if="showGuestWebsite"
+              v-model="guestWebsite"
+              type="url"
+              :placeholder="websitePlaceholder"
+              :size="compact ? 'sm' : 'md'"
+            />
+          </div>
+
           <SrTextarea
             ref="textareaRef"
             v-model="content"
