@@ -296,6 +296,9 @@
       height: 0;
     }
 
+    /* 滚动条不可见时更要拦住滚动链，否则滚到尽头会接着带动外层页面 */
+    overscroll-behavior: contain;
+
     &.is-scrollable {
       overflow-y: auto;
     }
@@ -376,12 +379,19 @@
     background: var(--sr-color-bg-sunken);
     overflow-y: auto;
 
-    // 滚动条样式必须自己写，不能指望从页面继承：`scrollbar-width` / `scrollbar-color`
-    // 是继承属性 —— 完整模式挂在宿主内容区里会继承到宿主的细滚动条，而紧凑形态
-    // Teleport 到 body，继承链变成 body，就回退成系统默认的粗滚动条。
-    // 同一个组件、同一份模板却出现两种滚动条，就是这么来的。
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--sr-color-text) 20%, transparent) transparent;
+    // 滚动条藏起来：轨道是矩形的，容器却有四角圆角，滚动条会从圆角外缘冒出来，
+    // 无论怎么调颜色都对不齐。歌单有滚轮与触摸就能滚，这条灰杠只是碍眼。
+    // 顺带解决了继承问题：`scrollbar-width` / `scrollbar-color` 是继承属性，
+    // 完整模式继承宿主的细滚动条、Teleport 到 body 的紧凑形态继承 body 的默认粗滚动条。
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    // 滚动条不可见时更要拦住滚动链，否则滚到列表尽头会接着带动外层页面
+    overscroll-behavior: contain;
   }
 
   &__playlist-item {

@@ -242,7 +242,7 @@ import '@sunset-reverie/ui/components/music-player/style.css'
 
 - **只负责播放与展示**：不内置曲库、不依赖任何第三方播放器库，歌单完全由 Meting API 提供。
 - **三种形态共用一套面板**，差别只在外壳：`full` 常驻原地，`attach` / `mini` 收起为贴边元素；写成两套模板的话任何改动都要同步两遍。`attach` 的两段式展开也不是第二套模板，而是同一个面板少了几个区块。
-- **滚动条写死在组件样式里**。`scrollbar-width` / `scrollbar-color` 是继承属性，紧凑形态 `Teleport` 到 `body` 后继承链变了，不自己声明就会和完整模式长得不一样。
+- **歌单与歌词面板不显示滚动条**。滚动轨道是矩形的，容器却有四角圆角，滚动条会从圆角外缘冒出来，颜色怎么调都对不齐；靠滚轮与触摸滚动，并用 `overscroll-behavior: contain` 拦住滚动链。附带解决了继承问题：`scrollbar-width` / `scrollbar-color` 是继承属性，紧凑形态 `Teleport` 到 `body` 后继承链变了，不显式声明就会和完整模式长得不一样。
 - **歌词二分查找**：播放期间每秒会查好几次，上百行歌词用线性扫描纯属浪费。
 - **歌词自动居中用 `scrollTo`** 而不是 `scrollIntoView`——后者会连带滚动所有可滚祖先，包括整个页面，用户正在看评论时页面会突然跳一下。位置用两个矩形相减算，不依赖 `offsetTop` 的定位祖先。
 - **`autoplay` 要捕获 Promise**：无用户交互时浏览器会拒绝播放，不捕获会产生未处理的 Promise 警告，按钮状态也会与实际不符。

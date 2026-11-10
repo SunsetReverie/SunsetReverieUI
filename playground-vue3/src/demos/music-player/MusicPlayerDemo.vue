@@ -334,11 +334,16 @@ function setMiniPlacement(value: string): void {
           间奏不隐藏：空行保留为时间锚点，显示成「· · ·」而不是隐藏，否则歌词列表的高度会随播放不断变化。
         </li>
         <li>
-          歌单容器的 <code>scrollbar-width</code> /
+          歌单与歌词面板都不显示滚动条：滚动轨道是矩形的，容器却有四角圆角，滚动条会从圆角外缘冒出来，
+          颜色怎么调都对不齐。靠滚轮与触摸滚动即可，另加
+          <code>overscroll-behavior: contain</code>
+          拦住滚动链，免得滚到列表尽头又带动外层页面。顺带也绕开了
+          <code>scrollbar-width</code>
+          /
           <code>scrollbar-color</code>
-          写在组件样式里，不靠页面继承：这两个是继承属性，完整模式在宿主内容区里能继承到宿主的细滚动条，
-          而紧凑形态 <code>Teleport</code> 到 <code>body</code> 后继承链换成 <code>body</code>，
-          就会退回系统默认的粗滚动条。同一份模板两种外观，根源就在这里。
+          的继承问题——这两个是继承属性，紧凑形态 <code>Teleport</code> 到
+          <code>body</code>
+          后继承链变了，就会退回系统默认的粗滚动条。
         </li>
       </ul>
     </SrPanel>
