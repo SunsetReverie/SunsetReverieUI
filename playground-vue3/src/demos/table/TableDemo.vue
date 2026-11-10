@@ -111,6 +111,31 @@ function logEvent(text: string): void {
   eventLogs.value = [`${time}  ${text}`, ...eventLogs.value].slice(0, 5)
 }
 
+/**
+ * 行点击事件：模板里写不了 TS 断言与反引号模板字符串（vue-tsc 会报语法错），
+ * 统一搬到脚本里，模板只挂函数名
+ * @param row 被点击的行
+ */
+function logRowClick(row: SrTableRow): void {
+  logEvent(`row-click: ${row.name}`)
+}
+
+/**
+ * 选中集合变化事件
+ * @param keys 当前选中的行 key
+ */
+function logSelection(keys: (string | number)[]): void {
+  logEvent(`selection-change: ${keys.length} 项`)
+}
+
+/**
+ * 排序事件
+ * @param payload 排序字段与方向
+ */
+function logSort(payload: { key: string; order: string | null }): void {
+  logEvent(`sort-change: ${payload.key} ${payload.order ?? '取消'}`)
+}
+
 /* ---------- 列布局 ---------- */
 /** 定宽列（tableLayout = fixed） */
 const fixedLayoutColumns: SrTableColumn[] = [
@@ -265,13 +290,9 @@ const autoLayoutColumns: SrTableColumn[] = [
             :data="rows"
             :columns="columns"
             selectable
-            @row-click="logEvent(`row-click: ${($event as SrTableRow).name}`)"
-            @selection-change="logEvent(`selection-change: ${($event as (string | number)[]).length} 项`)"
-            @sort-change="
-              logEvent(
-                `sort-change: ${($event as { key: string; order: string | null }).key} ${($event as { order: string | null }).order ?? '取消'}`,
-              )
-            "
+            @row-click="logRowClick"
+            @selection-change="logSelection"
+            @sort-change="logSort"
           />
         </div>
         <div class="log">

@@ -35,12 +35,46 @@ body {
 
   // 侧栏通栏：上下到底、无外边距，右侧一条分隔线
   &__side {
+    display: flex;
+    flex-direction: column;
     flex: 0 0 auto;
     height: 100%;
     border-right: 1px solid var(--sr-color-border-subtle);
     background: color-mix(in srgb, var(--sr-color-bg-container) 58%, transparent);
     backdrop-filter: var(--sr-glass-filter);
     -webkit-backdrop-filter: var(--sr-glass-filter);
+  }
+
+  // 搜索区占了顶部，SrNav 不能再按「父容器 100% 高」算，否则会溢出视口。
+  // 让它吃掉剩余高度，菜单区自己滚（SrNav 内部已有唯一滚动容器）
+  &__side .sr-nav.is-bare {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+  }
+
+  &__search {
+    flex: 0 0 auto;
+    padding: 12px 12px 8px;
+  }
+
+  &__search-meta {
+    margin: 6px 0 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+  }
+
+  &__search-empty {
+    margin: 0;
+    padding: 0 14px 18px;
+    color: var(--sr-color-text-tertiary);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  // 收起态只留图标，搜索框无处安放
+  &.is-collapsed &__search {
+    display: none;
   }
 
   &__main {
@@ -174,7 +208,36 @@ body {
 
   &__swatches {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
+  }
+
+  // 自定义主色：预设之外的任意颜色，补上抽屉里缺的那一维
+  &__color {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px 2px 3px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-full);
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--sr-color-primary-alpha-25);
+    }
+
+    input[type='color'] {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 0;
+      border-radius: var(--sr-radius-full);
+      background: transparent;
+      cursor: pointer;
+    }
   }
 
   &__swatch {
@@ -386,4 +449,61 @@ body.force-tooltip .sr-tooltip {
   color: var(--sr-color-on-primary);
   font-size: 10px;
   font-style: normal;
+}
+
+// ---------- 键盘焦点 ----------
+// 图标按钮过去只有 :hover，Tab 走过去完全看不出落点
+.pg__icon-btn:focus-visible,
+.pg__scrim:focus-visible,
+.setting__swatch:focus-visible,
+.setting__color:focus-within {
+  outline: 2px solid var(--sr-color-primary);
+  outline-offset: 2px;
+}
+
+// ---------- 窄屏：侧栏改抽屉 ----------
+// 768 以下常驻 216px 会把内容挤成一条缝，原来只能手动收起侧栏
+@media (max-width: 767px) {
+  .pg__side {
+    position: fixed;
+    z-index: 60;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 240px;
+    transform: translateX(-100%);
+    box-shadow: var(--sr-shadow-lg);
+    transition: transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+  }
+
+  .pg.is-drawer-open .pg__side {
+    transform: translateX(0);
+  }
+
+  .pg__scrim {
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(16, 20, 26, 0.38);
+    cursor: pointer;
+  }
+
+  .pg__main {
+    width: 100%;
+  }
+
+  .pg__pill {
+    display: none;
+  }
+
+  .pg__body {
+    padding: var(--sr-space-4);
+    overflow-x: hidden;
+  }
+
+  .pg__body > * {
+    max-width: 100%;
+  }
 }

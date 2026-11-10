@@ -9,6 +9,7 @@ import {
   SrDrawer,
   SrIcon,
   SrAvatar,
+  SrInput,
   SrNav,
   SrTabs,
   useSrBreakpoint,
@@ -24,11 +25,28 @@ defineOptions({ name: 'PlaygroundApp' })
 const route = useRoute()
 const router = useRouter()
 
-const { mode, resolved, style, preset, setTheme, setStyle, setPreset, resetPrimaryColor } = useSrTheme()
+const {
+  mode,
+  resolved,
+  style,
+  preset,
+  primary,
+  setTheme,
+  setStyle,
+  setPreset,
+  setPrimaryColor,
+  resetPrimaryColor,
+} = useSrTheme()
 const { current: breakpoint, width } = useSrBreakpoint()
 
-/** 侧栏是否收起 */
+/** 侧栏是否收起（宽屏才有意义） */
 const collapsed = ref(false)
+
+/** 窄屏侧栏抽屉是否打开 */
+const drawerOpen = ref(false)
+
+/** 是否窄屏：侧栏从常驻变成抽屉 */
+const isNarrow = computed(() => width.value < 768)
 
 /** 外观设置抽屉 */
 const settingOpen = ref(false)
@@ -72,11 +90,57 @@ const crumbs = computed(() => {
 })
 
 /**
+ * 顶栏菜单按钮：窄屏开抽屉，宽屏收起常驻侧栏
+ * @returns 无
+ */
+function toggleSide(): void {
+  if (isNarrow.value) drawerOpen.value = !drawerOpen.value
+  else collapsed.value = !collapsed.value
+}
+
+/**
  * 点击菜单时跳路由，URL 跟着变，刷新也能回来
  * @param key 侧栏 key（组件演示带 c- 前缀）
  */
 function onSelect(key: string): void {
   void router.push(navKeyToRoute(key))
+  // 窄屏下选完就收起抽屉，否则菜单一直盖在内容上
+  drawerOpen.value = false
+}
+
+/** 组件页搜索索引：侧栏只显示去掉 Sr 前缀的短名，描述也得能搜到 */
+const searchIndex = new Map(
+  demoEntries.map((item) => [`c-${item.key}`, `${item.name} ${item.key} ${item.description}`.toLowerCase()]),
+)
+
+/** 侧栏搜索词 */
+const query = ref('')
+
+/**
+ * 过滤后的侧栏项：按显示名、分组、key 与组件说明匹配
+ * 68 个组件平铺在侧栏里，没有搜索时找组件只能靠肉眼扫
+ */
+const filteredNavItems = computed(() => {
+  const q = query.value.trim().toLowerCase()
+  if (!q) return navItems
+  return navItems.filter((item) => {
+    const text = [item.label, item.group, item.key, searchIndex.get(item.key ?? '')]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+    return text.includes(q)
+  })
+})
+
+/** 取色器当前值：没自定义时用库默认主色 */
+const primaryColor = computed(() => primary.value || '#ff7a45')
+
+/**
+ * 自定义品牌色：写进根变量与 localStorage，全站组件立即换色
+ * @param event 原生取色器输入事件
+ */
+function onPrimaryColor(event: Event): void {
+  setPrimaryColor((event.target as HTMLInputElement).value)
 }
 
 /** 主题选项 */
@@ -94,12 +158,29 @@ const styleItems = [
 </script>
 
 <template>
-  <div class="pg" :class="{ 'is-collapsed': collapsed }">
+  <div class="pg" :class="{ 'is-collapsed': collapsed && !isNarrow, 'is-drawer-open': drawerOpen }">
     <!-- 侧栏：用组件库自己的 SrNav -->
     <aside class="pg__side">
+      <div class="pg__search">
+        <SrInput
+          v-model="query"
+          size="sm"
+          clearable
+          placeholder="搜索组件 / 页面"
+          aria-label="搜索组件与页面"
+        >
+          <template #prefix>
+            <SrIcon name="lucide:search" :size="14" />
+          </template>
+        </SrInput>
+        <p v-if="query.trim()" class="pg__search-meta">
+          {{ filteredNavItems.length }} / {{ navItems.length }} 项
+        </p>
+      </div>
+
       <SrNav
         bare
-        :items="navItems"
+        :items="filteredNavItems"
         :model-value="activeKey"
         logo="lucide:moon-star"
         title="夕梦 UI"
@@ -117,15 +198,30 @@ const styleItems = [
           </span>
         </template>
       </SrNav>
+
+      <p v-if="!filteredNavItems.length" class="pg__search-empty">没有匹配的页面，换个关键词试试</p>
     </aside>
+
+    <!-- 窄屏抽屉的遮罩：点一下就收起，不用非得找到关闭按钮 -->
+    <button
+      v-if="isNarrow && drawerOpen"
+      class="pg__scrim"
+      type="button"
+      aria-label="关闭导航"
+      @click="drawerOpen = false"
+    ></button>
 
     <div class="pg__main">
       <header class="pg__header">
         <button
           class="pg__icon-btn"
           type="button"
-          :title="collapsed ? '展开侧栏' : '收起侧栏'"
-          @click="collapsed = !collapsed"
+          :title="isNarrow ? (drawerOpen ? '关闭导航' : '打开导航') : collapsed ? '展开侧栏' : '收起侧栏'"
+          :aria-label="
+            isNarrow ? (drawerOpen ? '关闭导航' : '打开导航') : collapsed ? '展开侧栏' : '收起侧栏'
+          "
+          :aria-expanded="isNarrow ? drawerOpen : !collapsed"
+          @click="toggleSide"
         >
           <SrIcon name="lucide:menu" :size="16" />
         </button>
@@ -139,12 +235,19 @@ const styleItems = [
             class="pg__icon-btn"
             type="button"
             :title="resolved === 'dark' ? '切到浅色' : '切到暗色'"
+            :aria-label="resolved === 'dark' ? '切到浅色' : '切到暗色'"
             @click="setTheme(resolved === 'dark' ? 'light' : 'dark')"
           >
             <SrIcon :name="resolved === 'dark' ? 'lucide:sun' : 'lucide:moon-star'" :size="16" />
           </button>
 
-          <button class="pg__icon-btn" type="button" title="外观设置" @click="settingOpen = true">
+          <button
+            class="pg__icon-btn"
+            type="button"
+            title="外观设置"
+            aria-label="外观设置"
+            @click="settingOpen = true"
+          >
             <SrIcon name="lucide:settings" :size="16" />
           </button>
         </div>
@@ -187,6 +290,10 @@ const styleItems = [
               type="button"
               @click="setPreset(item.key)"
             />
+            <label class="setting__color" :title="`自定义品牌色 ${primaryColor}`">
+              <input type="color" :value="primaryColor" aria-label="自定义品牌色" @input="onPrimaryColor" />
+              <span>自定义</span>
+            </label>
           </div>
         </div>
 

@@ -1163,6 +1163,478 @@
     ],
     "slots": []
   },
+  "comment": {
+    "name": "comment",
+    "options": [
+      {
+        "from": "commentProps",
+        "name": "comments",
+        "type": "SrCommentData[]",
+        "default": "() => []",
+        "description": "顶层评论列表 @remarks 组件不排序、不改数组，排序在内部复制后做。"
+      },
+      {
+        "from": "commentProps",
+        "name": "user",
+        "type": "SrCommentAuthor | null",
+        "default": "null",
+        "description": "当前登录用户 @remarks 有值是登录态，`null` 是游客态（表单多出昵称/邮箱/网址）。 组件不猜身份，是否显示「删除」看每条评论的 `author.isSelf`。"
+      },
+      {
+        "from": "commentProps",
+        "name": "allowGuest",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否允许游客评论 @default true 关掉且未登录时，表单位置换成登录引导插槽——而不是让人写完再提示登录。"
+      },
+      {
+        "from": "commentProps",
+        "name": "requireGuestName",
+        "type": "boolean",
+        "default": "true",
+        "description": "游客昵称必填 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "requireGuestEmail",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客邮箱必填 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "requireGuestWebsite",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客网址必填 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "showGuestWebsite",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示游客网址输入框 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "maxLength",
+        "type": "number",
+        "default": "500",
+        "description": "正文字数上限 @default 500"
+      },
+      {
+        "from": "commentProps",
+        "name": "sort",
+        "type": "SrCommentSort",
+        "default": "'latest'",
+        "description": "初始排序 @default 'latest'"
+      },
+      {
+        "from": "commentProps",
+        "name": "showSort",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示排序切换 @default true（列表只有一条时不显示）"
+      },
+      {
+        "from": "commentProps",
+        "name": "pagination",
+        "type": "SrCommentPagination",
+        "default": "'none'",
+        "description": "分页方式 @default 'none' `pager` 前端切片 + 页码；`more` 只抛 `load-more`，由宿主追加数据。"
+      },
+      {
+        "from": "commentProps",
+        "name": "pageSize",
+        "type": "number",
+        "default": "0",
+        "description": "每页条数 @default 0（按 10 处理）"
+      },
+      {
+        "from": "commentProps",
+        "name": "hasMore",
+        "type": "boolean",
+        "default": "true",
+        "description": "`more` 模式是否还有更多 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "loadingMore",
+        "type": "boolean",
+        "default": "false",
+        "description": "`more` 模式加载中 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "autoLoadMore",
+        "type": "boolean",
+        "default": "false",
+        "description": "滚到底自动触发 `load-more` @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "noMoreText",
+        "type": "string",
+        "default": "'没有更多了'",
+        "description": "到底文案 @default '没有更多了'"
+      },
+      {
+        "from": "commentProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "列表加载中 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "submitting",
+        "type": "boolean",
+        "default": "false",
+        "description": "提交中，会禁用表单与按钮 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "title",
+        "type": "string",
+        "default": "'评论'",
+        "description": "标题 @default '评论'"
+      },
+      {
+        "from": "commentProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "true",
+        "description": "标题旁显示总数 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "likeable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许点赞 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "replyable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许回复 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "deletable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许删除（还需 `author.isSelf`） @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "emojiable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许插入表情 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 @default [] @remarks 面板选择与正文反查必须是同一份数据， 否则会出现「能选到、发出来却显示成方括号」的割裂。"
+      },
+      {
+        "from": "commentProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'还没有评论，来说两句吧'",
+        "description": "空态文案 @default '还没有评论，来说两句吧'"
+      },
+      {
+        "from": "commentProps",
+        "name": "showEditor",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示评论框 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "rows",
+        "type": "number",
+        "default": "0",
+        "description": "正文框初始行数 @default 0 0 表示按 `compact` 取默认值（回复框 2 行、顶层 3 行）。"
+      },
+      {
+        "from": "commentProps",
+        "name": "maxRows",
+        "type": "number",
+        "default": "0",
+        "description": "自动增高的上限行数 @default 0 0 表示按 `compact` 取默认值（回复框 6 行、顶层 10 行）。"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundImage",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景图 @remarks 透传给内部 `SrTextarea`：`url()`、渐变函数或裸地址都行， 裸地址会先校验协议再包成 `url()`。"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundText",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景文字（水印） @remarks 常见用法是「友善发言」这类提示，或品牌名。"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundPosition",
+        "type": "SrTextareaBackgroundPosition",
+        "default": "'center'",
+        "description": "背景落点 @default 'center'"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundTextSize",
+        "type": "number",
+        "default": "0",
+        "description": "水印字号（px） @default 0，0 表示跟随组件字号"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundTextOpacity",
+        "type": "number",
+        "default": "0.06",
+        "description": "水印不透明度 @default 0.06"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "comment",
+        "type": "SrCommentData",
+        "default": "",
+        "description": "评论数据"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "depth",
+        "type": "number",
+        "default": "0",
+        "description": "深度，0 为顶层 @default 0"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "likeable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许点赞 @default true"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "replyable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许回复 @default true"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "deletable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许删除 @default true"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "replyCollapseLimit",
+        "type": "number",
+        "default": "2",
+        "description": "折叠时展示的回复条数 @default 2"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "replyingId",
+        "type": "string | number | null",
+        "default": "null",
+        "description": "正在回复的目标 id，命中的条目会高亮并挂载回复表单 @default null"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "emojiMap",
+        "type": "Map<string, SrEmojiItem>",
+        "default": "() => new Map<string, SrEmojiItem>()",
+        "description": "表情查找表，由容器算好逐层传下来 @default new Map()"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "user",
+        "type": "SrCommentAuthor | null",
+        "default": "null",
+        "description": "当前用户，`null` 为游客态"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "allowGuest",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许游客评论 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "requireGuestName",
+        "type": "boolean",
+        "default": "true",
+        "description": "游客昵称必填 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "requireGuestEmail",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客邮箱必填 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "requireGuestWebsite",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客网址必填 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "showGuestWebsite",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示游客网址输入框 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "maxLength",
+        "type": "number",
+        "default": "500",
+        "description": "正文字数上限 @default 500"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "submitting",
+        "type": "boolean",
+        "default": "false",
+        "description": "提交中 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "emojiable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许插入表情 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 @default []"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "replyTo",
+        "type": "SrCommentData | null",
+        "default": "null",
+        "description": "回复目标，不为空时表单进入精简态 @default null"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "精简态：回复场景更小更轻 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "rows",
+        "type": "number",
+        "default": "0",
+        "description": "正文框初始行数 @default 0 0 表示按 `compact` 取默认值（回复框 2 行、顶层 3 行）。"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "maxRows",
+        "type": "number",
+        "default": "0",
+        "description": "自动增高的上限行数 @default 0 0 表示按 `compact` 取默认值（回复框 6 行、顶层 10 行）。"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundImage",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景图，透传给 `SrTextarea`"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundText",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景文字（水印）"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundPosition",
+        "type": "SrTextareaBackgroundPosition",
+        "default": "'center'",
+        "description": "背景落点 @default 'center'"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundTextSize",
+        "type": "number",
+        "default": "0",
+        "description": "水印字号（px） @default 0"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundTextOpacity",
+        "type": "number",
+        "default": "0.06",
+        "description": "水印不透明度 @default 0.06"
+      }
+    ],
+    "sources": ["comment", "commentItem", "commentEditor"],
+    "emits": [
+      {
+        "name": "submit",
+        "params": ["payload"]
+      },
+      {
+        "name": "like",
+        "params": ["comment"]
+      },
+      {
+        "name": "delete",
+        "params": ["comment"]
+      },
+      {
+        "name": "sort-change",
+        "params": ["sort"]
+      },
+      {
+        "name": "page-change",
+        "params": ["page"]
+      },
+      {
+        "name": "load-more",
+        "params": []
+      }
+    ],
+    "slots": [
+      "comment-actions",
+      "comment-avatar",
+      "comment-browser",
+      "comment-footer",
+      "comment-level",
+      "comment-meta",
+      "comment-os",
+      "comment-region",
+      "editor-toolbar",
+      "empty",
+      "login"
+    ]
+  },
   "config-provider": {
     "name": "config-provider",
     "options": [
@@ -1836,17 +2308,24 @@
     "options": [
       {
         "from": "emptyProps",
+        "name": "type",
+        "type": "SrEmptyType",
+        "default": "'default'",
+        "description": "场景类型，决定默认图标、文案与色调 @default 'default'"
+      },
+      {
+        "from": "emptyProps",
         "name": "description",
         "type": "string",
-        "default": "'暂无数据'",
-        "description": "描述文案 @default '暂无数据'"
+        "default": "''",
+        "description": "描述文案，不传则用场景预设文案"
       },
       {
         "from": "emptyProps",
         "name": "icon",
         "type": "string",
-        "default": "'lucide:inbox'",
-        "description": "图标名，传空字符串则不显示图标"
+        "default": "undefined",
+        "description": "图标名，不传则用场景预设图标；显式传空字符串则不显示图标"
       },
       {
         "from": "emptyProps",
@@ -2547,6 +3026,41 @@
       },
       {
         "from": "markdownProps",
+        "name": "codeHighlight",
+        "type": "boolean",
+        "default": "true",
+        "description": "代码块是否做语法着色 @default true 内置一套零依赖的高亮器，覆盖 JS / TS / JSON / HTML / Vue / CSS / Shell / Python / Markdown 的高频语法。要更精确的高亮可以关掉它，换成 `sanitize` 里接 Prism / shiki 的输出。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeLineNumbers",
+        "type": "boolean",
+        "default": "true",
+        "description": "代码块是否显示行号 @default true 行号由 CSS 计数器绘制，不打进复制内容里；数字不参与选中， 手动划选代码时也不会把行号带走。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeCopy",
+        "type": "boolean",
+        "default": "true",
+        "description": "代码块是否显示复制按钮 @default true 按钮只在浏览器端生效：`navigator.clipboard` 不可用（非安全上下文）时 退回 `document.execCommand('copy')`。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeCopyNotify",
+        "type": "boolean",
+        "default": "false",
+        "description": "复制成功后是否弹一条 `srMessage` 提示 @default false 按钮本身已经会把文案切成「已复制」，这里额外走全局消息， 适合把复制当成一次正式操作的场景。 想换成 toast / notification，用 `copy` 事件自己接管即可。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => DEFAULT_EMOJI_PACKAGES",
+        "description": "表情包 @remarks 正文里的 `[名称]` 按这张表渲染：有 `char` 直接输出字符（不落 `img`）， 有 `url` 才输出图片。必须与插入端（`SrEmojiPicker` / `SrMarkdownEditor`） 使用同一份数据，否则会显示成 `[名称]` 纯文本。 默认使用内置字符表情包；传 `[]` 可以彻底关掉表情解析。"
+      },
+      {
+        "from": "markdownProps",
         "name": "size",
         "type": "SrSize",
         "default": "'md'",
@@ -2561,7 +3075,12 @@
       }
     ],
     "sources": ["markdown"],
-    "emits": [],
+    "emits": [
+      {
+        "name": "copy",
+        "params": ["text"]
+      }
+    ],
     "slots": []
   },
   "markdown-editor": {
@@ -2601,6 +3120,34 @@
         "type": "(html: string) =",
         "default": "undefined",
         "description": "HTML 后处理钩子，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeHighlight",
+        "type": "boolean",
+        "default": "true",
+        "description": "预览里的代码块是否做语法着色 @default true 透传给 `SrMarkdown`，内置零依赖高亮器。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeLineNumbers",
+        "type": "boolean",
+        "default": "true",
+        "description": "预览里的代码块是否显示行号 @default true 行号由 CSS 计数器画，复制时不会带上数字。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeCopy",
+        "type": "boolean",
+        "default": "true",
+        "description": "预览里的代码块是否显示复制按钮 @default true"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeCopyNotify",
+        "type": "boolean",
+        "default": "false",
+        "description": "复制成功后是否弹一条 `srMessage` 提示 @default false 关闭时按钮仍会把文案切成「已复制」，只是不走全局消息。"
       },
       {
         "from": "markdownEditorProps",
@@ -2729,6 +3276,10 @@
       {
         "name": "mode-change",
         "params": ["mode"]
+      },
+      {
+        "name": "copy",
+        "params": ["text"]
       }
     ],
     "slots": ["insertPanel.slotName", "preview", "toolbar"]
@@ -2877,6 +3428,132 @@
       }
     ],
     "slots": ["default", "footer", "header"]
+  },
+  "music-player": {
+    "name": "music-player",
+    "options": [
+      {
+        "from": "musicPlayerProps",
+        "name": "api",
+        "type": "string",
+        "default": "'https://meting-api.shurans.cn/'",
+        "description": "Meting API 地址 @default 'https://meting-api.shurans.cn/' @remarks 只填到域名，`?server=&type=&id=` 由组件拼。 生产环境建议自建，公共实例随时可能限流。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "server",
+        "type": "SrMusicServer",
+        "default": "'netease'",
+        "description": "音源 @default 'netease' @remarks 换音源必须同时换 `id`：同一个歌单 id 在两家平台之间不通用。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "type",
+        "type": "SrMusicListType",
+        "default": "'playlist'",
+        "description": "查询类型 @default 'playlist'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "id",
+        "type": "string | number",
+        "default": "''",
+        "description": "歌单 / 单曲 id @remarks 从分享链接里取：`music.163.com/playlist?id=2585465480` 里的那一串。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "mode",
+        "type": "SrMusicMode",
+        "default": "'full'",
+        "description": "展示形态 @default 'full'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "placement",
+        "type": "SrMusicPlacement",
+        "default": "'bottomRight'",
+        "description": "贴边位置，仅 `attach` / `mini` 生效 @default 'bottomRight'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "offset",
+        "type": "number | string",
+        "default": "16",
+        "description": "距屏幕边缘的距离，数字按 px @default 16"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "showLyrics",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示歌词面板 @default true"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "globalLyrics",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示底部全局歌词条 @default false"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "autoplay",
+        "type": "boolean",
+        "default": "false",
+        "description": "自动播放 @default false"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "volume",
+        "type": "number",
+        "default": "0.7",
+        "description": "初始音量 0~1 @default 0.7"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "loop",
+        "type": "SrMusicLoop",
+        "default": "'list'",
+        "description": "初始循环模式 @default 'list'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "showPlaylist",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示播放列表 @default true"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "lyricOffset",
+        "type": "number",
+        "default": "0",
+        "description": "歌词偏移秒数 @default 0 正数表示歌词延后显示，用于校正某些音源的几十毫秒偏差。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "errorText",
+        "type": "string",
+        "default": "'音乐加载失败，请检查 Meting API 配置'",
+        "description": "加载失败时的兜底文案"
+      }
+    ],
+    "sources": ["musicPlayer"],
+    "emits": [
+      {
+        "name": "change",
+        "params": ["track", "index"]
+      },
+      {
+        "name": "play",
+        "params": ["playing"]
+      },
+      {
+        "name": "error",
+        "params": ["error"]
+      }
+    ],
+    "slots": []
   },
   "nav": {
     "name": "nav",
@@ -4529,6 +5206,175 @@
       }
     ],
     "slots": ["default"]
+  },
+  "textarea": {
+    "name": "textarea",
+    "options": [
+      {
+        "from": "textareaProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "内容，`v-model` @remarks 富文本模式下收发的是**标记文本**（`你好[微笑]`）， 不是渲染后的 HTML。这样存库、传输、反渲染都简单。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "''",
+        "description": "占位文案"
+      },
+      {
+        "from": "textareaProps",
+        "name": "rows",
+        "type": "number",
+        "default": "3",
+        "description": "初始行数 @default 3"
+      },
+      {
+        "from": "textareaProps",
+        "name": "autosize",
+        "type": "boolean",
+        "default": "true",
+        "description": "高度跟随内容 @default true 达到 `maxRows` 后停止长高，改为内部滚动。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "maxRows",
+        "type": "number",
+        "default": "0",
+        "description": "自动增高的上限行数 @default 0 0 表示不限制。只对 `autosize` 生效。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "maxlength",
+        "type": "number",
+        "default": "undefined",
+        "description": "最大长度，同时用于字数统计"
+      },
+      {
+        "from": "textareaProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示字数统计（给了 `maxlength` 才有「/n」）"
+      },
+      {
+        "from": "textareaProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      },
+      {
+        "from": "textareaProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用"
+      },
+      {
+        "from": "textareaProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读"
+      },
+      {
+        "from": "textareaProps",
+        "name": "status",
+        "type": "SrTextareaStatus",
+        "default": "'default'",
+        "description": "校验态，只影响边框颜色 @default 'default'"
+      },
+      {
+        "from": "textareaProps",
+        "name": "resize",
+        "type": "'none' | 'vertical'",
+        "default": "'none'",
+        "description": "允许用户纵向拖拽调整高度 @default 'none' `maxRows` 生效时不建议再开，两种高度来源会打架。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundImage",
+        "type": "string",
+        "default": "''",
+        "description": "背景图 支持三种写法：`url(...)` 片段、`linear-gradient(...)` 这类渐变函数、 以及裸地址（内部会包成 `url()`）。只放行 http(s)、data:image 与相对路径。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundPosition",
+        "type": "SrTextareaBackgroundPosition",
+        "default": "'center'",
+        "description": "背景内容的落点 @default 'center' 同时作用于背景图与背景文字：九宫格任选其一。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundSize",
+        "type": "string",
+        "default": "'cover'",
+        "description": "背景图尺寸 @default 'cover' 也接受任意 CSS 值（如 `'120px 80px'`、`'contain'`）。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundText",
+        "type": "string",
+        "default": "''",
+        "description": "背景文字（水印） 绝对定位在内容下层，`pointer-events: none`，不参与编辑与选中。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundTextSize",
+        "type": "number",
+        "default": "0",
+        "description": "背景文字字号（px） @default 0 表示跟随组件字号（2.8em）"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundTextOpacity",
+        "type": "number",
+        "default": "0.06",
+        "description": "背景文字不透明度 @default 0.06"
+      },
+      {
+        "from": "textareaProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 传了才启用富文本模式：输入区变成 `contenteditable`， 表情按 `char` / `url` 内联渲染，`v-model` 仍然是标记文本。 不传则走原生 `textarea`，行为与普通输入框一致。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "submitOnEnter",
+        "type": "boolean",
+        "default": "false",
+        "description": "`Enter` 直接提交 @default false 开启后 `Enter` 触发 `submit` 事件，`Shift + Enter` 换行； 关闭时 `Enter` 就是换行。输入法组合中的回车不会误触发。"
+      }
+    ],
+    "sources": ["textarea"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "focus",
+        "params": ["event"]
+      },
+      {
+        "name": "blur",
+        "params": ["event"]
+      },
+      {
+        "name": "submit",
+        "params": ["value"]
+      }
+    ],
+    "slots": ["footer"]
   },
   "tile": {
     "name": "tile",

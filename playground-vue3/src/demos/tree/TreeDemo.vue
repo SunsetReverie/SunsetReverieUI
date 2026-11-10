@@ -112,7 +112,7 @@ const bigExpanded = ref<SrTreeKey[]>(['g0', 'g1'])
  * @param keys 勾选结果
  * @param detail 详情
  */
-function onCheck(keys: SrTreeKey[], detail: { halfCheckedKeys: SrTreeKey[] }): void {
+function onCheck(_keys: SrTreeKey[], detail: { halfCheckedKeys: SrTreeKey[] }): void {
   halfKeys.value = detail.halfCheckedKeys
 }
 

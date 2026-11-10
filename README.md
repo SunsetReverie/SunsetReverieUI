@@ -160,6 +160,10 @@ W10 完成后按业务需要提前交付了一批 P2 组件，并对已有的交
 | --- | --- |
 | 演示站重构 | `vue-router`（hash 模式）+ `SrNav` 侧栏 + header + 外观设置抽屉，页面分类为开始/设计系统/组件/示例 |
 | 概览页开场面板 | 首页第一屏讲清定位与六条卖点（Token 分层、双风格、首帧定稿、主干自带、回归守卫、类型），组件数与注册表联动，玻璃 / 扁平 / 暗色三态自适应 |
+| 演示站可查找 | 侧栏按名称 / 分类 / 组件说明过滤；窄屏侧栏改抽屉 + 遮罩；演示页可展开并复制该页真实源码（Vite `?raw`，不手抄示例） |
+| 演示覆盖守卫 | `check-demo-coverage` 挂进 `pnpm lint`，对齐组件目录 / 注册表 / `props.json` / 孤儿文件；Row 与 Col 的 Props 表在同一页分两组展示 |
+| 演示站体检 | `pnpm check:demo` 遍历注册表全部演示页，断言标题渲染、源码入口存在、无控制台错误，失败即非零退出 |
+| 演示站类型检查 | `pnpm typecheck` 现在也跑 `playground-vue3` 的 `vue-tsc`；模板里不写 TS 断言与反引号模板字符串，复杂表达式收进脚本函数 |
 | SSR 冒烟测试 | `ssr-components.spec.ts` 覆盖 30 个组件，在 node 环境下渲染，抓出过 `SrDrawer` 的服务端崩溃 |
 | 水合 e2e | `pnpm check:hydration` 构建 Nuxt 站并断言水合告警为 0，另有 `lint:smoke` 保证新组件不会漏测 |
 | Token 校验 | `pnpm lint:tokens` 对齐变量定义与引用，防住「变量拼错导致整条声明静默失效」 |
@@ -221,7 +225,8 @@ pnpm build
 
 | 命令 | 说明 |
 | --- | --- |
-| `pnpm dev` | 启动 playground-vue3（直连源码，HMR） |
+| `pnpm dev` | 启动 playground-vue3（直连源码，HMR，端口 5173） |
+| `pnpm check:demo` | 先起 `pnpm dev`，再遍历全部演示页做渲染 / 控制台冒烟；端口不同用 `DEMO_PORT=xxxx` |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |

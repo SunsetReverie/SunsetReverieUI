@@ -48,7 +48,7 @@ const rowMenu = ref<{ open: (event: MouseEvent) => void } | null>(null)
  * @param key 菜单项 key
  * @param item 菜单项
  */
-function onSelect(key: string, item: SrContextMenuItem): void {
+function onSelect(_key: string, item: SrContextMenuItem): void {
   lastAction.value = `${item.label}${currentRow.value ? ` · ${currentRow.value}` : ''}`
 }
 

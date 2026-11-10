@@ -306,7 +306,7 @@ const introStats = computed(() => [
   // 每条说明要折成四五行，读起来像墓碑
   &__points {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
     gap: var(--sr-space-3);
     margin: var(--sr-space-5) 0 0;
     padding: 0;

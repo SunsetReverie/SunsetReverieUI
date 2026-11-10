@@ -46,8 +46,28 @@ const articles = [
 const verticals = [
   { title: '待处理缺陷', value: '12', bg: 'linear-gradient(135deg, #ef4444, #f87171)' },
   { title: '本周发布', value: '6', bg: 'linear-gradient(135deg, #10b981, #34d399)' },
-  { title: '组件总数', value: '35', bg: 'linear-gradient(135deg, #3e3edc, #6b6bee)' },
+  { title: '组件总数', value: '68', bg: 'linear-gradient(135deg, #3e3edc, #6b6bee)' },
 ]
+
+/** 轮播项形状：组件把 items 声明为 unknown[]，渲染权交给使用方 */
+interface CarouselItem {
+  title: string
+  bg?: string
+  cover?: string
+  author?: string
+  date?: string
+  tag?: string
+  value?: string
+}
+
+/**
+ * 收窄轮播插槽参数；模板里不能写 TS 断言，统一走这个函数
+ * @param item 插槽给出的 unknown 项
+ * @returns 带类型的轮播项
+ */
+function asItem(item: unknown): CarouselItem {
+  return item as CarouselItem
+}
 </script>
 
 <template>
@@ -56,8 +76,8 @@ const verticals = [
       <h3>基础（自动播放，悬停暂停）</h3>
       <SrCarousel v-model="basic" :items="slides" :height="200" autoplay :interval="3000">
         <template #item="{ item, index }">
-          <div class="slide" :style="{ background: item.bg }">
-            <strong>{{ item.title }}</strong>
+          <div class="slide" :style="{ background: asItem(item).bg }">
+            <strong>{{ asItem(item).title }}</strong>
             <span>{{ index + 1 }} / {{ slides.length }}</span>
           </div>
         </template>
@@ -69,8 +89,8 @@ const verticals = [
       <h3>循环播放（末张之后回到第一张）</h3>
       <SrCarousel v-model="looped" :items="slides" :height="160" loop>
         <template #item="{ item, index }">
-          <div class="slide" :style="{ background: item.bg }">
-            <strong>{{ item.title }}</strong>
+          <div class="slide" :style="{ background: asItem(item).bg }">
+            <strong>{{ asItem(item).title }}</strong>
             <span>第 {{ index + 1 }} 张，拖到最右会回到第 1 张</span>
           </div>
         </template>
@@ -82,9 +102,9 @@ const verticals = [
       <h3>纵向轮播（direction = vertical）</h3>
       <SrCarousel v-model="vertical" :items="verticals" :height="180" direction="vertical">
         <template #item="{ item }">
-          <div class="stat" :style="{ background: item.bg }">
-            <span class="stat__value">{{ item.value }}</span>
-            <span class="stat__label">{{ item.title }}</span>
+          <div class="stat" :style="{ background: asItem(item).bg }">
+            <span class="stat__value">{{ asItem(item).value }}</span>
+            <span class="stat__label">{{ asItem(item).title }}</span>
           </div>
         </template>
       </SrCarousel>
@@ -95,16 +115,16 @@ const verticals = [
       <h3>封面内容层（#overlay 插槽）</h3>
       <SrCarousel v-model="featured" :items="articles" :height="240">
         <template #item="{ item }">
-          <div class="cover" :style="{ background: item.cover }" />
+          <div class="cover" :style="{ background: asItem(item).cover }" />
         </template>
 
         <template #overlay="{ item }">
-          <span class="cover__tag">{{ item.tag }}</span>
-          <h4 class="cover__title">{{ item.title }}</h4>
+          <span class="cover__tag">{{ asItem(item).tag }}</span>
+          <h4 class="cover__title">{{ asItem(item).title }}</h4>
           <div class="cover__meta">
-            <span>{{ item.author }}</span>
+            <span>{{ asItem(item).author }}</span>
             <span class="cover__dot">·</span>
-            <span>{{ item.date }}</span>
+            <span>{{ asItem(item).date }}</span>
           </div>
         </template>
       </SrCarousel>
@@ -121,12 +141,12 @@ const verticals = [
         indicator-position="outside"
       >
         <template #item="{ item }">
-          <div class="cover" :style="{ background: item.cover }" />
+          <div class="cover" :style="{ background: asItem(item).cover }" />
         </template>
 
         <template #overlay="{ item }">
-          <h4 class="cover__title">{{ item.title }}</h4>
-          <div class="cover__meta">{{ item.author }} · {{ item.date }}</div>
+          <h4 class="cover__title">{{ asItem(item).title }}</h4>
+          <div class="cover__meta">{{ asItem(item).author }} · {{ asItem(item).date }}</div>
         </template>
       </SrCarousel>
     </section>
@@ -138,8 +158,8 @@ const verticals = [
           <span class="tag">draggable = false（鼠标拖不动）</span>
           <SrCarousel :items="slides" :height="120" :draggable="false" :autoplay="false">
             <template #item="{ item }">
-              <div class="slide" :style="{ background: item.bg }">
-                <strong>{{ item.title }}</strong>
+              <div class="slide" :style="{ background: asItem(item).bg }">
+                <strong>{{ asItem(item).title }}</strong>
               </div>
             </template>
           </SrCarousel>
@@ -149,8 +169,8 @@ const verticals = [
           <span class="tag">touchable = false（触摸不响应）</span>
           <SrCarousel :items="slides" :height="120" :touchable="false" :autoplay="false">
             <template #item="{ item }">
-              <div class="slide" :style="{ background: item.bg }">
-                <strong>{{ item.title }}</strong>
+              <div class="slide" :style="{ background: asItem(item).bg }">
+                <strong>{{ asItem(item).title }}</strong>
               </div>
             </template>
           </SrCarousel>

@@ -18,6 +18,8 @@ export interface DemoEntry {
   description: string
   /** props.json 里的键；与 key 相同可省略 */
   api?: string
+  /** 同页一起展示的其他组件 API 键（如 Row/Col 共用一个演示） */
+  extraApi?: string[]
   /** 演示组件，懒加载 */
   demo: () => Promise<Component>
 }
@@ -456,6 +458,7 @@ export const demoGroups: DemoGroup[] = [
         key: 'row',
         name: 'SrRow / SrCol',
         api: 'row',
+        extraApi: ['col'],
         description: '24 栅格。响应式 span 全部由 CSS 媒体查询完成。',
         demo: () => import('./row/RowDemo.vue'),
       },

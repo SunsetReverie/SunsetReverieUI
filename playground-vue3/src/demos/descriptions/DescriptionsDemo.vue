@@ -4,6 +4,9 @@ import { SrButton, SrDescriptions, SrTag, type SrDescriptionItem } from '@sunset
 
 defineOptions({ name: 'DescriptionsDemo' })
 
+/** 尺寸档位：写在脚本里让 TS 推成字面量类型，模板里不需要类型断言 */
+const sizes = ['sm', 'md', 'lg'] as const
+
 /** 基础信息 */
 const basicItems: SrDescriptionItem[] = [
   { label: '姓名', value: '林深' },
@@ -129,9 +132,9 @@ const orderItems = computed<SrDescriptionItem[]>(() => [
     <section>
       <h3>尺寸</h3>
       <div class="stack">
-        <div v-for="s in ['small', 'md', 'large']" :key="s" class="size-row">
+        <div v-for="s in sizes" :key="s" class="size-row">
           <span class="size-row__label">{{ s }}</span>
-          <SrDescriptions :items="basicItems.slice(0, 3)" :column="3" :size="s as 'small'" border />
+          <SrDescriptions :items="basicItems.slice(0, 3)" :column="3" :size="s" border />
         </div>
       </div>
     </section>

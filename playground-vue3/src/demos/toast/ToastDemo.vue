@@ -17,6 +17,13 @@ function showPersistent(): void {
   const id = srToast('不会自动消失，点这里关掉', { duration: 0, closable: true })
   setTimeout(() => srToast.close(id), 4000)
 }
+
+/** 连发 7 条：模板里裸写 setTimeout 会被 vue-tsc 当成组件实例上的属性 */
+function burstToasts(): void {
+  for (let i = 1; i <= 7; i += 1) {
+    window.setTimeout(() => srToast(`第 ${i} 条`), i * 120)
+  }
+}
 </script>
 
 <template>
@@ -78,13 +85,7 @@ function showPersistent(): void {
     <section>
       <h3>连发多条（验证队列与上限）</h3>
       <div class="row">
-        <SrButton
-          size="sm"
-          variant="outline"
-          @click="[1, 2, 3, 4, 5, 6, 7].forEach((i) => setTimeout(() => srToast(`第 ${i} 条`), i * 120))"
-        >
-          连发 7 条
-        </SrButton>
+        <SrButton size="sm" variant="outline" @click="burstToasts"> 连发 7 条 </SrButton>
       </div>
       <p class="hint">超过 5 条时最早的会被自动移除</p>
     </section>

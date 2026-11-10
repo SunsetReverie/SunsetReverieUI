@@ -49,7 +49,7 @@ const storyMarks = ref('今天 [得意] 了一下，下午要 [开会]')
  * @param item 表情项
  * @param mark 标记文本
  */
-function onSelect(item: SrEmojiItem, mark: string): void {
+function onSelect(_item: SrEmojiItem, mark: string): void {
   picked.value = [...picked.value, mark].slice(-12)
   storyMarks.value = `${storyMarks.value} ${mark}`
 }

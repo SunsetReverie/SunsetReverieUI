@@ -22,7 +22,14 @@ defineOptions({ name: 'FormDemo' })
 /* ---------- 1. 基础校验 ---------- */
 
 const basicRef = ref<InstanceType<typeof SrForm>>()
-const basic = reactive({ username: '', email: '', role: '' })
+// 日期与数字各自用类型正确的字段，别把 Date / number 塞进字符串字段里
+const basic = reactive({
+  username: '',
+  email: '',
+  role: '',
+  birthday: null as Date | null,
+  quantity: 1,
+})
 const basicResult = ref('')
 
 const roles = [
@@ -95,7 +102,7 @@ const widths = ['88px', '120px', '160px'] as const
 
 /* ---------- 5. 尺寸 ---------- */
 
-const sizeModel = reactive({ a: '示例内容', b: '2' })
+const sizeModel = reactive({ a: '示例内容', b: 2 })
 const sizes = ['sm', 'md', 'lg'] as const
 
 /* ---------- 6. 整表禁用 ---------- */
@@ -489,10 +496,10 @@ async function validateOne(): Promise<void> {
           </SrRadioGroup>
         </SrFormItem>
         <SrFormItem label="日期">
-          <SrDatePicker v-model="basic.username" />
+          <SrDatePicker v-model="basic.birthday" />
         </SrFormItem>
         <SrFormItem label="数字">
-          <SrInputNumber v-model="basic.role" :min="0" />
+          <SrInputNumber v-model="basic.quantity" :min="0" />
         </SrFormItem>
       </SrForm>
       <p class="hint">各种控件放进表单后高度自动对齐，label 宽度统一由表单控制</p>

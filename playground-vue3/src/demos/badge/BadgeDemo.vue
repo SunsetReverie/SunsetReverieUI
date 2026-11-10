@@ -3,7 +3,7 @@ import { SrBadge, SrButton } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'BadgeDemo' })
 
-const types = ['danger', 'primary', 'success', 'warning', 'info', 'default'] as const
+const types = ['danger', 'primary', 'success', 'warning', 'info'] as const
 const statuses = [
   { status: 'processing', text: '部署中' },
   { status: 'success', text: '运行正常' },

@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+import apiData from '../demos/props.json'
+import { demoEntries, demoGroups } from '../demos/registry'
+import { navItems } from '../router'
 
 import {
   SrAvatar,
@@ -12,7 +17,6 @@ import {
   SrInput,
   SrNav,
   SrTable,
-  SrTag,
   type SrNavItem,
   type SrTableColumn,
   type SrTableRow,
@@ -64,31 +68,71 @@ const userMenus = [
   { key: 'logout', label: '退出登录', danger: true, divided: true },
 ]
 
-/** 统计卡片 */
-const stats = [
-  { label: '组件总数', value: '34', delta: '+4 本周' },
-  { label: '本周发布', value: '6', delta: '较上周 +2' },
-  { label: '待处理问题', value: '12', delta: '3 个高优先级' },
-]
+const router = useRouter()
 
-/** 表格列 */
+/** 搜索词：真正过滤下方的组件表，不再是个摆设输入框 */
+const keyword = ref('')
+
+/** 是否展开全部组件行 */
+const showAll = ref(false)
+
+/**
+ * 统计卡片
+ *
+ * 全部取自注册表与路由，避免样张里出现「34 个组件 / 本周发布 6」这类
+ * 和库里 68 个组件对不上的编造数字。
+ */
+const stats = computed(() => [
+  { label: '组件演示', value: String(demoEntries.length), delta: '每个都有独立页面' },
+  { label: '组件分类', value: String(demoGroups.length), delta: '侧栏按分类分组' },
+  {
+    label: '实验室',
+    value: String(navItems.filter((item) => item.group === '实验室').length),
+    delta: '主题 / 断点 / 视觉审计等',
+  },
+])
+
+/** 表格列：字段都来自注册表与 API 产物，不编造负责人与更新时间 */
 const columns: SrTableColumn[] = [
-  { key: 'name', title: '组件', minWidth: 140 },
-  { key: 'owner', title: '负责人', width: 110 },
-  { key: 'status', title: '状态', width: 110 },
-  { key: 'updated', title: '更新时间', width: 130, align: 'right' },
+  { key: 'name', title: '组件', minWidth: 150 },
+  { key: 'group', title: '分类', width: 130 },
+  { key: 'props', title: 'Props 数', width: 100, align: 'right' },
+  { key: 'page', title: '演示页', width: 130 },
 ]
 
-/** 表格数据 */
-const rows: SrTableRow[] = [
-  { id: 1, name: 'SrTable', owner: '林深', status: 'stable', updated: '11-06' },
-  { id: 2, name: 'SrNav', owner: '周夏', status: 'beta', updated: '11-07' },
-  { id: 3, name: 'SrDrawer', owner: '陈默', status: 'stable', updated: '11-05' },
-  { id: 4, name: 'SrTag', owner: '苏白', status: 'beta', updated: '11-07' },
-]
+/** 表格数据：整个组件库都能搜，默认只显示前 6 条 */
+const allRows: SrTableRow[] = demoEntries.map((item, index) => {
+  const group = demoGroups.find((g) => g.items.includes(item))?.title ?? '—'
+  const apiKey = item.api ?? item.key
+  const options = (apiData as Record<string, { options?: unknown[] } | undefined>)[apiKey]?.options ?? []
 
-/** 状态文案 */
-const statusText: Record<string, string> = { stable: '稳定', beta: '预览版' }
+  return {
+    id: index + 1,
+    name: item.name,
+    group,
+    props: options.length,
+    page: `#/c/${item.key}`,
+    search: `${item.name} ${item.key} ${group} ${item.description}`.toLowerCase(),
+  }
+})
+
+/** 当前展示的行：有搜索词时显示全部命中，否则按 showAll 截断 */
+const rows = computed<SrTableRow[]>(() => {
+  const q = keyword.value.trim().toLowerCase()
+  const matched = q ? allRows.filter((row) => String(row.search).includes(q)) : allRows
+  return showAll.value || q ? matched : matched.slice(0, 6)
+})
+
+/**
+ * 打开当前列表里的第一个组件演示页
+ * @returns 无；没有命中时什么也不做
+ */
+function openFirst(): void {
+  const first = rows.value[0]
+  if (!first) return
+  const key = String(first.page).replace('#/c/', '')
+  void router.push({ name: 'component', params: { key } })
+}
 
 /** 折叠按钮提示 */
 const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧栏'))
@@ -99,7 +143,8 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
     <p class="panel__desc" style="margin: 0 0 16px">
       侧栏可折叠、顶部固定 header，内容区独立滚动 —— 就是一个最小可用的后台骨架。 侧栏用
       <code style="font-family: var(--sr-font-family-mono)">SrNav</code>，header 里的面包屑、
-      搜索、通知、用户菜单也都是现成组件拼的。
+      搜索、通知、用户菜单也都是现成组件拼的。下面的统计与表格直接读演示注册表和 API
+      产物，搜索、展开、按钮都是真的。
     </p>
 
     <!-- 模拟一个应用窗口，这样在演示页里也能看出真实布局 -->
@@ -120,14 +165,27 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
 
       <div class="admin__main">
         <header class="admin__header">
-          <button class="admin__toggle" type="button" :title="toggleText" @click="collapsed = !collapsed">
+          <button
+            class="admin__toggle"
+            type="button"
+            :title="toggleText"
+            :aria-label="toggleText"
+            @click="collapsed = !collapsed"
+          >
             <SrIcon name="lucide:menu" :size="16" />
           </button>
 
           <SrBreadcrumb :items="crumbs" separator-icon="lucide:chevron-right" />
 
           <div class="admin__actions">
-            <SrInput class="admin__search" size="sm" placeholder="搜索组件">
+            <SrInput
+              v-model="keyword"
+              class="admin__search"
+              size="sm"
+              clearable
+              placeholder="搜索组件"
+              aria-label="搜索组件"
+            >
               <template #prefix>
                 <SrIcon name="lucide:search" :size="14" />
               </template>
@@ -140,7 +198,7 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
             </SrBadge>
 
             <SrDropdown :items="userMenus" placement="bottom-end">
-              <button class="admin__user" type="button">
+              <button class="admin__user" type="button" aria-label="用户菜单">
                 <SrAvatar alt="林" size="sm" />
                 <span class="admin__user-name">林深</span>
                 <SrIcon name="lucide:chevron-down" :size="14" />
@@ -157,18 +215,21 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
             </SrCard>
           </div>
 
-          <SrCard title="最近更新" subtitle="按更新时间排序" style="margin-top: 16px">
-            <SrTable :columns="columns" :data="rows">
-              <template #cell-status="{ value }">
-                <SrTag :type="value === 'stable' ? 'success' : 'warning'" size="sm" round>
-                  {{ statusText[value as string] ?? value }}
-                </SrTag>
-              </template>
-            </SrTable>
+          <SrCard
+            title="组件清单"
+            :subtitle="`来自演示注册表 · 当前显示 ${rows.length} / ${allRows.length}`"
+            style="margin-top: 16px"
+          >
+            <SrTable v-if="rows.length" :columns="columns" :data="rows" />
+            <p v-else class="admin__empty">没有匹配的组件，换个关键词试试</p>
 
             <template #footer>
-              <SrButton size="sm" variant="text">查看全部</SrButton>
-              <SrButton size="sm" variant="primary">新建组件</SrButton>
+              <SrButton size="sm" variant="text" @click="showAll = !showAll">
+                {{ showAll ? '只看前 6 条' : `查看全部 ${allRows.length} 个` }}
+              </SrButton>
+              <SrButton size="sm" variant="primary" :disabled="!rows.length" @click="openFirst">
+                打开组件页
+              </SrButton>
             </template>
           </SrCard>
         </div>
@@ -180,7 +241,8 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
 <style scoped>
 .admin {
   display: flex;
-  height: 620px;
+  /* 小视口里 620px 会把页面撑到一屏半，按视口高度收敛 */
+  height: min(620px, 78vh);
   overflow: hidden;
   border: 1px solid var(--sr-color-border);
   border-radius: 16px;
@@ -247,6 +309,32 @@ const toggleText = computed(() => (collapsed.value ? '展开侧栏' : '收起侧
 
 .admin__search {
   width: 168px;
+  max-width: 40vw;
+}
+
+.admin__empty {
+  margin: 0;
+  padding: 24px 0;
+  color: var(--sr-color-text-tertiary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.admin__toggle:focus-visible,
+.admin__icon-btn:focus-visible,
+.admin__user:focus-visible {
+  outline: 2px solid var(--sr-color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 620px) {
+  .admin__side {
+    display: none;
+  }
+
+  .admin__user-name {
+    display: none;
+  }
 }
 
 .admin__user {

@@ -42,7 +42,12 @@ for (const name of componentNames) {
 
   const md = readFileSync(docFile, 'utf-8')
   const entry = api[name]
-  if (!entry) continue
+  // 过去这里静默 continue：props.json 过期漏掉组件时，文档校验照样「通过」。
+  // 现在把它算成缺口，提示重新生成产物。
+  if (!entry) {
+    problems.push({ name, kind: 'API 产物缺失', items: ['pnpm gen:demo-props'] })
+    continue
+  }
 
   const props = [...new Set((entry.options || []).map((option) => option.name))]
   const missingProps = props.filter((prop) => !new RegExp('\\| `' + prop + '`').test(md))

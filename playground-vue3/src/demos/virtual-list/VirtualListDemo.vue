@@ -36,6 +36,51 @@ const HEIGHT = 320
 
 /** 实际渲染的 DOM 数（用于说明效果） */
 const renderedCount = computed(() => Math.ceil(HEIGHT / USER_HEIGHT) + 6)
+
+/** 用户行结构 */
+interface UserRow {
+  id: number
+  name: string
+  email: string
+  score: number
+}
+
+/**
+ * 虚拟列表的 item 是 unknown，模板表达式里不能写 `as` 断言（vue-tsc 会报语法错），
+ * 取值统一收到脚本里，模板只调函数
+ * @param item 列表项
+ * @returns 行 key
+ */
+function userKey(item: unknown): number {
+  return (item as UserRow).id
+}
+
+/**
+ * 取用户名
+ * @param item 列表项
+ * @returns 姓名
+ */
+function userName(item: unknown): string {
+  return (item as UserRow).name
+}
+
+/**
+ * 取邮箱
+ * @param item 列表项
+ * @returns 邮箱
+ */
+function userMail(item: unknown): string {
+  return (item as UserRow).email
+}
+
+/**
+ * 取分数
+ * @param item 列表项
+ * @returns 分数
+ */
+function userScore(item: unknown): number {
+  return (item as UserRow).score
+}
 </script>
 
 <template>
@@ -58,21 +103,16 @@ const renderedCount = computed(() => Math.ceil(HEIGHT / USER_HEIGHT) + 6)
     <section>
       <h3>带头像的列表</h3>
       <div class="card" style="padding: 0">
-        <SrVirtualList
-          :items="users"
-          :item-height="USER_HEIGHT"
-          :height="HEIGHT"
-          :item-key="(item) => (item as { id: number }).id"
-        >
+        <SrVirtualList :items="users" :item-height="USER_HEIGHT" :height="HEIGHT" :item-key="userKey">
           <template #default="{ item }">
             <div class="user">
-              <div class="user__avatar">{{ (item as { name: string }).name.slice(-2) }}</div>
+              <div class="user__avatar">{{ userName(item).slice(-2) }}</div>
               <div class="user__main">
-                <p class="user__name">{{ (item as { name: string }).name }}</p>
-                <p class="user__mail">{{ (item as { email: string }).email }}</p>
+                <p class="user__name">{{ userName(item) }}</p>
+                <p class="user__mail">{{ userMail(item) }}</p>
               </div>
-              <SrTag size="sm" :type="(item as { score: number }).score > 60 ? 'success' : 'info'">
-                {{ (item as { score: number }).score }} 分
+              <SrTag size="sm" :type="userScore(item) > 60 ? 'success' : 'info'">
+                {{ userScore(item) }} 分
               </SrTag>
             </div>
           </template>

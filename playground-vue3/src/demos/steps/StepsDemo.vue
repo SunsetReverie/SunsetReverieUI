@@ -4,6 +4,9 @@ import { SrButton, SrSteps, SrSwitch, type SrStepItem } from '@sunset-reverie/ui
 
 defineOptions({ name: 'StepsDemo' })
 
+/** 尺寸档位：写在脚本里让 TS 推成字面量类型，模板里不需要类型断言 */
+const sizes = ['sm', 'md', 'lg'] as const
+
 /** 基础步骤 */
 const basicSteps: SrStepItem[] = [
   { title: '填写信息', description: '基础资料与联系方式' },
@@ -152,9 +155,9 @@ function prev(): void {
     <section>
       <h3>尺寸</h3>
       <div class="stack">
-        <div v-for="s in ['small', 'md', 'large']" :key="s" class="size-row">
+        <div v-for="s in sizes" :key="s" class="size-row">
           <span class="size-row__label">{{ s }}</span>
-          <SrSteps :items="basicSteps.slice(0, 3)" :current="1" :size="s as 'small'" />
+          <SrSteps :items="basicSteps.slice(0, 3)" :current="1" :size="s" />
         </div>
       </div>
     </section>
