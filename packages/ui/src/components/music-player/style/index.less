@@ -25,6 +25,9 @@
   border-radius: var(--sr-music-radius);
   background: var(--sr-music-panel-bg);
 
+  /* 玻璃层自带内高光，但外投影得单独给：浮在内容上才有「离页面的距离」 */
+  box-shadow: var(--sr-shadow-lg);
+
   /* ---------- 顶部：封面 + 信息 ---------- */
   &__head {
     display: flex;

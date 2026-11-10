@@ -126,12 +126,20 @@ function setMiniPlacement(value: string): void {
         <SrTabs
           :model-value="attachPlacement"
           :items="placementTabs"
+          type="pill"
           size="sm"
           @update:model-value="setAttachPlacement"
         />
         <SrSwitch v-model="attachOn" size="sm" />
       </div>
 
+      <SrMusicPlayer
+        v-if="attachOn"
+        :id="PLAYLIST_ID"
+        :api="API"
+        mode="attach"
+        :placement="attachPlacement"
+      />
       <div v-if="!attachOn" class="placeholder">
         未启用。打开上方开关后，收起态会作为一个贴边圆钮出现在对应角落。
       </div>
@@ -164,6 +172,7 @@ function setMiniPlacement(value: string): void {
         <SrTabs
           :model-value="miniPlacement"
           :items="placementTabs"
+          type="pill"
           size="sm"
           @update:model-value="setMiniPlacement"
         />
@@ -174,6 +183,14 @@ function setMiniPlacement(value: string): void {
         </div>
       </div>
 
+      <SrMusicPlayer
+        v-if="miniOn"
+        :id="PLAYLIST_ID"
+        :api="API"
+        mode="mini"
+        :placement="miniPlacement"
+        :global-lyrics="miniGlobalLyrics"
+      />
       <div v-if="!miniOn" class="placeholder">
         未启用。打开上方开关后，收起态会作为一条贴边胶囊条出现在屏幕边缘。
       </div>
@@ -208,6 +225,15 @@ function setMiniPlacement(value: string): void {
         <SrSwitch v-model="globalOn" size="sm" />
       </div>
 
+      <SrMusicPlayer
+        v-if="globalOn"
+        :id="PLAYLIST_ID"
+        :api="API"
+        mode="attach"
+        placement="bottomLeft"
+        global-lyrics
+        :show-lyrics="false"
+      />
       <div v-if="!globalOn" class="placeholder">
         未启用。打开上方开关后，左下角会出现一个贴边圆钮，播放时屏幕底部会固定显示当前歌词。
         它与吸附模式的圆钮是两个独立的播放器实例——同时打开就会看到两个圆钮，不是重复渲染。

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import SrIcon from '../../icon/src/icon.vue'
+import SrTooltip from '../../tooltip/src/tooltip.vue'
 import { fetchMusicLyric, fetchMusicTracks } from './api'
 import { findLyricIndex, parseLrc, resolveLyricText } from './lrc'
 import { MUSIC_LOOP_MAP, MUSIC_LOOP_ORDER, musicPlayerProps } from './music-player'
@@ -713,18 +714,18 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="sr-music__top-actions">
-              <button
-                v-if="globalLyrics"
-                class="sr-music__btn sr-music__btn--sm"
-                :class="{ 'is-active': globalLyricOpen }"
-                type="button"
-                :title="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'"
-                :aria-label="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'"
-                :aria-pressed="globalLyricOpen"
-                @click="globalLyricOpen = !globalLyricOpen"
-              >
-                <SrIcon name="lucide:captions" :size="15" />
-              </button>
+              <SrTooltip v-if="globalLyrics" :content="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'">
+                <button
+                  class="sr-music__btn sr-music__btn--sm"
+                  :class="{ 'is-active': globalLyricOpen }"
+                  type="button"
+                  :aria-label="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'"
+                  :aria-pressed="globalLyricOpen"
+                  @click="globalLyricOpen = !globalLyricOpen"
+                >
+                  <SrIcon name="lucide:captions" :size="15" />
+                </button>
+              </SrTooltip>
             </div>
           </div>
 
@@ -749,72 +750,74 @@ onBeforeUnmount(() => {
 
           <!-- 控制区 -->
           <div class="sr-music__controls">
-            <button
-              class="sr-music__btn"
-              type="button"
-              :title="loopInfo.label"
-              :aria-label="loopInfo.label"
-              @click="cycleLoop"
-            >
-              <SrIcon :name="loopInfo.icon" :size="18" />
-            </button>
+            <SrTooltip :content="loopInfo.label">
+              <button class="sr-music__btn" type="button" :aria-label="loopInfo.label" @click="cycleLoop">
+                <SrIcon :name="loopInfo.icon" :size="18" />
+              </button>
+            </SrTooltip>
 
-            <button class="sr-music__btn" type="button" aria-label="上一首" title="上一首" @click="step(-1)">
-              <SrIcon name="lucide:skip-back" :size="18" />
-            </button>
+            <SrTooltip content="上一首">
+              <button class="sr-music__btn" type="button" aria-label="上一首" @click="step(-1)">
+                <SrIcon name="lucide:skip-back" :size="18" />
+              </button>
+            </SrTooltip>
 
-            <button
-              class="sr-music__btn sr-music__btn--main"
-              type="button"
-              :aria-label="playing ? '暂停' : '播放'"
-              :title="playing ? '暂停' : '播放'"
-              @click="toggle"
-            >
-              <SrIcon :name="playing ? 'lucide:pause' : 'lucide:play'" :size="20" />
-            </button>
+            <SrTooltip :content="playing ? '暂停' : '播放'">
+              <button
+                class="sr-music__btn sr-music__btn--main"
+                type="button"
+                :aria-label="playing ? '暂停' : '播放'"
+                @click="toggle"
+              >
+                <SrIcon :name="playing ? 'lucide:pause' : 'lucide:play'" :size="20" />
+              </button>
+            </SrTooltip>
 
-            <button class="sr-music__btn" type="button" aria-label="下一首" title="下一首" @click="step(1)">
-              <SrIcon name="lucide:skip-forward" :size="18" />
-            </button>
+            <SrTooltip content="下一首">
+              <button class="sr-music__btn" type="button" aria-label="下一首" @click="step(1)">
+                <SrIcon name="lucide:skip-forward" :size="18" />
+              </button>
+            </SrTooltip>
 
-            <button
-              v-if="showLyrics"
-              class="sr-music__btn"
-              :class="{ 'is-active': lyricOpen }"
-              type="button"
-              :title="lyricOpen ? '收起歌词' : '展开歌词'"
-              :aria-label="lyricOpen ? '收起歌词' : '展开歌词'"
-              :aria-pressed="lyricOpen"
-              @click="lyricOpen = !lyricOpen"
-            >
-              <SrIcon name="lucide:mic-vocal" :size="18" />
-            </button>
+            <SrTooltip v-if="showLyrics" :content="lyricOpen ? '收起歌词' : '展开歌词'">
+              <button
+                class="sr-music__btn"
+                :class="{ 'is-active': lyricOpen }"
+                type="button"
+                :aria-label="lyricOpen ? '收起歌词' : '展开歌词'"
+                :aria-pressed="lyricOpen"
+                @click="lyricOpen = !lyricOpen"
+              >
+                <SrIcon name="lucide:mic-vocal" :size="18" />
+              </button>
+            </SrTooltip>
 
-            <button
-              v-if="showPlaylist"
-              class="sr-music__btn"
-              :class="{ 'is-active': playlistOpen }"
-              type="button"
-              :title="`播放列表（${tracks.length} 首）`"
-              :aria-label="`播放列表，共 ${tracks.length} 首`"
-              :aria-expanded="playlistOpen"
-              @click="playlistOpen = !playlistOpen"
-            >
-              <SrIcon name="lucide:list-music" :size="18" />
-            </button>
+            <SrTooltip v-if="showPlaylist" :content="`播放列表（${tracks.length} 首）`">
+              <button
+                class="sr-music__btn"
+                :class="{ 'is-active': playlistOpen }"
+                type="button"
+                :aria-label="`播放列表，共 ${tracks.length} 首`"
+                :aria-expanded="playlistOpen"
+                @click="playlistOpen = !playlistOpen"
+              >
+                <SrIcon name="lucide:list-music" :size="18" />
+              </button>
+            </SrTooltip>
           </div>
 
           <!-- 音量：单独一行，和主控制条分开 -->
           <div class="sr-music__volume">
-            <button
-              class="sr-music__btn"
-              type="button"
-              :title="muted ? '取消静音' : '静音'"
-              :aria-label="muted ? '取消静音' : `音量 ${Math.round(volume * 100)}%`"
-              @click="toggleMute"
-            >
-              <SrIcon :name="muted || volume === 0 ? 'lucide:volume-x' : 'lucide:volume-2'" :size="18" />
-            </button>
+            <SrTooltip :content="muted ? '取消静音' : `音量 ${Math.round(volume * 100)}%`">
+              <button
+                class="sr-music__btn"
+                type="button"
+                :aria-label="muted ? '取消静音' : `音量 ${Math.round(volume * 100)}%`"
+                @click="toggleMute"
+              >
+                <SrIcon :name="muted || volume === 0 ? 'lucide:volume-x' : 'lucide:volume-2'" :size="18" />
+              </button>
+            </SrTooltip>
 
             <input
               class="sr-music__range"
