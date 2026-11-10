@@ -2,6 +2,8 @@
 
 游客与登录双态、一层回复、排序分页、表情标记与插槽定制。数据完全由宿主持有，组件只派发事件。
 
+`comments` 是一棵**两层数组**：顶层评论带 `replies`，回复的回复并入同一层。字段与 JSON 示例见[数据格式](#数据格式)。
+
 <script setup>
 import { computed, ref } from 'vue'
 import { DEFAULT_EMOJI_PACKAGES, SrComment } from '@sunset-reverie/ui'
@@ -70,6 +72,31 @@ function onDelete(comment) {
 }
 </script>
 
+## 快速上手
+
+最小可用例子——一份数据、一个事件：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const comments = ref([
+  {
+    id: 1,
+    author: { id: 'u1', name: '苏晚' },
+    content: '第一条评论[微笑]',
+    createdAt: Date.now(),
+  },
+])
+</script>
+
+<template>
+  <SrComment :comments="comments" @submit="(payload) => console.log(payload.content)" />
+</template>
+```
+
+不传 `user` 就是游客态，表单会要求填昵称；登录态传 `:user="{ id, name }"` 即可。表情要生效还得传 `:emoji-packages`（与插入端同一份数据）。
+
 ## 交互演示
 
 <div class="sr-demo">
@@ -101,34 +128,223 @@ function onDelete(comment) {
 
 组件**不持有业务状态**：点赞、删除、提交都只派发事件，改数据的是宿主。这样乐观更新还是等接口返回，由业务自己决定，不会出现两边各持一份状态互相打架。
 
-## 数据结构
+## 数据格式
 
-```ts
-interface SrCommentData {
-  id: string | number
-  author: SrCommentAuthor
-  content: string                 // 纯文本，表情是标记（[微笑]）
-  createdAt: string | number | Date
-  likes?: number
-  liked?: boolean
-  replies?: SrCommentData[]       // 只支持一层
-  replyTo?: SrCommentAuthor       // 回复目标，用于「回复 @某某」
-  deleted?: boolean               // 软删除
-  meta?: Record<string, unknown>  // 归属地/系统/浏览器等
-}
+`comments` 接收一棵**只有两层**的数组：顶层评论带 `replies`。下面这份示例把字段基本用满，可以直接对照着写接口：
 
-interface SrCommentAuthor {
-  id: string | number
-  name: string
-  avatar?: string
-  website?: string                // 有值时昵称渲染成链接
-  isSelf?: boolean                // 是否本人，决定显示「删除」
-  isAdmin?: boolean               // 显示「作者」标识
-  meta?: Record<string, unknown>
+```json
+[
+  {
+    "id": 1,
+    "author": {
+      "id": "u_1024",
+      "name": "苏晚",
+      "avatar": "https://cdn.example.com/avatar/1024.png",
+      "website": "https://suvian.me",
+      "isAdmin": true,
+      "meta": { "level": 6 }
+    },
+    "content": "这套主题的层次感做得很舒服，尤其喜欢卡片上那层高光。[微笑]",
+    "createdAt": "2026-11-10T11:57:00+08:00",
+    "likes": 12,
+    "liked": false,
+    "meta": { "region": "浙江", "os": "macOS", "browser": "Chrome" },
+    "replies": [
+      {
+        "id": 11,
+        "author": { "id": "u_2048", "name": "陈屿" },
+        "content": "同感，暗色模式下也不闷。",
+        "createdAt": 1762747020000,
+        "likes": 3,
+        "replyTo": { "id": "u_1024", "name": "苏晚" },
+        "meta": { "region": "广东", "os": "Windows", "browser": "Edge" }
+      },
+      {
+        "id": 12,
+        "author": { "id": "u_me", "name": "林深", "isSelf": true },
+        "content": "高光是玻璃图层带的。",
+        "createdAt": "2026-11-10 11:59:00",
+        "replyTo": { "id": "u_2048", "name": "陈屿" }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "author": { "id": "u_4096", "name": "周野" },
+    "content": "这条已经被作者删除了。",
+    "createdAt": 1762740000000,
+    "deleted": true
+  }
+]
+```
+
+### 评论字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string \| number` | 是 | 唯一标识，列表 key 与事件回传都用它 |
+| `author` | `SrCommentAuthor` | 是 | 作者信息 |
+| `content` | `string` | 是 | 正文，**纯文本**；表情写成标记 `[微笑]` |
+| `createdAt` | `string \| number \| Date` | 是 | 创建时间 |
+| `likes` | `number` | 否 | 点赞数，缺省按 0 处理 |
+| `liked` | `boolean` | 否 | 当前用户是否已赞，决定爱心是否高亮 |
+| `replies` | `SrCommentData[]` | 否 | 回复，**只有顶层评论会读这个字段** |
+| `replyTo` | `SrCommentAuthor` | 否 | 这条回复针对谁，渲染成「回复 @某某」 |
+| `deleted` | `boolean` | 否 | 软删除，显示占位并隐藏操作区 |
+| `meta` | `object` | 否 | 环境信息，组件只透传给插槽 |
+
+### 作者字段
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string \| number` | 是 | 唯一标识 |
+| `name` | `string` | 是 | 昵称；没有头像时用它首字做回退 |
+| `avatar` | `string` | 否 | 头像地址 |
+| `website` | `string` | 否 | 个人网址，有值时昵称渲染成链接 |
+| `isSelf` | `boolean` | 否 | 是否本人，**唯一决定是否显示「删除」** |
+| `isAdmin` | `boolean` | 否 | 显示「作者」标识 |
+| `meta` | `object` | 否 | 等级等扩展信息 |
+
+### 回复在 JSON 里怎么放
+
+只有一层：回复放在顶层评论的 `replies` 里，**回复的回复也是同一层的元素**，用 `replyTo` 标注它针对谁：
+
+```json
+{
+  "id": 1,
+  "content": "顶层评论",
+  "replies": [
+    { "id": 11, "content": "回复顶层", "replyTo": { "id": 1, "name": "苏晚" } },
+    { "id": 12, "content": "回复 11 楼", "replyTo": { "id": 11, "name": "陈屿" } }
+  ]
 }
 ```
 
-`createdAt` 三种写法都吃：时间戳（10 位按秒处理）、日期字符串、`Date`。
+挂在回复身上的 `replies` 不会被渲染——无限嵌套在窄屏上会把正文挤成一条竖线。
+
+### meta 里的约定键
+
+`meta` 是自由结构，但下面这几个键组件**认识**，有值就渲染成标签：
+
+| 来源 | 键 | 渲染成 |
+| --- | --- | --- |
+| `author.meta.level` | `level` | `Lv.6`（主色标签） |
+| `comment.meta.region` | `region` | 归属地 |
+| `comment.meta.os` | `os` | 操作系统 |
+| `comment.meta.browser` | `browser` | 浏览器 |
+
+其它键不渲染，只在 `#comment-meta` / `#comment-footer` 的作用域里可读。
+
+### 时间字段
+
+四种写法都吃，服务端返回什么就传什么：
+
+```json
+{ "createdAt": 1762747020000 }
+{ "createdAt": 1762747020 }
+{ "createdAt": "1762747020000" }
+{ "createdAt": "2026-11-10 11:57:00" }
+```
+
+10 位数字按秒处理，13 位按毫秒；数字字符串也是按时间戳解析，不会被当成日期字符串。
+
+### 提交载荷
+
+`submit` 事件的载荷固定三块：
+
+```json
+{
+  "content": "你好[微笑]",
+  "replyTo": {
+    "id": 1,
+    "author": { "id": "u_1024", "name": "苏晚" },
+    "content": "这套主题的层次感做得很舒服"
+  },
+  "guest": null
+}
+```
+
+| 场景 | `replyTo` | `guest` |
+| --- | --- | --- |
+| 顶层评论（登录） | `null` | `null` |
+| 回复（登录） | 被回复的评论对象 | `null` |
+| 游客评论 | `null` 或评论对象 | `{ name, email, website }` |
+
+### 宿主怎么更新数据
+
+组件不改传进去的数组，四个事件都得自己处理：
+
+```vue
+<script setup lang="ts">
+const comments = ref<SrCommentData[]>([])
+const commentRef = ref()
+
+function onLike(comment: SrCommentData) {
+  // 乐观更新：先改本地，失败再回滚
+  const liked = !comment.liked
+  comment.liked = liked
+  comment.likes = Math.max(0, (comment.likes ?? 0) + (liked ? 1 : -1))
+
+  api.like(comment.id, liked).catch(() => {
+    comment.liked = !liked
+    comment.likes = Math.max(0, (comment.likes ?? 0) - (liked ? 1 : -1))
+  })
+}
+
+function onDelete(comment: SrCommentData) {
+  api.remove(comment.id).then(() => {
+    // 软删除：保留占位，别把节点摘掉，否则下面的回复没了上下文
+    comment.deleted = true
+  })
+}
+
+async function onSubmit(payload: SrCommentSubmitPayload) {
+  const created = await api.create(payload)
+
+  if (payload.replyTo) {
+    const parent = comments.value.find(
+      (item) =>
+        item.id === payload.replyTo!.id || item.replies?.some((r) => r.id === payload.replyTo!.id),
+    )
+    parent?.replies?.push(created)
+  } else {
+    comments.value.unshift(created)
+  }
+
+  // 成功后才清空表单
+  commentRef.value?.clearEditor()
+}
+</script>
+```
+
+### 分页数据怎么给
+
+| 模式 | `comments` 传什么 | 额外处理 |
+| --- | --- | --- |
+| `pager` | **全量**顶层评论，组件自己切片 | 页码变化派发 `page-change` |
+| `more` | 已加载的那部分 | 点「加载更多」派发 `load-more`，宿主追加后更新 `hasMore` |
+| `none` | 全量 | 不分页 |
+
+```vue
+<!-- 加载更多：追加数据，不要重新切片 -->
+<SrComment
+  :comments="loaded"
+  pagination="more"
+  :has-more="loaded.length < total"
+  :loading-more="loading"
+  @load-more="loadNextPage"
+/>
+```
+
+### 表情在数据里怎么存
+
+正文存的是**标记文本**，不是 HTML，也不是图片地址：
+
+```json
+{ "content": "太可爱了[微笑][狗头]" }
+```
+
+渲染时按 `emojiPackages` 反查：`char` 直出字符，`url` 才生成图片。所以换一整套表情包不用动历史数据，只要名称对得上；查不到的标记原样显示，不会吞掉正文。
 
 ## 游客与登录
 
@@ -201,7 +417,7 @@ interface SrCommentAuthor {
 
 只传 `page-size` 不传 `pagination` 时按 `pager` 处理——否则老代码升级后会一屏铺出几千条。
 
-## 表情
+## 表情渲染
 
 `emoji-packages` 同时用于**表单插入**和**正文反查**，必须是同一份：
 
@@ -428,6 +644,29 @@ import '@sunset-reverie/ui/components/comment/style.css'
 其余尺寸与颜色都走全局设计令牌（`--sr-space-*` / `--sr-color-*` / `--sr-radius-*`），换主题自动跟随；毛玻璃质感下输入框边框会自动压淡一档，不需要单独处理。
 
 排序条在**未激活项上也有 hover 底色**，不是只换文字颜色。
+
+## 常见问题
+
+**删除按钮不显示？**
+看 `author.isSelf`。组件不猜身份——游客态下所有评论都来自同一浏览器，按昵称比对必然误判，这个字段要服务端给。
+
+**正文里的 `[微笑]` 原样显示了？**
+说明 `emojiPackages` 与插入端不是同一份数据，或名称对不上。查不到的标记会原样保留，不会吞内容。
+
+**分页条没出现？**
+顶层评论数不超过 `pageSize` 时不渲染分页条；`more` 模式在 `hasMore=false` 时只显示「没有更多了」。
+
+**提交成功后表单为什么没清空？**
+故意的。立刻清空会让失败的提交丢掉用户刚写的内容，成功后自己调 `commentRef.value?.clearEditor()`。
+
+**回复的回复显示在哪？**
+并入同一层。把 `replies` 挂到回复身上不会被渲染，只有顶层评论的 `replies` 会渲染。
+
+**排序能按「时间 + 点赞」混合吗？**
+`hottest` 只按点赞数，不做时间衰减。要更复杂的规则，自己在宿主排好再传进来，并把 `show-sort` 关掉。
+
+**能改整体配色和间距吗？**
+可以，见「样式定制」。颜色全部走设计令牌，换主题自动跟随；间距和排序条圆角有组件级变量。
 
 ## 注意事项
 
