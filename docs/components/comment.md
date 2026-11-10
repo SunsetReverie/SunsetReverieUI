@@ -99,20 +99,16 @@ const comments = ref([
 
 ## 交互演示
 
-<div class="sr-demo">
-  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px">
-    <SrSwitch v-model="loggedIn" size="sm" />
-    <span style="color: var(--sr-color-text-tertiary); font-size: 12px">
-      {{ loggedIn ? '登录态：林深' : '游客态：多出昵称/邮箱/网址' }}
-    </span>
-  </div>
-  <SrComment
-    :comments="comments"
-    :user="user"
-    :emoji-packages="emojiPackages"
-    @like="onLike"
-    @delete="onDelete"
-  />
+<!-- 演示用 Date.now() 计算「几分钟前」：SSR 与客户端文案会不同，整块交给客户端渲染 -->
+<div class="sr-demo is-block">
+  <ClientOnly>
+    <template #fallback><p style="margin: 0; color: var(--vp-c-text-3); font-size: 12px">交互演示在浏览器中渲染（相对时间依赖当前时刻）。</p></template>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px">
+      <SrSwitch v-model="loggedIn" size="sm" />
+      <span style="color: var(--sr-color-text-tertiary); font-size: 12px">{{ loggedIn ? '登录态：林深' : '游客态：多出昵称/邮箱/网址' }}</span>
+    </div>
+    <SrComment :comments="comments" :user="user" :emoji-packages="emojiPackages" @like="onLike" @delete="onDelete" />
+  </ClientOnly>
 </div>
 
 ```vue

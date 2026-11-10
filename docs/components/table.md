@@ -67,13 +67,15 @@ const data = ref<SrTableRow[]>([
 排序、多选都是真的，点表头试试：
 
 <div class="sr-demo is-block">
-  <SrTable v-model:selected-keys="selected" :columns="columns" :data="data" selectable>
-    <template #cell-status="{ value }">
-      <SrTag :type="value === 'stable' ? 'success' : 'warning'" size="sm" round>
-        {{ statusText[value] ?? value }}
-      </SrTag>
-    </template>
-  </SrTable>
+  <div class="sr-demo__panel">
+    <SrTable v-model:selected-keys="selected" :columns="columns" :data="data" selectable>
+      <template #cell-status="{ value }">
+        <SrTag :type="value === 'stable' ? 'success' : 'warning'" size="sm" round>
+          {{ statusText[value] ?? value }}
+        </SrTag>
+      </template>
+    </SrTable>
+  </div>
   <p style="margin: 12px 0 0; font-size: 13px; color: var(--vp-c-text-3)">
     已选 {{ selected.length }} 行
   </p>
@@ -285,6 +287,8 @@ const columns: SrTableColumn[] = [
 > `cell-<key>` 是**命名约定**而不是固定插槽：组件源码里只有一个动态入口 `slotNameOf(column)`，把列配置的 `key` 拼成实际插槽名（列 `status` 对应 `#cell-status`）。
 
 ## 注意事项
+
+- **表格本身不画卡片背景**，方便嵌进任意面板。需要毛玻璃卡片时用 `SrCard` 包一层；文档演示里的 `.sr-demo__panel` 只是演示站的托底工具，不属于组件 API。
 
 - **`pagination` 与 `lazy` 语义互斥**。同时开启时，`lazy` 往 `data` 里追加数据，但视图只显示当前页的切片，看起来像「加载没反应」。两者只能选一个。
 - **固定列必须给 px 宽度**，否则偏移量算不出来，`sticky` 会叠在一起。

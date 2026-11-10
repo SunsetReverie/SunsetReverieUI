@@ -6,29 +6,12 @@
 import { ref } from 'vue'
 
 const picked = ref('')
-
-const customPackages = [
-  {
-    key: 'work',
-    name: '办公',
-    emojis: [
-      { name: '收到', char: '👌' },
-      { name: '开会', char: '📅' },
-      { name: '加班', char: '🌙' },
-      { name: '搞定', char: '✅' },
-      { name: '摸鱼', char: '🐟' },
-      { name: '请假', char: '🏖️' },
-    ],
-  },
-]
 </script>
 
 ## 交互演示
 
 <div class="sr-demo is-block">
-  <div style="max-width: 300px; border: 1px solid var(--vp-c-border); border-radius: 8px; overflow: hidden">
-    <SrEmojiPicker :packages="customPackages" :columns="6" @select="(item, mark) => (picked = mark)" />
-  </div>
+  <SrEmojiPicker :columns="8" @select="(item, mark) => (picked = mark)" />
   <p style="margin: 10px 0 0; font-size: 12px; color: var(--vp-c-text-3)">
     选中的标记：<code>{{ picked || '（还没选）' }}</code>
   </p>

@@ -74,6 +74,20 @@
   align-items: stretch;
 }
 
+/* 演示用的玻璃托底：表格 / 标签页这类组件本身没有表面，
+   直接放在渐变舞台上会「看起来是扁平的」。用它包一层即可看到毛玻璃。
+   flat 风格下 --sr-glass-filter 为 none、背景变实色，同一套声明自然退回卡片。 */
+.sr-demo__panel {
+  width: 100%;
+  padding: 16px;
+  border: var(--sr-glass-border-width, 1px) solid var(--sr-color-border);
+  border-radius: var(--sr-radius-base);
+  background: var(--sr-color-bg-container);
+  box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight, 0 0 0 0 transparent);
+  backdrop-filter: var(--sr-glass-filter);
+  -webkit-backdrop-filter: var(--sr-glass-filter);
+}
+
 /* 演示里的分组标签 */
 .sr-demo__label {
   flex: 0 0 auto;
