@@ -181,6 +181,10 @@ interface SrCommentAuthor {
 
 排序有 `latest` / `oldest` / `hottest`（只按点赞数，不做时间衰减）。切换排序会回到第一页。
 
+::: tip 数据要够才看得出效果
+页码模式在顶层评论数不超过 `pageSize` 时不渲染分页条；加载更多模式在 `hasMore=false` 时只显示「没有更多了」。演示或联调时至少准备两页数据（比如 23 条 + 每页 5 条），否则会觉得「分页没生效」。
+:::
+
 只传 `page-size` 不传 `pagination` 时按 `pager` 处理——否则老代码升级后会一屏铺出几千条。
 
 ## 表情

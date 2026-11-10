@@ -351,6 +351,27 @@ describe('SrEmojiPicker', () => {
     wrapper.unmount()
   })
 
+  it('按下时不能立刻捕获指针，否则 tab 的 click 会丢', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+    const tabs = wrapper.find('.sr-emoji-picker__tabs')
+    const el = tabs.element as HTMLElement
+
+    // jsdom 没有指针捕获，手动补一个用来观察调用时机
+    const capture = vi.fn()
+    Object.defineProperty(el, 'setPointerCapture', { value: capture, configurable: true })
+
+    await tabs.trigger('pointerdown', { pointerId: 2, pointerType: 'mouse', button: 0, clientX: 100 })
+
+    // 按下就捕获的话，pointerup 与随后的 click 目标都会变成这个容器，
+    // 具体 tab 按钮上的 @click 永远收不到 —— 真实浏览器里就是「点分类没反应」
+    expect(capture).not.toHaveBeenCalled()
+
+    await tabs.trigger('pointermove', { pointerId: 2, clientX: 80 })
+    expect(capture).toHaveBeenCalledTimes(1)
+
+    wrapper.unmount()
+  })
+
   it('maxHeight 作用在面板上', () => {
     const wrapper = mount(SrEmojiPicker, { props: { packages, maxHeight: 180 } })
 

@@ -216,7 +216,9 @@ function onTabsPointerDown(event: PointerEvent): void {
   dragMoved = false
   suppressClick = false
 
-  el.setPointerCapture?.(event.pointerId)
+  // 这里**不能**立刻 setPointerCapture：一旦捕获，pointerup 与随后的 click
+  // 目标都会变成这个容器，tab 按钮上的 @click 就再也收不到事件——
+  // 表现就是「点分类标签没反应」。等真的拉过阈值再捕获。
 }
 
 /**
@@ -235,6 +237,9 @@ function onTabsPointerMove(event: PointerEvent): void {
   if (!dragMoved && Math.abs(dx) > 4) {
     dragMoved = true
     tabsDragging.value = true
+    // 确认是拖拽了再捕获指针：这样拖出分类栏也能继续收到 move，
+    // 而普通点击全程没有捕获，click 才会正常落到具体 tab 上
+    el.setPointerCapture?.(event.pointerId)
   }
   if (!dragMoved) return
 
