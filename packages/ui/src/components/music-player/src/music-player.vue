@@ -4,6 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import SrIcon from '../../icon/src/icon.vue'
 import SrTooltip from '../../tooltip/src/tooltip.vue'
 import { fetchMusicLyric, fetchMusicTracks } from './api'
+import { isInteractiveTarget } from './interaction'
 import { findLyricIndex, parseLrc, resolveLyricText } from './lrc'
 import { MUSIC_LOOP_MAP, MUSIC_LOOP_ORDER, musicPlayerProps } from './music-player'
 
@@ -76,9 +77,9 @@ const miniExpanded = ref(false)
 /**
  * 面板是否铺开成完整形态
  *
- * @remarks 吸附模式改成两段式：悬停圆钮先给一张精简卡片，点卡片右上角的
- * 展开按钮才铺开歌词、歌单、音量这些重内容。一悬停就弹出完整面板太"砸脸"，
- * 而多数时候用户只是想暂停或切歌。
+ * @remarks 吸附模式两段式：悬停圆钮先给精简卡片，再点卡片展开完整面板。
+ * 展开入口不局限于右上角的图标 —— 卡片任意非控件区域都能点，
+ * 图标保留是为了让「这里可以展开」一眼可见、也给键盘用户一个明确目标。
  */
 const panelExpanded = ref(false)
 
@@ -511,6 +512,22 @@ function expandToFull(): void {
 }
 
 /**
+ * 精简卡片的整卡点击：非控件区域一律铺开完整面板
+ *
+ * 控件（展开图标、上一首 / 播放 / 下一首、进度条）保持自己的行为，
+ * 用事件委托判定而不是给每个按钮加 stopPropagation —— 后者在新增控件时
+ * 极容易漏，漏一个就会变成「点播放结果把面板展开了」。
+ *
+ * @param event 冒泡到面板根的点击事件
+ * @returns 无；非精简形态或控件点击时直接返回
+ */
+function onCompactCardClick(event: MouseEvent): void {
+  if (!isCompactCard.value) return
+  if (isInteractiveTarget(event.target)) return
+  expandToFull()
+}
+
+/**
  * 读取当前播放状态
  *
  * @returns 当前曲目、索引、播放状态与进度
@@ -726,6 +743,7 @@ onBeforeUnmount(() => {
         :style="anchorStyle"
         @mouseenter="cancelMiniLeave"
         @mouseleave="handleMiniLeave"
+        @click="onCompactCardClick"
       >
         <!-- 加载 / 失败 -->
         <div v-if="loading" class="sr-music__status">正在加载歌单…</div>
@@ -745,7 +763,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="sr-music__top-actions">
-              <!-- 精简卡片阶段只给一个"铺开"入口，铺开后才是完整面板 -->
+              <!-- 整卡都能点开，这里仍保留一个明确的展开入口（也是键盘可达的目标） -->
               <SrTooltip v-if="isCompactCard" content="展开完整播放器">
                 <button
                   class="sr-music__btn sr-music__btn--sm"

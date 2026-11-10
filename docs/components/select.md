@@ -114,8 +114,10 @@ const options = [
 | `value` | `string \| number` | 选项值 |
 | `label` | `string` | 展示文案 |
 | `disabled` | `boolean` | 该项不可选 |
+| `icon` | `string` | 可选的图标名；组件不渲染，留给 `#option` 插槽 |
+| `[key: string]` | `unknown` | 允许附带业务字段，原样透传到 `#option` 插槽 |
 
-> 选项目前只支持平铺列表，没有分组与远程加载。需要分组时用 `#option` 插槽自己在数据里加标记。
+> 选项目前只支持平铺列表，没有分组与远程加载。需要分组时用 `#option` 插槽自己在数据里加标记。选项对象允许带自定义字段，插槽里直接读即可，不必写 `'icon' in option` 之类的收窄。
 
 ## 事件
 

@@ -461,6 +461,9 @@
   &.is-compact-card {
     gap: var(--sr-space-3);
     width: 288px;
+    // 整卡都是展开热区：光标要给出「可点」的提示，
+    // 控件自身的光标由各自的规则覆盖，不受影响
+    cursor: pointer;
 
     --sr-music-cover-size: 52px;
   }

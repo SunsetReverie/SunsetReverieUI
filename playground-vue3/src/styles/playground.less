@@ -308,70 +308,59 @@ body {
 }
 
 // ---------- 代码块高亮 token ----------
-// SrCodeBlock 只管容器与转义，不内置高亮器，也不带 token 配色：
-// 那是使用方（或高亮器主题样式表）的职责。演示站统一在这里配一套。
+// SrCodeBlock 只管容器与转义，不内置高亮器，也不带 token 配色。
+// 演示站这里只做「色板色阶 → 语法角色」的映射，不写死 hex：
+// 主色一换，代码高亮也跟着换；亮底取 600/700 深色阶保证对比度。
 .sr-code {
+  --pg-code-kw: var(--sr-dusk-600);
+  --pg-code-str: var(--sr-success-700);
+  --pg-code-com: var(--sr-night-500);
+  --pg-code-num: var(--sr-sunset-700);
+  --pg-code-var: var(--sr-info-700);
+  --pg-code-tag: var(--sr-danger-700);
+  --pg-code-attr: var(--sr-warning-700);
+
   .tk-kw {
-    color: #a855f7;
+    color: var(--pg-code-kw);
     font-weight: 600;
   }
 
   .tk-str {
-    color: #15803d;
+    color: var(--pg-code-str);
   }
 
   .tk-com {
-    color: #94a3b8;
+    color: var(--pg-code-com);
     font-style: italic;
   }
 
   .tk-num {
-    color: #c2410c;
+    color: var(--pg-code-num);
   }
 
   .tk-var {
-    color: #1d4ed8;
+    color: var(--pg-code-var);
   }
 
   .tk-tag {
-    color: #be123c;
+    color: var(--pg-code-tag);
   }
 
   .tk-attr {
-    color: #b45309;
+    color: var(--pg-code-attr);
   }
 }
 
-// 实验室的代码区用 data-sr-theme="dark" 固定成暗色，token 也得换成浅色字，
-// 否则亮色主题下那套深字压在深色底上根本看不见。
+// 暗底改用同色系的 300/400 浅色阶。实验室的代码区会在局部根节点写
+// data-sr-theme="dark" 固定成暗色，属性选择器同样命中。
 [data-sr-theme='dark'] .sr-code {
-  .tk-kw {
-    color: #c792ea;
-  }
-
-  .tk-str {
-    color: #c3e88d;
-  }
-
-  .tk-com {
-    color: #6b7a90;
-  }
-
-  .tk-num {
-    color: #f78c6c;
-  }
-
-  .tk-var {
-    color: #82aaff;
-  }
-
-  .tk-tag {
-    color: #f07178;
-  }
-
-  .tk-attr {
-    color: #ffcb6b;
-  }
+  --pg-code-kw: var(--sr-dusk-300);
+  --pg-code-str: var(--sr-success-300);
+  --pg-code-com: var(--sr-night-400);
+  --pg-code-num: var(--sr-sunset-300);
+  --pg-code-var: var(--sr-info-300);
+  --pg-code-tag: var(--sr-danger-300);
+  --pg-code-attr: var(--sr-warning-300);
 }
 
 // 截图调试：强制显示提示气泡（样式表 !important 可以盖过 v-show 的内联 display: none）

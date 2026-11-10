@@ -163,7 +163,12 @@ W10 完成后按业务需要提前交付了一批 P2 组件，并对已有的交
 | 演示站可查找 | 侧栏按名称 / 分类 / 组件说明过滤；窄屏侧栏改抽屉 + 遮罩；演示页可展开并复制该页真实源码（Vite `?raw`，不手抄示例） |
 | 演示覆盖守卫 | `check-demo-coverage` 挂进 `pnpm lint`，对齐组件目录 / 注册表 / `props.json` / 孤儿文件；Row 与 Col 的 Props 表在同一页分两组展示 |
 | 演示站体检 | `pnpm check:demo` 遍历注册表全部演示页，断言标题渲染、源码入口存在、无控制台错误，失败即非零退出 |
+| 视觉基线 | `pnpm check:visual` 比对开场面板 / pill 标签 / 右键菜单 / 吸附播放器 5 张基线（`visual/__screenshots__`），`pnpm check:visual:update` 重建；固定亮色 + 扁平 + 无动效 |
 | 演示站类型检查 | `pnpm typecheck` 现在也跑 `playground-vue3` 的 `vue-tsc`；模板里不写 TS 断言与反引号模板字符串，复杂表达式收进脚本函数 |
+| API 提取器 | `extract-api.mjs` 用括号配平解析 `defineEmits` / `defineSlots`，插槽只看 `.vue` 模板；补齐 21 个组件原先为空的插槽表与嵌套事件参数 |
+| 演示站事件日志 | `EventLog.vue` 复用组件，Pagination / LoadMore / InputNumber 三个偏薄演示补齐全套能力 + 实时事件日志；代码高亮色值改消费 L1 色板 |
+| 类型契约补齐 | `SrDatePickerValue` 纳入字符串输出并按同模板回显、`SrSelectOption` 允许自定义字段、`SrCarouselItem` 带索引签名；吸附面板整卡点击展开（`button / input / a / [role=slider]` 用事件委托排除） |
+| 搜索与分组折叠联动 | `SrNav` 新增 `filterActive`：搜索期间临时忽略分组折叠、禁用折叠按钮，清空搜索后恢复用户的折叠状态 |
 | SSR 冒烟测试 | `ssr-components.spec.ts` 覆盖 30 个组件，在 node 环境下渲染，抓出过 `SrDrawer` 的服务端崩溃 |
 | 水合 e2e | `pnpm check:hydration` 构建 Nuxt 站并断言水合告警为 0，另有 `lint:smoke` 保证新组件不会漏测 |
 | Token 校验 | `pnpm lint:tokens` 对齐变量定义与引用，防住「变量拼错导致整条声明静默失效」 |
@@ -227,6 +232,7 @@ pnpm build
 | --- | --- |
 | `pnpm dev` | 启动 playground-vue3（直连源码，HMR，端口 5173） |
 | `pnpm check:demo` | 先起 `pnpm dev`，再遍历全部演示页做渲染 / 控制台冒烟；端口不同用 `DEMO_PORT=xxxx` |
+| `pnpm check:visual` | 比对演示站视觉基线（自带 webServer，无需先 `pnpm dev`）；改动 UI 后用 `pnpm check:visual:update` 重建基线 |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |

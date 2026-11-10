@@ -13,6 +13,15 @@ export interface SrSelectOption {
   label: string
   /** 该选项禁用 */
   disabled?: boolean
+  /** 自定义 `#option` 插槽常用的图标名；组件不渲染它，只透传 */
+  icon?: string
+  /**
+   * 允许业务附带自定义字段（描述、分组、权限等），由 `#option` 插槽自行消费
+   *
+   * @remarks 早期只声明三个字段，宿主给选项加一个 icon 就被 TS 判为非法，
+   * 只能在插槽里写 `'icon' in option` 绕开。数据本来就是透传的，类型也不该拦。
+   */
+  [key: string]: unknown
 }
 
 /** 校验态（与 SrInput 保持一致，供 SrFormItem 复用） */

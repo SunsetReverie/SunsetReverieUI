@@ -17,7 +17,12 @@ import {
   startOfDay,
   toDate,
 } from './date-utils'
-import { datePickerProps, type SrDatePickerShortcut, type SrDatePickerValue } from './date-picker'
+import {
+  datePickerProps,
+  type SrDatePickerInnerValue,
+  type SrDatePickerShortcut,
+  type SrDatePickerValue,
+} from './date-picker'
 
 defineOptions({ name: 'SrDatePicker' })
 
@@ -63,21 +68,30 @@ const displayFormat = computed(() => {
   return props.showSeconds ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm'
 })
 
+/**
+ * 外部字符串的解析模板
+ *
+ * @remarks `valueFormat` 模式下回传的是组件自己按该模板输出的字符串，
+ * 回显时自然也要按同一模板解析；用 displayFormat 解析 '2026/11/20' 会在
+ * 分隔符处取到 '1/'，直接解析成 null。传 Date 时 toDate 不看模板。
+ */
+const inputFormat = computed(() => props.valueFormat || displayFormat.value)
+
 /** 最小可选 */
 const minDate = computed(() => toDate(props.min, displayFormat.value))
 
 /** 最大可选 */
 const maxDate = computed(() => toDate(props.max, displayFormat.value))
 
-/** 已提交的值（Date 或 [Date, Date]） */
-const inner = computed<SrDatePickerValue>(() => {
+/** 已提交的值：外部给的字符串也统一解析回 Date 或 [Date, Date] */
+const inner = computed<SrDatePickerInnerValue>(() => {
   const value = props.modelValue
   if (!value) return null
   if (Array.isArray(value)) {
     const [from, to] = value
-    return [toDate(from, displayFormat.value) ?? new Date(), toDate(to, displayFormat.value) ?? new Date()]
+    return [toDate(from, inputFormat.value) ?? new Date(), toDate(to, inputFormat.value) ?? new Date()]
   }
-  return toDate(value, displayFormat.value)
+  return toDate(value, inputFormat.value)
 })
 
 /** 区间值（统一成 [Date, Date] 或 null） */
@@ -105,7 +119,7 @@ const leftMonth = ref(startOfMonth(singleValue.value ?? rangeValue.value?.[0] ??
 const timeTarget = ref(0)
 
 /** 内部暂存的值：点「确定」才提交，date 类型点日期即提交 */
-const draft = ref<SrDatePickerValue>(null)
+const draft = ref<SrDatePickerInnerValue>(null)
 
 /** 月份归一化到 1 号 */
 function startOfMonth(date: Date): Date {
@@ -260,7 +274,7 @@ function toggle(): void {
 }
 
 /** 提交值 */
-function commit(value: SrDatePickerValue): void {
+function commit(value: SrDatePickerInnerValue): void {
   const output = formatOutput(normalizeSeconds(value))
   emit('update:modelValue', output)
   emit('change', output)
@@ -268,21 +282,18 @@ function commit(value: SrDatePickerValue): void {
 
 /**
  * 按 valueFormat 转换输出
- * @param value 内部值
- * @returns 对外值
+ * @param value 内部值（Date 或 [Date, Date]）
+ * @returns 对外值：未设 valueFormat 时原样返回，否则返回字符串 / 字符串区间
  */
-function formatOutput(value: SrDatePickerValue): SrDatePickerValue {
+function formatOutput(value: SrDatePickerInnerValue): SrDatePickerValue {
   if (!props.valueFormat) return value
   if (!value) return null
 
   if (Array.isArray(value)) {
-    return [
-      formatDate(value[0], props.valueFormat) as unknown as Date,
-      formatDate(value[1], props.valueFormat) as unknown as Date,
-    ]
+    return [formatDate(value[0], props.valueFormat), formatDate(value[1], props.valueFormat)]
   }
 
-  return formatDate(value, props.valueFormat) as unknown as Date
+  return formatDate(value, props.valueFormat)
 }
 
 /** 合并日期与时间 */
@@ -468,7 +479,7 @@ function confirm(): void {
  * @param value 待提交值
  * @returns 处理后的值
  */
-function normalizeSeconds(value: SrDatePickerValue): SrDatePickerValue {
+function normalizeSeconds(value: SrDatePickerInnerValue): SrDatePickerInnerValue {
   if (props.showSeconds || !hasTime.value) return value
 
   const clear = (date: Date): Date => {

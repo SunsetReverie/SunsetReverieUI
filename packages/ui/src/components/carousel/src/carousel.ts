@@ -9,6 +9,18 @@ export type SrCarouselDirection = 'horizontal' | 'vertical'
 /** 指示器位置 */
 export type SrCarouselIndicatorPosition = 'inside' | 'outside'
 
+/**
+ * 轮播数据项
+ *
+ * @remarks 内容异形（图片、卡片、富文本），组件不规定具体字段，
+ * 只保证「是个对象」并把渲染权交给 `#item` 插槽。索引签名让插槽里
+ * 可以直接读 `item.title` 这类业务字段，而不是拿到一个连属性访问都
+ * 不允许的 `unknown`；值仍是 unknown，用作样式时需要自行收窄。
+ */
+export interface SrCarouselItem {
+  [key: string]: unknown
+}
+
 export const carouselProps = {
   /**
    * 数据源，每项原样传给 `#item` 插槽
@@ -17,7 +29,7 @@ export const carouselProps = {
    * 用作用域插槽把渲染权交给调用方，组件只管切换与布局。
    */
   items: {
-    type: Array as PropType<unknown[]>,
+    type: Array as PropType<SrCarouselItem[]>,
     default: () => [],
   },
   /** 当前索引，支持 v-model */
@@ -109,4 +121,5 @@ export const carouselProps = {
   },
 }
 
+/** 组件 props 类型 */
 export type SrCarouselProps = ExtractPropTypes<typeof carouselProps>

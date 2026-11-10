@@ -160,39 +160,136 @@ function parseProps(code, name) {
 }
 
 /**
+ * 取出泛型声明里的花括号块
+ *
+ * @remarks 用括号配平而不是 `/defineEmits<\{([\s\S]*?)\}>/`：
+ * 事件参数里常有 `{ key: string }` 这类内联对象，非贪婪正则会在第一个
+ * 内部右括号处截断，把后面的事件全丢掉。
+ *
+ * @param code 源码
+ * @param marker 起始标记，如 `defineEmits<{`
+ * @returns 花括号内的文本；没有声明时返回空串
+ */
+function genericBlock(code, marker) {
+  const start = code.indexOf(marker)
+  if (start < 0) return ''
+
+  let depth = 0
+  for (let i = start + marker.length - 1; i < code.length; i += 1) {
+    if (code[i] === '{') depth += 1
+    else if (code[i] === '}') {
+      depth -= 1
+      if (depth === 0) return code.slice(start + marker.length, i)
+    }
+  }
+  return ''
+}
+
+/**
+ * 找与起始括号配对的右括号
+ *
+ * @param code 文本
+ * @param open 起始括号下标
+ * @returns 右括号下标；找不到返回 -1
+ */
+function findClosing(code, open) {
+  let depth = 0
+  for (let i = open; i < code.length; i += 1) {
+    if ('[{<('.includes(code[i])) depth += 1
+    else if (']}>'.includes(code[i])) {
+      // `=>` 里的 > 不是泛型闭合，不能拿来减深度
+      if (code[i] === '>' && code[i - 1] === '=') continue
+      depth -= 1
+      if (depth === 0) return i
+    }
+  }
+  return -1
+}
+
+/**
+ * 按顶层逗号拆分参数列表
+ *
+ * @param inner 方括号内的文本
+ * @returns 每个参数的类型声明文本
+ */
+function splitTopLevel(inner) {
+  const parts = []
+  let depth = 0
+  let buffer = ''
+  for (let i = 0; i < inner.length; i += 1) {
+    const ch = inner[i]
+    if ('[{<('.includes(ch)) depth += 1
+    else if (']}>'.includes(ch)) {
+      if (ch === '>' && inner[i - 1] === '=') {
+        buffer += ch
+        continue
+      }
+      depth -= 1
+    }
+    if (ch === ',' && depth === 0) {
+      parts.push(buffer.trim())
+      buffer = ''
+    } else buffer += ch
+  }
+  if (buffer.trim()) parts.push(buffer.trim())
+  return parts.filter(Boolean)
+}
+
+/**
  * 解析 emits
  * @param code 源码
  * @returns 事件列表
  */
 function parseEmits(code) {
   const emits = []
-  const block = /defineEmits<\{([\s\S]*?)\}>\(\)/.exec(code)
-  if (!block) return emits
+  const block = genericBlock(code, 'defineEmits<{')
 
-  // 事件名可以带引号（'update:modelValue'）也可以不带（select）
-  for (const match of block[1].matchAll(/(?:'([^']+)'|([A-Za-z]\w*)):\s*\[([\s\S]*?)\]/g)) {
+  // 事件名可以带引号（'update:modelValue'）也可以不带（select）。
+  // 只认两格缩进的顶层键，避开多行参数里同样形如 `x: [` 的内联对象。
+  for (const match of block.matchAll(/^ {2}(?:'([^']+)'|([A-Za-z]\w*)):\s*\[/gm)) {
+    const open = match.index + match[0].length - 1
+    const close = findClosing(block, open)
+    const inner = block.slice(open + 1, close < 0 ? block.length : close)
     emits.push({
       name: match[1] ?? match[2],
-      params: match[3]
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean)
-        .map((item) => item.split(':')[0]?.trim() ?? ''),
+      params: splitTopLevel(inner).map((item) => item.split(':')[0]?.trim() ?? ''),
     })
   }
+
+  // 数组式声明 defineEmits(['open', 'close'])
+  const array = /defineEmits\(\[([^\]]*)\]\)/.exec(code)
+  if (array) {
+    for (const match of array[1].matchAll(/['"]([^'"]+)['"]/g)) {
+      emits.push({ name: match[1], params: [] })
+    }
+  }
+
   return emits
 }
 
 /**
  * 解析 slots
+ *
+ * @remarks 模板里的 `<slot>`、脚本里的 `$slots.xxx`、以及 `defineSlots<{}>()`
+ * 三种写法都要认；后者是 Volar 的类型声明，不一定伴随模板 slot 标签。
+ *
  * @param code 源码
  * @returns 插槽名列表
  */
 function parseSlots(code) {
   const names = new Set()
-  for (const match of code.matchAll(/<slot[^>]*name="([^"]+)"/g)) names.add(match[1])
+
+  for (const match of code.matchAll(/<slot\b[^>]*\bname=["']([^"']+)["']/g)) names.add(match[1])
   for (const match of code.matchAll(/\$slots\.([a-zA-Z]\w*)/g)) names.add(match[1])
   for (const match of code.matchAll(/slots\.([a-zA-Z]\w*)/g)) names.add(match[1])
+
+  // defineSlots<{ default?: () => unknown; item(props: {...}): unknown }>()
+  // 只认缩进两格的顶层键，避免把内联参数对象里的字段也当成插槽
+  const typed = genericBlock(code, 'defineSlots<{')
+  for (const match of typed.matchAll(/^ {2}(?:'([^']+)'|([A-Za-z_]\w*))\??\s*[(:]/gm)) {
+    names.add(match[1] ?? match[2])
+  }
+
   // 有裸 <slot 说明存在默认插槽
   if (/<slot(?![^>]*name=)/.test(code)) names.add('default')
   return [...names].sort()
@@ -258,9 +355,18 @@ function extract(name) {
    * 它们 emit 的是内部事件，不该出现在公开 API 里。
    */
   const candidates = sources.filter((item) => basename(item.file).replace(/\.(vue|ts)$/, '') === name)
-  // 同名文件可能有 .ts（props）和 .vue（emits），取第一个能解析出事件的
-  const mainCode =
-    candidates.find((item) => parseEmits(item.code).length > 0)?.code ?? candidates[0]?.code ?? all
+  /**
+   * 主组件模板源码
+   *
+   * 之前把「第一个能解析出事件的文件」同时拿去解析插槽，没有自定义事件的
+   * 组件就会退化到 props 的 .ts 文件，里面当然一个 `<slot>` 也没有 ——
+   * 21 个组件的插槽表因此全是空的。插槽必须只看 .vue 模板。
+   */
+  const mainVueCode = candidates
+    .filter((item) => item.file.endsWith('.vue'))
+    .map((item) => item.code)
+    .join('\n')
+  const mainCode = candidates.find((item) => parseEmits(item.code).length > 0)?.code || mainVueCode || all
 
   const props = []
   /** 每个 props 变量的名字，用于区分同文件里的多个组件（如 Form / FormItem） */
@@ -289,7 +395,7 @@ function extract(name) {
     options: props,
     sources: sourceNames,
     emits: parseEmits(mainCode),
-    slots: parseSlots(mainCode),
+    slots: parseSlots(mainVueCode || mainCode),
   }
 }
 

@@ -28,8 +28,19 @@ const resolvedSize = computed<SrSize>(() => props.size ?? config.value.size)
 /** 展开中的父项 key */
 const openKeys = ref<Set<string>>(new Set())
 
-/** 收起的分组名 */
+/** 用户收起的分组名（含 `collapsed: true` 的默认值） */
 const closedGroups = ref<Set<string>>(new Set())
+
+/**
+ * 实际生效的收起分组
+ *
+ * @remarks 外部搜索期间 items 只剩命中项，此时若还沿用折叠状态，
+ * 用户会看到「结果数 1 / 74」却一项都没有。用 computed 临时架空，
+ * 而不是直接清空 closedGroups —— 后者会让搜索结束时的折叠状态无法恢复。
+ */
+const effectiveClosedGroups = computed<Set<string>>(() =>
+  props.filterActive ? new Set<string>() : closedGroups.value,
+)
 
 // 初次挂载时把「默认收起」的分组记下来
 watch(
@@ -62,6 +73,8 @@ const rootStyle = computed(() => {
  * @returns 是否可折叠
  */
 function isGroupCollapsible(item: SrNavItem): boolean {
+  // 搜索结果里折叠一个分组只会让命中项消失，此时标题退化为纯说明文字
+  if (props.filterActive) return false
   return item.collapsible !== false
 }
 
@@ -73,8 +86,8 @@ function isGroupCollapsible(item: SrNavItem): boolean {
 function isGroupHidden(item: SrNavItem): boolean {
   // 收起态只有图标，分组折叠无从体现；若沿用折叠状态，
   // 被折叠组里的图标会一起消失，看起来像「菜单丢了」
-  if (props.collapsed) return false
-  return Boolean(item.group && closedGroups.value.has(item.group))
+  if (props.collapsed || props.filterActive) return false
+  return Boolean(item.group && effectiveClosedGroups.value.has(item.group))
 }
 
 /**
@@ -82,7 +95,7 @@ function isGroupHidden(item: SrNavItem): boolean {
  * @param group 分组名
  */
 function toggleGroup(group: string): void {
-  if (props.disabled) return
+  if (props.disabled || props.filterActive) return
   const next = new Set(closedGroups.value)
   if (next.has(group)) next.delete(group)
   else next.add(group)
@@ -166,7 +179,7 @@ function pick(item: SrNavItem): void {
           <sr-icon
             v-if="isGroupCollapsible(item) && !collapsed"
             class="sr-nav__group-arrow"
-            :class="{ 'is-open': !closedGroups.has(item.group) }"
+            :class="{ 'is-open': !effectiveClosedGroups.has(item.group) }"
             name="lucide:chevron-down"
             :size="14"
           />

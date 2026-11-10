@@ -15,8 +15,22 @@ export type SrDatePickerType = 'date' | 'datetime' | 'daterange' | 'datetimerang
 /** 校验态，与 SrInput 保持一致 */
 export type SrDatePickerStatus = 'default' | 'error' | 'warning' | 'success'
 
-/** 值类型：单值为 Date，区间为 [Date, Date] */
-export type SrDatePickerValue = Date | [Date, Date] | null
+/**
+ * 面板内部值：日期一律按 Date 处理，区间按 [Date, Date]
+ *
+ * @remarks 选中、草稿、秒归一化这些内部流程只认这一种形状；
+ * 把格式化字符串混进来会让每个调用点都先做一次类型分支。
+ */
+export type SrDatePickerInnerValue = Date | [Date, Date] | null
+
+/**
+ * 对外值（v-model / change）
+ *
+ * @remarks 传了 `valueFormat` 时组件输出字符串或字符串区间，
+ * 早期类型只写 Date，导致组件内部不得不用 `as unknown as Date` 把字符串
+ * 伪装成 Date 才能 emit。现在把这两种输出正式纳入契约，宿主不用再断言。
+ */
+export type SrDatePickerValue = SrDatePickerInnerValue | string | [string, string]
 
 /** 快捷选项 */
 export interface SrDatePickerShortcut {
@@ -33,7 +47,8 @@ export interface SrDatePickerShortcut {
 export const datePickerProps = {
   /** 选中值，支持 v-model */
   modelValue: {
-    type: [Date, Array] as PropType<SrDatePickerValue>,
+    // valueFormat 模式下外部回传的是字符串，少了 String 会在 dev 下报 prop 类型告警
+    type: [Date, Array, String] as PropType<SrDatePickerValue>,
     default: null,
   },
   /** 选择模式 @default 'date' */

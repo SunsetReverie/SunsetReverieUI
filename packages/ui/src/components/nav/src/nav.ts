@@ -106,6 +106,16 @@ export const navProps = {
     type: Boolean,
     default: false,
   },
+  /**
+   * 外部正在过滤 items（如侧栏搜索）@default false
+   *
+   * 为真时暂时忽略分组折叠状态、并禁用折叠按钮，保证命中的项都看得见；
+   * 关掉后恢复用户原来的折叠状态，不会因为一次搜索把分组永久展开。
+   */
+  filterActive: {
+    type: Boolean,
+    default: false,
+  },
 } as const
 
 export type SrNavProps = ExtractPropTypes<typeof navProps>

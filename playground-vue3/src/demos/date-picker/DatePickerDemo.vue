@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { SrDatePicker, type SrDatePickerShortcut } from '@sunset-reverie/ui'
+import { ref } from 'vue'
+import { SrDatePicker, type SrDatePickerShortcut, type SrDatePickerValue } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'DatePickerDemo' })
 
@@ -50,13 +50,8 @@ const customShortcuts: SrDatePickerShortcut[] = [
 const customRange = ref<[Date, Date] | null>(null)
 
 /** 字符串输出 */
-// valueFormat 运行时产出 string，但组件类型仍按 Date 声明（库里用断言绕过去了）。
-// 这里用 ref 承接 v-model，再用 computed 把展示值收窄成 string，模板无需类型断言
-const strModel = ref<Date | [Date, Date] | null>(null)
-const strValue = computed<string>(() => {
-  const value: unknown = strModel.value
-  return typeof value === 'string' ? value : ''
-})
+/** valueFormat 输出字符串：SrDatePickerValue 已把字符串纳入契约，可以直接双向绑定 */
+const strValue = ref<SrDatePickerValue>('')
 
 /** 表单校验态 */
 const statusValue = ref<Date | null>(null)
@@ -154,7 +149,7 @@ const readonlyValue = ref<Date | null>(new Date(2026, 10, 8))
 
     <section>
       <h3>字符串输出（valueFormat）</h3>
-      <SrDatePicker v-model="strModel" value-format="YYYY/MM/DD" />
+      <SrDatePicker v-model="strValue" value-format="YYYY/MM/DD" />
       <p class="hint">绑定的值：{{ strValue || '空' }}（类型是 string，直接塞给后端接口）</p>
     </section>
 

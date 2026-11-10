@@ -142,6 +142,35 @@ describe('SrNav', () => {
     expect(groups[1]?.classes()).not.toContain('is-toggle')
     wrapper.unmount()
   })
+
+  it('搜索期间忽略分组折叠，结束后恢复原状态', async () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        items: [
+          { group: '基础', key: 'a', label: 'A' },
+          { group: '基础', key: 'b', label: 'B' },
+        ],
+      },
+    })
+
+    await wrapper.findAll('.sr-nav__group')[0]?.trigger('click')
+    expect(wrapper.findAll('.sr-nav__item')).toHaveLength(0)
+
+    await wrapper.setProps({ filterActive: true, items: [{ group: '基础', key: 'b', label: 'B' }] })
+    expect(wrapper.findAll('.sr-nav__item')).toHaveLength(1)
+    expect(wrapper.findAll('.sr-nav__group')[0]?.attributes('disabled')).toBeDefined()
+
+    await wrapper.setProps({
+      filterActive: false,
+      items: [
+        { group: '基础', key: 'a', label: 'A' },
+        { group: '基础', key: 'b', label: 'B' },
+      ],
+    })
+    expect(wrapper.findAll('.sr-nav__item')).toHaveLength(0)
+    wrapper.unmount()
+  })
   it('收起态不渲染分组标题，避免留下可点的空白', () => {
     const wrapper = mount(SrNav, {
       props: {

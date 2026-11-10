@@ -20,29 +20,12 @@ const cities: SrSelectOption[] = ['北京', '上海', '广州', '深圳', '杭�
   }),
 )
 
-/** 带图标的自定义选项：icon 是演示自己扩展的字段 */
-interface RoleOption extends SrSelectOption {
-  icon: string
-}
-
-/** 带图标与描述的选项 */
-const roles: RoleOption[] = [
+/** 带图标与描述的选项：SrSelectOption 允许附带自定义字段，#option 插槽直接读 */
+const roles: SrSelectOption[] = [
   { value: 'owner', label: '所有者', icon: 'lucide:heart' },
   { value: 'editor', label: '编辑者', icon: 'lucide:pencil' },
   { value: 'viewer', label: '查看者', icon: 'lucide:eye' },
 ]
-
-/**
- * 读自定义字段
- *
- * 组件把插槽参数声明为 SrSelectOption，扩展字段不在基础类型里；
- * 用 in 收窄，模板里就不用写 TS 断言。
- * @param option 插槽给出的选项
- * @returns 图标名，没有则返回空字符串
- */
-function optionIcon(option: SrSelectOption): string {
-  return 'icon' in option ? String(option.icon) : ''
-}
 
 /** 长列表 */
 const longList: SrSelectOption[] = Array.from({ length: 60 }, (_, i) => ({
@@ -144,7 +127,7 @@ const multiText = computed(() => (multi.value.length ? multi.value.join(', ') : 
         <SrSelect v-model="role" :options="roles">
           <template #option="{ option }">
             <span class="opt">
-              <SrIcon :name="optionIcon(option)" :size="14" />
+              <SrIcon :name="option.icon ?? ''" :size="14" />
               <span>{{ option.label }}</span>
             </span>
           </template>

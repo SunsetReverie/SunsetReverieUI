@@ -278,7 +278,7 @@
     ],
     "sources": ["avatar"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "badge": {
     "name": "badge",
@@ -342,7 +342,7 @@
     ],
     "sources": ["badge"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "breadcrumb": {
     "name": "breadcrumb",
@@ -378,7 +378,7 @@
     ],
     "sources": ["breadcrumb"],
     "emits": [],
-    "slots": []
+    "slots": ["separator"]
   },
   "button": {
     "name": "button",
@@ -470,7 +470,7 @@
     ],
     "sources": ["button"],
     "emits": [],
-    "slots": []
+    "slots": ["default", "icon", "loading"]
   },
   "calendar": {
     "name": "calendar",
@@ -590,7 +590,7 @@
     ],
     "sources": ["card"],
     "emits": [],
-    "slots": []
+    "slots": ["default", "extra", "footer", "header"]
   },
   "carousel": {
     "name": "carousel",
@@ -598,7 +598,7 @@
       {
         "from": "carouselProps",
         "name": "items",
-        "type": "unknown[]",
+        "type": "SrCarouselItem[]",
         "default": "() => []",
         "description": "数据源，每项原样传给 `#item` 插槽 不直接接收 DOM 子节点：轮播内容异形（图片、卡片、富文本都有）， 用作用域插槽把渲染权交给调用方，组件只管切换与布局。"
       },
@@ -831,7 +831,7 @@
       },
       {
         "name": "change",
-        "params": ["value"]
+        "params": ["value", "labels"]
       },
       {
         "name": "visible-change",
@@ -1039,7 +1039,7 @@
     ],
     "sources": ["col"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "collapse": {
     "name": "collapse",
@@ -1081,7 +1081,7 @@
       },
       {
         "name": "change",
-        "params": ["keys"]
+        "params": ["keys", "key"]
       }
     ],
     "slots": ["item", "title"]
@@ -1655,7 +1655,7 @@
     ],
     "sources": ["configProvider"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "confirm": {
     "name": "confirm",
@@ -1985,7 +1985,7 @@
     ],
     "sources": ["descriptions"],
     "emits": [],
-    "slots": []
+    "slots": ["extra", "label", "title", "value"]
   },
   "divider": {
     "name": "divider",
@@ -2014,7 +2014,7 @@
     ],
     "sources": ["divider"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "drawer": {
     "name": "drawer",
@@ -2351,7 +2351,7 @@
     ],
     "sources": ["empty"],
     "emits": [],
-    "slots": []
+    "slots": ["action", "default"]
   },
   "form": {
     "name": "form",
@@ -2466,11 +2466,11 @@
     "emits": [
       {
         "name": "submit",
-        "params": ["model", "unknown>"]
+        "params": ["model"]
       },
       {
         "name": "validate-fail",
-        "params": ["errors", "SrFormError>"]
+        "params": ["errors"]
       }
     ],
     "slots": ["default"]
@@ -2530,7 +2530,7 @@
     ],
     "sources": ["icon"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "image": {
     "name": "image",
@@ -2991,7 +2991,7 @@
     ],
     "sources": ["loading"],
     "emits": [],
-    "slots": []
+    "slots": ["default", "text"]
   },
   "markdown": {
     "name": "markdown",
@@ -3648,6 +3648,13 @@
         "type": "boolean",
         "default": "false",
         "description": "禁用整个导航"
+      },
+      {
+        "from": "navProps",
+        "name": "filterActive",
+        "type": "boolean",
+        "default": "false",
+        "description": "外部正在过滤 items（如侧栏搜索）@default false 为真时暂时忽略分组折叠状态、并禁用折叠按钮，保证命中的项都看得见； 关掉后恢复用户原来的折叠状态，不会因为一次搜索把分组永久展开。"
       }
     ],
     "sources": ["nav"],
@@ -3954,7 +3961,7 @@
     ],
     "sources": ["progress"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "qrcode": {
     "name": "qrcode",
@@ -4167,7 +4174,7 @@
     ],
     "sources": ["result"],
     "emits": [],
-    "slots": []
+    "slots": ["default", "extra", "icon", "subTitle", "title"]
   },
   "row": {
     "name": "row",
@@ -4210,7 +4217,7 @@
     ],
     "sources": ["row"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "segmented": {
     "name": "segmented",
@@ -4435,7 +4442,7 @@
     ],
     "sources": ["skeleton"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "slider": {
     "name": "slider",
@@ -4572,7 +4579,7 @@
     ],
     "sources": ["space"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "spinner": {
     "name": "spinner",
@@ -4707,7 +4714,7 @@
     ],
     "sources": ["statistic"],
     "emits": [],
-    "slots": []
+    "slots": ["prefix", "suffix", "title"]
   },
   "steps": {
     "name": "steps",
@@ -5042,7 +5049,7 @@
       },
       {
         "name": "selection-change",
-        "params": ["keys"]
+        "params": ["keys", "rows"]
       },
       {
         "name": "sort-change",
@@ -5054,7 +5061,7 @@
       },
       {
         "name": "expand-change",
-        "params": ["keys"]
+        "params": ["keys", "rows"]
       },
       {
         "name": "update:page",
@@ -5479,7 +5486,7 @@
     ],
     "sources": ["timeline"],
     "emits": [],
-    "slots": []
+    "slots": ["content"]
   },
   "toast": {
     "name": "toast",
@@ -5614,7 +5621,7 @@
     ],
     "sources": ["tooltip"],
     "emits": [],
-    "slots": []
+    "slots": ["content", "default"]
   },
   "transfer": {
     "name": "transfer",
@@ -5684,7 +5691,7 @@
       },
       {
         "name": "change",
-        "params": ["value"]
+        "params": ["value", "direction"]
       }
     ],
     "slots": []
@@ -5723,7 +5730,7 @@
     ],
     "sources": ["transition"],
     "emits": [],
-    "slots": []
+    "slots": ["default"]
   },
   "tree": {
     "name": "tree",
@@ -5902,11 +5909,11 @@
       },
       {
         "name": "check",
-        "params": ["keys"]
+        "params": ["keys", "detail"]
       },
       {
         "name": "expand",
-        "params": ["keys"]
+        "params": ["keys", "detail"]
       },
       {
         "name": "node-click",
@@ -6054,7 +6061,7 @@
       },
       {
         "name": "change",
-        "params": ["files"]
+        "params": ["files", "file?"]
       },
       {
         "name": "success",

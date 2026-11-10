@@ -153,7 +153,7 @@ const slides = [{ title: '一' }, { title: '二' }, { title: '三' }]
 
 | 名称 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `items` | `unknown[]` | `[]` | 数据源，每项原样传给插槽 |
+| `items` | `SrCarouselItem[]` | `[]` | 数据源，每项原样传给插槽；`SrCarouselItem` 是带索引签名的对象，插槽里可直接读业务字段 |
 | `modelValue` | `number` | `0` | 当前索引，支持 `v-model` |
 | `effect` | `'slide' \| 'fade'` | `'slide'` | 切换效果 |
 | `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向 |
@@ -183,6 +183,8 @@ const slides = [{ title: '一' }, { title: '二' }, { title: '三' }]
 | --- | --- |
 | `item` | 每张内容，作用域 `{ item, index, active }` |
 | `overlay` | 叠加在内容之上的信息层，作用域同上 |
+
+`item` 是 `SrCarouselItem`（带索引签名的对象），所以 <code v-pre>`{{ item.title }}`</code> 可以直接写，不必像早期那样把插槽参数断言成业务类型。字段值仍是 `unknown`——组件不猜你的数据结构；用作 `:style` 或传给要求 `string` 的 prop 时收窄一次即可，例如 <code v-pre>`:style="{ background: String(item.bg ?? '') }"`</code>。
 
 ## 注意事项
 

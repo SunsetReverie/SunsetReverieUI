@@ -200,6 +200,24 @@ describe('SrDatePicker', () => {
     wrapper.unmount()
   })
 
+  it('valueFormat 的字符串值按输出模板回显', () => {
+    const wrapper = mountPicker({ modelValue: '2026/11/20', valueFormat: 'YYYY/MM/DD' })
+
+    expect(wrapper.find('.sr-date-picker__value').text()).toBe('2026-11-20')
+    wrapper.unmount()
+  })
+
+  it('valueFormat 的区间字符串值也能回显', () => {
+    const wrapper = mountPicker({
+      modelValue: ['2026/11/01', '2026/11/20'],
+      valueFormat: 'YYYY/MM/DD',
+      type: 'daterange',
+    })
+
+    expect(wrapper.find('.sr-date-picker__value').text()).toBe('2026-11-01 ~ 2026-11-20')
+    wrapper.unmount()
+  })
+
   it('datetime range 选完两次后仍显示选中态', async () => {
     const wrapper = mountPicker({ type: 'datetimerange' })
     await wrapper.find('.sr-date-picker__trigger').trigger('click')

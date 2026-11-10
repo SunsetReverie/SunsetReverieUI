@@ -181,6 +181,7 @@ const styleItems = [
       <SrNav
         bare
         :items="filteredNavItems"
+        :filter-active="Boolean(query.trim())"
         :model-value="activeKey"
         logo="lucide:moon-star"
         title="夕梦 UI"

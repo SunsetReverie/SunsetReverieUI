@@ -159,7 +159,7 @@ const disabledWeekend = (date: Date) => [0, 6].includes(date.getDay())
   </p>
 </div>
 
-适合直接塞给后端接口，省掉一层转换。
+适合直接塞给后端接口，省掉一层转换。`SrDatePickerValue` 正式包含 `string` 与 `[string, string]`：`valueFormat` 输出的组件自己会按同一模板解析回显，所以把 emit 出来的字符串原样绑回 `v-model` 也能正确显示日期，不需要在宿主侧转换或断言成 `Date`。
 
 ## 校验态
 
