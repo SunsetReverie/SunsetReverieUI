@@ -4,6 +4,8 @@ import {
   DEFAULT_EMOJI_PACKAGES,
   SrButton,
   SrComment,
+  SrDropdown,
+  SrIcon,
   SrInputNumber,
   SrSegmented,
   SrSwitch,
@@ -34,6 +36,19 @@ const me = {
 
 /** 表情包 */
 const emojiPackages = DEFAULT_EMOJI_PACKAGES
+
+/**
+ * 快捷回复
+ *
+ * @remarks `key` 直接存文案，选中后插进正文即可，
+ * 不用再维护一层 key → 文案的映射。
+ */
+const quickReplies = [
+  { key: '说得太对了，学到不少', label: '说得太对了，学到不少' },
+  { key: '感谢分享，已经收藏了', label: '感谢分享，已经收藏了' },
+  { key: '这个方案的取舍讲得很清楚', label: '这个方案的取舍讲得很清楚' },
+  { key: '能再展开讲讲吗？', label: '能再展开讲讲吗？' },
+]
 
 /** 背景演示模式 */
 const bgMode = ref<'none' | 'text' | 'image'>('text')
@@ -555,8 +570,40 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
         </template>
       </SrComment>
       <p class="hint">
-        具名槽位和通用 <code>meta</code> 槽位并存：常用字段有便捷通道（<code>level</code> /
-        <code>region</code>），新字段不至于只能改组件库。
+        <code>Lv.6</code> / <code>浙江</code> / <code>macOS</code> / <code>Chrome</code> 这些标签
+        <strong>默认就会渲染</strong>：作者的 <code>meta.level</code>、评论的
+        <code>meta.region / os / browser</code> 有值就显示，等级自带主色底以区别于其它标签。
+        上面的槽位只是把它们换成自定义样式；具名槽位与通用 <code>meta</code> 槽位并存，
+        新字段不至于只能改组件库。
+      </p>
+    </section>
+
+    <section>
+      <h3>工具栏插槽：快捷回复</h3>
+      <SrComment
+        :comments="comments.slice(0, 1)"
+        :user="user"
+        :emoji-packages="emojiPackages"
+        :show-count="false"
+        @like="onLike"
+        @submit="onSubmit"
+      >
+        <template #editor-toolbar="{ insert }">
+          <SrDropdown
+            :items="quickReplies"
+            size="sm"
+            placement="top-start"
+            @select="(key) => insert(String(key ?? ''))"
+          >
+            <button type="button" class="quick-reply" aria-label="快捷回复">
+              <SrIcon name="lucide:zap" :size="16" />
+            </button>
+          </SrDropdown>
+        </template>
+      </SrComment>
+      <p class="hint">
+        <code>editor-toolbar</code> 插槽落在表情按钮右侧，作用域里有 <code>insert</code> 与
+        <code>submit</code>：选中一条快捷回复就插到光标处。换成图片、话题标签、@提醒都是同一个口子。
       </p>
     </section>
 
@@ -620,6 +667,28 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
   background: var(--sr-color-bg-sunken);
   color: var(--sr-color-text-tertiary);
   font-size: 11px;
+}
+
+.quick-reply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--sr-radius-sm);
+  background: transparent;
+  color: var(--sr-color-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+
+.quick-reply:hover {
+  background: var(--sr-color-bg-sunken);
+  color: var(--sr-color-primary);
 }
 
 .foot {

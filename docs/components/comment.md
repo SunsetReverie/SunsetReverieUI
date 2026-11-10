@@ -260,6 +260,9 @@ interface SrCommentAuthor {
 | `comment-browser` | `browser` 等 | 浏览器 |
 | `comment-actions` | 同上 | 操作区（点赞/回复/删除） |
 | `comment-footer` | 同上 | 条目底部 |
+| `editor-toolbar` | `insert, submit` | 评论框工具栏，位于表情按钮右侧 |
+
+`Lv.6` / `浙江` / `macOS` / `Chrome` 这些标签**默认就会渲染**——作者的 `meta.level`、评论的 `meta.region / os / browser` 有值就显示，等级自带主色底以区别于其它标签。上面的槽位只是把它们换成自定义样式，不传也能用。
 
 ```vue
 <SrComment :comments="comments">
@@ -268,6 +271,20 @@ interface SrCommentAuthor {
   </template>
 </SrComment>
 ```
+
+`editor-toolbar` 用来往工具栏加自己的按钮，作用域给了 `insert` 与 `submit`：
+
+```vue
+<SrComment :comments="comments">
+  <template #editor-toolbar="{ insert }">
+    <SrDropdown :items="quickReplies" size="sm" placement="top-start" @select="(key) => insert(String(key))">
+      <button type="button" aria-label="快捷回复">⚡</button>
+    </SrDropdown>
+  </template>
+</SrComment>
+```
+
+`insert(text)` 会把内容插到正文光标处，快捷回复、图片、话题标签、@提醒都走同一个口子。
 
 具名槽位与通用 `meta` 槽位并存：常用字段有便捷通道，新字段不至于只能改组件库。
 
@@ -363,6 +380,11 @@ interface SrCommentAuthor {
 | --- | --- | --- |
 | `submit` | `SrCommentSubmitPayload` | 通过校验 |
 | `cancel-reply` | — | 取消回复 |
+
+| 插槽 | 作用域 | 说明 |
+| --- | --- | --- |
+| `login` | — | 未登录且不允许游客时的登录引导 |
+| `toolbar` | `insert, submit` | 工具栏扩展位，位于表情按钮右侧 |
 
 | 暴露方法 | 说明 |
 | --- | --- |

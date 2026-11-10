@@ -222,6 +222,20 @@ function submit(): void {
 }
 
 /**
+ * 往正文插入一段文本
+ *
+ * @param text 待插入文本
+ *
+ * @remarks 提供给 `toolbar` 插槽：快捷回复、话题标签都靠它把内容塞进光标处。
+ */
+function insertText(text: string): void {
+  if (!text) return
+
+  textareaRef.value?.insertText(text)
+  error.value = ''
+}
+
+/**
  * 重置正文
  *
  * @remarks 保留游客填过的昵称/邮箱/网址：同一个人连着发两条很常见，
@@ -347,6 +361,9 @@ onBeforeUnmount(() => {
             >
               <SrIcon name="lucide:smile" :size="16" />
             </button>
+
+            <!-- 表情按钮旁的扩展位：快捷回复、图片、话题等 -->
+            <slot name="toolbar" :insert="insertText" :submit="submit" />
 
             <span class="sr-comment-editor__tip">Ctrl / ⌘ + Enter 发送</span>
 

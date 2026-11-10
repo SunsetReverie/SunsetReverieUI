@@ -159,7 +159,9 @@ function onDelete(): void {
           <time class="sr-comment-item__time" :title="fullTime">{{ relativeTime }}</time>
 
           <slot name="level" v-bind="scope">
-            <span v-if="scope.level" class="sr-comment-item__tag">Lv.{{ scope.level }}</span>
+            <span v-if="scope.level" class="sr-comment-item__tag sr-comment-item__tag--level">
+              Lv.{{ scope.level }}
+            </span>
           </slot>
           <slot name="region" v-bind="scope">
             <span v-if="scope.region" class="sr-comment-item__tag">{{ scope.region }}</span>

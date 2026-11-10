@@ -173,6 +173,13 @@
     line-height: 16px;
   }
 
+  // 等级用主色系，和归属地 / 系统的中性灰拉开层次
+  &__tag--level {
+    background: var(--sr-color-primary-alpha-12);
+    color: var(--sr-color-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
   &__content {
     margin: 0;
     color: var(--sr-color-text);
@@ -258,12 +265,6 @@
     &:hover {
       text-decoration: underline;
     }
-  }
-
-  // 正在回复的条目左侧加一道主色，方便定位
-  &.is-replying > &__body {
-    border-left: 2px solid var(--sr-color-primary);
-    padding-left: var(--sr-space-3);
   }
 }
 

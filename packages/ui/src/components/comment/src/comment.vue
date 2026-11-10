@@ -261,6 +261,8 @@ onBeforeUnmount(() => {
         @submit="onSubmit"
       >
         <template #login><slot name="login" /></template>
+
+        <template #toolbar="s"><slot name="editor-toolbar" v-bind="s" /></template>
       </CommentEditor>
     </div>
 
@@ -313,6 +315,8 @@ onBeforeUnmount(() => {
               @cancel-reply="cancelReply"
             >
               <template #login><slot name="login" /></template>
+
+              <template #toolbar="s"><slot name="editor-toolbar" v-bind="s" /></template>
             </CommentEditor>
           </div>
         </template>
