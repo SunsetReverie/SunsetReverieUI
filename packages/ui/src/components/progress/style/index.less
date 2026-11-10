@@ -63,6 +63,58 @@
     text-align: center;
   }
 
+  // ---------- 形态：环形 ----------
+  &--circle {
+    position: relative;
+    flex: 0 0 auto;
+    width: var(--sr-progress-size, 120px);
+    height: var(--sr-progress-size, 120px);
+    gap: 0;
+  }
+
+  &__circle {
+    width: 100%;
+    height: 100%;
+    // 从 12 点方向起画；文字是 HTML 层，不跟着转
+    transform: rotate(-90deg);
+  }
+
+  &__circle-track {
+    stroke: var(--sr-color-border-subtle);
+  }
+
+  &__circle-bar {
+    stroke: var(--sr-color-primary);
+    // 只过渡偏移量：改 percent 时弧长平滑变化，不重新布局
+    transition: stroke-dashoffset var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
+  }
+
+  &--success &__circle-bar {
+    stroke: var(--sr-color-success);
+  }
+
+  &--warning &__circle-bar {
+    stroke: var(--sr-color-warning);
+  }
+
+  &--error &__circle-bar {
+    stroke: var(--sr-color-danger);
+  }
+
+  &__circle-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sr-color-text);
+    // 字号跟着直径走，120px 下约 14.4px，小环也不会溢出
+    font-size: max(12px, calc(var(--sr-progress-size, 120px) * 0.12));
+    font-weight: var(--sr-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
   // ---------- 条纹 ----------
   &.is-striped &__bar {
     background-image: linear-gradient(

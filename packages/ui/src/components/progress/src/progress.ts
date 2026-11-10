@@ -6,6 +6,16 @@ import type { SrSize } from '../../../types/config'
 export type SrProgressStatus = 'normal' | 'success' | 'error' | 'warning'
 
 export const progressProps = {
+  /**
+   * 形态 @default 'line'
+   *
+   * `line` 横向轨道，适合页面顶部的整体进度；
+   * `circle` 环形，适合卡片里单独占一块，文字居中放在圆心里。
+   */
+  type: {
+    type: String as PropType<'line' | 'circle'>,
+    default: 'line',
+  },
   /** 百分比 0-100，超出会被夹到边界 @default 0 */
   percent: {
     type: Number,
@@ -54,6 +64,15 @@ export const progressProps = {
   size: {
     type: String as PropType<SrSize>,
     default: undefined,
+  },
+  /**
+   * 环形直径（px） @default 120
+   *
+   * 只对 `type="circle"` 生效；轨道粗细仍由 `strokeWidth` 控制。
+   */
+  width: {
+    type: Number,
+    default: 120,
   },
 } as const
 

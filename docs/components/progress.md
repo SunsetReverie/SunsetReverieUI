@@ -1,27 +1,34 @@
 # SrProgress 进度条
 
-线性进度条。四种状态、可选条纹与流动、百分比文字可放轨道内或外侧。宽度由 CSS 变量驱动，过渡交给 CSS，JS 不做补间。
+进度条，支持线性与环形两种形态。四种状态、可选条纹与流动、百分比文字可放轨道内/圆心或外侧。尺寸由 CSS 变量驱动，过渡交给 CSS，JS 不做补间。
 
 <script setup>
 import { onBeforeUnmount, ref } from 'vue'
 
 const basic = ref(38)
 const running = ref(0)
+const active = ref(false)
 
 let timer
-function simulate() {
-  if (timer) return
-  running.value = 0
+function start() {
+  if (active.value) return
+  if (running.value >= 100) running.value = 0
+  active.value = true
   timer = setInterval(() => {
-    running.value += 8
-    if (running.value >= 100) {
-      running.value = 100
-      clearInterval(timer)
-      timer = null
-    }
-  }, 200)
+    running.value = Math.min(100, running.value + 4)
+    if (running.value >= 100) pause()
+  }, 120)
 }
-onBeforeUnmount(() => timer && clearInterval(timer))
+function pause() {
+  if (timer) clearInterval(timer)
+  timer = null
+  active.value = false
+}
+function reset() {
+  pause()
+  running.value = 0
+}
+onBeforeUnmount(pause)
 </script>
 
 ```vue
@@ -39,6 +46,18 @@ import { SrProgress } from '@sunset-reverie/ui'
 <div class="sr-demo is-block">
   <SrProgress :percent="basic" />
 </div>
+
+## 环形
+
+<div class="sr-demo is-block">
+  <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap">
+    <SrProgress type="circle" :percent="25" />
+    <SrProgress type="circle" :percent="68" status="success" />
+    <SrProgress type="circle" :percent="92" status="error" />
+  </div>
+</div>
+
+`type="circle"` 把百分比居中放进圆环：直径由 `width` 控制（默认 120），环宽仍由 `strokeWidth` 控制，状态色与线性共用一套。弧线用 `stroke-dashoffset` 过渡，改 `percent` 时不会触发重排。
 
 ## 四种状态
 
@@ -100,8 +119,16 @@ import { SrProgress } from '@sunset-reverie/ui'
 
 <div class="sr-demo is-block">
   <SrProgress :percent="running" :status="running >= 100 ? 'success' : 'normal'" />
-  <p style="margin: 10px 0 0">
-    <SrButton size="sm" variant="outline" @click="simulate">开始模拟</SrButton>
+  <div style="display: flex; justify-content: center; margin-top: 16px">
+    <SrProgress type="circle" :percent="running" :width="140" :status="running >= 100 ? 'success' : 'normal'" />
+  </div>
+  <p style="margin: 12px 0 0; display: flex; gap: 10px; align-items: center">
+    <SrButton size="sm" variant="primary" @click="start">开始</SrButton>
+    <SrButton size="sm" variant="secondary" @click="pause">暂停</SrButton>
+    <SrButton size="sm" variant="text" @click="reset">重置</SrButton>
+    <SrTag size="sm" :type="running >= 100 ? 'success' : active ? 'primary' : 'default'">
+      {{ running >= 100 ? '已完成' : active ? '进行中' : '已暂停' }}
+    </SrTag>
   </p>
 </div>
 
@@ -109,6 +136,7 @@ import { SrProgress } from '@sunset-reverie/ui'
 
 | 名称 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `type` | `'line' \| 'circle'` | `'line'` | 形态：横向轨道 / 环形 |
 | `percent` | `number` | `0` | 百分比 0-100，超出会被夹到边界 |
 | `status` | `'normal' \| 'success' \| 'error' \| 'warning'` | `'normal'` | 状态，影响颜色 |
 | `strokeWidth` | `number` | `6` | 轨道高度（px） |
@@ -118,6 +146,7 @@ import { SrProgress } from '@sunset-reverie/ui'
 | `striped` | `boolean` | `false` | 条纹背景 |
 | `animated` | `boolean` | `false` | 条纹流动，需配合 `striped` |
 | `size` | `SrSize` | — | 尺寸档位，决定轨道高度 |
+| `width` | `number` | `120` | 环形直径（px），只对 `type="circle"` 生效 |
 
 ## 插槽
 
@@ -131,3 +160,5 @@ import { SrProgress } from '@sunset-reverie/ui'
 - `textInside` 与 `showText` 独立：`textInside` 开启时文字必然显示，`showText: false` 只影响外侧文字。
 - 宽度变化有过渡动画，由 `--sr-motion-duration-base` 控制；需要瞬时更新（如进度回退）时过渡会稍显拖沓，这种情况建议外层用 `key` 重建。
 - 圆角固定为全圆（`--sr-radius-full`），不受外观质感影响——进度条的细长比例下，方角会显得生硬。
+- **环形下 `textInside` / `striped` / `animated` 不生效**：圆心文字本来就是居中的，条纹在弧线上也没有意义。
+- 环形直径最小按 24px 处理，避免半径算出负数；字号跟随直径缩放（120px 约 14.4px），小环不会溢出。

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { SrButton, SrLoading, SrSegmented, SrSpinner, SrTag } from '@sunset-reverie/ui'
+import { onBeforeUnmount, ref } from 'vue'
+import { SrButton, SrLoading, SrProgress, SrSegmented, SrSpinner, SrTag } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'LoadingDemo' })
 
@@ -54,6 +54,40 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
   assign(true)
   setTimeout(() => assign(false), ms)
 }
+
+/** 动态进度的百分比 */
+const progressPercent = ref(20)
+const progressRunning = ref(false)
+
+let progressTimer: ReturnType<typeof setInterval> | null = null
+
+/** 暂停动态进度 */
+function pauseProgress(): void {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+  progressRunning.value = false
+}
+
+/** 开始/继续：每 80ms 涨 1%，到 100 自动停 */
+function startProgress(): void {
+  if (progressRunning.value) return
+  if (progressPercent.value >= 100) progressPercent.value = 0
+  progressRunning.value = true
+  progressTimer = setInterval(() => {
+    progressPercent.value = Math.min(100, progressPercent.value + 1)
+    if (progressPercent.value >= 100) pauseProgress()
+  }, 80)
+}
+
+/** 重置回起点 */
+function resetProgress(): void {
+  pauseProgress()
+  progressPercent.value = 0
+}
+
+onBeforeUnmount(pauseProgress)
 </script>
 
 <template>
@@ -233,6 +267,48 @@ function simulate(assign: (v: boolean) => void, ms = 1200): void {
           <span class="label">{{ s }}</span>
         </div>
       </div>
+    </section>
+
+    <section>
+      <h3>环形进度</h3>
+      <div class="row">
+        <SrProgress type="circle" :percent="25" />
+        <SrProgress type="circle" :percent="68" status="success" />
+        <SrProgress type="circle" :percent="92" status="error" />
+        <SrTag size="sm">type="circle"</SrTag>
+      </div>
+      <p class="hint">
+        进度用 <code>SrProgress</code>：<code>type="circle"</code> 把百分比居中放进圆环，直径由
+        <code>width</code> 控制、环宽由 <code>strokeWidth</code> 控制。需要遮罩或全屏时，再把它放进
+        <code>SrLoading</code> 所在的区域。
+      </p>
+    </section>
+
+    <section>
+      <h3>动态进度</h3>
+      <div class="dynamic">
+        <SrProgress :percent="progressPercent" :status="progressPercent >= 100 ? 'success' : 'normal'" />
+        <div class="dynamic__ring">
+          <SrProgress
+            type="circle"
+            :percent="progressPercent"
+            :width="140"
+            :status="progressPercent >= 100 ? 'success' : 'normal'"
+          />
+        </div>
+        <div class="row">
+          <SrButton size="sm" variant="primary" @click="startProgress">开始</SrButton>
+          <SrButton size="sm" variant="secondary" @click="pauseProgress">暂停</SrButton>
+          <SrButton size="sm" variant="text" @click="resetProgress">重置</SrButton>
+          <SrTag
+            size="sm"
+            :type="progressPercent >= 100 ? 'success' : progressRunning ? 'primary' : 'default'"
+          >
+            {{ progressPercent >= 100 ? '已完成' : progressRunning ? '进行中' : '已暂停' }}
+          </SrTag>
+        </div>
+      </div>
+      <p class="hint">线性与环形绑同一个百分比；暂停保留当前值，再点开始从原处继续</p>
     </section>
 
     <section>
@@ -445,5 +521,19 @@ h3 {
   margin-bottom: 8px;
   color: var(--sr-color-text-tertiary);
   font-size: 11px;
+}
+
+.dynamic {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--sr-color-border-subtle);
+  border-radius: var(--sr-radius-lg);
+  background: var(--sr-color-bg-container);
+}
+
+.dynamic__ring {
+  display: flex;
+  justify-content: center;
 }
 </style>

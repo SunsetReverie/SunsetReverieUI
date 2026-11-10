@@ -3199,6 +3199,13 @@
     "options": [
       {
         "from": "progressProps",
+        "name": "type",
+        "type": "'line' | 'circle'",
+        "default": "'line'",
+        "description": "形态 @default 'line' `line` 横向轨道，适合页面顶部的整体进度； `circle` 环形，适合卡片里单独占一块，文字居中放在圆心里。"
+      },
+      {
+        "from": "progressProps",
         "name": "percent",
         "type": "number",
         "default": "0",
@@ -3259,6 +3266,13 @@
         "type": "SrSize",
         "default": "undefined",
         "description": "尺寸档位，同时影响高度与字号；传了以对应档位为准"
+      },
+      {
+        "from": "progressProps",
+        "name": "width",
+        "type": "number",
+        "default": "120",
+        "description": "环形直径（px） @default 120 只对 `type=\"circle\"` 生效；轨道粗细仍由 `strokeWidth` 控制。"
       }
     ],
     "sources": ["progress"],
