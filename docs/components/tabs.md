@@ -12,6 +12,28 @@ const pillTab = ref('a')
 const verticalTab = ref('a')
 const plainTab = ref('a')
 const lazyTab = ref('a')
+const sortTab = ref('latest')
+
+const sortItems = [
+  { key: 'latest', label: '最新' },
+  { key: 'hot', label: '最热' },
+  { key: 'pick', label: '推荐' },
+]
+
+const postRanks = {
+  latest: [
+    { title: 'Vue 3.5 的响应式又快了三成', meta: '3 小时前' },
+    { title: 'Nuxt 4 目录结构迁移笔记', meta: '昨天' },
+  ],
+  hot: [
+    { title: '一张图看懂 SSR 与 CSR 的取舍', meta: '阅读 1.2w' },
+    { title: '手写一个虚拟滚动列表', meta: '阅读 8k' },
+  ],
+  pick: [
+    { title: '组件库的视觉一致性怎么守', meta: '编辑推荐' },
+    { title: '从零搭建一套设计令牌', meta: '编辑推荐' },
+  ],
+}
 
 const items = [
   { key: 'a', label: '概览' },
@@ -55,7 +77,7 @@ const items = [
 | `line`（默认） | 下划线指示 | 页面级导航 |
 | `card` | 连接式卡片，选中项与内容区连通 | 后台详情页 |
 | `segment` | 背板内浮起，类似分段控件 | 视图模式切换 |
-| `pill` | 实色胶囊，未选中项带淡底 | 筛选栏、设置面板 |
+| `pill` | 实色圆角标签，未选中项带淡底 | 筛选项、前台列表排序 |
 
 <div class="sr-demo is-column">
   <div>
@@ -78,6 +100,36 @@ const items = [
     <SrTabs v-model="pillTab" :items="items" type="pill" size="sm" />
   </div>
 </div>
+
+## 前台列表排序
+
+前台栏目的「最新 / 最热 / 推荐」这类文字切换，`type="pill"` 最省事：一排等高标签，选中项主色实底白字，其余淡主色底。圆角按标签高度等比取（`md` 40px → 8px），是圆角矩形而不是全圆胶囊——椭圆在小尺寸上显得过软，也会挤占左右留白。
+
+<div class="sr-demo is-block">
+  <SrTabs v-model="sortTab" :items="sortItems" type="pill" size="sm">
+    <template #panel="{ item }">
+      <ul style="display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none">
+        <li v-for="(post, index) in postRanks[item.key]" :key="post.title" style="display: flex; align-items: center; gap: 8px">
+          <span style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; background: var(--sr-color-primary-alpha-08); color: var(--sr-color-text-tertiary); font-size: 11px">{{ index + 1 }}</span>
+          <span style="flex: 1; color: var(--sr-color-text-secondary); font-size: 13px">{{ post.title }}</span>
+          <span style="color: var(--sr-color-text-tertiary); font-size: 12px">{{ post.meta }}</span>
+        </li>
+      </ul>
+    </template>
+  </SrTabs>
+</div>
+
+通用 `#panel` 插槽透出当前 `item`，换档位时直接按 `item.key` 取对应数据，不用为每一档写一个插槽：
+
+```vue
+<SrTabs v-model="sort" :items="sortItems" type="pill">
+  <template #panel="{ item }">
+    <ul>
+      <li v-for="post in listBySort[item.key]" :key="post.title">{{ post.title }}</li>
+    </ul>
+  </template>
+</SrTabs>
+```
 
 ## 垂直方向
 
@@ -160,3 +212,4 @@ const items = [
 - `lazy` 只影响首次挂载：切走再切回不会重建面板，状态得以保留。
 - 键盘可用左右方向键在标签间移动，Home / End 跳到首尾。
 - `card` 外观的标签之间共用边框（相邻标签去掉左边框），避免出现双线。
+- `pill` 的圆角是 `calc(标签高度 * 0.2)`（`md` 8px、`sm` 6.8px），hover 与竖排都沿用同一个变量，不会出现圆角跳变；想回到全圆胶囊把 `--sr-tabs-tab-radius` 覆盖成 `var(--sr-radius-full)` 即可。

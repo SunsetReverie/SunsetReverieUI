@@ -10,6 +10,9 @@
 .sr-tabs {
   --sr-tabs-height: 40px;
   --sr-tabs-font: 14px;
+  // 标签自身的圆角：hover 与 pill 变体共用同一个变量，
+  // 否则 hover 时圆角会被基础规则改成 8px，pill 上会出现一帧跳变
+  --sr-tabs-tab-radius: 8px;
 
   display: flex;
   flex-direction: column;
@@ -83,7 +86,7 @@
     }
 
     &:hover:not(.is-disabled, .is-active) {
-      border-radius: 8px;
+      border-radius: var(--sr-tabs-tab-radius);
       background: var(--sr-color-primary-alpha-08);
       color: var(--sr-color-primary-text);
     }
@@ -152,17 +155,21 @@
     }
   }
 
-  // ---------- 变体：胶囊分段 ----------
-  // 选中项主色实底 + 白字 + 柔光，未选中留空，适合主题切换这类互斥选项
+  // ---------- 变体：圆角标签 ----------
+  // 选中项主色实底 + 白字 + 柔光，未选中留空。
+  // 适合主题切换这类互斥选项，也常用于前台「最新 / 最热 / 推荐」这类文字排序切换
   &--pill &__nav {
     gap: 8px;
   }
 
   &--pill &__nav &__tab {
+    // 圆角随标签高度等比缩放（md 40px → 8px），做圆角矩形而不是全圆胶囊：
+    // 前台列表排序是一排文字标签，椭圆在小尺寸里显得过软、也挤占左右留白
+    --sr-tabs-tab-radius: calc(var(--sr-tabs-height) * 0.2);
     padding: 0 var(--sr-space-4);
     border: 1px solid transparent;
     border-bottom: 0;
-    border-radius: var(--sr-radius-full);
+    border-radius: var(--sr-tabs-tab-radius);
     // 未选中也给一层极淡的主色底，文字用次级色保证可读
     background: var(--sr-color-primary-alpha-08);
     color: var(--sr-color-text-secondary);
@@ -201,7 +208,8 @@
       justify-content: flex-start;
       border: 0;
       border-right: 2px solid transparent;
-      border-radius: var(--sr-radius-sm);
+      // 与横向共用同一个圆角变量，竖排 pill 才不会退回近直角
+      border-radius: var(--sr-tabs-tab-radius);
       background: transparent;
       box-shadow: none;
 
