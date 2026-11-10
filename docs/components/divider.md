@@ -30,7 +30,7 @@
 <SrDivider content-position="left">基本信息</SrDivider>
 ```
 
-线由 `::before` / `::after` 两段拼成，文字压在中间。文字自带底色，所以不会出现线穿过文字的情况。
+线由 `::before` / `::after` 两段拼成，文字压在中间，中间那段本来就没有线，所以文字不需要铺底色——铺了反而会在彩色或玻璃背景上露出一个白块。
 
 `content-position` 只在水平方向生效，垂直方向会忽略。
 

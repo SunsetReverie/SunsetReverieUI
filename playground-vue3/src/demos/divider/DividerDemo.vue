@@ -20,7 +20,7 @@ defineOptions({ name: 'DividerDemo' })
       <SrDivider content-position="left">左对齐标题</SrDivider>
       <SrDivider content-position="right">右对齐标题</SrDivider>
       <p class="hint">
-        线由 <code>::before</code> / <code>::after</code> 两段拼成，文字压在中间；文字带底色，不会出现线穿字
+        线由 <code>::before</code> / <code>::after</code> 两段拼成，文字压在中间；中段无线，文字不铺底色
       </p>
     </section>
 

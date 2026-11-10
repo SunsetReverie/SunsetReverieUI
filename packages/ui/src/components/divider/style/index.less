@@ -37,10 +37,11 @@
   }
 
   // ---------- 文字 ----------
+  // 线已经被拆成左右两段，文字周围本来就没有线穿过，
+  // 所以不能给文字铺容器底色——那会在彩色/玻璃背景上露出一个白块
   &__text {
     flex: 0 0 auto;
     padding: 0 12px;
-    background: var(--sr-color-bg-container);
     white-space: nowrap;
   }
 
