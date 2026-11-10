@@ -192,6 +192,11 @@ export const commentProps = {
     type: Number,
     default: 0,
   },
+  /** 水印不透明度 @default 0.06 */
+  backgroundTextOpacity: {
+    type: Number,
+    default: 0.06,
+  },
 } as const
 
 export type SrCommentProps = ExtractPropTypes<typeof commentProps>
@@ -323,6 +328,11 @@ export const commentEditorProps = {
   backgroundTextSize: {
     type: Number,
     default: 0,
+  },
+  /** 水印不透明度 @default 0.06 */
+  backgroundTextOpacity: {
+    type: Number,
+    default: 0.06,
   },
 } as const
 

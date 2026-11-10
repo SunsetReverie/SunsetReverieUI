@@ -9,7 +9,12 @@ import {
   SrSwitch,
   SrTag,
 } from '@sunset-reverie/ui'
-import type { SrCommentData, SrCommentGuestInfo, SrCommentSubmitPayload } from '@sunset-reverie/ui'
+import type {
+  SrCommentData,
+  SrCommentGuestInfo,
+  SrCommentSubmitPayload,
+  SrTextareaBackgroundPosition,
+} from '@sunset-reverie/ui'
 
 defineOptions({ name: 'CommentDemo' })
 
@@ -42,6 +47,21 @@ const bgOptions = [
 
 /** 水印字号 */
 const bgTextSize = ref(44)
+
+/** 水印落点 */
+const bgPosition = ref<SrTextareaBackgroundPosition>('bottom')
+
+/** 水印透明度 */
+const bgTextOpacity = ref(0.06)
+
+/** 九宫格选项：挑最常用的五个 */
+const bgPositionOptions = [
+  { label: '居中', value: 'center' },
+  { label: '左上', value: 'top-left' },
+  { label: '右上', value: 'top-right' },
+  { label: '左下', value: 'bottom-left' },
+  { label: '右下', value: 'bottom-right' },
+]
 
 /** 点阵背景图：内联 SVG，不依赖外网 */
 const dotPattern =
@@ -402,6 +422,19 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
         <SrInputNumber v-model="bgTextSize" :min="12" :max="120" :step="4" size="sm" style="width: 130px" />
         <span class="row-label">水印字号</span>
       </div>
+      <div class="row">
+        <SrSegmented v-model="bgPosition" :options="bgPositionOptions" size="sm" />
+        <SrInputNumber
+          v-model="bgTextOpacity"
+          :min="0.02"
+          :max="0.3"
+          :step="0.02"
+          :precision="2"
+          size="sm"
+          style="width: 130px"
+        />
+        <span class="row-label">透明度</span>
+      </div>
       <SrComment
         :comments="comments.slice(0, 1)"
         :user="user"
@@ -409,14 +442,17 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
         :background-image="bgImage"
         :background-text="bgText"
         :background-text-size="bgTextSize"
-        background-position="bottom"
+        :background-text-opacity="bgTextOpacity"
+        :background-position="bgPosition"
         @like="onLike"
         @submit="onSubmit"
       />
       <p class="hint">
         背景透传给内部 <code>SrTextarea</code>：<code>backgroundImage</code> 接受 url() / 渐变 / 裸地址，
-        <code>backgroundText</code> 是水印，<code>backgroundPosition</code> 走九宫格（这里固定在底部居中）。
-        背景层不参与选中，全选复制不会把水印带走。
+        <code>backgroundText</code> 是水印，<code>backgroundPosition</code> 走九宫格，<code
+          >backgroundTextOpacity</code
+        >
+        调浓淡。 背景层不参与选中，全选复制不会把水印带走。
       </p>
     </section>
 

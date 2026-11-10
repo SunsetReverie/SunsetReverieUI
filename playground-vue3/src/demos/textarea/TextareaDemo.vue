@@ -41,6 +41,9 @@ const dotPattern =
 /** 背景文字字号 */
 const bgTextSize = ref(40)
 
+/** 水印透明度 */
+const bgTextOpacity = ref(0.06)
+
 /** 背景落点 */
 const bgPosition = ref<SrTextareaBackgroundPosition>('center')
 
@@ -106,6 +109,16 @@ function onSubmit(value: string): void {
         <SrSegmented v-model="bgPosition" :options="bgPositionOptions" size="sm" />
         <SrInputNumber v-model="bgTextSize" :min="12" :max="120" :step="4" size="sm" style="width: 130px" />
         <span class="row-label">字号 px</span>
+        <SrInputNumber
+          v-model="bgTextOpacity"
+          :min="0.02"
+          :max="0.3"
+          :step="0.02"
+          :precision="2"
+          size="sm"
+          style="width: 130px"
+        />
+        <span class="row-label">透明度</span>
       </div>
       <SrTextarea
         v-model="withBg"
@@ -114,6 +127,7 @@ function onSubmit(value: string): void {
         :background-text="backgroundText"
         :background-position="bgPosition"
         :background-text-size="bgTextSize"
+        :background-text-opacity="bgTextOpacity"
         placeholder="背景只是装饰，内容照常输入"
       />
       <p class="hint">

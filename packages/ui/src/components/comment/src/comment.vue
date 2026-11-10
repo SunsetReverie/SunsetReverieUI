@@ -257,6 +257,7 @@ onBeforeUnmount(() => {
         :background-text="backgroundText"
         :background-position="backgroundPosition"
         :background-text-size="backgroundTextSize"
+        :background-text-opacity="backgroundTextOpacity"
         @submit="onSubmit"
       >
         <template #login><slot name="login" /></template>
@@ -307,6 +308,7 @@ onBeforeUnmount(() => {
               :background-text="backgroundText"
               :background-position="backgroundPosition"
               :background-text-size="backgroundTextSize"
+              :background-text-opacity="backgroundTextOpacity"
               @submit="onSubmit"
               @cancel-reply="cancelReply"
             >

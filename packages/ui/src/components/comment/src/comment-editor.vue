@@ -332,6 +332,7 @@ onBeforeUnmount(() => {
             :background-text="backgroundText"
             :background-position="backgroundPosition"
             :background-text-size="backgroundTextSize"
+            :background-text-opacity="backgroundTextOpacity"
           />
 
           <div class="sr-comment-editor__toolbar">

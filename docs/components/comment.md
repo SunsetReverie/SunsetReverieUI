@@ -240,6 +240,9 @@ interface SrCommentAuthor {
 | `backgroundText` | 水印文字 |
 | `backgroundPosition` | 九宫格，图片与文字共用 |
 | `backgroundTextSize` | 水印字号（px），0 跟随组件字号 |
+| `backgroundTextOpacity` | 水印不透明度，默认 0.06 |
+
+位置（九宫格）、字号、浓淡都是运行时属性，切主题、切位置不必重建组件。
 
 背景是独立的一层，`pointer-events: none`，不抢焦点、不参与选中——全选复制不会把水印带进正文。回复框同样生效（`compact` 时水印字号会跟着组件字号缩小，除非显式给 `backgroundTextSize`）。
 
@@ -305,6 +308,7 @@ interface SrCommentAuthor {
 | `backgroundText` | `string` | `''` | 正文框水印文字 |
 | `backgroundPosition` | 九宫格 | `'center'` | 背景落点，图片与文字共用 |
 | `backgroundTextSize` | `number` | `0` | 水印字号（px），0 跟随组件 |
+| `backgroundTextOpacity` | `number` | `0.06` | 水印不透明度 |
 
 | 事件 | 参数 | 说明 |
 | --- | --- | --- |
@@ -353,6 +357,7 @@ interface SrCommentAuthor {
 | `backgroundText` | `string` | `''` | 正文框水印文字 |
 | `backgroundPosition` | 九宫格 | `'center'` | 背景落点 |
 | `backgroundTextSize` | `number` | `0` | 水印字号（px） |
+| `backgroundTextOpacity` | `number` | `0.06` | 水印不透明度 |
 
 | 事件 | 参数 | 说明 |
 | --- | --- | --- |
