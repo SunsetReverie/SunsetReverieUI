@@ -45,23 +45,34 @@ body {
     -webkit-backdrop-filter: var(--sr-glass-filter);
   }
 
-  // 搜索区占了顶部，SrNav 不能再按「父容器 100% 高」算，否则会溢出视口。
-  // 让它吃掉剩余高度，菜单区自己滚（SrNav 内部已有唯一滚动容器）
+  // SrNav 不能按「父容器 100% 高」算，否则会溢出视口。
+  // 让它吃掉侧栏剩余高度，菜单区自己滚（SrNav 内部已有唯一滚动容器）
   &__side .sr-nav.is-bare {
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
   }
 
+  // 顶栏搜索：与主题 / 设置按钮同处右侧操作区。
+  // 输入框宽度随视口收缩，收起侧栏后也依然能用（以前它藏在侧栏里）
   &__search {
-    flex: 0 0 auto;
-    padding: 12px 12px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  &__search .sr-input {
+    width: clamp(170px, 20vw, 240px);
   }
 
   &__search-meta {
-    margin: 6px 0 0;
+    flex: 0 0 auto;
     color: var(--sr-color-text-tertiary);
     font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   &__search-empty {
@@ -70,11 +81,6 @@ body {
     color: var(--sr-color-text-tertiary);
     font-size: 12px;
     text-align: center;
-  }
-
-  // 收起态只留图标，搜索框无处安放
-  &.is-collapsed &__search {
-    display: none;
   }
 
   &__main {
@@ -102,6 +108,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
     margin-left: auto;
   }
 
@@ -456,10 +463,12 @@ body.force-tooltip .sr-tooltip {
   .pg__side {
     position: fixed;
     z-index: 60;
-    top: 0;
+    // 从顶栏下方开始：搜索时抽屉会自动打开，不能盖住用户正在输入的框
+    top: 56px;
     bottom: 0;
     left: 0;
     width: 240px;
+    height: auto;
     transform: translateX(-100%);
     box-shadow: var(--sr-shadow-lg);
     transition: transform var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
@@ -487,6 +496,31 @@ body.force-tooltip .sr-tooltip {
     display: none;
   }
 
+  // 顶栏浮在抽屉与遮罩之上，保证输入过程中始终可点、可清空
+  .pg__header {
+    position: relative;
+    z-index: 70;
+  }
+
+  // 顶栏空间不够同时放面包屑与搜索框：窄屏优先保搜索，位置信息交给抽屉里的菜单
+  .pg__header > .sr-breadcrumb {
+    display: none;
+  }
+
+  .pg__header-actions {
+    flex: 1 1 auto;
+    margin-left: 0;
+  }
+
+  .pg__search {
+    flex: 1 1 auto;
+  }
+
+  .pg__search .sr-input {
+    width: auto;
+    flex: 1 1 auto;
+  }
+
   .pg__body {
     padding: var(--sr-space-4);
     overflow-x: hidden;
@@ -494,5 +528,17 @@ body.force-tooltip .sr-tooltip {
 
   .pg__body > * {
     max-width: 100%;
+  }
+}
+
+// 极窄屏：结果计数让位给输入区，抽屉会自动打开展示过滤结果
+@media (max-width: 420px) {
+  .pg__header {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+
+  .pg__search-meta {
+    display: none;
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import {
@@ -132,6 +132,20 @@ const filteredNavItems = computed(() => {
   })
 })
 
+/**
+ * 搜索时把结果列表露出来
+ *
+ * 输入框搬进顶栏后，结果仍在侧栏里：窄屏侧栏是抽屉、宽屏可能已收起，
+ * 不主动展开就会出现「搜了却什么也没变」。
+ * @param value 新搜索词
+ * @returns 无
+ */
+watch(query, (value) => {
+  if (!value.trim()) return
+  if (isNarrow.value) drawerOpen.value = true
+  else if (collapsed.value) collapsed.value = false
+})
+
 /** 取色器当前值：没自定义时用库默认主色 */
 const primaryColor = computed(() => primary.value || '#ff7a45')
 
@@ -159,25 +173,8 @@ const styleItems = [
 
 <template>
   <div class="pg" :class="{ 'is-collapsed': collapsed && !isNarrow, 'is-drawer-open': drawerOpen }">
-    <!-- 侧栏：用组件库自己的 SrNav -->
+    <!-- 侧栏：只放导航，搜索框已移到顶栏 -->
     <aside class="pg__side">
-      <div class="pg__search">
-        <SrInput
-          v-model="query"
-          size="sm"
-          clearable
-          placeholder="搜索组件 / 页面"
-          aria-label="搜索组件与页面"
-        >
-          <template #prefix>
-            <SrIcon name="lucide:search" :size="14" />
-          </template>
-        </SrInput>
-        <p v-if="query.trim()" class="pg__search-meta">
-          {{ filteredNavItems.length }} / {{ navItems.length }} 项
-        </p>
-      </div>
-
       <SrNav
         bare
         :items="filteredNavItems"
@@ -230,6 +227,23 @@ const styleItems = [
         <SrBreadcrumb :items="crumbs" separator-icon="lucide:chevron-right" />
 
         <div class="pg__header-actions">
+          <div class="pg__search">
+            <SrInput
+              v-model="query"
+              size="sm"
+              clearable
+              placeholder="搜索组件 / 页面"
+              aria-label="搜索组件与页面"
+            >
+              <template #prefix>
+                <SrIcon name="lucide:search" :size="14" />
+              </template>
+            </SrInput>
+            <span v-if="query.trim()" class="pg__search-meta">
+              {{ filteredNavItems.length }} / {{ navItems.length }}
+            </span>
+          </div>
+
           <span class="pg__pill">{{ breakpoint }} · {{ width }}px</span>
 
           <button
