@@ -47,6 +47,7 @@ export const SR_COMPONENT_NAMES = [
   'Markdown',
   'MarkdownEditor',
   'Modal',
+  'MusicPlayer',
   'Nav',
   'Pagination',
   'Panel',

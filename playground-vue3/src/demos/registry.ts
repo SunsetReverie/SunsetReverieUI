@@ -116,6 +116,12 @@ export const demoGroups: DemoGroup[] = [
         demo: () => import('./comment/CommentDemo.vue'),
       },
       {
+        key: 'music-player',
+        name: 'SrMusicPlayer',
+        description: '音乐播放器。Meting 歌单、歌词滚动、完整 / 吸附 / 胶囊三种形态。',
+        demo: () => import('./music-player/MusicPlayerDemo.vue'),
+      },
+      {
         key: 'slider',
         name: 'SrSlider',
         description: '滑块。单值或区间、步长吸附、间断点、纵向。',

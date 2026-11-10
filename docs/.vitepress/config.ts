@@ -98,6 +98,7 @@ export default defineConfig({
             { text: 'SrInput', link: '/components/input' },
             { text: 'SrTextarea', link: '/components/textarea' },
             { text: 'SrComment', link: '/components/comment' },
+            { text: 'SrMusicPlayer', link: '/components/music-player' },
             { text: 'SrIcon', link: '/components/icon' },
             { text: 'SrSpinner', link: '/components/spinner' },
             { text: 'SrProgress', link: '/components/progress' },

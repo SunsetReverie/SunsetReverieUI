@@ -1,0 +1,544 @@
+// 音乐播放器
+//
+// 三种形态共用一套面板：full 常驻、attach 收起成贴边圆钮、mini 收起成胶囊条。
+// 紧凑态的定位由组件写在行内（left/right + top/bottom + offset），
+// 这里只负责外观与形态差异。
+
+@import '../../../styles/mixins/index.less';
+
+.sr-music {
+  --sr-music-width: 380px;
+  --sr-music-radius: var(--sr-radius-lg);
+  --sr-music-cover: 56px;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--sr-music-width);
+  color: var(--sr-color-text);
+  font-size: var(--sr-font-size-sm);
+
+  // ---------- 面板 ----------
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sr-space-3);
+    padding: var(--sr-space-4);
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-music-radius);
+    background: var(--sr-color-bg-container);
+    box-shadow: var(--sr-shadow-md);
+    .sr-glass-layer();
+  }
+
+  // 紧凑形态的面板浮在页面之上
+  &.is-compact &__panel {
+    width: 320px;
+    z-index: var(--sr-z-popover);
+  }
+
+  // ---------- 头部 ----------
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-3);
+  }
+
+  &__cover {
+    position: relative;
+    flex: none;
+    width: var(--sr-music-cover);
+    height: var(--sr-music-cover);
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--sr-color-bg-sunken);
+    // 旋转加在封面上而不是外面的分隔环：环是轴对称的，转起来看不出来
+    animation: sr-music-spin 18s linear infinite;
+    animation-play-state: paused;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // 用 animation-play-state 而不是增删 animation：
+  // 后者每次从 0° 重启，视觉上是「跳一下再转」
+  &.is-playing &__cover {
+    animation-play-state: running;
+  }
+
+  &__cover-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--sr-color-text-quaternary);
+  }
+
+  &__meta {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__artist {
+    margin: 2px 0 0;
+    overflow: hidden;
+    color: var(--sr-color-text-tertiary);
+    font-size: var(--sr-font-size-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__head-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 2px;
+  }
+
+  // ---------- 通用按钮 ----------
+  &__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease;
+
+    &:hover {
+      background: var(--sr-color-bg-sunken);
+      color: var(--sr-color-text);
+    }
+
+    &.is-on {
+      color: var(--sr-color-primary);
+    }
+  }
+
+  &__main-btn {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--sr-color-primary);
+    color: var(--sr-color-text-inverse, #fff);
+    cursor: pointer;
+    transition: filter 0.16s ease;
+
+    &:hover {
+      filter: brightness(1.06);
+    }
+  }
+
+  // ---------- 歌词 ----------
+  &__lyrics {
+    height: 128px;
+    overflow-y: auto;
+    padding: 0 2px;
+    scrollbar-width: thin;
+  }
+
+  &__lyric-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__lyric-line {
+    display: block;
+    width: 100%;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
+    font-size: var(--sr-font-size-xs);
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      color 0.16s ease,
+      transform 0.16s ease;
+
+    &:hover:not(:disabled) {
+      color: var(--sr-color-text);
+    }
+
+    &.is-active {
+      color: var(--sr-color-primary);
+      font-weight: 600;
+      transform: scale(1.04);
+    }
+
+    &.is-empty {
+      cursor: default;
+      opacity: 0.4;
+    }
+  }
+
+  &__lyric-text {
+    display: block;
+  }
+
+  &__lyric-trans {
+    display: block;
+    margin-top: 1px;
+    font-size: 11px;
+    opacity: 0.7;
+  }
+
+  &__tip {
+    margin: 0;
+    padding: var(--sr-space-3) 0;
+    color: var(--sr-color-text-tertiary);
+    font-size: var(--sr-font-size-xs);
+    text-align: center;
+
+    &.is-error {
+      color: var(--sr-color-danger);
+    }
+  }
+
+  // ---------- 进度 / 音量 ----------
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+  }
+
+  &__time {
+    flex: none;
+    color: var(--sr-color-text-tertiary);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__range {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 4px;
+    padding: 0;
+    border-radius: var(--sr-radius-full, 999px);
+    background: linear-gradient(
+      to right,
+      var(--sr-color-primary) 0 var(--sr-music-progress, 0%),
+      var(--sr-color-border) var(--sr-music-progress, 0%) 100%
+    );
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      width: 12px;
+      height: 12px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--sr-color-primary);
+      box-shadow: 0 0 0 2px var(--sr-color-bg-container);
+      appearance: none;
+    }
+
+    &::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--sr-color-primary);
+    }
+
+    &--volume {
+      flex: 0 0 64px;
+      width: 64px;
+    }
+  }
+
+  // ---------- 控制区 ----------
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sr-space-1);
+  }
+
+  &__volume {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  // ---------- 播放列表 ----------
+  &__playlist {
+    max-height: 200px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    border-top: 1px solid var(--sr-color-border-subtle);
+    list-style: none;
+  }
+
+  &__track {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    width: 100%;
+    padding: 6px 4px;
+    border: 0;
+    border-radius: var(--sr-radius-sm);
+    background: transparent;
+    color: var(--sr-color-text-secondary);
+    font-size: var(--sr-font-size-xs);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sr-color-bg-sunken);
+      color: var(--sr-color-text);
+    }
+
+    &.is-active {
+      color: var(--sr-color-primary);
+    }
+  }
+
+  &__track-index {
+    flex: none;
+    width: 18px;
+    color: var(--sr-color-text-quaternary);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  &__track-name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__track-artist {
+    flex: 0 1 40%;
+    overflow: hidden;
+    color: var(--sr-color-text-quaternary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ---------- 收起态：贴边圆钮 ----------
+  &__attach {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--sr-color-border);
+    border-radius: 50%;
+    background: var(--sr-color-bg-elevated, var(--sr-color-bg-container));
+    box-shadow: var(--sr-shadow-md);
+    color: var(--sr-color-primary);
+    cursor: pointer;
+    .sr-glass-layer();
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // ---------- 收起态：胶囊条 ----------
+  &__pill {
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    max-width: 260px;
+    padding: 4px 12px 4px 4px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-full, 999px);
+    background: var(--sr-color-bg-elevated, var(--sr-color-bg-container));
+    box-shadow: var(--sr-shadow-md);
+    .sr-glass-layer();
+  }
+
+  &__pill-cover {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 50%;
+    background: var(--sr-color-bg-sunken);
+    color: var(--sr-color-primary);
+    cursor: pointer;
+    animation: sr-music-spin 8s linear infinite;
+    animation-play-state: paused;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &.is-playing &__pill-cover {
+    animation-play-state: running;
+  }
+
+  // hover 只加遮罩不缩放：缩放在「圆形在转」时会变成「圆形在跳」
+  &__pill-mask {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(0 0 0 / 45%);
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.16s ease;
+  }
+
+  &__pill-cover:hover &__pill-mask {
+    opacity: 1;
+  }
+
+  &__pill-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sr-color-text);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  &__pill-lyric,
+  &__pill-meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__pill-lyric {
+    max-width: 180px;
+    font-size: var(--sr-font-size-xs);
+  }
+
+  &__pill-meta {
+    max-width: 180px;
+    color: var(--sr-color-text-quaternary);
+    font-size: 11px;
+  }
+
+  // ---------- 底部全局歌词 ----------
+  &__global {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    z-index: var(--sr-z-popover);
+    display: flex;
+    align-items: center;
+    gap: var(--sr-space-2);
+    max-width: min(560px, calc(100vw - 48px));
+    padding: 8px 16px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-full, 999px);
+    background: var(--sr-color-bg-elevated, var(--sr-color-bg-container));
+    box-shadow: var(--sr-shadow-md);
+    transform: translateX(-50%);
+    pointer-events: none;
+    .sr-glass-layer();
+  }
+
+  &__global-cover {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__global-text {
+    overflow: hidden;
+    color: var(--sr-color-text);
+    font-size: var(--sr-font-size-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__global-meta {
+    flex: none;
+    color: var(--sr-color-text-quaternary);
+    font-size: 11px;
+  }
+}
+
+@keyframes sr-music-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 全局歌词条的进出
+.sr-music-global-enter-active,
+.sr-music-global-leave-active {
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease;
+}
+
+.sr-music-global-enter-from,
+.sr-music-global-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px);
+}
+
+// 尊重系统的「减少动态效果」设置
+@media (prefers-reduced-motion: reduce) {
+  .sr-music {
+    &__cover,
+    &__pill-cover {
+      animation: none;
+    }
+  }
+
+  .sr-music-global-enter-active,
+  .sr-music-global-leave-active {
+    transition: none;
+  }
+}
