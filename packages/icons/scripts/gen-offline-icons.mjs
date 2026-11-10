@@ -42,6 +42,9 @@ function isNotIcon(icon) {
   // Vue 事件与插槽名
   if (icon.startsWith('update:') || icon.startsWith('v-slot:')) return true
 
+  // 注释里描述「配合 v-model:xxx 使用」也会被正则扫到，'v-model' 不是图标集合
+  if (icon.startsWith('v-model:')) return true
+
   // 时间戳：演示数据里的 '10:24' 会被 [a-z0-9-]+:[a-z0-9-]+ 误判成图标名
   if (/^\d+:\d+$/.test(icon)) return true
 

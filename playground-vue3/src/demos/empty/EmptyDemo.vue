@@ -15,6 +15,42 @@ defineOptions({ name: 'EmptyDemo' })
     </section>
 
     <section>
+      <h3>场景类型</h3>
+      <div class="grid">
+        <SrEmpty type="search">
+          <template #action>
+            <SrButton size="sm">清空筛选条件</SrButton>
+          </template>
+        </SrEmpty>
+        <SrEmpty type="data">
+          <template #action>
+            <SrButton size="sm" variant="primary">新建项目</SrButton>
+          </template>
+        </SrEmpty>
+        <SrEmpty type="error" bordered>
+          <template #action>
+            <SrButton size="sm">重新加载</SrButton>
+          </template>
+        </SrEmpty>
+        <SrEmpty type="network">
+          <template #action>
+            <SrButton size="sm">重新连接</SrButton>
+          </template>
+        </SrEmpty>
+        <SrEmpty type="permission">
+          <template #action>
+            <SrButton size="sm">申请权限</SrButton>
+          </template>
+        </SrEmpty>
+        <SrEmpty type="default" bordered>
+          <template #action>
+            <SrButton size="sm" variant="primary">新建组件</SrButton>
+          </template>
+        </SrEmpty>
+      </div>
+    </section>
+
+    <section>
       <h3>带操作</h3>
       <SrEmpty description="还没有创建任何组件">
         <template #action>

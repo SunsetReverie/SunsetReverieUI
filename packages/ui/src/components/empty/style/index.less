@@ -1,12 +1,18 @@
 // 空状态
 //
-// 图标 + 描述 + 可选操作，纵向居中。
+// 图标块 + 描述 + 可选操作，纵向居中。
+// 图标外面套一块淡色圆角底，靠色调区分「没数据」和「出错 / 没权限」。
 
 @import '../../../styles/mixins/index.less';
 @import '../../icon/style/index.less';
 
 .sr-empty {
   --sr-empty-gap: var(--sr-space-3);
+  // 图标块尺寸与圆角：圆角按块宽等比取，32px 的小块也是圆润的
+  --sr-empty-icon-box: 52px;
+  --sr-empty-icon-radius: calc(var(--sr-empty-icon-box) * 0.24);
+  // 图标块主色，按场景色调覆盖
+  --sr-empty-accent: var(--sr-color-text-tertiary);
 
   display: flex;
   flex-direction: column;
@@ -18,21 +24,34 @@
 
   &--xs {
     --sr-empty-gap: var(--sr-space-2);
+    --sr-empty-icon-box: 32px;
     padding: var(--sr-space-5) var(--sr-space-3);
   }
 
   &--sm {
     --sr-empty-gap: var(--sr-space-2);
+    --sr-empty-icon-box: 40px;
     padding: var(--sr-space-6) var(--sr-space-3);
   }
 
   &--lg {
+    --sr-empty-icon-box: 64px;
     padding: var(--sr-space-10) var(--sr-space-5);
   }
 
   &.is-bordered {
     border: 1px dashed var(--sr-color-border);
     border-radius: var(--sr-radius-base);
+  }
+
+  // ---------- 场景色调 ----------
+
+  &.is-tone-warning {
+    --sr-empty-accent: var(--sr-color-warning);
+  }
+
+  &.is-tone-danger {
+    --sr-empty-accent: var(--sr-color-danger);
   }
 
   &__image {
@@ -48,8 +67,15 @@
   }
 
   &__icon {
-    color: var(--sr-color-text-tertiary);
-    opacity: 0.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--sr-empty-icon-box);
+    height: var(--sr-empty-icon-box);
+    border-radius: var(--sr-empty-icon-radius);
+    background: color-mix(in srgb, var(--sr-empty-accent) 12%, transparent);
+    color: var(--sr-empty-accent);
   }
 
   &__description {
