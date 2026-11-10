@@ -60,9 +60,14 @@ const disabledColor = ref('#64748b')
       <h3>透明度（showAlpha）</h3>
       <div class="row">
         <SrColorPicker v-model="alphaColor" show-alpha format="rgb" />
+        <SrColorPicker v-model="alphaColor" show-alpha />
         <SrTag size="sm">{{ alphaColor }}</SrTag>
       </div>
-      <p class="hint">多一条透明度滑条，背景是棋盘格——棋盘格表示「这里透明」，不是灰色</p>
+      <p class="hint">
+        透明度既能拖滑条，也能在右侧百分比框里直接输；色块下面是棋盘格——表示「这里透明」，不是灰色。
+        同一个值，左边按
+        <code>rgb</code> 输出 <code>rgba(…)</code>，右边默认输出八位 <code>#rrggbbaa</code>。
+      </p>
     </section>
 
     <section>

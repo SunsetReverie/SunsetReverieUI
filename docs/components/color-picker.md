@@ -20,7 +20,7 @@ const presets = ['#3e3edc', '#ff7a45', '#1f7a4d', '#e0b100', '#d64545', '#8b5cf6
   <span style="margin-left: 12px; font-size: 12px; color: var(--vp-c-text-3)">{{ color || '空' }}</span>
 </div>
 
-面板里三个可拖的区域：**饱和度方块**、**色相条**、**透明度条**。也可以直接在右下角的输入框里敲 hex。
+面板里三个可拖的区域：**饱和度方块**、**色相条**、**透明度条**。也可以直接在底部的输入框里敲 hex，透明度除了拖，还能在右侧的百分比框里直接输。
 
 ## 基础用法
 
@@ -73,7 +73,7 @@ const color = ref('#3e3edc')
   <SrColorPicker v-model="alphaColor" show-alpha format="rgb" />
 </div>
 
-打开后多一条透明度滑条，背景是**棋盘格**——它表示「这里是透明的」，不是灰色。
+打开后多一条透明度滑条与一个百分比输入框：拖到 37% 这种精确值很难控，直接敲数字更稳。滑条与色块下面铺的是**棋盘格**——它表示「这里是透明的」，不是灰色。
 
 输出会带 alpha：`rgba(...)` 或 `#rrggbbaa`。不开 `show-alpha` 时始终输出不透明色。
 
@@ -125,7 +125,7 @@ const color = ref('#3e3edc')
 | --- | --- | --- | --- |
 | `modelValue` | `string` | `''` | 颜色值 |
 | `format` | `'hex' \| 'rgb' \| 'hsl'` | `'hex'` | 输出格式 |
-| `showAlpha` | `boolean` | `false` | 显示透明度滑条 |
+| `showAlpha` | `boolean` | `false` | 显示透明度控制（滑条 + 百分比输入） |
 | `presets` | `string[]` | `[]` | 预设色板 |
 | `clearable` | `boolean` | `false` | 可清空 |
 | `disabled` | `boolean` | `false` | 禁用 |
@@ -162,4 +162,5 @@ isSameColor('#3e3edc', 'rgb(62, 62, 220)') // true（不同格式同一颜色）
 - **内部按 HSL 存**。拖动时用 hsl 计算才平滑，代价是「hex → hsl → hex」会有 ±1 的往返误差。所以点预设色时**直接用原值输出**，不走 hsl 往返。
 - **`isSameColor` 有 ±1 容差**。正是为了吸收上面那点误差，严格相等会误判成两个颜色。
 - **透明度只在 `showAlpha` 时输出**。不开时即使内部有 alpha 值，输出也是不透明的。
+- 百分比输入框只接受 0–100 的整数，超出会夹到边界；清空输入不会立刻改值，失焦后回显当前透明度。
 - **`update:modelValue` 触发频繁**，拖动时每次移动都发，副作用放 `change`。

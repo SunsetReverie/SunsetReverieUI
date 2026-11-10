@@ -41,6 +41,10 @@ const sat = ref(70)
 const light = ref(55)
 /** 透明度 */
 const alpha = ref(1)
+/** 透明度输入框 */
+const alphaInputRef = ref<HTMLInputElement | null>(null)
+/** 透明度输入框里的草稿：边输入边格式化会把光标打断 */
+const alphaDraft = ref('100')
 /** 十六进制输入框的临时文本 */
 const hexInput = ref('#3e3edc')
 /** 正在拖拽的部件 */
@@ -96,6 +100,16 @@ watch(
     // 自己刚发出去的值不再回灌，否则光标会跳
     if (isSameColor(value, outputValue.value)) return
     syncFromValue(value)
+  },
+  { immediate: true },
+)
+
+// 拖动滑条或外部值变化时同步输入框；正在输入时不抢，否则光标会跳
+watch(
+  alpha,
+  (value) => {
+    if (typeof document !== 'undefined' && document.activeElement === alphaInputRef.value) return
+    alphaDraft.value = String(Math.round(value * 100))
   },
   { immediate: true },
 )
@@ -249,6 +263,26 @@ function onHexInput(value: string): void {
 }
 
 /**
+ * 输入透明度百分比
+ *
+ * 只留数字、最多三位；空串时先不改 alpha，允许用户清空后重输。
+ * @param value 输入框文本
+ */
+function onAlphaInput(value: string): void {
+  const digits = value.replace(/\D/g, '').slice(0, 3)
+  alphaDraft.value = digits
+  if (!digits) return
+
+  alpha.value = Math.min(100, Number(digits)) / 100
+  commit()
+}
+
+/** 失焦或回车时把草稿归一化（比如输入 150 后回显 100） */
+function onAlphaBlur(): void {
+  alphaDraft.value = String(Math.round(alpha.value * 100))
+}
+
+/**
  * 选预设色
  *
  * 先用原值走一遍格式化，避免「内部存 hsl → 转回 rgb 差 1」：
@@ -324,7 +358,9 @@ defineExpose({ open, close })
       @keydown.enter.prevent="toggle"
       @keydown.space.prevent="toggle"
     >
-      <span v-if="hasValue" class="sr-color-picker__swatch" :style="{ background: props.modelValue }" />
+      <!-- 用 backgroundColor 而不是 background 简写：简写会把 CSS 里的棋盘格背景图清掉，
+           带透明度的色块就只剩「变淡的纯色」，看不出它是透明的 -->
+      <span v-if="hasValue" class="sr-color-picker__swatch" :style="{ backgroundColor: props.modelValue }" />
       <span v-else class="sr-color-picker__swatch sr-color-picker__swatch--empty" />
 
       <span class="sr-color-picker__value" :class="{ 'is-placeholder': !hasValue }">
@@ -370,7 +406,7 @@ defineExpose({ open, close })
             v-if="showAlpha"
             ref="alphaRef"
             class="sr-color-picker__alpha"
-            :style="{ backgroundImage: `${alphaGradient}, var(--sr-cp-checker)` }"
+            :style="{ '--sr-cp-alpha-gradient': alphaGradient }"
             @pointerdown="startDrag('alpha', $event)"
           >
             <span class="sr-color-picker__alpha-cursor" :style="{ left: `${alpha * 100}%` }" />
@@ -378,7 +414,7 @@ defineExpose({ open, close })
 
           <!-- 输入区 -->
           <div class="sr-color-picker__inputs">
-            <span class="sr-color-picker__preview" :style="{ background: outputValue }" />
+            <span class="sr-color-picker__preview" :style="{ backgroundColor: outputValue }" />
             <input
               class="sr-color-picker__hex"
               type="text"
@@ -386,8 +422,22 @@ defineExpose({ open, close })
               spellcheck="false"
               @input="onHexInput(($event.target as HTMLInputElement).value)"
             />
-            <span v-if="showAlpha" class="sr-color-picker__alpha-value">
-              {{ Math.round(alpha * 100) }}%
+
+            <!-- 透明度既能拖，也能敲：拖到 37% 这种精确值很难控 -->
+            <span v-if="showAlpha" class="sr-color-picker__alpha-field">
+              <input
+                ref="alphaInputRef"
+                class="sr-color-picker__alpha-input"
+                type="text"
+                inputmode="numeric"
+                maxlength="3"
+                aria-label="透明度（百分比）"
+                :value="alphaDraft"
+                @input="onAlphaInput(($event.target as HTMLInputElement).value)"
+                @blur="onAlphaBlur"
+                @keydown.enter.prevent="onAlphaBlur"
+              />
+              <span class="sr-color-picker__alpha-unit" aria-hidden="true">%</span>
             </span>
           </div>
 

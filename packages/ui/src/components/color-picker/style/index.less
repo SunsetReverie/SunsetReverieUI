@@ -7,11 +7,14 @@
  * 拖拽全部走 Pointer Events，鼠标与触屏共用一套。
  */
 
+// 棋盘格底纹：表示透明的部分。只放图像本身，位置与尺寸由使用处单独声明——
+// `background-image` 不接受 `50% / 8px 8px` 这类简写片段，混在一起整条声明会失效。
+// 面板是 Teleport 到 body 的，不在 .sr-color-picker 子树里，所以两处都要各自声明。
+@sr-cp-checker: repeating-conic-gradient(var(--sr-color-border-subtle) 0% 25%, transparent 0% 50%);
+
 .sr-color-picker {
   --sr-cp-height: 32px;
-  // 棋盘格底纹：表示透明的部分
-  --sr-cp-checker: repeating-conic-gradient(var(--sr-color-border-subtle) 0% 25%, transparent 0% 50%) 50% /
-    8px 8px;
+  --sr-cp-checker: @sr-cp-checker;
 
   position: relative;
   display: inline-block;
@@ -46,6 +49,7 @@
     border: 1px solid var(--sr-color-border-subtle);
     border-radius: 3px;
     background-image: var(--sr-cp-checker);
+    background-size: 8px 8px;
   }
 
   &__swatch--empty {
@@ -104,6 +108,8 @@
     position: fixed;
     z-index: var(--sr-z-index-popover, 1050);
     width: 232px;
+    // Teleport 到 body 后拿不到根节点的变量，棋盘格必须在这里再声明一次
+    --sr-cp-checker: @sr-cp-checker;
     padding: 10px;
     border: var(--sr-glass-border-width) solid var(--sr-glass-border-color);
     border-radius: var(--sr-radius-base);
@@ -175,6 +181,11 @@
     height: 10px;
     margin-top: 10px;
     border-radius: var(--sr-radius-full);
+    // 内联只给渐变，棋盘格和尺寸在这里拼：多图层的 size 必须逐层对应
+    background-image: var(--sr-cp-alpha-gradient), var(--sr-cp-checker);
+    background-size:
+      100% 100%,
+      8px 8px;
     cursor: pointer;
     touch-action: none;
     overflow: hidden;
@@ -207,6 +218,7 @@
     border: 1px solid var(--sr-color-border-subtle);
     border-radius: var(--sr-form-radius);
     background-image: var(--sr-cp-checker);
+    background-size: 8px 8px;
   }
 
   // 与 SrInput 对齐：同样的边框色、圆角与焦点环，而不是一个裸 input
@@ -236,11 +248,43 @@
     }
   }
 
-  &__alpha-value {
+  // 透明度数值框：与 hex 输入框同一套边框 / 圆角 / 焦点环
+  &__alpha-field {
+    display: inline-flex;
+    align-items: center;
     flex: 0 0 auto;
+    height: 26px;
+    padding: 0 6px 0 7px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-form-radius);
+    background: var(--sr-color-bg-container);
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:focus-within {
+      border-color: var(--sr-color-primary);
+      box-shadow: var(--sr-shadow-focus);
+    }
+  }
+
+  &__alpha-input {
+    width: 24px;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &__alpha-unit {
+    margin-left: 1px;
     color: var(--sr-color-text-tertiary);
     font-size: 11.5px;
-    font-variant-numeric: tabular-nums;
   }
 
   // ---------- 预设 ----------
