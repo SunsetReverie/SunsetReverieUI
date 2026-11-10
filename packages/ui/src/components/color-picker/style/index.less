@@ -70,14 +70,33 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: var(--sr-color-text-tertiary);
-    color: var(--sr-color-bg-container);
+    // 不做成实心圆：清空是次要操作，实心底会把视线从色块和色值上抢走，
+    // 只在悬停/聚焦时给一层淡底，明确「这里可点」即可。
+    background: transparent;
+    color: var(--sr-color-text-tertiary);
     cursor: pointer;
+    transition:
+      color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      background-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      background: var(--sr-color-bg-hover);
+      color: var(--sr-color-text);
+    }
+
+    &:active {
+      background: var(--sr-color-bg-active);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sr-color-primary-alpha-25);
+      outline-offset: 1px;
+    }
   }
 
   // ---------- 面板 ----------
@@ -183,29 +202,38 @@
 
   &__preview {
     flex: 0 0 auto;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border: 1px solid var(--sr-color-border-subtle);
-    border-radius: var(--sr-radius-sm);
+    border-radius: var(--sr-form-radius);
     background-image: var(--sr-cp-checker);
   }
 
+  // 与 SrInput 对齐：同样的边框色、圆角与焦点环，而不是一个裸 input
   &__hex {
     flex: 1 1 auto;
     min-width: 0;
-    height: 24px;
-    padding: 0 6px;
-    border: 1px solid var(--sr-color-border-subtle);
-    border-radius: var(--sr-radius-sm);
+    height: 26px;
+    padding: 0 8px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-form-radius);
     background: var(--sr-color-bg-container);
     color: var(--sr-color-text);
     font-family: var(--sr-font-family-mono);
     font-size: 12px;
     outline: none;
-  }
+    transition:
+      border-color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard),
+      box-shadow var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
 
-  &__hex:focus {
-    border-color: var(--sr-color-primary);
+    &:focus {
+      border-color: var(--sr-color-primary);
+      box-shadow: var(--sr-shadow-focus);
+    }
+
+    &:hover:not(:focus) {
+      border-color: var(--sr-color-border-strong);
+    }
   }
 
   &__alpha-value {
