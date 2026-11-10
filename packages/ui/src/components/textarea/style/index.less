@@ -170,7 +170,10 @@
     right: var(--sr-textarea-padding-x);
     bottom: 6px;
     z-index: 2;
-    padding: 0 2px;
+    padding: 0 4px;
+    border-radius: var(--sr-radius-sm);
+    // 半透明底：水印也落在右下角时，数字不会被大字压得看不清
+    background: color-mix(in srgb, var(--sr-color-bg-container) 72%, transparent);
     line-height: 1.4;
     pointer-events: none;
   }

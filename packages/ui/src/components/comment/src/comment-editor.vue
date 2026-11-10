@@ -328,6 +328,10 @@ onBeforeUnmount(() => {
             :disabled="submitting"
             :emoji-packages="emojiPackages"
             :size="compact ? 'sm' : 'md'"
+            :background-image="backgroundImage"
+            :background-text="backgroundText"
+            :background-position="backgroundPosition"
+            :background-text-size="backgroundTextSize"
           />
 
           <div class="sr-comment-editor__toolbar">

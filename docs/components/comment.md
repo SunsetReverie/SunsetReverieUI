@@ -217,6 +217,32 @@ interface SrCommentAuthor {
 
 **全程不使用 `v-html`**，这是评论正文的安全底线。查不到的 `[名称]` 原样保留，不会吞掉正文。
 
+## 输入框背景
+
+正文框的背景直接透传给内部 `SrTextarea`，适合放「友善发言」这类水印或品牌背景图：
+
+```vue
+<!-- 右下角水印 -->
+<SrComment
+  :comments="comments"
+  background-text="友善发言"
+  background-position="bottom-right"
+  :background-text-size="44"
+/>
+
+<!-- 背景图：url() / 渐变 / 裸地址都行 -->
+<SrComment :comments="comments" background-image="url(/assets/paper.png)" />
+```
+
+| 属性 | 说明 |
+| --- | --- |
+| `backgroundImage` | `url()`、渐变函数或裸地址，裸地址会先校验协议 |
+| `backgroundText` | 水印文字 |
+| `backgroundPosition` | 九宫格，图片与文字共用 |
+| `backgroundTextSize` | 水印字号（px），0 跟随组件字号 |
+
+背景是独立的一层，`pointer-events: none`，不抢焦点、不参与选中——全选复制不会把水印带进正文。回复框同样生效（`compact` 时水印字号会跟着组件字号缩小，除非显式给 `backgroundTextSize`）。
+
 ## 插槽
 
 | 名称 | 作用域 | 说明 |
@@ -275,6 +301,10 @@ interface SrCommentAuthor {
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包，表单与正文共用 |
 | `emptyText` | `string` | `'还没有评论，来说两句吧'` | 空态文案 |
 | `showEditor` | `boolean` | `true` | 是否显示评论框 |
+| `backgroundImage` | `string` | `''` | 正文框背景图 |
+| `backgroundText` | `string` | `''` | 正文框水印文字 |
+| `backgroundPosition` | 九宫格 | `'center'` | 背景落点，图片与文字共用 |
+| `backgroundTextSize` | `number` | `0` | 水印字号（px），0 跟随组件 |
 
 | 事件 | 参数 | 说明 |
 | --- | --- | --- |
@@ -319,6 +349,10 @@ interface SrCommentAuthor {
 | `emojiPackages` | `SrEmojiPackage[]` | `[]` | 表情包 |
 | `replyTo` | `SrCommentData \| null` | `null` | 回复目标，进入精简态 |
 | `compact` | `boolean` | `false` | 精简样式 |
+| `backgroundImage` | `string` | `''` | 正文框背景图 |
+| `backgroundText` | `string` | `''` | 正文框水印文字 |
+| `backgroundPosition` | 九宫格 | `'center'` | 背景落点 |
+| `backgroundTextSize` | `number` | `0` | 水印字号（px） |
 
 | 事件 | 参数 | 说明 |
 | --- | --- | --- |

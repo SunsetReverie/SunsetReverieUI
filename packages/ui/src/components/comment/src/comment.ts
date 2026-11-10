@@ -1,6 +1,7 @@
 import type { ExtractPropTypes, PropType } from 'vue'
 
 import type { SrEmojiItem, SrEmojiPackage } from '../../emoji-picker/src/emoji-picker'
+import type { SrTextareaBackgroundPosition } from '../../textarea/src/textarea'
 import type { SrCommentAuthor, SrCommentData, SrCommentPagination, SrCommentSort } from './types'
 
 /** 容器 props */
@@ -162,6 +163,35 @@ export const commentProps = {
     type: Boolean,
     default: true,
   },
+  /**
+   * 正文框背景图
+   *
+   * @remarks 透传给内部 `SrTextarea`：`url()`、渐变函数或裸地址都行，
+   * 裸地址会先校验协议再包成 `url()`。
+   */
+  backgroundImage: {
+    type: String,
+    default: '',
+  },
+  /**
+   * 正文框背景文字（水印）
+   *
+   * @remarks 常见用法是「友善发言」这类提示，或品牌名。
+   */
+  backgroundText: {
+    type: String,
+    default: '',
+  },
+  /** 背景落点 @default 'center' */
+  backgroundPosition: {
+    type: String as PropType<SrTextareaBackgroundPosition>,
+    default: 'center',
+  },
+  /** 水印字号（px） @default 0，0 表示跟随组件字号 */
+  backgroundTextSize: {
+    type: Number,
+    default: 0,
+  },
 } as const
 
 export type SrCommentProps = ExtractPropTypes<typeof commentProps>
@@ -273,6 +303,26 @@ export const commentEditorProps = {
   compact: {
     type: Boolean,
     default: false,
+  },
+  /** 正文框背景图，透传给 `SrTextarea` */
+  backgroundImage: {
+    type: String,
+    default: '',
+  },
+  /** 正文框背景文字（水印） */
+  backgroundText: {
+    type: String,
+    default: '',
+  },
+  /** 背景落点 @default 'center' */
+  backgroundPosition: {
+    type: String as PropType<SrTextareaBackgroundPosition>,
+    default: 'center',
+  },
+  /** 水印字号（px） @default 0 */
+  backgroundTextSize: {
+    type: Number,
+    default: 0,
   },
 } as const
 

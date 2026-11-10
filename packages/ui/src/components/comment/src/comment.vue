@@ -253,6 +253,10 @@ onBeforeUnmount(() => {
         :submitting="submitting"
         :emojiable="emojiable"
         :emoji-packages="emojiPackages"
+        :background-image="backgroundImage"
+        :background-text="backgroundText"
+        :background-position="backgroundPosition"
+        :background-text-size="backgroundTextSize"
         @submit="onSubmit"
       >
         <template #login><slot name="login" /></template>
@@ -299,6 +303,10 @@ onBeforeUnmount(() => {
               :submitting="submitting"
               :emojiable="emojiable"
               :emoji-packages="emojiPackages"
+              :background-image="backgroundImage"
+              :background-text="backgroundText"
+              :background-position="backgroundPosition"
+              :background-text-size="backgroundTextSize"
               @submit="onSubmit"
               @cancel-reply="cancelReply"
             >

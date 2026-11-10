@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { DEFAULT_EMOJI_PACKAGES, SrButton, SrComment, SrSwitch, SrTag } from '@sunset-reverie/ui'
+import {
+  DEFAULT_EMOJI_PACKAGES,
+  SrButton,
+  SrComment,
+  SrInputNumber,
+  SrSegmented,
+  SrSwitch,
+  SrTag,
+} from '@sunset-reverie/ui'
 import type { SrCommentData, SrCommentGuestInfo, SrCommentSubmitPayload } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'CommentDemo' })
@@ -21,6 +29,29 @@ const me = {
 
 /** 表情包 */
 const emojiPackages = DEFAULT_EMOJI_PACKAGES
+
+/** 背景演示模式 */
+const bgMode = ref<'none' | 'text' | 'image'>('text')
+
+/** 背景模式选项 */
+const bgOptions = [
+  { label: '无背景', value: 'none' },
+  { label: '水印文字', value: 'text' },
+  { label: '背景图', value: 'image' },
+]
+
+/** 水印字号 */
+const bgTextSize = ref(44)
+
+/** 点阵背景图：内联 SVG，不依赖外网 */
+const dotPattern =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='3' cy='3' r='1.4' fill='%237c3aed' fill-opacity='0.18'/%3E%3C/svg%3E\")"
+
+/** 背景图 */
+const bgImage = computed(() => (bgMode.value === 'image' ? dotPattern : ''))
+
+/** 水印文字 */
+const bgText = computed(() => (bgMode.value === 'text' ? '聊两句' : ''))
 
 /**
  * 造一批评论，用于分页与加载更多的演示
@@ -361,6 +392,31 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
       <p v-if="guestInfo" class="hint">
         已记住游客身份：{{ guestInfo.name || '（未填）' }}
         <template v-if="guestInfo.website">，网址 {{ guestInfo.website }}</template>
+      </p>
+    </section>
+
+    <section>
+      <h3>输入框背景（水印 / 背景图）</h3>
+      <div class="row">
+        <SrSegmented v-model="bgMode" :options="bgOptions" size="sm" />
+        <SrInputNumber v-model="bgTextSize" :min="12" :max="120" :step="4" size="sm" style="width: 130px" />
+        <span class="row-label">水印字号</span>
+      </div>
+      <SrComment
+        :comments="comments.slice(0, 1)"
+        :user="user"
+        :emoji-packages="emojiPackages"
+        :background-image="bgImage"
+        :background-text="bgText"
+        :background-text-size="bgTextSize"
+        background-position="bottom"
+        @like="onLike"
+        @submit="onSubmit"
+      />
+      <p class="hint">
+        背景透传给内部 <code>SrTextarea</code>：<code>backgroundImage</code> 接受 url() / 渐变 / 裸地址，
+        <code>backgroundText</code> 是水印，<code>backgroundPosition</code> 走九宫格（这里固定在底部居中）。
+        背景层不参与选中，全选复制不会把水印带走。
       </p>
     </section>
 
