@@ -9,6 +9,8 @@
 .sr-skeleton {
   --sr-skeleton-row-height: 14px;
 
+  // 读屏专用的 1px 文本是 position: absolute，需要定位祖先才不会逃出滚动容器
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 12px;

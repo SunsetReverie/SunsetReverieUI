@@ -124,11 +124,11 @@ const sliders = [
 <style scoped>
 .tuner {
   display: grid;
-  gap: 10px;
+  gap: var(--sr-space-3);
 }
 
 .tuner__hint {
-  padding: 8px 10px;
+  padding: var(--sr-space-2) var(--sr-space-3);
   border-radius: var(--sr-radius-sm);
   background: var(--sr-color-primary-alpha-08);
   color: var(--sr-color-text-secondary);
@@ -144,7 +144,7 @@ const sliders = [
   display: grid;
   grid-template-columns: 84px 1fr 62px;
   align-items: center;
-  gap: 10px;
+  gap: var(--sr-space-3);
 }
 
 .tuner__label {

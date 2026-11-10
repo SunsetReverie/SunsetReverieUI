@@ -220,7 +220,9 @@ const cssCode = `/* 768 就是 SR_BREAKPOINTS.md，改 token 时两边一起变 
       title="在 JS 里判断"
       description="只有在 JS 里做结构性切换时才需要它——纯样式切换交给媒体查询，别两头判断。"
     >
-      <div class="lab__code">
+      <!-- 代码区固定用暗色：和编辑器一致，也让长代码片段从浅色说明里跳出来。
+           直接给容器加 data-sr-theme，用的是同一套暗色 token，不另写一套配色。 -->
+      <div class="lab__code" data-sr-theme="dark">
         <SrCodeBlock title="useSrBreakpoint" lang="ts" :code="usageCode" />
         <SrCodeBlock title="style.css" lang="css" :code="cssCode" />
       </div>

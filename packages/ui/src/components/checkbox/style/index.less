@@ -7,6 +7,10 @@
 @import '../../../styles/mixins/index.less';
 
 .sr-checkbox {
+  // 视觉隐藏的原生 input 是 position: absolute，必须给它一个定位祖先：
+  // 否则它会以初始包含块定位，跑到滚动容器之外，把 document 撑高一截
+  // （页面越长撑得越高，滚到底就是一大片空白）。
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--sr-space-2);

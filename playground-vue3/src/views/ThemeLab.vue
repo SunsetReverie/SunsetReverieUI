@@ -74,6 +74,9 @@ function onStyleChange(value: SrSegmentedValue): void {
 /** 自定义色初值取当前品牌色，打开面板就能看到现状 */
 const customColor = ref('#FF7A45')
 
+/** 取色面板里的预设色，与上方预设主题色同源，不另造一套色板 */
+const presetColors = SR_THEME_PRESETS.map((item) => item.primary)
+
 /** 当前预设的完整信息，用于展示文案 */
 const currentPreset = computed(() => SR_THEME_PRESETS.find((item) => item.key === preset.value))
 
@@ -131,7 +134,8 @@ const scaleTokens = [
     >
       <SrDescriptions :items="stateItems" :column="1" border />
 
-      <div class="lab__grid">
+      <!-- 与断点实验室一致：代码区固定用暗色 token，不随全局明暗切换 -->
+      <div class="lab__grid" data-sr-theme="dark">
         <SrCodeBlock title="index.html" lang="html" :code="rootCode" />
         <SrCodeBlock title="localStorage" lang="text" :code="readStorage()" />
       </div>
@@ -215,7 +219,11 @@ const scaleTokens = [
         title="玻璃参数可以调"
         description="下面这几项只对 glass 生效，写在内联变量上实时预览；数值定下来后应写回 token，别留在页面里。"
       />
-      <GlassTuner />
+
+      <div class="lab__tuner">
+        <div class="lab__subsection-title">参数调节 · GlassTuner</div>
+        <GlassTuner />
+      </div>
     </SrPanel>
 
     <SrPanel title="主题色" description="预设走属性选择器（SSR 友好），自定义色走内联变量，两者互斥。">
@@ -237,11 +245,23 @@ const scaleTokens = [
         </button>
       </div>
 
-      <div class="lab__toolbar">
-        <span class="lab__field-label">自定义主色</span>
-        <SrColorPicker v-model="customColor" />
-        <SrButton variant="secondary" size="sm" @click="setPrimaryColor(customColor)">应用</SrButton>
-        <SrButton variant="text" size="sm" @click="resetPrimaryColor()">还原默认</SrButton>
+      <div class="lab__custom">
+        <div class="lab__custom-head">
+          <div class="lab__custom-text">
+            <div class="lab__subsection-title">自定义主色 · SrColorPicker</div>
+            <p class="lab__custom-hint">
+              点色块打开组件库的取色面板：拖动饱和度与色相，或直接点面板底部的预设色。挑好后按「应用到全局」，
+              整条派生色阶会跟着重算。
+            </p>
+          </div>
+          <span class="lab__custom-preview" :style="{ background: customColor }" :title="customColor" />
+        </div>
+
+        <div class="lab__custom-row">
+          <SrColorPicker v-model="customColor" size="lg" :presets="presetColors" />
+          <SrButton variant="primary" @click="setPrimaryColor(customColor)">应用到全局</SrButton>
+          <SrButton variant="secondary" @click="resetPrimaryColor()">还原默认</SrButton>
+        </div>
       </div>
 
       <p class="lab__note">
@@ -319,9 +339,68 @@ const scaleTokens = [
     gap: var(--sr-space-2);
   }
 
-  &__field-label {
+  &__subsection-title {
+    color: var(--sr-color-text);
+    font-family: var(--sr-font-family-mono);
+    font-size: var(--sr-font-size-xs);
+    font-weight: var(--sr-font-weight-semibold);
+    letter-spacing: 0.04em;
+  }
+
+  &__tuner {
+    display: grid;
+    gap: var(--sr-space-4);
+    margin-top: var(--sr-space-4);
+    padding: var(--sr-space-4);
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-lg);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__custom {
+    display: grid;
+    gap: var(--sr-space-4);
+    margin-top: var(--sr-space-4);
+    padding: var(--sr-space-4);
+    border: 1px solid var(--sr-color-border-subtle);
+    border-radius: var(--sr-radius-lg);
+    background: var(--sr-color-bg-sunken);
+  }
+
+  &__custom-head {
+    display: flex;
+    gap: var(--sr-space-4);
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__custom-text {
+    display: grid;
+    gap: var(--sr-space-2);
+    min-width: 0;
+  }
+
+  &__custom-hint {
+    margin: 0;
     color: var(--sr-color-text-secondary);
     font-size: var(--sr-font-size-sm);
+    line-height: 1.8;
+  }
+
+  &__custom-preview {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--sr-color-border);
+    border-radius: var(--sr-radius-md);
+    box-shadow: 0 0 0 3px var(--sr-color-bg-container);
+  }
+
+  &__custom-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sr-space-3);
+    align-items: center;
   }
 
   &__compare {
@@ -356,7 +435,7 @@ const scaleTokens = [
   &__swatches {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: var(--sr-space-2);
+    gap: var(--sr-space-3);
   }
 
   &__scale {

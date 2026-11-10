@@ -69,11 +69,11 @@ const ruleItems: SrDescriptionItem[] = [
   { label: '状态可辨', value: 'primary / success / warning / danger 四态不能被风格吃掉' },
 ]
 
-/** 表格列 */
+/** 表格列：三列宽度之和要塞得进最窄的一张审计卡（约 200px 可用宽） */
 const tableColumns: SrTableColumn[] = [
-  { key: 'name', title: '组件', minWidth: 120 },
-  { key: 'count', title: '实例数', width: 90, align: 'right' },
-  { key: 'status', title: '状态', width: 96, align: 'center' },
+  { key: 'name', title: '组件', minWidth: 72 },
+  { key: 'count', title: '实例数', width: 56, align: 'right' },
+  { key: 'status', title: '状态', width: 64, align: 'center' },
 ]
 
 /** 表格数据：四列配色下都要读得清 */
@@ -444,11 +444,15 @@ function showToast(): void {
           <div class="audit__col-head">{{ combo.label }}</div>
 
           <SrStatistic :value="24860" title="本月续费" prefix="¥" count-up />
-          <SrTable :data="tableRows" :columns="tableColumns" row-key="id" size="sm" stripe>
-            <template #cell-status="{ row }">
-              <SrTag :type="row.status === '稳定' ? 'success' : 'warning'" size="sm">{{ row.status }}</SrTag>
-            </template>
-          </SrTable>
+          <div class="audit__table">
+            <SrTable :data="tableRows" :columns="tableColumns" row-key="id" size="sm" stripe>
+              <template #cell-status="{ row }">
+                <SrTag :type="row.status === '稳定' ? 'success' : 'warning'" size="sm">{{
+                  row.status
+                }}</SrTag>
+              </template>
+            </SrTable>
+          </div>
         </div>
       </div>
     </SrPanel>
@@ -551,6 +555,8 @@ function showToast(): void {
     display: grid;
     gap: var(--sr-space-3);
     align-content: start;
+    // grid 子项默认 min-width: auto，表格一宽就会把整列撑破容器
+    min-width: 0;
     padding: var(--sr-space-3);
     border: 1px solid var(--sr-color-border);
     border-radius: var(--sr-radius-lg);
@@ -582,6 +588,12 @@ function showToast(): void {
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  &__table {
+    min-width: 0;
+    // 列宽兜底：极端窄屏时表格自身横滚，不许越出卡片
+    overflow-x: auto;
   }
 
   &__pair {

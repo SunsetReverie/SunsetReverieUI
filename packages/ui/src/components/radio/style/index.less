@@ -6,6 +6,8 @@
 @import '../../../styles/mixins/index.less';
 
 .sr-radio {
+  // 同 checkbox：隐藏的原生 input 需要定位祖先，否则会逃出滚动容器
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--sr-space-2);

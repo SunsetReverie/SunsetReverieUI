@@ -10,6 +10,8 @@
 @import '../../../styles/mixins/index.less';
 
 .sr-upload {
+  // 隐藏的 file input 需要定位祖先，否则会逃出滚动容器并撑高 document
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--sr-space-3);
