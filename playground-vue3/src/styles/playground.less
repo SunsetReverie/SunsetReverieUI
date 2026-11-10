@@ -200,55 +200,20 @@ body {
 // 容器本身改用组件库的 SrPanel，这里只保留排版
 
 .panel__title {
-  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--sr-space-2);
+  margin: 0 0 var(--sr-space-1);
   color: var(--sr-color-text);
-  font-size: 15px;
+  font-size: var(--sr-font-size-md);
   font-weight: var(--sr-font-weight-semibold);
 }
 
 .panel__desc {
-  margin: 6px 0 0;
-  color: var(--sr-color-text-tertiary);
-  font-size: 13px;
+  margin: 0 0 var(--sr-space-4);
+  color: var(--sr-color-text-secondary);
+  font-size: var(--sr-font-size-sm);
   line-height: 1.7;
-}
-panel {
-  background: var(--sr-color-bg-container);
-  border: 1px solid var(--sr-color-border);
-  border-radius: var(--sr-radius-base);
-  // 高光与模糊都跟着风格走：flat 下是零尺寸透明阴影 + none，视觉无变化
-  box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight);
-  backdrop-filter: var(--sr-glass-filter);
-  -webkit-backdrop-filter: var(--sr-glass-filter);
-  padding: var(--sr-space-5);
-  margin-bottom: var(--sr-space-4);
-  transition:
-    background-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
-    border-color var(--sr-motion-duration-base) var(--sr-motion-easing-standard),
-    box-shadow var(--sr-motion-duration-base) var(--sr-motion-easing-standard);
-
-  // 鼠标经过时浮起一层：不改位置，只加深边框与阴影 —— panel 本身不可点击，
-  // 位移会让人误以为可以点进去
-  &:hover {
-    border-color: var(--sr-color-border-strong);
-    box-shadow: var(--sr-shadow-md), var(--sr-glass-highlight);
-    // 刻意不做位移：panel 是展示容器，不是可点击的卡片
-  }
-
-  &__title {
-    display: flex;
-    align-items: baseline;
-    gap: var(--sr-space-2);
-    margin: 0 0 var(--sr-space-1);
-    font-size: var(--sr-font-size-md);
-    font-weight: var(--sr-font-weight-semibold);
-  }
-
-  &__desc {
-    margin: 0 0 var(--sr-space-4);
-    font-size: var(--sr-font-size-sm);
-    color: var(--sr-color-text-secondary);
-  }
 }
 
 // 栅格演示块
@@ -268,31 +233,6 @@ panel {
   color: var(--sr-color-primary);
   font-family: var(--sr-font-family-mono);
   font-size: var(--sr-font-size-xs);
-}
-
-// 代码行
-.kv {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: var(--sr-space-2);
-  padding: 5px 0;
-  border-bottom: 1px dashed var(--sr-color-border-subtle);
-  font-size: var(--sr-font-size-sm);
-
-  &:last-child {
-    border-bottom: 0;
-  }
-
-  &__key {
-    color: var(--sr-color-text-secondary);
-    font-family: var(--sr-font-family-mono);
-    font-size: var(--sr-font-size-xs);
-  }
-
-  &__val {
-    font-family: var(--sr-font-family-mono);
-    word-break: break-all;
-  }
 }
 
 // 截图调试：强制显示提示气泡（样式表 !important 可以盖过 v-show 的内联 display: none）

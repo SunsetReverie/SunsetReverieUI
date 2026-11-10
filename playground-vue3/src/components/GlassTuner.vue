@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, watch } from 'vue'
+import { computed, onMounted, onScopeDispose, reactive, watch } from 'vue'
 
 import { SrButton, useSrTheme } from '@sunset-reverie/ui'
 
@@ -22,6 +22,22 @@ const params = reactive({
 /** 是否处于玻璃风格：只有此时参数才生效 */
 const active = computed(() => style.value === 'glass')
 
+/** 被临时改写的变量，切风格与离开页面时都要按这份清单清干净 */
+const INLINE_VARS = [
+  '--sr-glass-blur',
+  '--sr-glass-saturate',
+  '--sr-glass-filter',
+  '--sr-shadow-glow-blur',
+  '--sr-glow-base',
+]
+
+/** 移除全部内联改写，把控制权交还 token */
+function clear(): void {
+  if (typeof document === 'undefined') return
+  const root = document.documentElement.style
+  for (const name of INLINE_VARS) root.removeProperty(name)
+}
+
 /**
  * 把参数写到根元素
  *
@@ -30,18 +46,13 @@ const active = computed(() => style.value === 'glass')
  */
 function apply(): void {
   if (typeof document === 'undefined') return
-  const root = document.documentElement.style
-
   if (!active.value) {
     // 扁平风格下必须清掉，否则辉光会跟着漏到 flat 里
-    root.removeProperty('--sr-glass-blur')
-    root.removeProperty('--sr-glass-saturate')
-    root.removeProperty('--sr-glass-filter')
-    root.removeProperty('--sr-shadow-glow-blur')
-    root.removeProperty('--sr-glow-base')
+    clear()
     return
   }
 
+  const root = document.documentElement.style
   root.setProperty('--sr-glass-blur', `${params.blur}px`)
   root.setProperty('--sr-glass-saturate', `${params.saturate}%`)
   root.setProperty('--sr-glass-filter', `blur(${params.blur}px) saturate(${params.saturate}%)`)
@@ -62,6 +73,9 @@ watch(active, apply)
 
 onMounted(apply)
 
+// 实验室只是临时改写：离开页面后不能让调过的模糊值继续影响其它演示
+onScopeDispose(clear)
+
 /** 滑块定义 */
 const sliders = [
   { key: 'blur', label: '模糊半径', min: 0, max: 40, step: 1, unit: 'px' },
@@ -76,7 +90,7 @@ const sliders = [
     <div class="tuner__hint" :class="{ 'is-off': !active }">
       {{
         active
-          ? '拖动滑块实时预览，满意后把数值告诉我，我写回 token'
+          ? '拖动滑块实时预览；数值定下来后写回 token，别把内联变量留在页面上'
           : '当前是扁平风格，参数暂不生效 —— 先切到玻璃风格'
       }}
     </div>
