@@ -9,6 +9,11 @@
   --sr-tile-accent: var(--sr-color-text-secondary);
   --sr-tile-padding: 14px 12px;
   --sr-tile-icon-box: 40px;
+  // 图标底块按尺寸等比缩放圆角（40px → 10px，接近图标块的常用比例），
+  // 不直接复用 --sr-radius-sm：它在 flat 下只有 2px，视觉上几乎是直角
+  --sr-tile-icon-radius: calc(var(--sr-tile-icon-box) * 0.25);
+  // 外框圆角不能小于内块，否则内块看起来会比卡片更圆；flat 下抬到 10px 与内块齐平
+  --sr-tile-radius: max(var(--sr-radius-base), 10px);
 
   position: relative;
   display: flex;
@@ -19,7 +24,7 @@
   min-width: 0;
   padding: var(--sr-tile-padding);
   border: 1px solid var(--sr-color-border-subtle);
-  border-radius: var(--sr-radius-base);
+  border-radius: var(--sr-tile-radius);
   background: var(--sr-color-bg-container);
   color: var(--sr-color-text);
   font-family: inherit;
@@ -51,7 +56,7 @@
   flex: 0 0 auto;
   width: var(--sr-tile-icon-box);
   height: var(--sr-tile-icon-box);
-  border-radius: var(--sr-radius-sm);
+  border-radius: var(--sr-tile-icon-radius);
   background: color-mix(in srgb, var(--sr-tile-accent) 12%, transparent);
   color: var(--sr-tile-accent);
 }
