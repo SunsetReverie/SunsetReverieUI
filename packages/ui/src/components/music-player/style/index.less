@@ -375,6 +375,13 @@
     border-radius: var(--sr-radius-lg);
     background: var(--sr-color-bg-sunken);
     overflow-y: auto;
+
+    // 滚动条样式必须自己写，不能指望从页面继承：`scrollbar-width` / `scrollbar-color`
+    // 是继承属性 —— 完整模式挂在宿主内容区里会继承到宿主的细滚动条，而紧凑形态
+    // Teleport 到 body，继承链变成 body，就回退成系统默认的粗滚动条。
+    // 同一个组件、同一份模板却出现两种滚动条，就是这么来的。
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--sr-color-text) 20%, transparent) transparent;
   }
 
   &__playlist-item {

@@ -323,6 +323,13 @@ function setMiniPlacement(value: string): void {
         <li>
           间奏不隐藏：空行保留为时间锚点，显示成「· · ·」而不是隐藏，否则歌词列表的高度会随播放不断变化。
         </li>
+        <li>
+          歌单容器的 <code>scrollbar-width</code> /
+          <code>scrollbar-color</code>
+          写在组件样式里，不靠页面继承：这两个是继承属性，完整模式在宿主内容区里能继承到宿主的细滚动条，
+          而紧凑形态 <code>Teleport</code> 到 <code>body</code> 后继承链换成 <code>body</code>，
+          就会退回系统默认的粗滚动条。同一份模板两种外观，根源就在这里。
+        </li>
       </ul>
     </SrPanel>
   </div>
