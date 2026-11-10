@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { srHighlightCode } from '../utils/highlight'
 import {
   SR_BREAKPOINTS,
   SR_BREAKPOINT_KEYS,
@@ -223,8 +224,8 @@ const cssCode = `/* 768 就是 SR_BREAKPOINTS.md，改 token 时两边一起变 
       <!-- 代码区固定用暗色：和编辑器一致，也让长代码片段从浅色说明里跳出来。
            直接给容器加 data-sr-theme，用的是同一套暗色 token，不另写一套配色。 -->
       <div class="lab__code" data-sr-theme="dark">
-        <SrCodeBlock title="useSrBreakpoint" lang="ts" :code="usageCode" />
-        <SrCodeBlock title="style.css" lang="css" :code="cssCode" />
+        <SrCodeBlock title="useSrBreakpoint" lang="ts" :code="usageCode" :highlight="srHighlightCode" />
+        <SrCodeBlock title="style.css" lang="css" :code="cssCode" :highlight="srHighlightCode" />
       </div>
 
       <p class="lab__note">

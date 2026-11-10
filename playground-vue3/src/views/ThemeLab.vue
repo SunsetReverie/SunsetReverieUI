@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 
 import GlassTuner from '../components/GlassTuner.vue'
+import { srHighlightCode } from '../utils/highlight'
 import {
   SR_PRIMARY_STORAGE_KEY,
   SR_PRESET_STORAGE_KEY,
@@ -136,8 +137,8 @@ const scaleTokens = [
 
       <!-- 与断点实验室一致：代码区固定用暗色 token，不随全局明暗切换 -->
       <div class="lab__grid" data-sr-theme="dark">
-        <SrCodeBlock title="index.html" lang="html" :code="rootCode" />
-        <SrCodeBlock title="localStorage" lang="text" :code="readStorage()" />
+        <SrCodeBlock title="index.html" lang="html" :code="rootCode" :highlight="srHighlightCode" />
+        <SrCodeBlock title="localStorage" lang="text" :code="readStorage()" :highlight="srHighlightCode" />
       </div>
 
       <p class="lab__note">

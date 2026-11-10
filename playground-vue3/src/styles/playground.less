@@ -244,6 +244,73 @@ body {
   font-size: var(--sr-font-size-xs);
 }
 
+// ---------- 代码块高亮 token ----------
+// SrCodeBlock 只管容器与转义，不内置高亮器，也不带 token 配色：
+// 那是使用方（或高亮器主题样式表）的职责。演示站统一在这里配一套。
+.sr-code {
+  .tk-kw {
+    color: #a855f7;
+    font-weight: 600;
+  }
+
+  .tk-str {
+    color: #15803d;
+  }
+
+  .tk-com {
+    color: #94a3b8;
+    font-style: italic;
+  }
+
+  .tk-num {
+    color: #c2410c;
+  }
+
+  .tk-var {
+    color: #1d4ed8;
+  }
+
+  .tk-tag {
+    color: #be123c;
+  }
+
+  .tk-attr {
+    color: #b45309;
+  }
+}
+
+// 实验室的代码区用 data-sr-theme="dark" 固定成暗色，token 也得换成浅色字，
+// 否则亮色主题下那套深字压在深色底上根本看不见。
+[data-sr-theme='dark'] .sr-code {
+  .tk-kw {
+    color: #c792ea;
+  }
+
+  .tk-str {
+    color: #c3e88d;
+  }
+
+  .tk-com {
+    color: #6b7a90;
+  }
+
+  .tk-num {
+    color: #f78c6c;
+  }
+
+  .tk-var {
+    color: #82aaff;
+  }
+
+  .tk-tag {
+    color: #f07178;
+  }
+
+  .tk-attr {
+    color: #ffcb6b;
+  }
+}
+
 // 截图调试：强制显示提示气泡（样式表 !important 可以盖过 v-show 的内联 display: none）
 body.force-tooltip .sr-tooltip {
   display: block !important;

@@ -107,7 +107,8 @@ const highlight = (code, lang) => hljs.highlight(code, { language: lang }).value
 
 ## 注意事项
 
-- **不内置高亮器**。语言覆盖面靠使用方的高亮器，比自研关键词表可靠得多。
+- **不内置高亮器**。语言覆盖面靠使用方的高亮器，比自研关键词表可靠得多。代码块一片纯色时先查两件事：`highlight` 传了没、高亮器的 token 配色样式表引了没——这两样缺一个都会看起来像「高亮没生效」。
+- **演示站的实验室页面**用 `playground-vue3/src/utils/highlight.ts` 里的 `srHighlightCode`：一次扫描 + 命名捕获组分词、边扫边转义，只覆盖 ts / css / html / text 几段短示例；正式项目请换成 highlight.js 或 shiki。
 - **`highlight` 抛错时退回纯文本**，不会让整块内容消失。
 - **`lang` 不认识时不报错**，由高亮器决定是原样返回还是降级。
 - **`wrap` 与 `lineNumbers` 互斥**，同时开启时只保留折行、隐藏行号。
