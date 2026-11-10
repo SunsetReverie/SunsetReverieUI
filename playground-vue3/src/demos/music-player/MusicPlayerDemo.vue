@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrMusicPlayer, SrSegmented, SrSwitch } from '@sunset-reverie/ui'
-import type { SrMusicPlacement, SrMusicTrack } from '@sunset-reverie/ui'
+import { SrMusicPlayer, SrPanel, SrSwitch, SrTabs } from '@sunset-reverie/ui'
+import type { SrMusicPlacement, SrMusicTrack, SrTabsItem } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'MusicPlayerDemo' })
 
@@ -65,19 +65,34 @@ const miniGlobalLyrics = ref(false)
 /** 全局底部歌词演示是否显示 */
 const globalOn = ref(false)
 
-/** 位置选项 */
-const placementOptions = [
-  { label: '左上', value: 'topLeft' },
-  { label: '右上', value: 'topRight' },
-  { label: '左下', value: 'bottomLeft' },
-  { label: '右下', value: 'bottomRight' },
+/** 位置标签 */
+const placementTabs: SrTabsItem[] = [
+  { key: 'topLeft', label: '左上' },
+  { key: 'topRight', label: '右上' },
+  { key: 'bottomLeft', label: '左下' },
+  { key: 'bottomRight', label: '右下' },
 ]
+
+/**
+ * 切换吸附位置
+ * @param value 标签 key
+ */
+function setAttachPlacement(value: string): void {
+  attachPlacement.value = value as SrMusicPlacement
+}
+
+/**
+ * 切换精简位置
+ * @param value 标签 key
+ */
+function setMiniPlacement(value: string): void {
+  miniPlacement.value = value as SrMusicPlacement
+}
 </script>
 
 <template>
   <div class="demo">
-    <section>
-      <h3>完整模式</h3>
+    <SrPanel title="完整模式" description="常驻显示封面、歌曲信息、进度、控制条与歌词面板">
       <SrMusicPlayer
         :id="PLAYLIST_ID"
         :api="API"
@@ -87,8 +102,8 @@ const placementOptions = [
         @play="onPlay"
         @error="onError"
       />
+
       <div class="notes">
-        <p class="hint">完整模式常驻显示封面、歌曲信息、进度、控制条与歌词面板。</p>
         <p class="note">
           封面在播放时会缓慢自转，暂停则停在当前角度——用
           <code>animation-play-state</code> 实现，而不是关掉再打开动画：后者每次都从 0°
@@ -104,24 +119,23 @@ const placementOptions = [
         </p>
         <p class="hint">事件：{{ events.length ? events.join(' · ') : '（还没有事件）' }}</p>
       </div>
-    </section>
+    </SrPanel>
 
-    <section>
-      <h3>吸附模式 attach</h3>
-      <div class="row">
-        <SrSegmented v-model="attachPlacement" :options="placementOptions" size="sm" />
+    <SrPanel title="吸附模式 attach">
+      <div class="toolbar">
+        <SrTabs
+          :model-value="attachPlacement"
+          :items="placementTabs"
+          size="sm"
+          @update:model-value="setAttachPlacement"
+        />
         <SrSwitch v-model="attachOn" size="sm" />
       </div>
+
       <div v-if="!attachOn" class="placeholder">
-        未启用。打开右上角开关后，收起态会作为一个贴边圆钮出现在对应角落。
+        未启用。打开上方开关后，收起态会作为一个贴边圆钮出现在对应角落。
       </div>
-      <SrMusicPlayer
-        v-if="attachOn"
-        :id="PLAYLIST_ID"
-        :api="API"
-        mode="attach"
-        :placement="attachPlacement"
-      />
+
       <div class="notes">
         <p class="note">
           收起为贴着屏幕边缘的小圆钮，鼠标移入或点击后展开完整播放器。适合做背景音乐——不占地方，需要时才出现。
@@ -143,26 +157,27 @@ const placementOptions = [
           <code>z-index</code> 只在那个局部语境里比较，页面外层随便一个定位元素都能压住它。
         </p>
       </div>
-    </section>
+    </SrPanel>
 
-    <section>
-      <h3>精简模式 mini</h3>
-      <div class="row">
-        <SrSegmented v-model="miniPlacement" :options="placementOptions" size="sm" />
-        <SrSwitch v-model="miniGlobalLyrics" size="sm" />
-        <SrSwitch v-model="miniOn" size="sm" />
+    <SrPanel title="精简模式 mini">
+      <div class="toolbar">
+        <SrTabs
+          :model-value="miniPlacement"
+          :items="placementTabs"
+          size="sm"
+          @update:model-value="setMiniPlacement"
+        />
+        <div class="toolbar-group">
+          <span class="row-label">全局歌词</span>
+          <SrSwitch v-model="miniGlobalLyrics" size="sm" />
+          <SrSwitch v-model="miniOn" size="sm" />
+        </div>
       </div>
+
       <div v-if="!miniOn" class="placeholder">
-        未启用。打开右上角开关后，收起态会作为一条贴边胶囊条出现在屏幕边缘。
+        未启用。打开上方开关后，收起态会作为一条贴边胶囊条出现在屏幕边缘。
       </div>
-      <SrMusicPlayer
-        v-if="miniOn"
-        :id="PLAYLIST_ID"
-        :api="API"
-        mode="mini"
-        :placement="miniPlacement"
-        :global-lyrics="miniGlobalLyrics"
-      />
+
       <div class="notes">
         <p class="note">
           收起为贴近屏幕边缘的常驻胶囊条（封面 + 歌名 - 歌手），不需要鼠标移入唤出——它一直就在那儿，随时可用。
@@ -186,35 +201,26 @@ const placementOptions = [
           悬停封面时只加遮罩、不做缩放——那是圆形按钮的常见手法，但这里封面还在自转，缩放会让「圆形在转」变成「圆形在跳」。
         </p>
       </div>
-    </section>
+    </SrPanel>
 
-    <section>
-      <h3>全局底部歌词</h3>
-      <div class="row">
+    <SrPanel title="全局底部歌词">
+      <div class="toolbar">
         <SrSwitch v-model="globalOn" size="sm" />
       </div>
+
       <div v-if="!globalOn" class="placeholder">
-        未启用。打开右上角开关后，左下角会出现一个贴边圆钮，播放时屏幕底部会固定显示当前歌词。
+        未启用。打开上方开关后，左下角会出现一个贴边圆钮，播放时屏幕底部会固定显示当前歌词。
         它与吸附模式的圆钮是两个独立的播放器实例——同时打开就会看到两个圆钮，不是重复渲染。
       </div>
-      <SrMusicPlayer
-        v-if="globalOn"
-        :id="PLAYLIST_ID"
-        :api="API"
-        mode="attach"
-        placement="bottomLeft"
-        global-lyrics
-        :show-lyrics="false"
-      />
+
       <div class="notes">
         <p class="note">
           <code>global-lyrics</code>
           开启后在屏幕底部固定一条当前歌词，与页面内容无关——滚到哪都能看到，适合做「字幕」。
-          上面「精简模式」面板的右上角也有同一个开关。
         </p>
         <p class="note">
-          注意它只是<strong>初始值</strong>：面板右上角的图标可以随时开关，这个开关是组件内部状态，
-          临时关掉字幕通常是一次性的观看偏好，没有持久化价值，不该逼着宿主回去改传参。
+          它只是<strong>初始值</strong>：面板右上角的图标可以随时开关。临时关掉字幕通常是一次性的观看偏好，
+          没有持久化价值，不该逼着宿主回去改传参。
         </p>
         <p class="note">
           歌词条 <code>Teleport</code> 到 <code>body</code>，不受父级 <code>overflow</code> 影响； 并且
@@ -222,19 +228,18 @@ const placementOptions = [
         </p>
         <p class="note">
           当前行是间奏（空行）时会向前回退到最近一句有词的，而不是显示空白——空行会让歌词条间歇性消失再出现，看起来很抖。
-          回退有上限，长间奏不会翻出很久以前的歌词。
         </p>
       </div>
-    </section>
+    </SrPanel>
 
-    <section>
-      <h3>API 配置</h3>
+    <SrPanel title="API 配置">
       <pre class="code">{{ `<SrMusicPlayer
   api="${API}"
   server="netease"
   type="playlist"
   id="${PLAYLIST_ID}"
 />` }}</pre>
+
       <ul class="list">
         <li>
           <code>api</code> 只填到域名（含协议），不要带 <code>/api</code> 之类的路径后缀——
@@ -269,15 +274,15 @@ const placementOptions = [
           https，否则音频与封面会被浏览器按混合内容拦截。
         </li>
       </ul>
-    </section>
+    </SrPanel>
 
-    <section>
-      <h3>实现说明</h3>
+    <SrPanel title="实现说明">
       <ul class="list">
         <li>只负责播放与展示：不内置曲库、不依赖任何第三方播放器库，歌单完全由 Meting API 提供。</li>
         <li>
-          两种形态共用一套面板，差别只在外壳：<code>full</code> 常驻原地，<code>mini</code> 收起为贴边圆钮；
-          写成两套模板的话任何改动都要同步两遍。
+          三种形态共用一套面板，差别只在外壳：<code>full</code> 常驻原地，<code>attach</code> /
+          <code>mini</code>
+          收起为贴边元素；写成两套模板的话任何改动都要同步两遍。
         </li>
         <li>歌词二分查找：播放期间每秒会查好几次，上百行歌词用线性扫描纯属浪费。</li>
         <li>
@@ -293,7 +298,7 @@ const placementOptions = [
           间奏不隐藏：空行保留为时间锚点，显示成「· · ·」而不是隐藏，否则歌词列表的高度会随播放不断变化。
         </li>
       </ul>
-    </section>
+    </SrPanel>
   </div>
 </template>
 
@@ -301,19 +306,34 @@ const placementOptions = [
 .demo {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 18px;
 }
 
-.demo section {
+.toolbar {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.row-label {
+  color: var(--sr-color-text-tertiary);
+  font-size: 12px;
 }
 
 .notes {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-top: 14px;
 }
 
 .hint {
@@ -329,13 +349,6 @@ const placementOptions = [
   line-height: 1.8;
 }
 
-.row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 .placeholder {
   padding: 14px 16px;
   border: 1px dashed var(--sr-color-border);
@@ -346,7 +359,7 @@ const placementOptions = [
 }
 
 .code {
-  margin: 0;
+  margin: 0 0 12px;
   padding: 12px 14px;
   overflow-x: auto;
   border-radius: var(--sr-radius-md);

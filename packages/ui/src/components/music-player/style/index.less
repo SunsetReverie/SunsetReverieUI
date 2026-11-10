@@ -150,7 +150,18 @@
     height: 4px;
     margin: 0;
     border-radius: 999px;
-    background: var(--sr-color-bg-sunken);
+
+    /**
+     * 已走完的部分用主题色，剩下的是同色淡底。
+     *
+     * @remarks 用 `--sr-music-progress` 这个内联变量切两段：`input[type=range]`
+     * 没有原生的进度填充，靠渐变既能画出进度，又不用额外叠一层 div。
+     */
+    background: linear-gradient(
+      to right,
+      var(--sr-color-primary) 0 var(--sr-music-progress, 0%),
+      var(--sr-color-primary-alpha-12) var(--sr-music-progress, 0%) 100%
+    );
     appearance: none;
     cursor: pointer;
 
