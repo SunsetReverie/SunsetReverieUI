@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { SrMusicPlayer, SrSegmented, SrSwitch, SrTag } from '@sunset-reverie/ui'
+import { SrMusicPlayer, SrSegmented, SrSwitch } from '@sunset-reverie/ui'
 import type { SrMusicPlacement, SrMusicTrack } from '@sunset-reverie/ui'
 
 defineOptions({ name: 'MusicPlayerDemo' })
 
-/** 公共 Meting 实例：生产环境建议自建，公共实例随时可能限流 */
+/** 公共 Meting 实例：生产环境建议自建 */
 const API = 'https://meting-api.shurans.cn/'
 
 /** 网易云歌单 id，从分享链接里取 */
@@ -19,7 +19,7 @@ const events = ref<string[]>([])
  * @param text 文案
  */
 function log(text: string): void {
-  events.value = [text, ...events.value].slice(0, 5)
+  events.value = [text, ...events.value].slice(0, 4)
 }
 
 /**
@@ -53,11 +53,17 @@ const attachOn = ref(false)
 /** 吸附位置 */
 const attachPlacement = ref<SrMusicPlacement>('bottomRight')
 
-/** 胶囊模式是否显示 */
+/** 精简模式是否显示 */
 const miniOn = ref(false)
 
-/** 胶囊位置（与吸附分开，两者收起态都是独立的 fixed 元素） */
+/** 精简位置（与吸附分开，两者收起态都是独立的 fixed 元素） */
 const miniPlacement = ref<SrMusicPlacement>('bottomLeft')
+
+/** 精简模式是否开全局歌词 */
+const miniGlobalLyrics = ref(false)
+
+/** 全局底部歌词演示是否显示 */
+const globalOn = ref(false)
 
 /** 位置选项 */
 const placementOptions = [
@@ -81,21 +87,34 @@ const placementOptions = [
         @play="onPlay"
         @error="onError"
       />
-      <p class="hint">
-        封面在播放时缓慢自转——转的是封面图而不是外圈，外圈是轴对称的转起来看不出来； 暂停用的是
-        <code>animation-play-state</code>，不会回到 0° 重来。
-      </p>
-      <p class="hint">事件：{{ events.length ? events.join(' · ') : '（还没开始播放）' }}</p>
+      <div class="notes">
+        <p class="hint">完整模式常驻显示封面、歌曲信息、进度、控制条与歌词面板。</p>
+        <p class="note">
+          封面在播放时会缓慢自转，暂停则停在当前角度——用
+          <code>animation-play-state</code> 实现，而不是关掉再打开动画：后者每次都从 0°
+          重新开始，视觉上是「跳一下再转」，而真实唱片暂停后再播是从原处继续的。
+        </p>
+        <p class="note">
+          转的是封面图本身，不是叠在上面那圈唱片分隔环。分隔环是轴对称图形，转它肉眼完全看不出变化；
+          封面图带图案和文字，转起来才看得出「正在播」。
+        </p>
+        <p class="note">
+          进度条与音量用的都是原生 <code>input[type=range]</code>：键盘方向键、无障碍朗读、移动端手势
+          全都是白送的。自定义 div 要补一大堆 ARIA 与键盘处理，还容易漏。
+        </p>
+        <p class="hint">事件：{{ events.length ? events.join(' · ') : '（还没有事件）' }}</p>
+      </div>
     </section>
 
     <section>
       <h3>吸附模式 attach</h3>
       <div class="row">
-        <SrSwitch v-model="attachOn" size="sm" />
-        <span class="row-label">显示悬浮圆钮</span>
         <SrSegmented v-model="attachPlacement" :options="placementOptions" size="sm" />
+        <SrSwitch v-model="attachOn" size="sm" />
       </div>
-      <SrTag size="sm">默认关闭，避免和下面的胶囊条叠在同一个角</SrTag>
+      <div v-if="!attachOn" class="placeholder">
+        未启用。打开右上角开关后，收起态会作为一个贴边圆钮出现在对应角落。
+      </div>
       <SrMusicPlayer
         v-if="attachOn"
         :id="PLAYLIST_ID"
@@ -103,19 +122,38 @@ const placementOptions = [
         mode="attach"
         :placement="attachPlacement"
       />
-      <p class="hint">
-        收起时是贴边圆钮，悬停即展开、移开 320ms 后自动收回。面板被 Teleport 到 body—— 留在祖先链里会被带
-        <code>transform</code> 的父级困在低层级 stacking context 里，
-        <code>z-index</code> 再高也压不住别的元素。
-      </p>
+      <div class="notes">
+        <p class="note">
+          收起为贴着屏幕边缘的小圆钮，鼠标移入或点击后展开完整播放器。适合做背景音乐——不占地方，需要时才出现。
+          圆钮在播放时会自转，暗示「正在响」；暂停则停住。
+        </p>
+        <p class="note">
+          鼠标移出后 320ms
+          自动收起，无需关闭按钮。不立即收起是因为鼠标从圆钮移向面板、或在面板内部从一个子元素移到另一个时，
+          中途会短暂掠出边界，立即收起会让面板不停闪烁；320ms 足够走完这段距离，又短到不觉得拖沓。
+        </p>
+        <p class="note">
+          圆钮是完整正圆，只是把圆心推到屏幕边缘外侧 12px，视觉上咬住边缘、不留悬空的切点感。
+          刻意不做「贴边切平」——封面播放时会自转，方形封面转到直角边时，直边与弧边对比强烈，整个钮看起来就是方的。
+        </p>
+        <p class="note">
+          层级：面板与圆钮都 <code>Teleport</code> 到 <code>body</code>，配合最高的
+          <code>--sr-z-popover</code>。两者缺一不可——<code>fixed</code> 元素若留在祖先链里， 任意一个带
+          <code>transform</code> / <code>filter</code> 的祖先都会创建 stacking context 把它困住， 此时
+          <code>z-index</code> 只在那个局部语境里比较，页面外层随便一个定位元素都能压住它。
+        </p>
+      </div>
     </section>
 
     <section>
       <h3>精简模式 mini</h3>
       <div class="row">
-        <SrSwitch v-model="miniOn" size="sm" />
-        <span class="row-label">显示胶囊条</span>
         <SrSegmented v-model="miniPlacement" :options="placementOptions" size="sm" />
+        <SrSwitch v-model="miniGlobalLyrics" size="sm" />
+        <SrSwitch v-model="miniOn" size="sm" />
+      </div>
+      <div v-if="!miniOn" class="placeholder">
+        未启用。打开右上角开关后，收起态会作为一条贴边胶囊条出现在屏幕边缘。
       </div>
       <SrMusicPlayer
         v-if="miniOn"
@@ -123,35 +161,137 @@ const placementOptions = [
         :api="API"
         mode="mini"
         :placement="miniPlacement"
-        global-lyrics
+        :global-lyrics="miniGlobalLyrics"
       />
-      <p class="hint">
-        封面本身就是播放开关，点文字区域才展开面板；播放时有歌词就显示当前歌词，暂停则回到歌名。 和 attach
-        的关键差别：胶囊条常驻可见，不需要悬停。
-      </p>
+      <div class="notes">
+        <p class="note">
+          收起为贴近屏幕边缘的常驻胶囊条（封面 + 歌名 - 歌手），不需要鼠标移入唤出——它一直就在那儿，随时可用。
+        </p>
+        <p class="note">
+          封面就是播放开关——悬停会盖上一层播放/暂停图标，点了直接控制播放，不用先展开面板。
+          点歌名才展开完整播放器。
+        </p>
+        <p class="note">
+          播放时文字区会变成当前歌词，随播放逐行切换（主色显示，与歌名区分）；暂停或无歌词则回退成「歌名 -
+          歌手」。
+          所以胶囊任何时候都有内容，不会出现空白，常驻在屏幕上也不像个静止的装饰。歌词取值与底部全局歌词同源
+          （<code>resolveLyricText</code>），间奏回退等规则一致。
+        </p>
+        <p class="note">
+          这与 <code>attach</code> 的关键差别在收起态能做什么：<code>attach</code> 收起时只能展开，
+          每次想暂停都得先展开再点；<code>mini</code> 收起时可以直接播放，展开退为备选动作。
+          需要「一眼看到在放什么、随手能暂停」就用 <code>mini</code>。
+        </p>
+        <p class="note">
+          悬停封面时只加遮罩、不做缩放——那是圆形按钮的常见手法，但这里封面还在自转，缩放会让「圆形在转」变成「圆形在跳」。
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h3>全局底部歌词</h3>
+      <div class="row">
+        <SrSwitch v-model="globalOn" size="sm" />
+      </div>
+      <div v-if="!globalOn" class="placeholder">
+        未启用。打开右上角开关后，左下角会出现一个贴边圆钮，播放时屏幕底部会固定显示当前歌词。
+        它与吸附模式的圆钮是两个独立的播放器实例——同时打开就会看到两个圆钮，不是重复渲染。
+      </div>
+      <SrMusicPlayer
+        v-if="globalOn"
+        :id="PLAYLIST_ID"
+        :api="API"
+        mode="attach"
+        placement="bottomLeft"
+        global-lyrics
+        :show-lyrics="false"
+      />
+      <div class="notes">
+        <p class="note">
+          <code>global-lyrics</code>
+          开启后在屏幕底部固定一条当前歌词，与页面内容无关——滚到哪都能看到，适合做「字幕」。
+          上面「精简模式」面板的右上角也有同一个开关。
+        </p>
+        <p class="note">
+          注意它只是<strong>初始值</strong>：面板右上角的图标可以随时开关，这个开关是组件内部状态，
+          临时关掉字幕通常是一次性的观看偏好，没有持久化价值，不该逼着宿主回去改传参。
+        </p>
+        <p class="note">
+          歌词条 <code>Teleport</code> 到 <code>body</code>，不受父级 <code>overflow</code> 影响； 并且
+          <code>pointer-events: none</code>——它只是字幕，不该挡住页面上的按钮。
+        </p>
+        <p class="note">
+          当前行是间奏（空行）时会向前回退到最近一句有词的，而不是显示空白——空行会让歌词条间歇性消失再出现，看起来很抖。
+          回退有上限，长间奏不会翻出很久以前的歌词。
+        </p>
+      </div>
     </section>
 
     <section>
       <h3>API 配置</h3>
-      <pre
-        class="code"
-      >{{ `<SrMusicPlayer api="${API}" server="netease" type="playlist" id="${PLAYLIST_ID}" />` }}</pre>
+      <pre class="code">{{ `<SrMusicPlayer
+  api="${API}"
+  server="netease"
+  type="playlist"
+  id="${PLAYLIST_ID}"
+/>` }}</pre>
       <ul class="list">
-        <li><code>api</code> 只填到域名，<code>?server=&amp;type=&amp;id=</code> 由组件拼。</li>
         <li>
-          <code>server</code> 支持 <code>netease</code> / <code>tencent</code>，<strong
-            >换音源必须换 id</strong
-          >，同一个歌单 id 两家不通用。
+          <code>api</code> 只填到域名（含协议），不要带 <code>/api</code> 之类的路径后缀——
+          不同部署方式的路径不一样，组件会自行拼接查询参数。
+        </li>
+        <li><code>server</code>：<code>netease</code>（默认）/ <code>tencent</code>。</li>
+        <li>
+          <code>type</code>：组件只接受能返回歌曲列表的 <code>playlist</code>（默认）与 <code>song</code>。
         </li>
         <li>
-          <code>type</code> 只接受 <code>playlist</code> 与 <code>song</code>；单字段查询（name / artist / url
-          / pic / lrc）用导出的 <code>buildMusicApiUrl</code> 自己调。
+          <code>id</code>：歌单 id 从分享链接取，如 <code>music.163.com/playlist?id=2585465480</code>
+          中的数字部分。
+        </li>
+        <li>换音源必须换 id：各音源曲库不同，同一个 id 在不同音源下指向完全不同的内容。</li>
+        <li>
+          id 写错不会报 HTTP 错误：接口返回 <code>{'{"error":"unknown playlist id"}'}</code> 且状态码仍是
+          200。 这类「成功状态码 + 错误内容」的响应只能靠解析 body
+          才能发现，组件会识别并把服务端的错误原样透出。
         </li>
         <li>
-          Meting 对不存在的 id 会返回 <strong>HTTP 200 + <code>{"error":"..."}</code></strong
-          >，组件已经先探 error 再判断，报错文案里保留服务端原文。
+          除上面两个列表类型，接口还支持单字段查询：<code>name</code> 歌名、<code>artist</code> 歌手、
+          <code>url</code> 播放链接、<code>pic</code> 封面、<code>lrc</code> 歌词。它们返回的是纯字符串
+          （部分是重定向地址），不是歌曲列表，无法驱动播放，但宿主可以用
+          <code>buildMusicApiUrl()</code> 单独调用。
         </li>
-        <li>页面是 https 时 API 也必须 https，否则音频会被混合内容策略拦掉。</li>
+        <li>
+          演示用的是公共 Meting 服务（<code>meting-api.shurans.cn</code>），仅用于开发与体验。生产环境请自建：
+          公共服务的带宽、可用性、曲库变动都不受你控制。
+        </li>
+        <li>
+          另外注意 HTTPS：页面是 https 时 <code>api</code> 也必须用
+          https，否则音频与封面会被浏览器按混合内容拦截。
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>实现说明</h3>
+      <ul class="list">
+        <li>只负责播放与展示：不内置曲库、不依赖任何第三方播放器库，歌单完全由 Meting API 提供。</li>
+        <li>
+          两种形态共用一套面板，差别只在外壳：<code>full</code> 常驻原地，<code>mini</code> 收起为贴边圆钮；
+          写成两套模板的话任何改动都要同步两遍。
+        </li>
+        <li>歌词二分查找：播放期间每秒会查好几次，上百行歌词用线性扫描纯属浪费。</li>
+        <li>
+          歌词自动居中用 <code>scrollTo</code> 而不用
+          <code>scrollIntoView</code>——后者会连带滚动所有可滚祖先，
+          包括整个页面，用户正在看评论时页面会突然跳一下。
+        </li>
+        <li>
+          <code>autoplay</code> 要捕获 Promise：无用户交互时浏览器会拒绝播放，不捕获会产生未处理的 Promise
+          警告，按钮状态也会与实际不符。
+        </li>
+        <li>
+          间奏不隐藏：空行保留为时间锚点，显示成「· · ·」而不是隐藏，否则歌词列表的高度会随播放不断变化。
+        </li>
       </ul>
     </section>
   </div>
@@ -170,10 +310,23 @@ const placementOptions = [
   gap: 10px;
 }
 
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .hint {
   color: var(--sr-color-text-tertiary);
   font-size: 12.5px;
   line-height: 1.7;
+}
+
+.note {
+  margin: 0;
+  color: var(--sr-color-text-secondary);
+  font-size: 12.5px;
+  line-height: 1.8;
 }
 
 .row {
@@ -183,9 +336,13 @@ const placementOptions = [
   flex-wrap: wrap;
 }
 
-.row-label {
+.placeholder {
+  padding: 14px 16px;
+  border: 1px dashed var(--sr-color-border);
+  border-radius: var(--sr-radius-md);
   color: var(--sr-color-text-tertiary);
-  font-size: 12px;
+  font-size: 12.5px;
+  line-height: 1.7;
 }
 
 .code {

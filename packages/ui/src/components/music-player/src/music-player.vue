@@ -82,9 +82,9 @@ let trackController: AbortController | null = null
 let lyricController: AbortController | null = null
 
 /** 紧凑态收起的延时句柄 */
-let miniLeaveTimer: ReturnType<typeof setTimeout> | undefined
+let miniLeaveTimer: ReturnType<typeof setTimeout> | null = null
 
-/** 鼠标移出后多久收起 */
+/** 鼠标移出后多久收起：太短会在面板内移动时闪烁，太长又拖沓 */
 const MINI_LEAVE_DELAY = 320
 
 /** 当前曲目 */
@@ -102,15 +102,11 @@ const progressPercent = computed(() =>
 const lyricIndex = computed(() => findLyricIndex(lyrics.value, currentTime.value, props.lyricOffset))
 
 /** 当前应展示的歌词文本 */
-const activeLyric = computed(() => {
-  const line = lyrics.value[lyricIndex.value]
-  return line?.translation
-    ? `${line.text} / ${line.translation}`
-    : resolveLyricText(lyrics.value, lyricIndex.value)
-})
+const activeLyric = computed(() => resolveLyricText(lyrics.value, lyricIndex.value))
 
 /** 底部全局歌词文字：暂停时退回歌名，避免静止地挂一句歌词 */
 const globalLyricText = computed(() => (playing.value ? activeLyric.value : ''))
+const pillMeta = computed(() => (currentTrack.value ? `${currentTrack.value.name}` : '音乐播放器'))
 
 /** 是否显示全局歌词条 */
 const showGlobalLyric = computed(() => globalLyricOpen.value && !!globalLyricText.value && !loadError.value)
@@ -124,35 +120,49 @@ const showPanel = computed(() => props.mode === 'full' || miniExpanded.value)
 /** 循环模式信息 */
 const loopInfo = computed(() => MUSIC_LOOP_MAP[loopMode.value])
 
-/** 根节点类名 */
-const rootClass = computed(() => [
-  `sr-music--${props.mode}`,
-  `sr-music--${props.placement}`,
-  {
-    'is-compact': isCompact.value,
-    'is-expanded': showPanel.value,
-    'is-playing': playing.value,
-  },
-])
+/** 停靠的水平侧 */
+const anchorSide = computed<'left' | 'right'>(() => (props.placement.endsWith('Left') ? 'left' : 'right'))
+
+/** 停靠的垂直侧 */
+const anchorVertical = computed<'top' | 'bottom'>(() =>
+  props.placement.startsWith('top') ? 'top' : 'bottom',
+)
 
 /**
- * 紧凑形态的定位
+ * 停靠距离
  *
- * @returns 定位样式；完整形态留在文档流里，不参与定位
+ * @remarks 圆钮、胶囊、展开面板都读这两个变量，保证落在同一个角；
+ * 各自写死的话改一处就会错位。
  */
 const anchorStyle = computed(() => {
-  if (!isCompact.value) return undefined
-
-  const gap = typeof props.offset === 'number' ? `${props.offset}px` : props.offset
-  const horizontal = props.placement.endsWith('Left') ? 'left' : 'right'
-  const vertical = props.placement.startsWith('top') ? 'top' : 'bottom'
+  const distance = typeof props.offset === 'number' ? `${props.offset}px` : props.offset
 
   return {
-    position: 'fixed',
-    [horizontal]: gap,
-    [vertical]: gap,
-  } as Record<string, string>
+    '--sr-music-anchor-x': distance,
+    '--sr-music-anchor-y': distance,
+  }
 })
+
+/** 面板类名 */
+const panelClass = computed(() => ({
+  'sr-music--mini-panel': isCompact.value,
+  [`sr-music__mini-panel--${anchorSide.value}`]: isCompact.value,
+  [`sr-music__mini-panel--${anchorVertical.value}`]: isCompact.value,
+  'is-playing': playing.value,
+}))
+
+/** 圆钮类名 */
+const miniClass = computed(() => ({
+  [`sr-music__mini--${anchorSide.value}`]: true,
+  [`sr-music__mini--${anchorVertical.value}`]: true,
+  'is-playing': playing.value,
+}))
+
+/** 胶囊类名 */
+const pillClass = computed(() => ({
+  [`sr-music__pill--${anchorSide.value}`]: true,
+  [`sr-music__pill--${anchorVertical.value}`]: true,
+}))
 
 /**
  * 秒数格式化为 mm:ss
@@ -169,11 +179,7 @@ function formatTime(seconds: number): string {
   return `${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`
 }
 
-/**
- * 拉取歌单
- *
- * @remarks 每次重载先中断上一个请求，否则慢的旧请求会覆盖新数据。
- */
+/** 拉取歌单 */
 async function loadTracks(): Promise<void> {
   trackController?.abort()
   const controller = new AbortController()
@@ -182,9 +188,9 @@ async function loadTracks(): Promise<void> {
   loading.value = true
   loadError.value = ''
 
-  if (!props.id) {
+  if (!props.api || !props.id) {
     loading.value = false
-    loadError.value = '缺少歌单 id'
+    loadError.value = props.errorText
     return
   }
 
@@ -202,22 +208,16 @@ async function loadTracks(): Promise<void> {
     currentIndex.value = 0
     void loadLyrics()
   } catch (error) {
-    // 主动取消不算失败
     if (controller.signal.aborted) return
 
     loadError.value = error instanceof Error ? error.message : props.errorText
     emit('error', error instanceof Error ? error : new Error(props.errorText))
   } finally {
-    // 被取消的旧请求不能把新请求的 loading 关掉
     if (!controller.signal.aborted) loading.value = false
   }
 }
 
-/**
- * 拉取当前曲目的歌词
- *
- * @remarks 歌词失败是常态（纯音乐、冷门曲），静默置空，不影响播放。
- */
+/** 拉取当前曲目的歌词，失败静默为空 */
 async function loadLyrics(): Promise<void> {
   lyricController?.abort()
   const controller = new AbortController()
@@ -243,12 +243,7 @@ async function loadLyrics(): Promise<void> {
   }
 }
 
-/**
- * 播放
- *
- * @remarks 浏览器的自动播放策略会拒绝没有用户手势的 `play()`，
- * 必须 catch：不捕获会留下未处理的 Promise，按钮状态也会跟实际脱节。
- */
+/** 播放；浏览器的自动播放策略会拒绝无用户手势的调用，必须 catch */
 async function play(): Promise<void> {
   const audio = audioRef.value
   if (!audio) return
@@ -276,11 +271,10 @@ function toggle(): void {
 }
 
 /**
- * 等 `src` 真正落到 audio 上再播
+ * 等 `src` 落到 audio 上再播
  *
- * @remarks
- * `:src` 是响应式的，改完立刻 `play()` 播的还是上一首。
- * `nextTick` 之后还要再让出一个宏任务，浏览器才会重新加载资源。
+ * @remarks `:src` 是响应式更新，改完立刻 `play()` 播的还是上一首；
+ * `nextTick` 之后还要让出一个宏任务，浏览器才会重新加载资源。
  */
 async function replayAfterSrcChange(): Promise<void> {
   await nextTick()
@@ -319,22 +313,14 @@ function step(direction: 1 | -1): void {
   if (!total) return
 
   if (loopMode.value === 'random') {
-    // 只有一首时随机等于重播，直接算 0 省一次下标换算
-    const next = total === 1 ? 0 : Math.floor(Math.random() * total)
-    selectTrack(next)
+    selectTrack(total === 1 ? 0 : Math.floor(Math.random() * total))
     return
   }
 
-  const next = (currentIndex.value + direction + total) % total
-  selectTrack(next)
+  selectTrack((currentIndex.value + direction + total) % total)
 }
 
-/**
- * 播放结束
- *
- * @remarks 刻意不用 `<audio loop>`：原生 loop 绕过组件状态机，
- * 播放状态、切歌逻辑都会失控。单曲循环自己把进度归零再播。
- */
+/** 播放结束：单曲循环手动归零，其余切下一首 */
 function handleEnded(): void {
   if (loopMode.value === 'one') {
     const audio = audioRef.value
@@ -357,30 +343,29 @@ function cycleLoop(): void {
 /**
  * 拖动进度
  *
- * @param event 输入事件
+ * @param event 原生 input 事件
  */
 function handleSeek(event: Event): void {
-  const value = Number((event.target as HTMLInputElement).value)
-  currentTime.value = value
+  const seconds = Number((event.target as HTMLInputElement).value)
+  currentTime.value = seconds
 
-  const audio = audioRef.value
-  if (audio) audio.currentTime = value
+  if (audioRef.value) audioRef.value.currentTime = seconds
 }
 
 /**
  * 调整音量
  *
- * @param event 输入事件
+ * @param event 原生 input 事件
  */
 function handleVolume(event: Event): void {
   const value = Number((event.target as HTMLInputElement).value)
   volume.value = value
+  muted.value = value === 0
 
   const audio = audioRef.value
   if (!audio) return
 
   audio.volume = value
-  muted.value = value === 0
   audio.muted = muted.value
 }
 
@@ -394,16 +379,37 @@ function toggleMute(): void {
 }
 
 /**
- * 点击歌词跳转
+ * 点歌词跳转
  *
- * @param time 目标秒数
+ * @param line 目标行
  */
-function seekToLyric(time: number): void {
-  const audio = audioRef.value
-  if (!audio) return
+function seekToLyric(line: SrLyricLine): void {
+  if (line.empty) return
 
-  audio.currentTime = time
-  currentTime.value = time
+  currentTime.value = line.time
+
+  if (audioRef.value) audioRef.value.currentTime = line.time
+}
+
+/**
+ * 当前歌词行滚到容器中间
+ *
+ * @remarks 用 `scrollTo` 而不是 `scrollIntoView`：后者会连带滚动所有可滚祖先，
+ * 包括整个页面。位置用两个矩形相减算，不依赖 `offsetTop` 的定位祖先。
+ */
+function scrollLyricToCenter(): void {
+  const box = lyricBoxRef.value
+  if (!box) return
+
+  const active = box.querySelector<HTMLElement>('.is-active')
+  if (!active) return
+
+  const offsetInView = active.getBoundingClientRect().top - box.getBoundingClientRect().top
+
+  box.scrollTo({
+    top: box.scrollTop + offsetInView - box.clientHeight / 2 + active.clientHeight / 2,
+    behavior: 'smooth',
+  })
 }
 
 /**
@@ -418,7 +424,7 @@ function handleTimeUpdate(event: Event): void {
 }
 
 /**
- * 元数据就绪
+ * 元数据就绪：同步时长与音量
  *
  * @param event `loadedmetadata` 事件
  */
@@ -442,58 +448,34 @@ function handlePause(): void {
   emit('play', false)
 }
 
-/**
- * 音频加载失败：跳过这首，避免卡住整个播放器
- */
+/** 音频加载失败：跳过这首，避免整个播放器卡死 */
 function handleAudioError(): void {
   if (tracks.value.length <= 1) return
   step(1)
 }
 
-/** 把当前歌词滚到容器中间 */
-function scrollLyricToCenter(): void {
-  const box = lyricBoxRef.value
-  if (!box) return
-
-  const active = box.querySelector<HTMLElement>('.is-active')
-  if (!active) return
-
-  // 用两个矩形相减算偏移，不依赖 `offsetTop`：后者要求某个祖先是 offsetParent，
-  // 布局一改就静默偏掉
-  const offsetInView = active.getBoundingClientRect().top - box.getBoundingClientRect().top
-
-  box.scrollTo({
-    top: box.scrollTop + offsetInView - box.clientHeight / 2 + active.clientHeight / 2,
-    behavior: 'smooth',
-  })
-}
-
-/** 取消紧凑态收起 */
+/** 取消自动收起 */
 function cancelMiniLeave(): void {
-  if (miniLeaveTimer) {
-    clearTimeout(miniLeaveTimer)
-    miniLeaveTimer = undefined
-  }
+  if (!miniLeaveTimer) return
+
+  clearTimeout(miniLeaveTimer)
+  miniLeaveTimer = null
 }
 
-/** 鼠标移出面板：延时收起，给用户留出移回来的时间 */
+/** 鼠标移出面板：延时收起 */
 function handleMiniLeave(): void {
   if (!isCompact.value) return
 
   cancelMiniLeave()
   miniLeaveTimer = setTimeout(() => {
     miniExpanded.value = false
+    miniLeaveTimer = null
   }, MINI_LEAVE_DELAY)
 }
 
 /** 从胶囊展开面板 */
 function openPanelFromPill(): void {
   miniExpanded.value = true
-}
-
-/** 切换全局歌词条 */
-function toggleGlobalLyric(): void {
-  globalLyricOpen.value = !globalLyricOpen.value
 }
 
 /**
@@ -541,12 +523,14 @@ defineExpose({
   getCurrent,
 })
 
-watch(lyricIndex, () => {
-  void nextTick(scrollLyricToCenter)
-})
+watch(lyricIndex, () => void nextTick(scrollLyricToCenter))
 
+/**
+ * 歌词面板从收起变为展开时补滚一次
+ *
+ * @remarks 收起状态下容器不在 DOM 里，期间的行变化都被早退吞掉。
+ */
 watch(lyricOpen, (open) => {
-  // 收起时容器不在 DOM 里，期间的行变化会被早退吞掉，展开时要补滚一次
   if (open) void nextTick(scrollLyricToCenter)
 })
 
@@ -554,15 +538,16 @@ watch(currentIndex, () => {
   if (lyricBoxRef.value) lyricBoxRef.value.scrollTop = 0
 })
 
-watch(volume, (value) => {
-  const audio = audioRef.value
-  if (audio) audio.volume = value
-})
+watch(
+  () => [props.api, props.server, props.type, props.id],
+  () => void loadTracks(),
+)
 
 watch(
   () => props.volume,
   (value) => {
     volume.value = value
+    if (audioRef.value) audioRef.value.volume = value
   },
 )
 
@@ -573,17 +558,10 @@ watch(
   },
 )
 
-watch(
-  () => [props.api, props.server, props.type, props.id],
-  () => void loadTracks(),
-)
-
 onMounted(async () => {
   await loadTracks()
 
-  if (props.autoplay) {
-    void replayAfterSrcChange()
-  }
+  if (props.autoplay) void replayAfterSrcChange()
 })
 
 onBeforeUnmount(() => {
@@ -601,84 +579,159 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <!-- 音频元素本身不需要可见 -->
+  <audio
+    ref="audioRef"
+    :src="currentTrack?.url"
+    preload="metadata"
+    @play="handlePlay"
+    @pause="handlePause"
+    @ended="handleEnded"
+    @timeupdate="handleTimeUpdate"
+    @loadedmetadata="handleLoadedMetadata"
+    @error="handleAudioError"
+  />
+
+  <!-- 全局底部歌词：与播放器位置无关 -->
+  <Teleport to="body">
+    <Transition name="sr-music-global-lyric">
+      <div v-if="showGlobalLyric" class="sr-music-global-lyric">
+        <img
+          v-if="currentTrack?.pic"
+          class="sr-music-global-lyric__cover"
+          :class="{ 'is-playing': playing }"
+          :src="currentTrack.pic"
+          alt=""
+        />
+
+        <span class="sr-music-global-lyric__text">{{ globalLyricText }}</span>
+
+        <span v-if="currentTrack" class="sr-music-global-lyric__name">
+          {{ currentTrack.name }} - {{ currentTrack.artist }}
+        </span>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- 吸附模式收起态：贴边圆钮 -->
+  <Teleport to="body">
+    <button
+      v-if="mode === 'attach' && !miniExpanded"
+      class="sr-music__mini"
+      :class="miniClass"
+      :style="anchorStyle"
+      type="button"
+      aria-label="展开播放器"
+      :title="currentTrack ? `${currentTrack.name} - ${currentTrack.artist}` : '音乐播放器'"
+      @mouseenter="miniExpanded = true"
+      @click="miniExpanded = true"
+    >
+      <img v-if="currentTrack?.pic" :src="currentTrack.pic" alt="" />
+
+      <span v-else class="sr-music__mini-fallback">
+        <SrIcon name="lucide:music" :size="22" />
+      </span>
+    </button>
+  </Teleport>
+
+  <!-- 精简模式收起态：胶囊条 -->
+  <Teleport to="body">
+    <Transition name="sr-music-pill">
+      <div
+        v-if="mode === 'mini' && !miniExpanded && hasTracks"
+        class="sr-music__pill"
+        :class="pillClass"
+        :style="anchorStyle"
+      >
+        <button
+          class="sr-music__pill-cover"
+          :class="{ 'is-playing': playing }"
+          type="button"
+          :aria-label="playing ? '暂停' : '播放'"
+          :title="playing ? '暂停' : '播放'"
+          @click="toggle"
+        >
+          <img v-if="currentTrack?.pic" :src="currentTrack.pic" alt="" />
+
+          <span v-else class="sr-music__pill-fallback">
+            <SrIcon name="lucide:music" :size="20" />
+          </span>
+
+          <span class="sr-music__pill-overlay" aria-hidden="true">
+            <SrIcon :name="playing ? 'lucide:pause' : 'lucide:play'" :size="18" />
+          </span>
+        </button>
+
+        <button
+          class="sr-music__pill-text"
+          type="button"
+          aria-label="展开完整播放器"
+          title="展开完整播放器"
+          @click="openPanelFromPill"
+        >
+          <Transition name="sr-music-pill-lyric" mode="out-in">
+            <span v-if="playing && globalLyricText" :key="globalLyricText" class="sr-music__pill-lyric">
+              {{ globalLyricText }}
+            </span>
+
+            <span v-else :key="'meta'" class="sr-music__pill-meta">
+              <span class="sr-music__pill-name">{{ pillMeta }}</span>
+              <span class="sr-music__pill-artist">{{ currentTrack?.artist }}</span>
+            </span>
+          </Transition>
+        </button>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- 完整面板：紧凑形态要 Teleport，否则会被祖先的 transform 困住层级 -->
   <Teleport to="body" :disabled="mode === 'full'">
-    <div class="sr-music" :class="rootClass" :style="anchorStyle">
-      <!-- 展开态面板：三种形态共用同一套结构，差别只在外壳 -->
+    <Transition name="sr-music-mini">
       <div
         v-if="showPanel"
-        class="sr-music__panel"
+        class="sr-music"
+        :class="panelClass"
+        :style="anchorStyle"
         @mouseenter="cancelMiniLeave"
         @mouseleave="handleMiniLeave"
       >
-        <div class="sr-music__header">
-          <div class="sr-music__cover">
-            <img v-if="currentTrack?.pic" :src="currentTrack.pic" :alt="currentTrack.name" />
-            <span v-else class="sr-music__cover-fallback">
-              <SrIcon name="lucide:music" :size="20" />
-            </span>
-          </div>
+        <!-- 加载 / 失败 -->
+        <div v-if="loading" class="sr-music__status">正在加载歌单…</div>
 
-          <div class="sr-music__meta">
-            <p class="sr-music__name" :title="currentTrack?.name">
-              {{ currentTrack?.name || '未选择曲目' }}
-            </p>
-            <p class="sr-music__artist" :title="currentTrack?.artist">
-              {{ currentTrack?.artist || '—' }}
-            </p>
-          </div>
-
-          <div class="sr-music__head-actions">
-            <button
-              v-if="globalLyrics"
-              type="button"
-              class="sr-music__icon-btn"
-              :class="{ 'is-on': globalLyricOpen }"
-              :aria-pressed="globalLyricOpen"
-              title="底部歌词"
-              @click="toggleGlobalLyric"
-            >
-              <SrIcon name="lucide:captions" :size="16" />
-            </button>
-
-            <button
-              v-if="isCompact"
-              type="button"
-              class="sr-music__icon-btn"
-              title="收起"
-              @click="miniExpanded = false"
-            >
-              <SrIcon name="lucide:chevron-down" :size="16" />
-            </button>
-          </div>
-        </div>
-
-        <p v-if="loading" class="sr-music__tip">正在加载歌单…</p>
-        <p v-else-if="loadError" class="sr-music__tip is-error">{{ loadError }}</p>
+        <div v-else-if="loadError" class="sr-music__status">{{ loadError }}</div>
 
         <template v-else-if="hasTracks">
-          <div v-if="lyricOpen" ref="lyricBoxRef" class="sr-music__lyrics">
-            <p v-if="lyricLoading" class="sr-music__tip">歌词加载中…</p>
-            <p v-else-if="!lyrics.length" class="sr-music__tip">暂无歌词</p>
-            <ul v-else class="sr-music__lyric-list">
-              <li v-for="(line, index) in lyrics" :key="`${line.time}-${index}`">
-                <button
-                  type="button"
-                  class="sr-music__lyric-line"
-                  :class="{ 'is-active': index === lyricIndex, 'is-empty': line.empty }"
-                  :disabled="line.empty"
-                  @click="seekToLyric(line.time)"
-                >
-                  <span class="sr-music__lyric-text">{{ line.empty ? '· · ·' : line.text }}</span>
-                  <span v-if="line.translation" class="sr-music__lyric-trans">
-                    {{ line.translation }}
-                  </span>
-                </button>
-              </li>
-            </ul>
+          <!-- 顶部：封面 + 歌曲信息 -->
+          <div class="sr-music__head">
+            <div class="sr-music__cover" :class="{ 'is-playing': playing }">
+              <img v-if="currentTrack?.pic" :src="currentTrack.pic" alt="" />
+            </div>
+
+            <div class="sr-music__info">
+              <p class="sr-music__name">{{ currentTrack?.name }}</p>
+              <p class="sr-music__artist">{{ currentTrack?.artist }}</p>
+            </div>
+
+            <div class="sr-music__top-actions">
+              <button
+                v-if="globalLyrics"
+                class="sr-music__btn sr-music__btn--sm"
+                :class="{ 'is-active': globalLyricOpen }"
+                type="button"
+                :title="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'"
+                :aria-label="globalLyricOpen ? '关闭全局歌词' : '开启全局歌词'"
+                :aria-pressed="globalLyricOpen"
+                @click="globalLyricOpen = !globalLyricOpen"
+              >
+                <SrIcon name="lucide:captions" :size="15" />
+              </button>
+            </div>
           </div>
 
+          <!-- 进度 -->
           <div class="sr-music__progress">
             <span class="sr-music__time">{{ formatTime(currentTime) }}</span>
+
             <input
               class="sr-music__range"
               type="range"
@@ -690,178 +743,137 @@ onBeforeUnmount(() => {
               aria-label="播放进度"
               @input="handleSeek"
             />
+
             <span class="sr-music__time">{{ formatTime(duration) }}</span>
           </div>
 
+          <!-- 控制区 -->
           <div class="sr-music__controls">
             <button
+              class="sr-music__btn"
               type="button"
-              class="sr-music__icon-btn"
               :title="loopInfo.label"
               :aria-label="loopInfo.label"
               @click="cycleLoop"
             >
-              <SrIcon :name="loopInfo.icon" :size="16" />
+              <SrIcon :name="loopInfo.icon" :size="18" />
+            </button>
+
+            <button class="sr-music__btn" type="button" aria-label="上一首" title="上一首" @click="step(-1)">
+              <SrIcon name="lucide:skip-back" :size="18" />
             </button>
 
             <button
+              class="sr-music__btn sr-music__btn--main"
               type="button"
-              class="sr-music__icon-btn"
-              title="上一首"
-              aria-label="上一首"
-              @click="step(-1)"
-            >
-              <SrIcon name="lucide:skip-back" :size="16" />
-            </button>
-
-            <button
-              type="button"
-              class="sr-music__main-btn"
-              :title="playing ? '暂停' : '播放'"
               :aria-label="playing ? '暂停' : '播放'"
+              :title="playing ? '暂停' : '播放'"
               @click="toggle"
             >
-              <SrIcon :name="playing ? 'lucide:pause' : 'lucide:play'" :size="18" />
+              <SrIcon :name="playing ? 'lucide:pause' : 'lucide:play'" :size="20" />
             </button>
 
-            <button
-              type="button"
-              class="sr-music__icon-btn"
-              title="下一首"
-              aria-label="下一首"
-              @click="step(1)"
-            >
-              <SrIcon name="lucide:skip-forward" :size="16" />
+            <button class="sr-music__btn" type="button" aria-label="下一首" title="下一首" @click="step(1)">
+              <SrIcon name="lucide:skip-forward" :size="18" />
             </button>
 
             <button
               v-if="showLyrics"
+              class="sr-music__btn"
+              :class="{ 'is-active': lyricOpen }"
               type="button"
-              class="sr-music__icon-btn"
-              :class="{ 'is-on': lyricOpen }"
+              :title="lyricOpen ? '收起歌词' : '展开歌词'"
+              :aria-label="lyricOpen ? '收起歌词' : '展开歌词'"
               :aria-pressed="lyricOpen"
-              title="歌词"
-              aria-label="歌词"
               @click="lyricOpen = !lyricOpen"
             >
-              <SrIcon name="lucide:mic" :size="16" />
+              <SrIcon name="lucide:mic-vocal" :size="18" />
             </button>
 
             <button
               v-if="showPlaylist"
+              class="sr-music__btn"
+              :class="{ 'is-active': playlistOpen }"
               type="button"
-              class="sr-music__icon-btn"
-              :class="{ 'is-on': playlistOpen }"
+              :title="`播放列表（${tracks.length} 首）`"
+              :aria-label="`播放列表，共 ${tracks.length} 首`"
               :aria-expanded="playlistOpen"
-              :title="`播放列表（${tracks.length}）`"
-              aria-label="播放列表"
               @click="playlistOpen = !playlistOpen"
             >
-              <SrIcon name="lucide:list-music" :size="16" />
+              <SrIcon name="lucide:list-music" :size="18" />
             </button>
-
-            <div class="sr-music__volume">
-              <button
-                type="button"
-                class="sr-music__icon-btn"
-                :title="muted ? '取消静音' : '静音'"
-                :aria-label="muted ? '取消静音' : '静音'"
-                @click="toggleMute"
-              >
-                <SrIcon :name="muted || volume === 0 ? 'lucide:volume-x' : 'lucide:volume-2'" :size="16" />
-              </button>
-              <input
-                class="sr-music__range sr-music__range--volume"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                :value="muted ? 0 : volume"
-                :style="{ '--sr-music-progress': `${(muted ? 0 : volume) * 100}%` }"
-                aria-label="音量"
-                @input="handleVolume"
-              />
-            </div>
           </div>
 
-          <ul v-if="showPlaylist && playlistOpen" class="sr-music__playlist">
-            <li v-for="(track, index) in tracks" :key="track.id || `${track.name}-${index}`">
-              <button
-                type="button"
-                class="sr-music__track"
-                :class="{ 'is-active': index === currentIndex }"
-                @click="selectTrack(index)"
-              >
-                <span class="sr-music__track-index">
-                  <SrIcon
-                    v-if="index === currentIndex"
-                    :name="playing ? 'lucide:volume-2' : 'lucide:play'"
-                    :size="12"
-                  />
-                  <template v-else>{{ index + 1 }}</template>
-                </span>
-                <span class="sr-music__track-name">{{ track.name }}</span>
-                <span class="sr-music__track-artist">{{ track.artist }}</span>
-              </button>
-            </li>
-          </ul>
+          <!-- 音量：单独一行，和主控制条分开 -->
+          <div class="sr-music__volume">
+            <button
+              class="sr-music__btn"
+              type="button"
+              :title="muted ? '取消静音' : '静音'"
+              :aria-label="muted ? '取消静音' : `音量 ${Math.round(volume * 100)}%`"
+              @click="toggleMute"
+            >
+              <SrIcon :name="muted || volume === 0 ? 'lucide:volume-x' : 'lucide:volume-2'" :size="18" />
+            </button>
+
+            <input
+              class="sr-music__range"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              :value="muted ? 0 : volume"
+              :style="{ '--sr-music-progress': `${(muted ? 0 : volume) * 100}%` }"
+              aria-label="音量"
+              @input="handleVolume"
+            />
+          </div>
+
+          <!-- 歌词面板 -->
+          <div v-if="showLyrics && lyricOpen" ref="lyricBoxRef" class="sr-music__lyrics is-scrollable">
+            <div v-if="lyricLoading" class="sr-music__lyric-empty">歌词加载中…</div>
+
+            <div v-else-if="!lyrics.length" class="sr-music__lyric-empty">暂无歌词</div>
+
+            <ul v-else class="sr-music__lyric-list">
+              <li v-for="(line, index) in lyrics" :key="`${line.time}-${index}`">
+                <button
+                  class="sr-music__lyric-line"
+                  :class="{ 'is-active': index === lyricIndex, 'is-empty': line.empty }"
+                  type="button"
+                  :disabled="line.empty"
+                  @click="seekToLyric(line)"
+                >
+                  {{ line.empty ? '· · ·' : line.text }}
+                  <span v-if="line.translation" class="sr-music__lyric-trans">
+                    {{ line.translation }}
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- 播放列表 -->
+          <div v-if="showPlaylist && playlistOpen" class="sr-music__playlist">
+            <button
+              v-for="(track, index) in tracks"
+              :key="track.id || `${track.name}-${index}`"
+              class="sr-music__playlist-item"
+              :class="{ 'is-active': index === currentIndex }"
+              type="button"
+              @click="selectTrack(index)"
+            >
+              <SrIcon
+                v-if="index === currentIndex"
+                :name="playing ? 'lucide:volume-2' : 'lucide:play'"
+                :size="12"
+              />
+
+              <span class="sr-music__playlist-name">{{ track.name }}</span>
+              <span class="sr-music__playlist-artist">{{ track.artist }}</span>
+            </button>
+          </div>
         </template>
-      </div>
-
-      <!-- 收起态：贴边圆钮 -->
-      <button
-        v-if="mode === 'attach' && !miniExpanded"
-        type="button"
-        class="sr-music__attach"
-        :title="currentTrack ? `${currentTrack.name} - ${currentTrack.artist}` : '音乐播放器'"
-        aria-label="展开播放器"
-        @mouseenter="miniExpanded = true"
-        @click="miniExpanded = true"
-      >
-        <img v-if="currentTrack?.pic" :src="currentTrack.pic" alt="" />
-        <SrIcon v-else name="lucide:music" :size="18" />
-      </button>
-
-      <!-- 收起态：胶囊条 -->
-      <div v-if="mode === 'mini' && !miniExpanded" class="sr-music__pill">
-        <button
-          type="button"
-          class="sr-music__pill-cover"
-          :aria-label="playing ? '暂停' : '播放'"
-          @click="toggle"
-        >
-          <img v-if="currentTrack?.pic" :src="currentTrack.pic" alt="" />
-          <SrIcon v-else name="lucide:music" :size="16" />
-          <span class="sr-music__pill-mask">
-            <SrIcon :name="playing ? 'lucide:pause' : 'lucide:play'" :size="14" />
-          </span>
-        </button>
-
-        <button type="button" class="sr-music__pill-text" @click="openPanelFromPill">
-          <span class="sr-music__pill-lyric">{{ globalLyricText || currentTrack?.name || '音乐' }}</span>
-          <span class="sr-music__pill-meta">{{ currentTrack?.artist || '—' }}</span>
-        </button>
-      </div>
-
-      <audio
-        ref="audioRef"
-        :src="currentTrack?.url"
-        preload="metadata"
-        @timeupdate="handleTimeUpdate"
-        @loadedmetadata="handleLoadedMetadata"
-        @ended="handleEnded"
-        @play="handlePlay"
-        @pause="handlePause"
-        @error="handleAudioError"
-      />
-    </div>
-
-    <!-- 底部全局歌词条 -->
-    <Transition name="sr-music-global">
-      <div v-if="showGlobalLyric" class="sr-music__global" aria-hidden="true">
-        <img v-if="currentTrack?.pic" class="sr-music__global-cover" :src="currentTrack.pic" alt="" />
-        <span class="sr-music__global-text">{{ globalLyricText }}</span>
-        <span class="sr-music__global-meta"> {{ currentTrack?.name }} - {{ currentTrack?.artist }} </span>
       </div>
     </Transition>
   </Teleport>
