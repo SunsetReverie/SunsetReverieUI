@@ -1,0 +1,53 @@
+name: Release
+
+# 打 v* tag 时自动构建四个 tarball 并创建 Release，
+# 下游就能直接用 Release 附件里的 URL 安装（见 README「安装」）。
+on:
+  push:
+    tags: ['v*']
+
+# 创建 Release 需要写权限；其余步骤只读
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: 构建并发布 tarball
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      # tokens → icons → ui → resolver → nuxt，产物缺一步都打不出正确的包
+      - name: 全量构建
+        run: pnpm build
+
+      - name: 打出四个 tarball
+        run: pnpm release:pack
+
+      # 附件名形如 sunset-reverie-ui-1.0.0-beta.1.tgz，
+      # 少传任何一个，用 Nuxt 模块或 resolver 的下游会装不上
+      - name: 创建 Release 并上传附件
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.tgz
+          generate_release_notes: true
+          fail_on_unmatched_files: true

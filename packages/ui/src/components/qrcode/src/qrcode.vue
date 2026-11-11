@@ -5,7 +5,7 @@ import SrIcon from '../../icon/src/icon.vue'
 import { encodeQr } from './encoder'
 import { qrcodeProps } from './qrcode'
 
-defineOptions({ name: 'SrQRCode', inheritAttrs: false })
+defineOptions({ name: 'SrQrcode', inheritAttrs: false })
 
 const props = defineProps(qrcodeProps)
 

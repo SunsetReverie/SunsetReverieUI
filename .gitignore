@@ -73,5 +73,5 @@ docs/夕梦UI组件库开发规划.md
 docs/夕梦UI组件库开发规划.html
 docs/SrMarkdown组件规划.md
 
-# CI 流水线（跑的就是上面这些测试，一并移出）
-.github/
+# CI 流水线需要跟着仓库走：发布 tarball 由 GitHub Actions 在打 tag 时自动构建
+# （.github 不再忽略）
