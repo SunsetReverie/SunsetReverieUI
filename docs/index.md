@@ -39,7 +39,7 @@ hero:
 
 <div class="sr-feature">
 <span class="doc-icon" style="--icon: url(/icons/box.svg)"></span>
-<h3>70 个组件</h3>
+<h3>71 个组件</h3>
 <p>P0–P2 全部落地：表格固定列与分页、侧栏导航与锚点、四种外观的标签页、虚拟列表、拖拽排序、Markdown 编辑器、吸附式音乐播放器。</p>
 </div>
 

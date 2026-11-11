@@ -2,6 +2,8 @@ import DefaultTheme from 'vitepress/theme'
 import type { App } from 'vue'
 
 import * as SunsetReverie from '@sunset-reverie/ui'
+// 地图组件不在主入口（数据 39KB，不拖累全量体积），文档站单独注册才能写标签
+import { SrChinaMap } from '../../../packages/ui/src/components/china-map'
 // 直接引源码样式：文档站的演示必须和当前代码完全一致。
 // 基础层提供全部 CSS 变量，组件样式依赖它，两者顺序不能反。
 import '../../../packages/ui/src/styles/base/index.less'
@@ -34,5 +36,8 @@ export default {
       if (!value || typeof value !== 'object' || !('install' in value)) continue
       app.use(value as never)
     }
+
+    // 地图组件刻意不在主入口，上面那轮遍历注册不到，单独装一次
+    app.use(SrChinaMap)
   },
 }

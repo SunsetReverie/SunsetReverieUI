@@ -168,6 +168,7 @@ export default defineConfig({
           text: '数据展示',
           items: [
             { text: 'SrChart', link: '/components/chart' },
+            { text: 'SrChinaMap', link: '/components/china-map' },
             { text: 'SrTable', link: '/components/table' },
             { text: 'SrPagination', link: '/components/pagination' },
             { text: 'SrLoadMore', link: '/components/load-more' },
