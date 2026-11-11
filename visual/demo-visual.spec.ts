@@ -3,8 +3,11 @@ import { expect, test, type Page } from '@playwright/test'
 /**
  * 演示站视觉基线
  *
- * 只挑四处「一改Style就最容易崩」的代表面：开场面板、pill 圆角标签、
- * 浮层面板、吸附播放器。全部用元素截图，避开窗口坐标差异。
+ * 挑的都是「一改样式就最容易崩」的代表面：开场面板、pill 圆角标签、
+ * 浮层面板、吸附播放器，外加四个结构最复杂的组件页（表格的普通/固定列、
+ * 树、穿梭框、Markdown 编辑器）。全部用元素截图，避开窗口坐标差异。
+ *
+ * 刻意不纳入日历 / 日期选择器：它们把「今天」高亮出来，基线每月都会失效。
  *
  * 运行前先 `pnpm check:visual:update` 生成基线，之后 `pnpm check:visual` 比对。
  */
@@ -122,4 +125,51 @@ test('吸附播放器：整卡点击展开', async ({ page }) => {
   const fullPanel = page.locator('.sr-music--mini-panel')
   await expect(fullPanel.locator('.sr-music__volume')).toBeVisible()
   await expect(fullPanel).toHaveScreenshot('music-attach-full.png')
+})
+
+test('表格：基础表格', async ({ page }) => {
+  await openDemo(page, '#/c/table')
+  // 基础表格里带排序箭头与 #cell-status 插槽，列宽和表头样式一变就会崩
+  const basic = page.locator('.demo > section').first()
+  await expect(basic).toBeVisible()
+  await expect(basic).toHaveScreenshot('table-basic.png')
+})
+
+test('表格：固定列', async ({ page }) => {
+  await openDemo(page, '#/c/table')
+  // 固定列靠 sticky + 边缘投影，横向滚动容器宽度算错时右边框会露出来
+  const fixed = page.locator('.demo > section').filter({ hasText: '固定列（横向滚动看效果）' })
+  await expect(fixed).toBeVisible()
+  await expect(fixed).toHaveScreenshot('table-fixed-columns.png')
+})
+
+test('树：展开态与连接线', async ({ page }) => {
+  await openDemo(page, '#/c/tree')
+  const first = page.locator('.demo > section').first()
+  await expect(first).toBeVisible()
+  // 只看树本身：右侧还有一个「当前选中」的状态栏，跟着截图会把提示文案也锁死
+  await expect(first.locator('.card').first()).toHaveScreenshot('tree-basic.png')
+})
+
+test('穿梭框：基础双栏', async ({ page }) => {
+  await openDemo(page, '#/c/transfer')
+  const basic = page.locator('.demo > section').filter({ hasText: '基础用法' }).first()
+  await expect(basic).toBeVisible()
+  await expect(basic).toHaveScreenshot('transfer-basic.png')
+})
+
+test('下拉菜单：展开面板', async ({ page }) => {
+  await openDemo(page, '#/c/dropdown')
+  await page.getByRole('button', { name: '更多操作' }).click()
+  const panel = page.locator('.sr-dropdown__panel').first()
+  await expect(panel).toBeVisible()
+  await expect(panel).toHaveScreenshot('dropdown-open.png')
+})
+
+test('Markdown 编辑器：完整工具栏', async ({ page }) => {
+  await openDemo(page, '#/c/markdown-editor')
+  // 工具栏按钮、分栏编辑与预览一起锁：图标尺寸、间距、分隔线都在这一张里
+  const full = page.locator('.demo > section').filter({ hasText: '完整工具栏' }).first()
+  await expect(full).toBeVisible()
+  await expect(full).toHaveScreenshot('markdown-editor-full.png')
 })
