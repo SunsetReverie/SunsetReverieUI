@@ -17,6 +17,7 @@ export const SR_COMPONENT_NAMES = [
   'Card',
   'Carousel',
   'Cascader',
+  'Chart',
   'Checkbox',
   'CheckboxGroup',
   'CodeBlock',

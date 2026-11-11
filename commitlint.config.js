@@ -7,6 +7,7 @@ export default {
       [
         // 组件
         'button',
+        'chart',
         'icon',
         'row',
         'col',

@@ -1,0 +1,147 @@
+/**
+ * 图表
+ *
+ * 图形全部是 SVG，颜色一律走主题变量：换肤、明暗切换、品牌色变化时图表自动跟随，
+ * 不需要在业务侧重新传一遍颜色。tooltip 用普通浮层而不是毛玻璃，
+ * 避免在图表密集页叠加过多 backdrop-filter 合成层。
+ */
+
+@import '../../../styles/mixins/index.less';
+
+.sr-chart {
+  position: relative;
+  width: 100%;
+
+  &__canvas {
+    position: relative;
+    width: 100%;
+  }
+
+  &__svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    font-family: inherit;
+  }
+
+  // ---------- 坐标与网格 ----------
+  &__grid-line {
+    stroke: var(--sr-color-border-subtle);
+    stroke-width: 1;
+    shape-rendering: crispedges;
+  }
+
+  &__tick {
+    fill: var(--sr-color-text-tertiary);
+    font-size: 12px;
+  }
+
+  &__cursor {
+    stroke: var(--sr-color-border-strong);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+  }
+
+  // ---------- 图形 ----------
+  &__line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &__area {
+    opacity: 0.12;
+  }
+
+  &__bar {
+    transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      opacity: 0.82;
+    }
+  }
+
+  &__dot {
+    stroke: var(--sr-color-bg-container);
+    stroke-width: 2;
+  }
+
+  &__slice {
+    transition: opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &:hover {
+      opacity: 0.86;
+    }
+  }
+
+  // ---------- tooltip ----------
+  &__tooltip {
+    position: absolute;
+    z-index: 2;
+    min-width: 96px;
+    padding: 8px 10px;
+    color: var(--sr-color-text);
+    font-size: 12px;
+    line-height: 1.6;
+    background: var(--sr-color-bg-elevated);
+    border-radius: var(--sr-radius-md);
+    box-shadow: var(--sr-shadow-md);
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+  }
+
+  &__tooltip-title {
+    margin-bottom: 4px;
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__tooltip-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  &__tooltip-name {
+    flex: 1 1 auto;
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__tooltip-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---------- 图例 ----------
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 8px;
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+  }
+
+  &__legend-item {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  &__swatch {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--sr-radius-full);
+  }
+
+  // ---------- 空态 ----------
+  &__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sr-color-text-tertiary);
+    font-size: 13px;
+  }
+}

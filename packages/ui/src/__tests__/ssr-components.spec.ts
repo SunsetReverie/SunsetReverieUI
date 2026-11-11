@@ -12,6 +12,7 @@ import {
   SrButton,
   SrCalendar,
   SrCard,
+  SrChart,
   SrCheckbox,
   SrCheckboxGroup,
   SrDatePicker,
@@ -380,6 +381,15 @@ describe('导航与数据组件的 SSR 渲染', () => {
   it('SrTile 服务端输出标题', async () => {
     const html = await render(SrTile, { title: '收藏' })
     expect(html).toContain('收藏')
+  })
+
+  it('SrChart 服务端输出 svg 与图例', async () => {
+    const html = await render(SrChart, {
+      categories: ['一月', '二月'],
+      series: [{ name: '订单', data: [12, 20] }],
+    })
+    expect(html).toContain('<svg')
+    expect(html).toContain('订单')
   })
 
   it('SrCalendar 服务端输出月份标题', async () => {
