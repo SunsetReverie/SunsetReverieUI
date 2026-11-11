@@ -330,7 +330,13 @@ for (const docFile of docFiles) {
     } else if (linkPart.startsWith('/guide/')) {
       target = join(GUIDES, `${linkPart.replace('/guide/', '')}.md`)
     } else if (linkPart.startsWith('/token-gallery.html')) {
-      target = 'docs/public/token-gallery.html'
+      // Token 验证页是构建产物：docs 的 dev/build 都会先跑 build:gallery。
+      // 干净的 CI 里先跑 lint 时它可能还不存在，不要当成断链拦下来
+      if (existsSync('docs/public/token-gallery.html')) target = 'docs/public/token-gallery.html'
+      else {
+        warnings.push('Token 验证页尚未生成：先跑 pnpm build:gallery（docs dev/build 会自动执行）')
+        continue
+      }
     } else if (linkPart.endsWith('.md')) {
       target = resolve(dirname(docFile), linkPart)
     } else if (linkPart && !linkPart.startsWith('/')) {
@@ -368,8 +374,7 @@ for (const file of [HOME, OVERVIEW, ...guideDocs.map((name) => join(GUIDES, `${n
 // ---------- 输出 ----------
 if (warnings.length) {
   console.log(
-    `[文档校验] 提醒：${warnings.length} 篇的 Props 区块同时列了数据结构字段表（不阻断，` +
-      `跑 node scripts/check-docs.mjs --verbose 看明细）`,
+    `[文档校验] 提醒：${warnings.length} 条（不阻断，` + `跑 node scripts/check-docs.mjs --verbose 看明细）`,
   )
   if (process.argv.includes('--verbose')) for (const warning of warnings) console.log(`  ${warning}`)
 }

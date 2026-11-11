@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev",
+    "dev": "pnpm --dir .. run build:gallery && vitepress dev",
     "build": "pnpm --dir .. run build:gallery && vitepress build",
     "preview": "vitepress preview"
   },

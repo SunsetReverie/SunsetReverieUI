@@ -240,7 +240,7 @@ pnpm build
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
-| `pnpm --filter @sunset-reverie/docs dev` | 启动文档站（VitePress） |
+| `pnpm --filter @sunset-reverie/docs dev` | 先 `build:gallery` 生成 Token 验证页，再启动 VitePress（`/token-gallery.html` 不会 404） |
 | `pnpm test:e2e` | 构建 Nuxt 演示站并跑 Playwright 水合测试 |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |

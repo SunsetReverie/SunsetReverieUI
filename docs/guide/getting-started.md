@@ -2,6 +2,21 @@
 
 夕梦 UI 不发布到 NPM，通过私有 Git 仓库以 tag 分发。
 
+## 能力概览
+
+面向需要长期维护的中后台：组件不依赖第三方 UI 拼装，主题不靠覆盖选择器，升级时不要求业务方跟着改样式。
+
+| 方面 | 现状 |
+| --- | --- |
+| 组件 | 69 个，按基础 / 表单 / 数据 / 展示 / 导航 / 反馈 / 布局与配置分组；每个都有独立文档，其中 68 个带演示页 |
+| 主题 | 明暗 × 玻璃/扁平 × 品牌色 × 动效三档，全部由 CSS 变量驱动；组件里没有写死的颜色与时长 |
+| Token | L1 原始色板 → L2 语义映射 → L3 组件级，`pnpm build:tokens` 一份源文件生成 CSS 与 TS 常量 |
+| 分发 | 核心包运行时只依赖 `@iconify/vue`；支持全量引入、按需引入与 resolver 自动导入 |
+| 框架 | Vue 3.4+、Nuxt 4 模块；SSR 首帧由内联脚本决定根属性，水合不闪白、不重排 |
+| 质量 | 单测 + SSR 冒烟 + Nuxt 水合 e2e + 演示站全页冒烟 + 视觉基线；新增组件漏测会被 lint 拦下 |
+
+组件索引见[组件概览](/components/)，主题与 Token 的细节见[主题与 Token](/guide/theming)。
+
 ## 安装
 
 ```bash
@@ -25,6 +40,33 @@ import App from './App.vue'
 
 useSrTheme().init()
 createApp(App).mount('#app')
+```
+
+组件**不需要全局注册**，在 SFC 里按需 import 即可，未用到的组件不会进包：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SrButton, SrInput } from '@sunset-reverie/ui'
+
+const keyword = ref('')
+</script>
+
+<template>
+  <SrInput v-model="keyword" placeholder="搜索组件" />
+  <SrButton variant="primary">查询</SrButton>
+</template>
+```
+
+样式分两层，按引入方式选一个：
+
+```ts
+// 全量：变量层 + 69 个组件样式，最省心
+import '@sunset-reverie/ui/style.css'
+
+// 按需：只引变量层，组件样式随组件单独引入（顺序必须是 base 在前）
+import '@sunset-reverie/ui/base.css'
+import '@sunset-reverie/ui/components/button/style.css'
 ```
 
 **防闪烁**：`index.html` 的 `<head>` 最前面插入初始化脚本，它会在首次绘制前决定明暗与风格：
@@ -51,6 +93,35 @@ createApp(App).mount('#app')
 ```ts
 import { SR_THEME_INIT_SNIPPET } from '@sunset-reverie/ui'
 ```
+
+## 全局配置
+
+`SrConfigProvider` 只下发上下文、不渲染额外 DOM，适合放在应用根部统一组件尺寸与弹层层级：
+
+```vue
+<script setup lang="ts">
+import { SrConfigProvider } from '@sunset-reverie/ui'
+</script>
+
+<template>
+  <SrConfigProvider size="sm" :z-index="2000">
+    <RouterView />
+  </SrConfigProvider>
+</template>
+```
+
+| 配置 | 类型 | 说明 |
+| --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | 子组件默认尺寸；局部可以再套一层覆盖 |
+| `zIndex` | `number` | 弹层层级基数，Modal / Dropdown / Tooltip 在其上叠加 |
+
+## TypeScript
+
+包内类型随源码一起发布，不需要装额外的 `@types`：
+
+- Props 由 `ExtractPropTypes` 推导，模板里写错值或漏传必填项会直接报错；
+- 事件与插槽用 `defineEmits` / `defineSlots` 声明，Volar 里能拿到参数补全；
+- 常用数据结构（`SrTableColumn`、`SrSelectOption`、`SrEmojiPackage` 等）都从包入口导出，可直接标注接口。
 
 ## 在 Nuxt 4 中使用
 
@@ -109,6 +180,7 @@ export default defineConfig({
 
 ## 下一步
 
-- [SrButton](/components/button) —— 五种变体与响应式尺寸
-- [SrInput](/components/input) —— 前后缀、清空、密码、校验态
-- [SrModal](/components/modal) —— 焦点陷阱与滚动锁定
+- [组件概览](/components/) —— 69 个组件按分组索引，先看全貌再挑
+- [主题与 Token](/guide/theming) —— 明暗 / 质感 / 品牌色 / 动效怎么切、怎么扩展
+- [拖拽排序](/guide/drag-sort) —— 表格、树、看板共用的拖拽能力
+- [Markdown 渲染样式定制](/guide/markdown-theming) —— 阅读区排版与代码高亮
