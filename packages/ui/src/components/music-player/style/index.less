@@ -109,7 +109,8 @@
     margin: calc(var(--sr-space-1) * -1) calc(var(--sr-space-1) * -1) 0 0;
   }
 
-  &__name {
+  // 双类选择器：宿主页面的 .vp-doc p 会把曲名/歌手撑成 16px 外边距 + 28px 行高
+  & &__name {
     margin: 0;
     color: var(--sr-color-text);
     font-size: var(--sr-font-size-md);
@@ -118,10 +119,12 @@
     .sr-truncate();
   }
 
-  &__artist {
+  & &__artist {
     margin: var(--sr-space-1) 0 0;
     color: var(--sr-color-text-secondary);
     font-size: var(--sr-font-size-xs);
+    // 不写行高时，文档站的 .vp-doc p 会把它撑到 28px，把播放器顶高
+    line-height: 1.4;
     .sr-truncate();
   }
 
@@ -304,7 +307,9 @@
     }
   }
 
-  &__lyric-list {
+  // 双类选择器：宿主页面（如 VitePress 的 .vp-doc ul）常给 ul 加
+  // list-style + padding-left，单类会被盖掉，歌词行就会长出项目符号
+  & &__lyric-list {
     display: flex;
     flex-direction: column;
     gap: var(--sr-space-2);

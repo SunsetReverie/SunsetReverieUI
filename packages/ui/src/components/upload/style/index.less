@@ -133,7 +133,8 @@
   }
 
   // ---------- 列表 ----------
-  &__list {
+  // 双类选择器：防宿主页面的全局 ul 样式（清单见 music-player 的歌词列表）
+  & &__list {
     display: flex;
     flex-direction: column;
     gap: 8px;

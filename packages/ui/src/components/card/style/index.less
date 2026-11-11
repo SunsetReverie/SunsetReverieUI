@@ -84,7 +84,8 @@
     font-weight: var(--sr-font-weight-semibold);
   }
 
-  &__subtitle {
+  // 双类选择器：挡住宿主页面的全局 p 外边距（见 alert 的说明）
+  & &__subtitle {
     margin: 0;
     color: var(--sr-color-text-tertiary);
     font-size: 12px;

@@ -122,7 +122,8 @@
     text-overflow: ellipsis;
   }
 
-  &__empty {
+  // 双类选择器：挡住宿主页面的全局 p 外边距（见 alert 的说明）
+  & &__empty {
     margin: 0;
     padding: 24px 8px;
     color: var(--sr-color-text-tertiary);

@@ -84,7 +84,8 @@
   font-size: var(--sr-anchor-font-size);
 
   // ---------- 列表 ----------
-  &__list {
+  // 双类选择器：宿主页面的全局 ul 样式（VitePress 的 .vp-doc ul）会盖掉单类
+  & &__list {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -99,7 +100,7 @@
     min-width: 0;
   }
 
-  &__sub {
+  & &__sub {
     margin: 0;
     padding: 0;
     list-style: none;

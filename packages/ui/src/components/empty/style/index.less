@@ -78,7 +78,8 @@
     color: var(--sr-empty-accent);
   }
 
-  &__description {
+  // 双类选择器：挡住宿主页面的全局 p 外边距（见 alert 的说明）
+  & &__description {
     margin: 0;
     color: var(--sr-color-text-tertiary);
     font-size: 13px;

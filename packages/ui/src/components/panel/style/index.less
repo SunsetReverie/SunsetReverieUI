@@ -52,7 +52,8 @@
     transition: color var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
   }
 
-  &__description {
+  // 双类选择器：挡住宿主页面的全局 p 外边距与行高（见 alert 的说明）
+  & &__description {
     margin: 0;
     color: var(--sr-color-text-tertiary);
     font-size: 12px;

@@ -50,7 +50,8 @@
     min-width: 0;
   }
 
-  &__title {
+  // 双类选择器：宿主页面的全局 p 样式（VitePress 的 .vp-doc p 有 16px 外边距）不能漏进组件
+  & &__title {
     margin: 0;
     color: var(--sr-color-text);
     font-size: 13px;

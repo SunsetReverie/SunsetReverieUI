@@ -35,7 +35,8 @@
   }
 
   // ---------- 标题 ----------
-  &__title {
+  // 双类选择器：挡住宿主页面的全局 p 外边距与行高（见 alert 的说明）
+  & &__title {
     margin: 0;
     color: var(--sr-color-text);
     font-size: 20px;
@@ -43,7 +44,7 @@
     line-height: 1.4;
   }
 
-  &__subtitle {
+  & &__subtitle {
     max-width: 480px;
     margin: 8px 0 0;
     color: var(--sr-color-text-secondary);

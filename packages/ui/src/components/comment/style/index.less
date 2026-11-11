@@ -73,7 +73,9 @@
   }
 
   // ---------- 列表 ----------
-  &__list {
+  // 双类选择器：宿主页面的全局 ul 样式（VitePress 的 .vp-doc ul）会盖掉单类，
+  // 表现为列表整体多出 1.25rem 缩进与上下 16px 外边距
+  & &__list {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -126,6 +128,8 @@
 .sr-comment-item {
   display: flex;
   gap: var(--sr-space-3);
+  // margin: 0 抵消 .vp-doc li + li 的 8px 上边距，列表节奏只由 gap 决定
+  margin: 0;
   list-style: none;
 
   &__avatar {
@@ -188,7 +192,8 @@
     font-variant-numeric: tabular-nums;
   }
 
-  &__content {
+  // 双类选择器：挡住宿主页面的全局 p 外边距与行高（见 alert 的说明）
+  & &__content {
     margin: 0;
     color: var(--sr-color-text);
     font-size: var(--sr-font-size-sm);
@@ -210,7 +215,7 @@
     user-select: none;
   }
 
-  &__deleted {
+  & &__deleted {
     margin: 0;
     color: var(--sr-color-text-quaternary);
     font-size: var(--sr-font-size-sm);

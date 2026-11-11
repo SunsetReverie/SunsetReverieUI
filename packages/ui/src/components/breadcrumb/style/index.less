@@ -6,7 +6,8 @@
 @import '../../icon/style/index.less';
 
 .sr-breadcrumb {
-  &__list {
+  // 双类选择器：防宿主页面的全局 ul 样式（VitePress 的 .vp-doc ul 特异性更高）
+  & &__list {
     display: flex;
     align-items: center;
     flex-wrap: wrap;

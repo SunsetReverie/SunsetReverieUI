@@ -130,7 +130,8 @@
     overflow: auto;
   }
 
-  &__column {
+  // 双类选择器：防宿主页面的全局 ul 样式（清单见 music-player 的歌词列表）
+  & &__column {
     flex: 0 0 auto;
     min-width: 140px;
     max-width: 220px;
@@ -177,7 +178,7 @@
   }
 
   // ---------- 搜索结果 ----------
-  &__results {
+  & &__results {
     margin: 0;
     padding: 4px;
     list-style: none;
