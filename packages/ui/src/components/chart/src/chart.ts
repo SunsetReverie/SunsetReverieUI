@@ -21,6 +21,8 @@ export interface SrChartTooltipItem {
   value: number
   /** 色块颜色 */
   color: string
+  /** 数值后缀，例如饼图的占比用 `%` */
+  suffix?: string
 }
 
 export const chartProps = {

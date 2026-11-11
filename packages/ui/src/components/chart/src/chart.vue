@@ -24,6 +24,8 @@ const DEFAULT_COLORS = [
 /** 容器宽度：SSR 首帧固定 600，挂载后用 ResizeObserver 跟随容器 */
 const width = ref(600)
 const rootRef = ref<HTMLElement | null>(null)
+/** SVG 根节点：tooltip 定位统一以它为坐标系 */
+const svgRef = ref<SVGSVGElement | null>(null)
 let observer: ResizeObserver | null = null
 
 /** tooltip 状态 */
@@ -305,12 +307,16 @@ const ariaLabel = computed(() => {
 
 /**
  * 把鼠标位置换算成相对画布的坐标
+ *
+ * 必须固定用 SVG 根节点的矩形，不能用 `event.currentTarget`：
+ * 饼图的监听挂在每个 `<path>` 上，扇区的包围盒是整块外接矩形，
+ * 直接拿它当原点会让 tooltip 偏离鼠标一个半径的距离。
  * @param event 鼠标事件
- * @returns 相对容器的 x / y
+ * @returns 相对画布的 x / y
  */
 function pointerOf(event: MouseEvent): { x: number; y: number } {
-  const target = event.currentTarget as Element
-  const rect = target.getBoundingClientRect()
+  const rect = svgRef.value?.getBoundingClientRect()
+  if (!rect) return { x: event.offsetX, y: event.offsetY }
   return { x: event.clientX - rect.left, y: event.clientY - rect.top }
 }
 
@@ -353,10 +359,12 @@ function handleSliceMove(event: MouseEvent, slice: SliceView): void {
     y: Math.max(24, y - 12),
     title: slice.name,
     items: [
+      { name: '数值', value: slice.value, color: slice.color },
       {
-        name: `${(slice.percent * 100).toFixed(1)}%`,
-        value: slice.value,
+        name: '占比',
+        value: Number((slice.percent * 100).toFixed(1)),
         color: slice.color,
+        suffix: '%',
       },
     ],
   }
@@ -393,6 +401,7 @@ onBeforeUnmount(() => {
   <div ref="rootRef" class="sr-chart">
     <div class="sr-chart__canvas" :style="{ height: `${props.height}px` }">
       <svg
+        ref="svgRef"
         class="sr-chart__svg"
         :width="width"
         :height="props.height"
@@ -514,7 +523,7 @@ onBeforeUnmount(() => {
         <div v-for="item in tooltip.items" :key="item.name" class="sr-chart__tooltip-row">
           <i class="sr-chart__swatch" :style="{ background: item.color }"></i>
           <span class="sr-chart__tooltip-name">{{ item.name }}</span>
-          <span class="sr-chart__tooltip-value">{{ item.value }}</span>
+          <span class="sr-chart__tooltip-value">{{ item.value }}{{ item.suffix ?? '' }}</span>
         </div>
       </div>
 

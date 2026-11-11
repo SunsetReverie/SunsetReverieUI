@@ -126,6 +126,24 @@ describe('SrChart', () => {
     expect(wrapper.find('.sr-chart__legend').text()).toContain('直接访问')
   })
 
+  it('饼图悬停扇区时提示包含数值与占比', async () => {
+    const wrapper = mount(SrChart, {
+      props: {
+        type: 'pie',
+        categories: ['直接访问'],
+        series: [{ name: '来源', data: [10] }],
+      },
+    })
+
+    await wrapper.find('.sr-chart__slice').trigger('mousemove', { clientX: 100, clientY: 100 })
+
+    const tip = wrapper.find('.sr-chart__tooltip')
+    expect(tip.exists()).toBe(true)
+    expect(tip.text()).toContain('数值')
+    expect(tip.text()).toContain('占比')
+    expect(tip.text()).toContain('100%')
+  })
+
   it('无数据时显示空态，不渲染图形', () => {
     const wrapper = mount(SrChart, { props: { series: [] } })
 
