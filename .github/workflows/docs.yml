@@ -1,0 +1,77 @@
+name: Docs
+
+# 文档站部署到 GitHub Pages：
+# https://sunsetreverie.github.io/SunsetReverieUI/
+#
+# 只有文档相关或组件源码变化才触发，改 CI / 发版脚本不必重跑整个站点。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+# Pages 部署需要这三项权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个部署，排队而不是取消，避免把正在发布的版本打断
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 构建文档站
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      # 文档站直连源码，样式里引用的 CSS 变量与 TS 常量都是生成物，必须先跑一遍
+      - name: 生成 Token
+        run: pnpm build:tokens
+
+      - name: 构建文档站
+        run: pnpm docs:build
+        env:
+          # 项目站点在 /<仓库名>/ 下，不设这个前缀静态资源会 404
+          DOCS_BASE: /SunsetReverieUI/
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传站点产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+
+  deploy:
+    name: 发布到 Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署
+        id: deployment
+        uses: actions/deploy-pages@v4

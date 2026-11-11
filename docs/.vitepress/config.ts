@@ -32,7 +32,17 @@ import { SR_THEME_INIT_SNIPPET } from '../../packages/ui/src/utils/theme-script'
  * 视觉风格与同品牌的框架文档站保持一致（纯色靛蓝、通栏毛玻璃导航、卡片式首页），
  * 主题定制集中在 .vitepress/theme/style.css，这里只管站点结构与文案。
  */
+/**
+ * 站点根路径
+ *
+ * GitHub Pages 的项目站点挂在 `/<仓库名>/` 下，构建时必须带上这个前缀，
+ * 否则静态资源会 404；本地 dev 与部署在根路径时保持默认 `/`。
+ * 由 `DOCS_BASE` 环境变量注入，见 `.github/workflows/docs.yml`。
+ */
+const BASE = (process.env.DOCS_BASE || '/').replace(/\/?$/, '/')
+
 export default defineConfig({
+  base: BASE,
   lang: 'zh-CN',
   title: '夕梦',
   titleTemplate: ':title · 夕梦 UI',
@@ -47,7 +57,8 @@ export default defineConfig({
   srcExclude: ['夕梦UI组件库开发规划.md', 'SrMarkdown组件规划.md'],
 
   head: [
-    ['link', { rel: 'icon', href: '/logo.svg' }],
+    // head 里的静态地址不会自动加 base，这里手动拼
+    ['link', { rel: 'icon', href: `${BASE}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#3e3edc' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: '夕梦 UI' }],
