@@ -44,6 +44,13 @@
     stroke-width: 1;
   }
 
+  // 九段线是窄条多边形，只靠填充几乎看不见，补一层描边
+  &__south-sea &__region {
+    stroke: var(--sr-color-primary);
+    stroke-opacity: 0.45;
+    stroke-width: 0.8;
+  }
+
   // ---------- 气泡 ----------
   &__bubble {
     fill: var(--sr-color-primary);

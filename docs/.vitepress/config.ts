@@ -71,6 +71,11 @@ export default defineConfig({
           find: /^@sunset-reverie\/ui$/,
           replacement: resolvePath('../../packages/ui/src/index.ts'),
         },
+        {
+          // 地图不在主入口，没这条会去 node_modules/dist 加载旧产物
+          find: /^@sunset-reverie\/ui\/china-map$/,
+          replacement: resolvePath('../../packages/ui/src/components/china-map/index.ts'),
+        },
       ],
     },
     css: {

@@ -336,7 +336,7 @@ onBeforeUnmount(() => {
             :height="southSea.height"
             rx="4"
           />
-          <path class="sr-china-map__region" :d="southSea.d" fill-opacity="0.1" />
+          <path class="sr-china-map__region" :d="southSea.d" fill-opacity="0.25" />
         </g>
 
         <!-- 气泡 -->

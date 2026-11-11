@@ -64,12 +64,15 @@ export function normalizeName(name: string): string {
  *
  * 用于把经纬度投到平面上：x 直接用经度，y 用墨卡托变换，
  * 这样中国地图不会被横向压扁得太过。
+ *
+ * 返回前乘 `180 / π` 换算成「度」：墨卡托原始结果是弧度，
+ * 量纲比经度小近 57 倍，直接和经度混用会让 y 方向被压缩成一条线。
  * @param latitude 纬度（度）
- * @returns 墨卡托 y 值
+ * @returns 墨卡托 y 值（度）
  */
 export function mercatorY(latitude: number): number {
   const clamped = Math.max(-85, Math.min(85, latitude))
-  return Math.log(Math.tan(Math.PI / 4 + (clamped * Math.PI) / 360))
+  return Math.log(Math.tan(Math.PI / 4 + (clamped * Math.PI) / 360)) * (180 / Math.PI)
 }
 
 /**
