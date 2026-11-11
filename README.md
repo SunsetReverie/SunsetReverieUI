@@ -196,13 +196,18 @@ sunsetreverie-ui/
 ├── internal/
 │   ├── tokens/              # Token 唯一手写源 + 代码生成
 │   └── examples/            # 三处共用的示例源码
-├── playground-vue3/         # Vite + Vue 3 调试站（直连源码，侧栏 + 路由布局）
-├── playground-nuxt4/        # Nuxt 4 调试站（SSR / 水合验证，含 smoke 冒烟页）
-├── scripts/                 # 命名 / 图标 / 产物 / 变量 / 水合覆盖校验
-├── docs/                    # 规划文档与 VitePress 文档站
+├── playground-vue3/         # Vite + Vue 3 调试站（仅本地，不进远程仓库）
+├── playground-nuxt4/        # Nuxt 4 调试站（仅本地，SSR / 水合验证）
+├── scripts/                 # 命名 / 图标 / 产物 / 变量 / 文档校验
+├── docs/                    # VitePress 文档站（内部规划材料仅本地）
 ├── .changeset/              # 变更说明（发版用）
 └── pnpm-workspace.yaml
 ```
+
+> **远程仓库跟踪范围**：只跟踪「使用框架必需的文件」——`packages/`、`internal/`、`docs/`、`scripts/` 与构建配置。
+> 测试资产（`visual/`、`e2e/`、Playwright 配置）、演示站（`playground-vue3`、`playground-nuxt4`）、内部规划材料与 CI 都写进了 `.gitignore`，
+> 只保留在本地，本地命令照旧可跑。需要找回被移出的文件时，本地有完整树备份分支：
+> `git checkout backup/full-tree-v1.0.0-beta.1 -- playground-vue3`。
 
 ---
 
@@ -252,11 +257,11 @@ pnpm build
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 可选：生成独立的 Token 验证页到 `docs/public/token-gallery.html`（本地查看，不挂进文档站） |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
-| `pnpm lint` | ESLint + Stylelint，再串起模板标签、演示类名、`ref` 解包、演示导入/覆盖、文档与 CSS 变量核对 |
+| `pnpm lint` | ESLint + Stylelint，再串起模板标签、`ref` 解包、文档与 CSS 变量核对（不依赖演示站，干净检出也能跑） |
+| `pnpm lint:demo` | 演示类名 / 演示导入 / 演示覆盖三项，依赖本地 `playground-vue3`，不随仓库分发 |
 | `pnpm lint:tokens` | 单独跑 CSS 变量核对：`var(--sr-x)` 引用的名字必须真的有定义（`lint` 已内置） |
 | `pnpm lint:naming` | 命名规范校验（组件目录、组件名、CSS 变量与类名前缀） |
 | `pnpm lint:icons` | 图标离线集合校验 |
-| `pnpm lint:tokens` | CSS 变量引用校验（引用与定义是否对齐，防拼错后静默失效） |
 | `pnpm lint:smoke` | 水合冒烟覆盖校验（新组件是否已进入 Nuxt smoke 页） |
 | `pnpm check:hydration` | 先 `pnpm build`，再构建 Nuxt 站并跑水合校验，断言告警数为 0 |
 | `pnpm typecheck` | 类型检查（会先生成 Token） |
