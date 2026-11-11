@@ -259,6 +259,7 @@ describe('SrEmojiPicker', () => {
     const items = wrapper.findAll('.sr-emoji-picker__item')
     expect(wrapper.findAll('.sr-tooltip__trigger')).toHaveLength(items.length)
     expect(wrapper.find('.sr-emoji-picker__meta').exists()).toBe(false)
+    expect(wrapper.find('.sr-emoji-picker').classes()).toContain('is-meta-hidden')
 
     await items[0]?.trigger('mouseenter')
     expect(wrapper.find('.sr-emoji-picker__meta').exists()).toBe(false)

@@ -359,7 +359,11 @@ watch(isSearching, (on, off) => {
 <template>
   <div
     class="sr-emoji-picker"
-    :class="[`sr-emoji-picker--${size}`, `is-tab-${tabPosition}`, { 'is-disabled': disabled }]"
+    :class="[
+      `sr-emoji-picker--${size}`,
+      `is-tab-${tabPosition}`,
+      { 'is-disabled': disabled, 'is-meta-hidden': !showMeta },
+    ]"
     :style="rootStyle"
   >
     <!-- 搜索框 -->
