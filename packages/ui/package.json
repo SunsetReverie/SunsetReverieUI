@@ -1,6 +1,6 @@
 {
   "name": "@sunset-reverie/ui",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "夕梦 UI —— SunsetReverie-UI 核心组件库",
   "type": "module",
   "sideEffects": [

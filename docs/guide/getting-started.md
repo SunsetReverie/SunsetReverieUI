@@ -26,7 +26,7 @@
 | GitHub | `github.com/SunsetReverie/SunsetReverieUI` |
 | Gitee | `gitee.com/SunsetReverie/sunset-reverie-ui` |
 
-npm 与 pnpm 命令相同，把 `<版本>` 换成实际版本号（当前 `1.0.0-beta.1`）：
+npm 与 pnpm 命令相同，把 `<版本>` 换成实际版本号（当前 `1.0.0-beta.2`）：
 
 ```bash
 # GitHub

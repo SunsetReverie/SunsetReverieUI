@@ -6,7 +6,7 @@
 
 | 项 | 说明 |
 | --- | --- |
-| 版本 | `v1.0.0-beta.1`，逐版本条目见 [CHANGELOG](./CHANGELOG.md) |
+| 版本 | `v1.0.0-beta.2`，逐版本条目见 [CHANGELOG](./CHANGELOG.md) |
 | 运行时 | Vue 3.4+ · Nuxt 4.x |
 | 工具链 | TypeScript · Less · Vite（库模式）· pnpm monorepo |
 | 体积 | 全量 310.7KB（gzip，含 CSS）· 按需最重 67.4KB |
@@ -27,7 +27,7 @@
 发布物是 Release 附件里的 tarball，两个镜像内容一致，npm 与 pnpm 命令相同：
 
 ```bash
-# 把 <版本> 换成实际版本号（当前 1.0.0-beta.1）
+# 把 <版本> 换成实际版本号（当前 1.0.0-beta.2）
 npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
 
 # Gitee 镜像（文件名相同）
