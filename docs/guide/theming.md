@@ -25,7 +25,7 @@ L1/L2 的生成物是 `packages/ui/src/styles/base/primitives.generated.css` 与
 
 组件目录里那些 `--sr-xxx` 属于 L3，跟组件样式放在同一个 `.less` 文件，方便就地调手感。
 
-> 想一眼看全所有变量与实际色值，用 [Token 验证页](/token-gallery.html)（由 `pnpm build:gallery` 生成）。
+> 完整的变量与色值以 `internal/tokens/src/tokens.ts`、`semantic.ts` 为准；改完跑 `pnpm build:tokens` 重新生成三份产物。
 
 ## 运行时切换
 

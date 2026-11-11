@@ -329,14 +329,6 @@ for (const docFile of docFiles) {
       target = join(DOCS, `${key}.md`)
     } else if (linkPart.startsWith('/guide/')) {
       target = join(GUIDES, `${linkPart.replace('/guide/', '')}.md`)
-    } else if (linkPart.startsWith('/token-gallery.html')) {
-      // Token 验证页是构建产物：docs 的 dev/build 都会先跑 build:gallery。
-      // 干净的 CI 里先跑 lint 时它可能还不存在，不要当成断链拦下来
-      if (existsSync('docs/public/token-gallery.html')) target = 'docs/public/token-gallery.html'
-      else {
-        warnings.push('Token 验证页尚未生成：先跑 pnpm build:gallery（docs dev/build 会自动执行）')
-        continue
-      }
     } else if (linkPart.endsWith('.md')) {
       target = resolve(dirname(docFile), linkPart)
     } else if (linkPart && !linkPart.startsWith('/')) {

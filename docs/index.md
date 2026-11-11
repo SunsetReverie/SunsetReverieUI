@@ -15,9 +15,6 @@ hero:
     - theme: alt
       text: 浏览组件
       link: /components/button
-    - theme: alt
-      text: Token 验证页
-      link: /token-gallery.html
 ---
 
 <div class="sr-features">

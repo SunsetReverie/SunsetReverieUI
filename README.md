@@ -195,7 +195,7 @@ sunsetreverie-ui/
 ├── playground-vue3/         # Vite + Vue 3 调试站（直连源码，侧栏 + 路由布局）
 ├── playground-nuxt4/        # Nuxt 4 调试站（SSR / 水合验证，含 smoke 冒烟页）
 ├── scripts/                 # 命名 / 图标 / 产物 / 变量 / 水合覆盖校验
-├── docs/                    # 规划文档与 Token 验证页
+├── docs/                    # 规划文档与 VitePress 文档站
 ├── .changeset/              # 变更说明（发版用）
 └── pnpm-workspace.yaml
 ```
@@ -225,7 +225,7 @@ pnpm build
 | Token Less 变量 | `packages/ui/src/tokens/generated/vars.less` |
 | Token TS 常量 | `packages/ui/src/tokens/generated/index.ts` |
 | L2 语义层 CSS | `packages/ui/src/styles/base/semantic.generated.css` |
-| Token 验证页 | `docs/public/token-gallery.html` |
+| Token 验证页（可选，本地） | `docs/public/token-gallery.html`，由 `pnpm build:gallery` 生成，不挂进文档站 |
 
 ---
 
@@ -237,14 +237,14 @@ pnpm build
 | `pnpm check:demo` | 先起 `pnpm dev`，再遍历全部演示页做渲染 / 控制台冒烟；端口不同用 `DEMO_PORT=xxxx` |
 | `pnpm check:visual` | 比对演示站视觉基线（自带 webServer，无需先 `pnpm dev`）；改动 UI 后用 `pnpm check:visual:update` 重建基线 |
 | `pnpm check:docs` | 单独跑文档站守卫；`pnpm lint` 已内置，加 `--verbose` 看数据结构表的提醒明细 |
-| `pnpm --filter @sunset-reverie/docs build` | 先 `build:gallery` 生成 Token 验证页，再构建 VitePress 站（干净检出也能构建） |
+| `pnpm --filter @sunset-reverie/docs build` | 构建 VitePress 站（不依赖 Token 验证页；干净检出可直接构建） |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
 | `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
-| `pnpm --filter @sunset-reverie/docs dev` | 先 `build:gallery` 生成 Token 验证页，再启动 VitePress（`/token-gallery.html` 不会 404） |
+| `pnpm --filter @sunset-reverie/docs dev` | 启动 VitePress 文档站（Token 验证页不再挂进站点） |
 | `pnpm test:e2e` | 构建 Nuxt 演示站并跑 Playwright 水合测试 |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
-| `pnpm build:gallery` | 生成 Token 验证页到 `docs/public/token-gallery.html` |
+| `pnpm build:gallery` | 可选：生成独立的 Token 验证页到 `docs/public/token-gallery.html`（本地查看，不挂进文档站） |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
 | `pnpm lint` | ESLint + Stylelint |
 | `pnpm lint:naming` | 命名规范校验（组件目录、组件名、CSS 变量与类名前缀） |

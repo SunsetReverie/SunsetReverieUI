@@ -103,5 +103,5 @@ pnpm build
 1. 本次改动已带 changeset：`pnpm changeset`；
 2. `pnpm version-packages` 汇总版本与 CHANGELOG；
 3. 提交后打 tag：`git tag v1.1.0 && git push --tags`；
-4. 文档站用新版本重新构建：`pnpm --filter @sunset-reverie/docs build`（会先重建 Token 验证页）；
+4. 文档站用新版本重新构建：`pnpm --filter @sunset-reverie/docs build`；
 5. 把本文「本次横向升级包含什么」换成该版本的真实条目，再发布。
