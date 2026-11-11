@@ -1,6 +1,6 @@
 # 版本升级
 
-夕梦 UI 通过私有 Git tag 分发，升级不是 `npm update`，而是**把锁定的 tag 换成新版本**，再按 CHANGELOG 处理变更。下面以 `1.0 → 1.1` 为例；当前仓库的具体版本号以 `packages/ui/package.json` 与 Git tag 为准，预发布版（`v1.0.0-beta.1`）与正式版都按这套流程走。
+夕梦 UI 通过 Release 附件里的 tarball 分发，升级不是 `npm update`（URL 没有版本区间语义），而是**把依赖 URL 里的版本号换成新版本**，再按 CHANGELOG 处理变更。下面以 `1.0 → 1.1` 为例；具体版本号以 `packages/ui/package.json` 与 Git tag 为准，预发布版与正式版都按这套流程走。
 
 ## 第一步：先看变更，不先改依赖
 
@@ -25,30 +25,32 @@ git log --oneline v1.0.0..v1.1.0 -- CHANGELOG.md
 
 ## 第二步：替换版本
 
-只改 `package.json` 里的 tag，或直接重新安装：
+tarball 的依赖写成「URL + 版本号」，升级就是把 URL 里的版本号换掉：
 
 ```bash
-# 方式一：直接安装到目标 tag
-pnpm add git+https://<你的 Git 地址>/sunset-reverie-ui.git#v1.1.0
+# 方式一：直接安装目标版本
+npm i https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz
 
 # 方式二：改 package.json 后统一安装
-# "dependencies": { "@sunset-reverie/ui": "git+https://...#v1.1.0" }
-pnpm install
+# "dependencies": { "@sunset-reverie/ui": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz" }
+npm install
 ```
 
-如果同时用了 Nuxt 模块或 resolver，四个包是**同版本发布**的，要一起升级：
+同时用了 Nuxt 模块或 resolver 的，四个包同版本发布，必须一起换成同一版本号的附件：
 
 ```json
 {
   "dependencies": {
-    "@sunset-reverie/ui": "git+https://<你的 Git 地址>/sunset-reverie-ui.git#v1.1.0",
-    "@sunset-reverie/nuxt": "git+https://<你的 Git 地址>/sunset-reverie-ui.git#v1.1.0",
-    "@sunset-reverie/resolver": "git+https://<你的 Git 地址>/sunset-reverie-ui.git#v1.1.0"
+    "@sunset-reverie/ui": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz",
+    "@sunset-reverie/nuxt": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-nuxt-1.1.0.tgz",
+    "@sunset-reverie/resolver": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-resolver-1.1.0.tgz"
   }
 }
 ```
 
 > 不要只升 `ui` 而留着旧版 `nuxt` / `resolver`：resolver 负责样式子路径，Nuxt 模块负责自动注册，版本错位会出现「组件能渲染但样式路径 404」。
+>
+> 依赖是 URL 而不是版本区间，所以 `npm update` / `pnpm update` 不会动它，必须手动改 URL —— 这是 tarball 分发的固有代价，换来的是使用者零配置安装。
 
 ## 第三步：跑升级检查
 
@@ -91,10 +93,9 @@ pnpm build       # 样式与按需入口是否都能解析
 ## 回滚
 
 ```bash
-# 把 tag 改回原版本（示例：从预发布版退回 0.1.0）
-pnpm add git+https://<你的 Git 地址>/sunset-reverie-ui.git#v0.1.0
-pnpm install
-pnpm build
+# 把 URL 里的版本号换回原版本（示例：从预发布版退回 0.1.0）
+npm i https://<Git 地址>/releases/download/v0.1.0/sunset-reverie-ui-0.1.0.tgz
+npm run build
 ```
 
 主题与 Token 是随包构建的，回滚版本即可一起回滚，不需要单独恢复 CSS 文件。
@@ -104,6 +105,9 @@ pnpm build
 1. 本次改动已带 changeset：`pnpm changeset`；
 2. 常规版本用 `pnpm version-packages` 汇总版本号与 CHANGELOG（四个包在 changesets 的 `fixed` 组里，版本号自动对齐）；
 3. **预发布版要精确指定序号**（如 `1.0.0-beta.1`）时，直接改四个包 `package.json` 的 `version` 与 `packages/nuxt` 的 `peerDependencies` 范围，再手写 CHANGELOG 段落——`changeset pre enter` 从 `beta.0` 起算，给不出 `beta.1`；
-4. 提交后打 tag：`git tag v1.0.0-beta.1`，确认无误再 `git push --tags`；
-5. 文档站重新构建：`pnpm --filter @sunset-reverie/docs build`。更新日志页直接包含仓库根 `CHANGELOG.md`，不用另抄一份；
-6. 把本文「`0.1.0 → 1.0.0-beta.1` 包含什么」换成下个版本的真实条目，再发布。
+4. 构建全部产物：`pnpm build`（缺 `dist` 时 `release:pack` 会直接报错退出）；
+5. 打 tarball：`pnpm release:pack`，四个包各一个 tgz 落在 `release/`，文件名形如 `sunset-reverie-ui-1.0.0-beta.1.tgz`；
+6. 提交并打 tag：`git tag v1.0.0-beta.1`，确认无误再 `git push --tags`；
+7. **建同名的 Git Release，把 `release/` 下四个 tgz 全部作为附件上传** —— 少了任何一个，用 Nuxt 模块或 resolver 的使用方会装不上；上传后逐条点开确认可下载（私有仓库要确认权限）；
+8. 文档站重新构建：`pnpm --filter @sunset-reverie/docs build`。更新日志页直接包含仓库根 `CHANGELOG.md`，不用另抄一份；
+9. 把本文「`0.1.0 → 1.0.0-beta.1` 包含什么」换成下个版本的真实条目，再发布。

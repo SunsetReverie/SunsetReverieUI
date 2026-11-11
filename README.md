@@ -1,6 +1,6 @@
 # SunsetReverie-UI（夕梦 UI）
 
-自用 / 团队内部的 Vue 3 + Nuxt 4 UI 组件库。**不发布到 NPM**，只托管在私有 Git 仓库，通过 tag 分发。
+自用 / 团队内部的 Vue 3 + Nuxt 4 UI 组件库。**不发布到公共 npm 源**，按 tag 把四个包打成 tarball，挂在私有 Git 仓库的 Release 附件上分发。
 
 当前版本：`v1.0.0-beta.1`（首个 1.0 预发布版，69 个组件，无 BREAKING）。逐版本条目见 [`CHANGELOG.md`](./CHANGELOG.md)，站点版见[更新日志](docs/changelog.md)。
 
@@ -257,6 +257,7 @@ pnpm build
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 可选：生成独立的 Token 验证页到 `docs/public/token-gallery.html`（本地查看，不挂进文档站） |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
+| `pnpm release:pack` | 发版打包：四个包各打一个 tarball 到 `release/`（需先 `pnpm build`），再把 tgz 挂到同版本 Git Release |
 | `pnpm lint` | ESLint + Stylelint，再串起模板标签、`ref` 解包、文档与 CSS 变量核对（不依赖演示站，干净检出也能跑） |
 | `pnpm lint:demo` | 演示类名 / 演示导入 / 演示覆盖三项，依赖本地 `playground-vue3`，不随仓库分发 |
 | `pnpm lint:tokens` | 单独跑 CSS 变量核对：`var(--sr-x)` 引用的名字必须真的有定义（`lint` 已内置） |

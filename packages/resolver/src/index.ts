@@ -19,6 +19,7 @@ export interface SunsetReverieResolverOptions {
    * 样式引入方式
    * - 'css'：引入 dist 编译产物（推荐，下游无需 Less）
    * - 'less'：引入 .less 源码（需下游配置 Less，但可用 Less 变量定制）
+   *   注意：包只发布 dist，tarball 安装后没有 src 目录，该选项仅本地 link 联调时有效
    * - false：不引入（自行全量引入 style.css）
    * @default 'css'
    */

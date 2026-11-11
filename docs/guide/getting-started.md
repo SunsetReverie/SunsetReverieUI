@@ -1,6 +1,6 @@
 # 快速开始
 
-夕梦 UI 不发布到 NPM，通过私有 Git 仓库以 tag 分发。
+夕梦 UI 不发布到公共 npm 源，按 tag 把每个包打成 tarball，挂在私有 Git 仓库的 Release 附件上分发。
 
 ## 能力概览
 
@@ -19,13 +19,28 @@
 
 ## 安装
 
+按 tag 把每个包打成一个 tarball 挂 Release，装法与装普通包完全一致，npm 与 pnpm 命令相同：
+
 ```bash
-# 私有仓库按 tag 分发，把 <你的 Git 地址> 换成实际仓库地址，锁定到某个版本
-# 当前是 1.0 预发布版；正式 v1.0.0 打出来后再换成 v1.0.0
-pnpm add git+https://<你的 Git 地址>/sunset-reverie-ui.git#v1.0.0-beta.1
+# 只装核心库：把 <Git 地址> 与 <版本> 换成实际值（当前为 1.0.0-beta.1）
+npm i https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
+
+# pnpm 写法相同
+pnpm add https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
 ```
 
-> 上面是**安装模板**：`<你的 Git 地址>` 是占位符，需要替换后才能执行。库不在公共 npm 源上；只装核心库时，按需引入的组件样式由子路径提供。
+> 注意是 **tarball URL**，不是 `git+https://...#tag`。Git 依赖装的是仓库根（`sunsetreverie-ui@0.0.0` 私有壳），而 `dist` 不进版本库，装下来既没有入口也没有产物；tarball 里是标准包结构（`dist` + `exports` + 类型声明），所以 npm 装它能直接用。
+>
+> 用 Nuxt 模块或按需解析器的，要把对应附件一起装，四个包同版本、不能混用。`@sunset-reverie/nuxt` 的 `peerDependencies` 里有 `@sunset-reverie/ui`，单独装它会去 npm 源找 `ui` 而失败，所以必须同一条命令带上：
+>
+> ```bash
+> npm i \
+>   https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz \
+>   https://<Git 地址>/releases/download/v<版本>/sunset-reverie-nuxt-<版本>.tgz \
+>   https://<Git 地址>/releases/download/v<版本>/sunset-reverie-resolver-<版本>.tgz
+> ```
+>
+> 升级与回滚同样只换 URL 里的 `<版本>`，见[版本升级](/guide/upgrading)。
 
 `@sunset-reverie/ui` 的运行时依赖只有 `@iconify/vue`；图标数据在构建时已内联进产物，不需要额外安装图标包。
 
@@ -178,6 +193,8 @@ export default defineConfig({
   plugins: [Components({ resolvers: [SunsetReverieResolver()] })],
 })
 ```
+
+`SunsetReverieResolver` 的 `importStyle` 默认 `'css'`，直接用编译好的样式，下游不需要 Less。`'less'` 会去引 `.less` 源码，而 tarball 里只有 `dist`，所以那个选项仅在本地 `link:` 联调时有效；要改主题请用 CSS 变量覆盖，见[主题与 Token](/guide/theming)。
 
 ## 下一步
 
