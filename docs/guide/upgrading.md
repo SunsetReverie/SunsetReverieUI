@@ -29,10 +29,10 @@ tarball 的依赖写成「URL + 版本号」，升级就是把 URL 里的版本�
 
 ```bash
 # 方式一：直接安装目标版本
-npm i https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz
+npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz
 
 # 方式二：改 package.json 后统一安装
-# "dependencies": { "@sunset-reverie/ui": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz" }
+# "dependencies": { "@sunset-reverie/ui": "https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz" }
 npm install
 ```
 
@@ -41,9 +41,9 @@ npm install
 ```json
 {
   "dependencies": {
-    "@sunset-reverie/ui": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz",
-    "@sunset-reverie/nuxt": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-nuxt-1.1.0.tgz",
-    "@sunset-reverie/resolver": "https://<Git 地址>/releases/download/v1.1.0/sunset-reverie-resolver-1.1.0.tgz"
+    "@sunset-reverie/ui": "https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.1.0/sunset-reverie-ui-1.1.0.tgz",
+    "@sunset-reverie/nuxt": "https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.1.0/sunset-reverie-nuxt-1.1.0.tgz",
+    "@sunset-reverie/resolver": "https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.1.0/sunset-reverie-resolver-1.1.0.tgz"
   }
 }
 ```
@@ -94,7 +94,7 @@ pnpm build       # 样式与按需入口是否都能解析
 
 ```bash
 # 把 URL 里的版本号换回原版本（示例：从预发布版退回 0.1.0）
-npm i https://<Git 地址>/releases/download/v0.1.0/sunset-reverie-ui-0.1.0.tgz
+npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v0.1.0/sunset-reverie-ui-0.1.0.tgz
 npm run build
 ```
 

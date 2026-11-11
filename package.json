@@ -24,6 +24,8 @@
     "gen:icons": "node packages/icons/scripts/gen-offline-icons.mjs",
     "gen:components": "node scripts/sync-components.mjs",
     "gen:china-map": "node scripts/gen-china-map.mjs",
+    "docs:dev": "pnpm --filter @sunset-reverie/docs dev",
+    "docs:build": "pnpm --filter @sunset-reverie/docs build",
     "verify:dist": "node scripts/verify-dist.mjs",
     "release:pack": "node scripts/pack-release.mjs",
     "format": "prettier --write .",

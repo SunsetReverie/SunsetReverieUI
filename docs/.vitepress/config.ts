@@ -100,6 +100,22 @@ export default defineConfig({
       { text: `v${UI_VERSION}`, link: '/changelog', activeMatch: '/changelog' },
     ],
 
+    // 两个镜像仓库的入口。Gitee 没有内置图标，用品牌红的圆角方块 + G
+    socialLinks: [
+      {
+        icon: 'github',
+        link: 'https://github.com/SunsetReverie/SunsetReverieUI',
+        ariaLabel: 'GitHub 仓库',
+      },
+      {
+        icon: {
+          svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#c71d23"/><text x="12" y="17" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">G</text></svg>',
+        },
+        link: 'https://gitee.com/SunsetReverie/sunset-reverie-ui',
+        ariaLabel: 'Gitee 仓库',
+      },
+    ],
+
     sidebar: {
       '/guide/': [
         {

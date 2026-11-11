@@ -19,14 +19,21 @@
 
 ## 安装
 
-按 tag 把每个包打成一个 tarball 挂 Release，装法与装普通包完全一致，npm 与 pnpm 命令相同：
+发布物是 Release 附件里的 tarball，两个仓库镜像内容一致，选一个快的即可：
+
+| 镜像 | 地址 |
+| --- | --- |
+| GitHub | `github.com/SunsetReverie/SunsetReverieUI` |
+| Gitee | `gitee.com/SunsetReverie/sunset-reverie-ui` |
+
+npm 与 pnpm 命令相同，把 `<版本>` 换成实际版本号（当前 `1.0.0-beta.1`）：
 
 ```bash
-# 只装核心库：把 <Git 地址> 与 <版本> 换成实际值（当前为 1.0.0-beta.1）
-npm i https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
+# GitHub
+npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
 
-# pnpm 写法相同
-pnpm add https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
+# Gitee 镜像（文件名相同，国内通常更快）
+npm i https://gitee.com/SunsetReverie/sunset-reverie-ui/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz
 ```
 
 > 注意是 **tarball URL**，不是 `git+https://...#tag`。Git 依赖装的是仓库根（`sunsetreverie-ui@0.0.0` 私有壳），而 `dist` 不进版本库，装下来既没有入口也没有产物；tarball 里是标准包结构（`dist` + `exports` + 类型声明），所以 npm 装它能直接用。
@@ -35,9 +42,9 @@ pnpm add https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版
 >
 > ```bash
 > npm i \
->   https://<Git 地址>/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz \
->   https://<Git 地址>/releases/download/v<版本>/sunset-reverie-nuxt-<版本>.tgz \
->   https://<Git 地址>/releases/download/v<版本>/sunset-reverie-resolver-<版本>.tgz
+>   https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v<版本>/sunset-reverie-ui-<版本>.tgz \
+>   https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v<版本>/sunset-reverie-nuxt-<版本>.tgz \
+>   https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v<版本>/sunset-reverie-resolver-<版本>.tgz
 > ```
 >
 > 升级与回滚同样只换 URL 里的 `<版本>`，见[版本升级](/guide/upgrading)。
