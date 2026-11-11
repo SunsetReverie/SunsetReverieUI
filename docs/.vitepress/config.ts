@@ -71,6 +71,8 @@ export default defineConfig({
     nav: [
       { text: '指南', link: '/guide/getting-started', activeMatch: '/guide/' },
       { text: '组件', link: '/components/button', activeMatch: '/components/' },
+      // 更新日志页在 docs 根目录，不进 guide 与 components 两个侧边栏
+      { text: '更新日志', link: '/changelog', activeMatch: '/changelog' },
     ],
 
     sidebar: {
