@@ -203,14 +203,17 @@ export default defineConfig({
 | 能力 | Vue 3 + Vite | Nuxt 4 |
 | --- | --- | --- |
 | 组件（模板里直接写 `<SrButton>`） | 支持，需 `unplugin-vue-components` + resolver | 支持，装模块即可 |
-| 组合式函数（`useSrTheme` 等 7 个） | 库未预置 preset，需自己配 `unplugin-auto-import` | 支持，模块已注册 |
+| 组合式函数（`useSrTheme` 等 7 个） | 支持，resolver 提供 preset，另装 `unplugin-auto-import` | 支持，模块已注册 |
 
 ### Vue 3 + Vite
 
 先装解析器与插件（resolver 不把它们列为依赖，需要使用者自备）：
 
 ```bash
+# 组件自动导入
 npm i -D @sunset-reverie/resolver unplugin-vue-components
+# 想让 useSrTheme 这类函数也免 import，再加这一个
+npm i -D unplugin-auto-import
 ```
 
 ```ts
@@ -244,31 +247,43 @@ export default defineConfig({
 
 `base.css` 只在解析到第一个组件时注入一次，后面的组件只带自己的 `style.css`；`importStyle` 默认 `'css'`，所以不需要再手动引 `style.css`。
 
-组合式函数要一起自动导入，再加一个 `unplugin-auto-import`：
+组合式函数要一起自动导入，再加一个 `unplugin-auto-import`。resolver 自带 preset，不用手抄名字：
 
 ```ts
 // vite.config.ts 的 plugins 里追加
 import AutoImport from 'unplugin-auto-import/vite'
+import { SunsetReverieAutoImport } from '@sunset-reverie/resolver'
 
 AutoImport({
-  imports: [
-    {
-      '@sunset-reverie/ui': [
-        'useSrTheme',
-        'useSrBreakpoint',
-        'useSrConfig',
-        'srToast',
-        'srConfirm',
-        'srMessage',
-        'srNotification',
-      ],
-    },
-  ],
+  // 自定义 preset 放在 imports 数组里（packagePresets 是另一种按包名解析的用法）
+  imports: [SunsetReverieAutoImport()],
   dts: 'src/auto-imports.d.ts',
 })
 ```
 
-> 这 7 个名字与 Nuxt 模块自动注册的是同一批导出，库里没有预置 `unplugin-auto-import` 的 preset，照抄即可。
+`SunsetReverieAutoImport()` 展开就是下面这个 preset（与 Nuxt 模块注册的同一批导出）：
+
+```ts
+{
+  from: '@sunset-reverie/ui',
+  imports: ['useSrTheme', 'useSrBreakpoint', 'useSrConfig', 'srToast', 'srConfirm', 'srMessage', 'srNotification'],
+}
+```
+
+只要三个 `useSr*` 组合式函数、不想要全局挂命令式 API 时，传参关掉：
+
+```ts
+imports: [SunsetReverieAutoImport({ includeApis: false })]
+```
+
+配好之后，`<script setup>` 里直接调用即可，不需要 import：
+
+```vue
+<script setup lang="ts">
+const theme = useSrTheme()     // 自动导入
+const copy = () => srToast.success('已复制')  // 自动导入
+</script>
+```
 
 ### Nuxt 4
 
@@ -290,6 +305,8 @@ export default defineNuxtConfig({
 - 自动导入只处理**模板标签**。`<script setup>` 里要用组件变量（存进 `ref`、动态组件 `:is`、`h()` 渲染）时，仍然要显式 import。
 - `dts` 指定的类型声明文件没生成时，Volar 会报「找不到 SrButton」；重新跑一次 dev server 或重启 TS Server 即可。
 - 标签大小写都识别（`<SrButton>` / `<sr-button>`），推荐 PascalCase，与文档和类型声明保持一致。
+- 自定义 preset 要放进 `imports` 数组（`imports: [SunsetReverieAutoImport()]`）。写成 `presets` 不会报错，但插件只提示 "no imports has defined"，函数自动导入静默失效——这是实测踩过的坑。
+- 项目 `package.json` 没有 `"type": "module"` 时，vite 会把配置按 CJS 打包，引入 ESM-only 的 `@sunset-reverie/resolver` 会报 `This package is ESM only but it was tried to load by require`；把配置文件改成 `vite.config.mts`，或给 `package.json` 加 `"type": "module"` 即可。
 
 ## 下一步
 
