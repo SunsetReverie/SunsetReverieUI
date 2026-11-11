@@ -1,0 +1,131 @@
+/**
+ * 中国地图
+ *
+ * 省份只用一层主题色 + 不同透明度做分级，换肤与暗色主题自动跟随；
+ * 省界用背景色描边，视觉上像「切开的板块」而不是每个省都套一圈深色边框。
+ */
+
+@import '../../../styles/mixins/index.less';
+
+.sr-china-map {
+  width: 100%;
+
+  &__canvas {
+    position: relative;
+    width: 100%;
+  }
+
+  &__svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    font-family: inherit;
+  }
+
+  // ---------- 省份 ----------
+  &__region {
+    fill: var(--sr-color-primary);
+    stroke: var(--sr-color-bg-container);
+    stroke-width: 1;
+    cursor: pointer;
+    transition: fill-opacity var(--sr-motion-duration-fast) var(--sr-motion-easing-standard);
+
+    &.is-active {
+      fill-opacity: 0.95;
+      stroke: var(--sr-color-primary);
+      stroke-width: 1.5;
+    }
+  }
+
+  // ---------- 南海诸岛小图 ----------
+  &__south-sea-frame {
+    fill: var(--sr-color-bg-sunken);
+    stroke: var(--sr-color-border-subtle);
+    stroke-width: 1;
+  }
+
+  // ---------- 气泡 ----------
+  &__bubble {
+    fill: var(--sr-color-primary);
+    fill-opacity: 0.4;
+    stroke: var(--sr-color-primary);
+    stroke-width: 1.5;
+    pointer-events: none;
+  }
+
+  // ---------- 名称 ----------
+  &__label {
+    fill: var(--sr-color-text);
+    font-size: 11px;
+    pointer-events: none;
+    // 描边在文字下层，密集区域也能看清
+    paint-order: stroke;
+    stroke: var(--sr-color-bg-container);
+    stroke-width: 2px;
+  }
+
+  // ---------- tooltip ----------
+  &__tooltip {
+    position: absolute;
+    z-index: 2;
+    min-width: 88px;
+    padding: 8px 10px;
+    color: var(--sr-color-text);
+    font-size: 12px;
+    line-height: 1.6;
+    background: var(--sr-color-bg-elevated);
+    border-radius: var(--sr-radius-md);
+    box-shadow: var(--sr-shadow-md);
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+  }
+
+  &__tooltip-title {
+    margin-bottom: 2px;
+    color: var(--sr-color-text-secondary);
+  }
+
+  &__tooltip-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---------- 图例 ----------
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    margin-top: 8px;
+    color: var(--sr-color-text-secondary);
+    font-size: 12px;
+  }
+
+  &__swatch {
+    width: 18px;
+    height: 10px;
+    background: var(--sr-color-primary);
+    border-radius: 2px;
+  }
+
+  &__swatch--dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--sr-radius-full);
+  }
+
+  &__legend-label {
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ---------- 空态 ----------
+  &__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sr-color-text-tertiary);
+    font-size: 13px;
+    pointer-events: none;
+  }
+}

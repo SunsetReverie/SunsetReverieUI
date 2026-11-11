@@ -8,10 +8,7 @@
  * 新增组件后执行 pnpm gen:components 即可，无需手改本文件。
  */
 
-import { SR_COMPONENT_NAMES } from './components.generated'
-
-/** 组件名清单（PascalCase，不含 Sr 前缀），由 pnpm gen:components 自动同步 */
-const COMPONENT_NAMES: readonly string[] = SR_COMPONENT_NAMES
+import { SR_COMPONENT_ENTRIES } from './components.generated'
 
 /** Resolver 配置项 */
 export interface SunsetReverieResolverOptions {
@@ -49,15 +46,6 @@ interface ComponentResolveResult {
 }
 
 /**
- * PascalCase 转 kebab-case
- * @param name 组件名，如 ButtonGroup
- * @returns kebab 形式，如 button-group
- */
-function toKebab(name: string): string {
-  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
-}
-
-/**
  * 生成夕梦 UI 的按需引入解析器
  * @param options 配置项
  * @returns 供 unplugin-vue-components 使用的 resolver 数组
@@ -80,9 +68,11 @@ export function SunsetReverieResolver(options: SunsetReverieResolverOptions = {}
       if (!name.startsWith(prefix)) return undefined
 
       const bare = name.slice(prefix.length)
-      if (!COMPONENT_NAMES.includes(bare)) return undefined
+      const entry = SR_COMPONENT_ENTRIES[bare]
+      if (!entry) return undefined
 
-      const kebab = toKebab(bare)
+      // 子组件（CheckboxGroup 等）与主组件同目录：样式按目录取，入口用映射里的值
+      const kebab = entry.dir
       const sideEffects: string[] = []
 
       if (importStyle === 'css') {
@@ -97,8 +87,8 @@ export function SunsetReverieResolver(options: SunsetReverieResolverOptions = {}
 
       return {
         name,
-        // 走子路径导入，保证只打包该组件
-        from: `@sunset-reverie/ui/${kebab}`,
+        // 主组件走子路径只打包该组件；子组件回落到包入口（它没有独立目录）
+        from: entry.from,
         sideEffects,
       }
     },

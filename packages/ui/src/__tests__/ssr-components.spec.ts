@@ -67,6 +67,8 @@ import {
   SrUpload,
   SrVirtualList,
 } from '..'
+// 地图组件不在主入口（数据体积大，独立子路径），单独引入
+import { SrChinaMap } from '../components/china-map'
 
 /**
  * 在无 DOM 环境下渲染组件，返回 HTML 字符串
@@ -390,6 +392,12 @@ describe('导航与数据组件的 SSR 渲染', () => {
     })
     expect(html).toContain('<svg')
     expect(html).toContain('订单')
+  })
+
+  it('SrChinaMap 服务端输出省份路径', async () => {
+    const html = await render(SrChinaMap, { data: [{ name: '广东', value: 12 }] })
+    expect(html).toContain('sr-china-map')
+    expect(html).toContain('sr-china-map__region')
   })
 
   it('SrCalendar 服务端输出月份标题', async () => {

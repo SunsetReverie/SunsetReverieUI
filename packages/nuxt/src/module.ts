@@ -12,7 +12,7 @@ import { addComponent, addImports, createResolver, defineNuxtModule } from '@nux
 import type { NuxtModule } from 'nuxt/schema'
 
 import { SR_THEME_INIT_SNIPPET, type SrStyleMode, type SrThemeMode } from '@sunset-reverie/ui'
-import { SR_COMPONENT_NAMES } from './components.generated'
+import { SR_COMPONENT_ENTRIES } from './components.generated'
 
 /** Module 配置项（nuxt.config.ts 中的 sunsetReverie 键） */
 export interface ModuleOptions {
@@ -92,11 +92,13 @@ const sunsetReverieModule: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOp
     // ---------- 2. 组件 ----------
     const prefix = options.prefix ?? 'Sr'
 
-    for (const name of SR_COMPONENT_NAMES) {
+    for (const [name, entry] of Object.entries(SR_COMPONENT_ENTRIES)) {
       addComponent({
         name: `${prefix}${name}`,
         export: `Sr${name}`,
-        filePath: '@sunset-reverie/ui',
+        // 主组件走子路径（地图这类不进主入口的组件也能自动注册，且只拉需要的模块）；
+        // 子组件（CheckboxGroup 等）没有独立目录，回落到包入口
+        filePath: entry.from,
       })
     }
 

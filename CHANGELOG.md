@@ -22,10 +22,11 @@
 > 预发布版：接口按 1.0 收敛，正式版前只修阻断性问题。下游请锁 `v1.0.0-beta.1`，
 > 预发布版之间不保证互相兼容。
 
-### 新增 · 组件（累计 70 个）
+### 新增 · 组件（累计 71 个）
 
 - 在 0.1.0 的 34 个组件之上补齐：`SrTextarea`、`SrComment`、`SrMusicPlayer`、`SrDescriptions`、`SrSteps`、`SrCollapse`、`SrSegmented`、`SrTimeline`、`SrSlider`、`SrResult`、`SrVirtualList`、`SrCascader`、`SrTransfer`、`SrAnchor`、`SrColorPicker`、`SrQrcode`、`SrDivider`、`SrSpace`、`SrImage`、`SrStatistic`、`SrLoading`、`SrCodeBlock`、`SrEmojiPicker`、`SrMarkdown`、`SrMarkdownEditor`、`SrTree`
 - `SrChart` 新增：纯 SVG 轻量图表，支持折线 / 柱状（含堆叠）/ 面积 / 饼图与环形，零第三方依赖；颜色全部取主题变量，宽度用 `ResizeObserver` 自适应，悬停显示该分类下全部系列，无数据自动空态
+- `SrChinaMap` 新增：中国省级地图，分级着色与气泡两种模式，点击抛出 `select`；走独立子路径 `@sunset-reverie/ui/china-map`（数据 gzip 约 39KB，不进主入口）；内置 34 个省级行政区 + 南海诸岛小图，省名支持「北京 / 北京市 / 内蒙古自治区」三种写法，数据由 `pnpm gen:china-map` 生成
 - `SrEmojiPicker` 新增 `tipMode`：`meta` / `tooltip` / `none`
 - `SrNav` 新增 `filterActive`：外部过滤时临时忽略分组折叠
 

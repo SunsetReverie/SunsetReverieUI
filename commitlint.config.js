@@ -8,6 +8,7 @@ export default {
         // 组件
         'button',
         'chart',
+        'china-map',
         'icon',
         'row',
         'col',
