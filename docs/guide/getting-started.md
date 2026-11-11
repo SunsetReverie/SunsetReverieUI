@@ -13,7 +13,7 @@
 | Token | L1 原始色板 → L2 语义映射 → L3 组件级，`pnpm build:tokens` 一份源文件生成 CSS 与 TS 常量 |
 | 分发 | 核心包运行时只依赖 `@iconify/vue`；支持全量引入、按需引入与 resolver 自动导入 |
 | 框架 | Vue 3.4+、Nuxt 4 模块；SSR 首帧由内联脚本决定根属性，水合不闪白、不重排 |
-| 质量 | 单测 + SSR 冒烟 + Nuxt 水合 e2e + 演示站全页冒烟 + 视觉基线；新增组件漏测会被 lint 拦下 |
+| 质量 | 单测 + SSR 冒烟 + Nuxt 水合 e2e + 演示站全页冒烟 + 布局与水合告警守卫 + 视觉基线；新增组件漏测会被 lint 拦下 |
 
 组件索引见[组件概览](/components/)，主题与 Token 的细节见[主题与 Token](/guide/theming)。
 
