@@ -141,6 +141,8 @@ function onSelect(item: SrEmojiItem, mark: string) {
 
 这行固定在滚动区之外，不随表情列表滚动；列表本身不显示滚动条，但滚轮、触控板与触摸仍可滚动。
 
+`tipMode="tooltip"` 时，分类名已经由底部 tab 标出，这行会自动隐藏，避免重复；只有在搜索时才恢复，用来显示命中数量。
+
 ## 名称提示方式
 
 `tipMode` 三选一，避免「信息行 + 浏览器原生 title」同时出现：
@@ -148,7 +150,7 @@ function onSelect(item: SrEmojiItem, mark: string) {
 | 值 | 悬停时的名称 | 说明 |
 | --- | --- | --- |
 | `meta`（默认） | 顶部信息行 | 不弹气泡，面板最安静 |
-| `tooltip` | 表情旁的气泡 | 用 `SrTooltip`，不依赖浏览器原生提示 |
+| `tooltip` | 表情旁的气泡 | 用 `SrTooltip`，不依赖浏览器原生提示；分类名已由底部 tab 标出，信息行自动隐藏（搜索时恢复以显示命中数） |
 | `none` | 不显示 | 只保留 `aria-label`，供读屏使用 |
 
 ```vue

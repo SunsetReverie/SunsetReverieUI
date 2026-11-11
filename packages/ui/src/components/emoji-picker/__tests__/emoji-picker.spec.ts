@@ -253,14 +253,23 @@ describe('SrEmojiPicker', () => {
     wrapper.unmount()
   })
 
-  it('tipMode=tooltip 时用气泡提示，信息行只显示分类', async () => {
+  it('tipMode=tooltip 时用气泡提示，并隐藏与 tab 重复的信息行', async () => {
     const wrapper = mount(SrEmojiPicker, { props: { packages, tipMode: 'tooltip' } })
 
     const items = wrapper.findAll('.sr-emoji-picker__item')
     expect(wrapper.findAll('.sr-tooltip__trigger')).toHaveLength(items.length)
+    expect(wrapper.find('.sr-emoji-picker__meta').exists()).toBe(false)
 
     await items[0]?.trigger('mouseenter')
-    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('甲包')
+    expect(wrapper.find('.sr-emoji-picker__meta').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('tipMode=tooltip 搜索时恢复信息行显示命中数', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, tipMode: 'tooltip', searchable: true } })
+
+    await wrapper.find('.sr-emoji-picker__search-input').setValue('赞')
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('找到 1 个')
     wrapper.unmount()
   })
 

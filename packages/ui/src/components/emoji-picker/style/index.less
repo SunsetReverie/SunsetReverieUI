@@ -99,8 +99,9 @@
   &__panel {
     flex: 1 1 auto;
     min-height: 0;
-    // 顶部留白由信息行负责，这里只留左右与底部
-    padding: 0 var(--sr-emoji-pad-x) 8px;
+    // 顶部 4px 是给第一排 hover 放大留的：34px 格子放大 1.14 再上移 1px，
+    // 会高出格子约 3.4px，没有这段留白就会被滚动容器裁掉一条边
+    padding: 4px var(--sr-emoji-pad-x) 8px;
     overflow-y: auto;
     // 面板内滚到底不要带动外层页面
     overscroll-behavior: contain;
@@ -119,7 +120,11 @@
     flex: 0 0 auto;
     order: 0;
     margin: 0;
-    padding: 8px var(--sr-emoji-pad-x) 4px;
+    // 字符表情在 34px 格子里只有约 23px 宽（居中留白两侧各 5.5px），
+    // 文字直接用 pad-x 会顶在格子左缘，看起来比表情更靠左。
+    // 补上「(格子 - 字号) / 2」这段内缩，文字左缘才和字形左缘对齐
+    padding: 8px var(--sr-emoji-pad-x) 4px
+      calc(var(--sr-emoji-pad-x) + (var(--sr-emoji-item-size) - var(--sr-emoji-font-size)) / 2);
     background: transparent;
     color: var(--sr-color-text-tertiary);
     font-size: 11.5px;

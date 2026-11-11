@@ -158,6 +158,14 @@ const panelStyle = computed(() =>
 const gridStyle = computed(() => ({ gridTemplateColumns: `repeat(${props.columns}, 1fr)` }))
 
 /**
+ * 是否显示信息行
+ *
+ * `tooltip` 模式下分类名已经由底部 tab 标出，再挂一行「表情」就是重复；
+ * 但搜索时没有 tab，命中数仍需要一行字来交代。
+ */
+const showMeta = computed(() => props.tipMode !== 'tooltip' || isSearching.value)
+
+/**
  * 悬停 / 聚焦某个表情
  *
  * 只有 `meta` 模式需要把名称写进信息行；`tooltip` 模式交给气泡，
@@ -376,7 +384,7 @@ watch(isSearching, (on, off) => {
     </div>
 
     <!-- 信息行：放在滚动区外，避免滚动内容从文字后面穿过 -->
-    <p class="sr-emoji-picker__meta" aria-live="polite">{{ metaText }}</p>
+    <p v-if="showMeta" class="sr-emoji-picker__meta" aria-live="polite">{{ metaText }}</p>
 
     <!-- 内容区 -->
     <div class="sr-emoji-picker__panel" :style="panelStyle" role="tabpanel">
