@@ -121,4 +121,68 @@ export function SunsetReverieResolver(options: SunsetReverieResolverOptions = {}
   return directives ? [componentResolver, directiveResolver] : [componentResolver]
 }
 
+/**
+ * 组合式函数与命令式 API 的自动导入清单
+ *
+ * 与 `@sunset-reverie/nuxt` 模块里 `addImports` 注册的是同一批导出。
+ * 两处必须保持一致：新增组合式函数时这里和 nuxt module 一起改，
+ * 否则 Vue 项目自动导入会漏、Nuxt 项目则会出现「自动导入可用但 preset 里没有」的不一致。
+ */
+export const SR_AUTO_IMPORT_NAMES: readonly string[] = [
+  'useSrTheme',
+  'useSrBreakpoint',
+  'useSrConfig',
+  'srToast',
+  'srConfirm',
+  'srMessage',
+  'srNotification',
+]
+
+/** 自动导入 preset 配置项 */
+export interface SunsetReverieAutoImportOptions {
+  /**
+   * 是否包含命令式 API（`srToast` / `srConfirm` / `srMessage` / `srNotification`）
+   *
+   * 关掉后只保留 `useSr*` 组合式函数，适合不希望全局挂命令式函数、
+   * 或只想让 `useSrTheme` 这类函数免 import 的场景。
+   * @default true
+   */
+  includeApis?: boolean
+}
+
+/**
+ * 与 `unplugin-auto-import` 的 `InlinePreset` 结构兼容的 preset
+ *
+ * 故意不引 `unplugin-auto-import` 的类型：它在使用方是开发依赖，
+ * 若在此处引用，resolver 的类型声明会带上一个未声明的依赖。
+ */
+export interface SunsetReverieAutoImportPreset {
+  /** 导入来源包名 */
+  from: string
+  /** 需要自动导入的导出名清单 */
+  imports: string[]
+}
+
+/**
+ * 生成 `unplugin-auto-import` 的 preset
+ *
+ * 用法：`AutoImport({ imports: [SunsetReverieAutoImport()] })`（注意是 `imports`，
+ * `presets` 是插件里另一种按包名解析的 `packagePresets`，写错不会报错但会静默失效），
+ * 之后 `<script setup>` 里可直接调用 `useSrTheme()` / `srToast()`，不必手写 import。
+ * @param options 配置项，见 {@link SunsetReverieAutoImportOptions}
+ * @returns 供 `unplugin-auto-import` 的 `presets` 数组使用的 preset 对象
+ */
+export function SunsetReverieAutoImport(
+  options: SunsetReverieAutoImportOptions = {},
+): SunsetReverieAutoImportPreset {
+  const { includeApis = true } = options
+
+  // 命令式 API 统一以 sr 开头，useSr* 组合式函数以 use 开头，按前缀区分即可
+  const imports = includeApis
+    ? [...SR_AUTO_IMPORT_NAMES]
+    : SR_AUTO_IMPORT_NAMES.filter((name) => !name.startsWith('sr'))
+
+  return { from: '@sunset-reverie/ui', imports: [...imports] }
+}
+
 export default SunsetReverieResolver

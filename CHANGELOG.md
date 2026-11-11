@@ -36,6 +36,7 @@
 - `pnpm lint` 补上 CSS 变量校验：定义与引用全部对齐，引用不存在的变量不再静默失效（顺带修掉 7 处）
 - 视觉基线扩到 11 张（表格、树、穿梭框、下拉菜单、Markdown 编辑器等），预热改走 `load`，消除冷启动超时
 - 分发改为 Release tarball：新增 `pnpm release:pack`，一次产出四个包的 tgz，npm 与 pnpm 都能用 URL 直接安装（实测 2 秒装完、285 个导出可用）；不再支持 `git+https://...#tag` 安装——Git 依赖装到的是 monorepo 根壳（`sunsetreverie-ui@0.0.0`，无入口），且 `dist` 不进版本库，装下来没有产物
+- `@sunset-reverie/resolver` 新增 `SunsetReverieAutoImport()`：给 `unplugin-auto-import` 用的 preset，Vue 项目一行 `imports: [SunsetReverieAutoImport()]` 即可自动导入 7 个组合式函数与命令式 API，`{ includeApis: false }` 可只保留三个 `useSr*`；清单与 Nuxt 模块 `addImports` 保持同一批导出
 
 ### 修复
 
