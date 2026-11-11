@@ -2,6 +2,8 @@
 
 自用 / 团队内部的 Vue 3 + Nuxt 4 UI 组件库。**不发布到 NPM**，只托管在私有 Git 仓库，通过 tag 分发。
 
+当前版本：`v1.0.0-beta.1`（首个 1.0 预发布版，69 个组件，无 BREAKING）。逐版本条目见 [`CHANGELOG.md`](./CHANGELOG.md)，站点版见[更新日志](docs/changelog.md)。
+
 - 品牌缩写：**SR**
 - 技术栈：Vue 3 · Nuxt 4 · TypeScript · Less · Vite（库模式）· pnpm monorepo
 - 规划文档：[`docs/夕梦UI组件库开发规划.md`](./docs/夕梦UI组件库开发规划.md)

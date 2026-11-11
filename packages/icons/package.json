@@ -1,6 +1,6 @@
 {
   "name": "@sunset-reverie/icons",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.1",
   "description": "夕梦 UI 图标封装：Iconify 运行时与离线集合",
   "type": "module",
   "sideEffects": false,

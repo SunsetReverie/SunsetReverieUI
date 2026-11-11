@@ -1,19 +1,40 @@
 # 更新日志
 
-本文件记录每次发布的变更。版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)，
-当前处于 `0.x` 阶段：**破坏性变更只进 MINOR**，PATCH 只放修复。
+本文件记录每次发布的变更。版本号遵循 [SemVer](https://semver.org/lang/zh-CN/)。
+`1.x` 起**破坏性变更只进 MAJOR**，MINOR 只加功能，PATCH 只放修复；
+预发布版（`-beta.n` / `-rc.n`）允许在正式版前调整接口，但不允许浮动引用。
 
 ---
 
 ## [Unreleased]
 
-下一个发布版的变更汇总。发布时用 `pnpm version-packages` 把它落成正式版本号；破坏性项必须在标题里标 **BREAKING**。
+下一个发布版的变更汇总。发布时把条目落到正式版本号那一段；破坏性项必须在标题里标 **BREAKING**。
+
+（暂无）
+
+---
+
+## [1.0.0-beta.1] - 2026-11-11
+
+1.0 的首个预发布版：组件从 34 个补到 69 个，工程链路补齐体积预算与回归守卫。
+**这一版没有 BREAKING 项** —— 1.0 承诺的是「接口表面冻结」，不是「把接口重写一遍」。
+
+> 预发布版：接口按 1.0 收敛，正式版前只修阻断性问题。下游请锁 `v1.0.0-beta.1`，
+> 预发布版之间不保证互相兼容。
 
 ### 新增 · 组件（累计 69 个）
 
 - 在 0.1.0 的 34 个组件之上补齐：`SrTextarea`、`SrComment`、`SrMusicPlayer`、`SrDescriptions`、`SrSteps`、`SrCollapse`、`SrSegmented`、`SrTimeline`、`SrSlider`、`SrResult`、`SrVirtualList`、`SrCascader`、`SrTransfer`、`SrAnchor`、`SrColorPicker`、`SrQrcode`、`SrDivider`、`SrSpace`、`SrImage`、`SrStatistic`、`SrLoading`、`SrCodeBlock`、`SrEmojiPicker`、`SrMarkdown`、`SrMarkdownEditor`、`SrTree`
 - `SrEmojiPicker` 新增 `tipMode`：`meta` / `tooltip` / `none`
 - `SrNav` 新增 `filterActive`：外部过滤时临时忽略分组折叠
+
+### 新增 · 构建与质量
+
+- `pnpm size` 把体积纳入预算：全量 JS 254.2KB、CSS 49.2KB、合计 303.4KB（gzip），按需最重 67.4KB（`SrComment`），超预算非零退出
+- `pnpm check:layout` 增加毛玻璃两项断言：单屏层数超 32 判失败、超 5 只提示；演示站切扁平风格后全页不得残留 `backdrop-filter`
+- 6 处组件样式改走 `.sr-glass-layer()`，扁平风格不再留下 `blur()` 合成层；新增 `--sr-glass-filter-mask` / `--sr-glass-filter-soft` 两档 token
+- `pnpm lint` 补上 CSS 变量校验：定义与引用全部对齐，引用不存在的变量不再静默失效（顺带修掉 7 处）
+- 视觉基线扩到 11 张（表格、树、穿梭框、下拉菜单、Markdown 编辑器等），预热改走 `load`，消除冷启动超时
 
 ### 修复
 
@@ -26,6 +47,11 @@
 - `SrSelectOption` 允许自定义字段
 - `SrCarouselItem` 增加索引签名，插槽可直接读自定义字段
 - `SrDatePickerValue` 纳入字符串输出
+
+### 已知限制
+
+- 单屏毛玻璃层数目标 5 层未达成：实测演示站最高 31 层、文档站最高 16 层，守卫阈值 32 只拦回归。往下压需要改小控件（输入框、标签、表头单元格）的模糊策略，属单独的视觉决策
+- 发版产物靠 `prepare` 构建，`<tag>-dist` 兜底分支尚未接通（规划 D-03），安装只能走主分支 tag
 
 ---
 

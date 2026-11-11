@@ -21,7 +21,8 @@
 
 ```bash
 # 私有仓库按 tag 分发，把 <你的 Git 地址> 换成实际仓库地址，锁定到某个版本
-pnpm add git+https://<你的 Git 地址>/sunset-reverie-ui.git#v0.1.0
+# 当前是 1.0 预发布版；正式 v1.0.0 打出来后再换成 v1.0.0
+pnpm add git+https://<你的 Git 地址>/sunset-reverie-ui.git#v1.0.0-beta.1
 ```
 
 > 上面是**安装模板**：`<你的 Git 地址>` 是占位符，需要替换后才能执行。库不在公共 npm 源上；只装核心库时，按需引入的组件样式由子路径提供。

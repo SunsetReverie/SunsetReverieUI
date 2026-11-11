@@ -19,6 +19,13 @@ pnpm changeset
 pnpm version-packages   # 汇总所有 changeset → 升版本号 + 写 CHANGELOG
 ```
 
+## 预发布版
+
+`changeset pre enter beta` 的序号从 `beta.0` 起算，给不出 `beta.1` / `rc.1` 这种精确序号。
+要发指定序号的预发布版（如 `v1.0.0-beta.1`），直接改四个包的 `version`、
+`packages/nuxt` 的 `peerDependencies` 范围，再手写 `CHANGELOG.md` 那一段；
+`pnpm version-packages` 留给转正式版。
+
 ## 约定
 
 - 四个发布包（ui / nuxt / resolver / icons）版本号由 `config.json` 的 `fixed` 锁定，始终一致。
