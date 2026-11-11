@@ -244,6 +244,35 @@ describe('SrEmojiPicker', () => {
     wrapper.unmount()
   })
 
+  it('不再输出原生 title，名称只走 aria-label', () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages } })
+
+    // 原生 title 会同时触发浏览器自带提示，和组件提示重复
+    expect(wrapper.findAll('.sr-emoji-picker__item[title]')).toHaveLength(0)
+    expect(wrapper.find('.sr-emoji-picker__item').attributes('aria-label')).toBe('微笑')
+    wrapper.unmount()
+  })
+
+  it('tipMode=tooltip 时用气泡提示，信息行只显示分类', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, tipMode: 'tooltip' } })
+
+    const items = wrapper.findAll('.sr-emoji-picker__item')
+    expect(wrapper.findAll('.sr-tooltip__trigger')).toHaveLength(items.length)
+
+    await items[0]?.trigger('mouseenter')
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('甲包')
+    wrapper.unmount()
+  })
+
+  it('tipMode=none 时既不显示气泡也不改信息行', async () => {
+    const wrapper = mount(SrEmojiPicker, { props: { packages, tipMode: 'none' } })
+
+    expect(wrapper.findAll('.sr-tooltip__trigger')).toHaveLength(0)
+    await wrapper.findAll('.sr-emoji-picker__item')[0]?.trigger('mouseenter')
+    expect(wrapper.find('.sr-emoji-picker__meta').text()).toBe('甲包')
+    wrapper.unmount()
+  })
+
   it('closeOnSelect 时额外派发 close', async () => {
     const wrapper = mount(SrEmojiPicker, { props: { packages, closeOnSelect: true } })
 

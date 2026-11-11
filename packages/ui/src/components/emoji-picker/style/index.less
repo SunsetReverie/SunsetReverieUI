@@ -9,6 +9,8 @@
  */
 
 @import '../../../styles/mixins/_surface.less';
+// tip-mode="tooltip" 会用到气泡组件，按需引入时不能漏掉它的样式
+@import '../../tooltip/style/index.less';
 
 .sr-emoji-picker {
   --sr-emoji-gap: 2px;

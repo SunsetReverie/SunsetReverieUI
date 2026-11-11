@@ -116,6 +116,19 @@ export const emojiPickerProps = {
     default: '搜索表情',
   },
   /**
+   * 表情名称的提示方式 @default 'meta'
+   *
+   * - `meta`：顶部信息行随悬停更新，不显示气泡
+   * - `tooltip`：悬停/聚焦时在表情旁弹出气泡，信息行只显示当前分类
+   * - `none`：只保留 `aria-label`，不显示名称
+   *
+   * 三种模式互斥，避免「信息行 + 原生 title」同时出现。
+   */
+  tipMode: {
+    type: String as PropType<'meta' | 'tooltip' | 'none'>,
+    default: 'meta',
+  },
+  /**
    * 显示「最近使用」 @default true
    *
    * 会话级，不持久化——组件不该替宿主决定存哪。

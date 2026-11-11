@@ -76,7 +76,9 @@ async function updatePosition(): Promise<void> {
  * @returns {void}
  */
 function scheduleUpdate(): void {
-  if (typeof window === 'undefined') return
+  // 未显示时不必测量：表情面板里可能有几十个提示实例，
+  // 滚动时每个都读一次布局会把滚动拖慢
+  if (typeof window === 'undefined' || !visible.value) return
   if (frame) return
 
   frame = window.requestAnimationFrame(() => {

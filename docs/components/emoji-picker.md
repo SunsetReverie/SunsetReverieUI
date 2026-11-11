@@ -6,12 +6,24 @@
 import { ref } from 'vue'
 
 const picked = ref('')
+
+/** 名称提示方式：信息行 / 气泡 / 不显示 */
+const tipMode = ref('meta')
+const tipOptions = [
+  { label: '信息行', value: 'meta' },
+  { label: '气泡', value: 'tooltip' },
+  { label: '不显示', value: 'none' },
+]
 </script>
 
 ## 交互演示
 
 <div class="sr-demo is-block">
-  <SrEmojiPicker :columns="8" @select="(item, mark) => (picked = mark)" />
+  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px">
+    <span style="font-size: 12px; color: var(--vp-c-text-3)">名称提示</span>
+    <SrSegmented v-model="tipMode" :options="tipOptions" />
+  </div>
+  <SrEmojiPicker :columns="8" :tip-mode="tipMode" @select="(item, mark) => (picked = mark)" />
   <p style="margin: 10px 0 0; font-size: 12px; color: var(--vp-c-text-3)">
     选中的标记：<code>{{ picked || '（还没选）' }}</code>
   </p>
@@ -125,9 +137,23 @@ function onSelect(item: SrEmojiItem, mark: string) {
 
 ## 信息行
 
-面板顶部有一行小字，平时显示当前分类名，鼠标悬停表情时改成该表情的**名称**。键盘 focus 到按钮上也会显示，方便确认 `[标记名]` 具体是什么。
+面板顶部有一行小字，平时显示当前分类名；`tipMode="meta"`（默认）时，鼠标悬停表情会改成该表情的**名称**，键盘 focus 也会显示，方便确认 `[标记名]` 具体是什么。
 
 这行固定在滚动区之外，不随表情列表滚动；列表本身不显示滚动条，但滚轮、触控板与触摸仍可滚动。
+
+## 名称提示方式
+
+`tipMode` 三选一，避免「信息行 + 浏览器原生 title」同时出现：
+
+| 值 | 悬停时的名称 | 说明 |
+| --- | --- | --- |
+| `meta`（默认） | 顶部信息行 | 不弹气泡，面板最安静 |
+| `tooltip` | 表情旁的气泡 | 用 `SrTooltip`，不依赖浏览器原生提示 |
+| `none` | 不显示 | 只保留 `aria-label`，供读屏使用 |
+
+```vue
+<SrEmojiPicker tip-mode="tooltip" @select="onSelect" />
+```
 
 ## 自定义表情包
 
@@ -249,6 +275,7 @@ const segments = parseEmojiText('今天[微笑]了', map)
 | `maxHeight` | `number` | `260` | 内容区最大高度（px） |
 | `searchable` | `boolean` | `false` | 显示搜索框 |
 | `searchPlaceholder` | `string` | `'搜索表情'` | 搜索占位文案 |
+| `tipMode` | `'meta' \| 'tooltip' \| 'none'` | `'meta'` | 名称提示方式：信息行 / 气泡 / 不显示 |
 | `showRecent` | `boolean` | `true` | 显示「最近」tab |
 | `closeOnSelect` | `boolean` | `false` | 选中后派发 `close` |
 | `size` | `SrSize` | `'md'` | 尺寸档位 |

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
+import SrTooltip from '../../tooltip/src/tooltip.vue'
 import { DEFAULT_EMOJI_PACKAGES } from './data'
 import { emojiPickerProps, type SrEmojiItem } from './emoji-picker'
 import { stringifyEmoji } from './parse'
@@ -118,9 +119,13 @@ const displayEmojis = computed<SrEmojiItem[]>(() => {
   return pack?.emojis ?? []
 })
 
-/** 信息行文案：悬停优先，其次搜索结果数，最后当前分类名 */
+/**
+ * 信息行文案：悬停优先，其次搜索结果数，最后当前分类名
+ *
+ * `tooltip` / `none` 模式下不把悬停名写进信息行，避免和气泡重复。
+ */
 const metaText = computed(() => {
-  if (hovered.value) return hovered.value.name
+  if (props.tipMode === 'meta' && hovered.value) return hovered.value.name
   if (isSearching.value) return `找到 ${displayEmojis.value.length} 个`
   if (viewingRecent.value && hasRecent.value) return '最近使用'
   return packages.value.find((item) => item.key === currentPackKey.value)?.name ?? ''
@@ -151,6 +156,26 @@ const panelStyle = computed(() =>
 
 /** 网格列数 */
 const gridStyle = computed(() => ({ gridTemplateColumns: `repeat(${props.columns}, 1fr)` }))
+
+/**
+ * 悬停 / 聚焦某个表情
+ *
+ * 只有 `meta` 模式需要把名称写进信息行；`tooltip` 模式交给气泡，
+ * `none` 模式什么也不显示，避免两处重复。
+ * @param item 表情项
+ * @returns 无
+ */
+function onItemEnter(item: SrEmojiItem): void {
+  if (props.tipMode === 'meta') hovered.value = item
+}
+
+/**
+ * 离开表情
+ * @returns 无
+ */
+function onItemLeave(): void {
+  if (props.tipMode === 'meta') hovered.value = null
+}
 
 /**
  * 选中表情
@@ -356,23 +381,54 @@ watch(isSearching, (on, off) => {
     <!-- 内容区 -->
     <div class="sr-emoji-picker__panel" :style="panelStyle" role="tabpanel">
       <div v-if="displayEmojis.length" class="sr-emoji-picker__grid" :style="gridStyle">
-        <button
-          v-for="item in displayEmojis"
-          :key="`${item.name}-${item.url ?? item.char}`"
-          class="sr-emoji-picker__item"
-          :class="{ 'is-picked': pickedName === item.name }"
-          type="button"
-          :title="item.name"
-          :aria-label="item.name"
-          @click="onSelect(item)"
-          @mouseenter="hovered = item"
-          @mouseleave="hovered = null"
-          @focus="hovered = item"
-          @blur="hovered = null"
-        >
-          <img v-if="item.url" class="sr-emoji-picker__img" :src="item.url" :alt="item.name" loading="lazy" />
-          <span v-else class="sr-emoji-picker__char">{{ item.char }}</span>
-        </button>
+        <template v-for="item in displayEmojis" :key="`${item.name}-${item.url ?? item.char}`">
+          <SrTooltip
+            v-if="tipMode === 'tooltip'"
+            :content="item.name"
+            placement="top"
+            :offset="6"
+            :show-delay="120"
+          >
+            <button
+              class="sr-emoji-picker__item"
+              :class="{ 'is-picked': pickedName === item.name }"
+              type="button"
+              :aria-label="item.name"
+              @click="onSelect(item)"
+            >
+              <img
+                v-if="item.url"
+                class="sr-emoji-picker__img"
+                :src="item.url"
+                :alt="item.name"
+                loading="lazy"
+              />
+              <span v-else class="sr-emoji-picker__char">{{ item.char }}</span>
+            </button>
+          </SrTooltip>
+
+          <button
+            v-else
+            class="sr-emoji-picker__item"
+            :class="{ 'is-picked': pickedName === item.name }"
+            type="button"
+            :aria-label="item.name"
+            @click="onSelect(item)"
+            @mouseenter="onItemEnter(item)"
+            @mouseleave="onItemLeave"
+            @focus="onItemEnter(item)"
+            @blur="onItemLeave"
+          >
+            <img
+              v-if="item.url"
+              class="sr-emoji-picker__img"
+              :src="item.url"
+              :alt="item.name"
+              loading="lazy"
+            />
+            <span v-else class="sr-emoji-picker__char">{{ item.char }}</span>
+          </button>
+        </template>
       </div>
 
       <p v-else class="sr-emoji-picker__empty">

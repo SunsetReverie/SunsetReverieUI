@@ -66,6 +66,16 @@ const tabOptions = [
   { label: '顶部', value: 'top' },
 ]
 
+/** 名称提示方式 */
+const tipMode = ref<'meta' | 'tooltip' | 'none'>('meta')
+
+/** 名称提示选项 */
+const tipOptions = [
+  { label: '信息行', value: 'meta' },
+  { label: '气泡', value: 'tooltip' },
+  { label: '不显示', value: 'none' },
+]
+
 /** 尺寸选项 */
 const sizeOptions = [
   { label: '小', value: 'sm' },
@@ -132,6 +142,20 @@ const segments = computed(() => parseEmojiText(storyMarks.value, buildEmojiMap(c
         不传 <code>packages</code> 时用内置的五个分类，共 130 多个字符表情。
         <code>tab-position</code> 控制分类栏在底部还是顶部；
         <code>searchable</code> 打开搜索框，跨分类按名称过滤。 悬停表情时顶部会显示名称
+      </p>
+    </section>
+
+    <section>
+      <h3>名称提示方式</h3>
+      <div class="row" style="margin-bottom: 12px">
+        <SrSegmented v-model="tipMode" :options="tipOptions" size="sm" />
+      </div>
+      <div class="panel">
+        <SrEmojiPicker :tip-mode="tipMode" @select="onSelect" />
+      </div>
+      <p class="hint">
+        <code>meta</code> 把名称写进顶部信息行；<code>tooltip</code> 用库里的气泡， 不再触发浏览器原生
+        title；<code>none</code> 只保留 <code>aria-label</code>。 三种模式互斥，不会同时出现两处名称
       </p>
     </section>
 
