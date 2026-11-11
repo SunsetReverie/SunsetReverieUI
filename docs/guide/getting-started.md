@@ -58,7 +58,7 @@ useSrTheme().init()
 createApp(App).mount('#app')
 ```
 
-组件**不需要全局注册**，在 SFC 里按需 import 即可，未用到的组件不会进包：
+组件**不需要全局注册**，在 SFC 里按需 import 即可，未用到的组件不会进包（想让模板里直接写标签、连 import 都省掉，见下文「自动导入」）：
 
 ```vue
 <script setup lang="ts">
@@ -160,7 +160,7 @@ export default defineNuxtConfig({
 | --- | --- |
 | 注入样式 | 把 `style.css` 插到 `css` 数组最前，保证变量层先于业务样式 |
 | 注册组件 | 扫描组件目录批量 `addComponent`，构建期按需打包 |
-| 自动导入 | `useSrTheme` / `useSrBreakpoint` / `useSrConfig` / `srToast` |
+| 自动导入 | 组件与 7 个函数：`useSrTheme` / `useSrBreakpoint` / `useSrConfig` / `srToast` / `srConfirm` / `srMessage` / `srNotification` |
 | 防闪烁 | 注入内联脚本并设置 `<html>` 初始属性 |
 
 ### 模块选项
@@ -195,6 +195,101 @@ export default defineConfig({
 ```
 
 `SunsetReverieResolver` 的 `importStyle` 默认 `'css'`，直接用编译好的样式，下游不需要 Less。`'less'` 会去引 `.less` 源码，而 tarball 里只有 `dist`，所以那个选项仅在本地 `link:` 联调时有效；要改主题请用 CSS 变量覆盖，见[主题与 Token](/guide/theming)。
+
+## 自动导入
+
+自动导入分两块能力，支持程度不一样：
+
+| 能力 | Vue 3 + Vite | Nuxt 4 |
+| --- | --- | --- |
+| 组件（模板里直接写 `<SrButton>`） | 支持，需 `unplugin-vue-components` + resolver | 支持，装模块即可 |
+| 组合式函数（`useSrTheme` 等 7 个） | 库未预置 preset，需自己配 `unplugin-auto-import` | 支持，模块已注册 |
+
+### Vue 3 + Vite
+
+先装解析器与插件（resolver 不把它们列为依赖，需要使用者自备）：
+
+```bash
+npm i -D @sunset-reverie/resolver unplugin-vue-components
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import { SunsetReverieResolver } from '@sunset-reverie/resolver'
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    Components({
+      resolvers: [SunsetReverieResolver()],
+      // 生成的组件类型声明，建议提交仓库，Volar 才能补全标签与 props
+      dts: 'src/components.d.ts',
+    }),
+  ],
+})
+```
+
+配好之后模板里直接写标签，插件会自动补成按需导入，连样式一起带上：
+
+```vue
+<template>
+  <!-- 等价于 import { SrButton } from '@sunset-reverie/ui/button' -->
+  <!-- 外加 base.css 与 components/button/style.css 两条副作用导入 -->
+  <SrButton variant="primary">提交</SrButton>
+</template>
+```
+
+`base.css` 只在解析到第一个组件时注入一次，后面的组件只带自己的 `style.css`；`importStyle` 默认 `'css'`，所以不需要再手动引 `style.css`。
+
+组合式函数要一起自动导入，再加一个 `unplugin-auto-import`：
+
+```ts
+// vite.config.ts 的 plugins 里追加
+import AutoImport from 'unplugin-auto-import/vite'
+
+AutoImport({
+  imports: [
+    {
+      '@sunset-reverie/ui': [
+        'useSrTheme',
+        'useSrBreakpoint',
+        'useSrConfig',
+        'srToast',
+        'srConfirm',
+        'srMessage',
+        'srNotification',
+      ],
+    },
+  ],
+  dts: 'src/auto-imports.d.ts',
+})
+```
+
+> 这 7 个名字与 Nuxt 模块自动注册的是同一批导出，库里没有预置 `unplugin-auto-import` 的 preset，照抄即可。
+
+### Nuxt 4
+
+装模块就同时拿到组件与函数的自动导入，不需要 `unplugin-vue-components`：
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: ['@sunset-reverie/nuxt'],
+})
+```
+
+- **组件**：模块批量 `addComponent`，模板里直接写 `<SrButton>`，构建期按需打包，未用到的组件不进产物；
+- **组合式函数**：`useSrTheme` / `useSrBreakpoint` / `useSrConfig` / `srToast` / `srConfirm` / `srMessage` / `srNotification` 直接调用，不需要 import；
+- 如果团队规范要求显式 import，把 `sunsetReverie.autoImports` 设为 `false` 即可关闭函数自动导入。
+
+### 使用注意
+
+- 自动导入只处理**模板标签**。`<script setup>` 里要用组件变量（存进 `ref`、动态组件 `:is`、`h()` 渲染）时，仍然要显式 import。
+- `dts` 指定的类型声明文件没生成时，Volar 会报「找不到 SrButton」；重新跑一次 dev server 或重启 TS Server 即可。
+- 标签大小写都识别（`<SrButton>` / `<sr-button>`），推荐 PascalCase，与文档和类型声明保持一致。
 
 ## 下一步
 
