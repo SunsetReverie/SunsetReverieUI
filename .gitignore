@@ -46,3 +46,29 @@ blob-report/
 
 # vite 临时配置产物
 *.timestamp-*.mjs
+
+# ------------------------------------------------------------------
+# 以下内容只保留在本地，不进远程仓库。
+#
+# 仓库定位是「使用框架必需文件的来源」：别人从 tag 安装只需要 packages/、
+# internal/ 与构建配置。测试资产、演示站、内部评审材料留在本地即可。
+# 注意：这些文件已从 Git 索引移出，工作区文件仍在，本地照常开发与运行。
+# ------------------------------------------------------------------
+
+# 视觉基线、e2e 与 Playwright 配置（测试资产）
+visual/
+e2e/
+playwright.config.ts
+playwright.visual.config.ts
+
+# 演示站（消费方示例工程，不是库本身的必需文件）
+playground-vue3/
+playground-nuxt4/
+
+# 内部规划材料（文档站 srcExclude 已排除，仅评审用）
+docs/夕梦UI组件库开发规划.md
+docs/夕梦UI组件库开发规划.html
+docs/SrMarkdown组件规划.md
+
+# CI 流水线（跑的就是上面这些测试，一并移出）
+.github/
