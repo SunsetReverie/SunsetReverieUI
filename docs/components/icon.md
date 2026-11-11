@@ -79,6 +79,10 @@ import { SrIcon } from '@sunset-reverie/ui'
 </SrIcon>
 ```
 
+## 更多图标
+
+核心库内联了 86 个常用图标，其余 Lucide 图标（共 2100 个）需要装配套图标包并在应用入口注册一次。下载、安装与注册的完整步骤见[扩展图标](/guide/icons)。
+
 ## Props
 
 | 名称 | 类型 | 默认值 | 说明 |

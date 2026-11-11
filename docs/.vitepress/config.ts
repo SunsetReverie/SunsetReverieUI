@@ -124,6 +124,7 @@ export default defineConfig({
             { text: '快速开始', link: '/guide/getting-started' },
             { text: '版本升级', link: '/guide/upgrading' },
             { text: '主题与 Token', link: '/guide/theming' },
+            { text: '扩展图标', link: '/guide/icons' },
             { text: '拖拽排序', link: '/guide/drag-sort' },
             { text: 'Markdown 渲染样式定制', link: '/guide/markdown-theming' },
           ],
