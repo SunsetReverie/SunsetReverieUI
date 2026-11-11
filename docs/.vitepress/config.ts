@@ -87,6 +87,19 @@ export default defineConfig({
           find: /^@sunset-reverie\/ui\/china-map$/,
           replacement: resolvePath('../../packages/ui/src/components/china-map/index.ts'),
         },
+        {
+          // 图标包同样直连源码：干净检出时 dist 不存在，走包解析会直接失败
+          find: /^@sunset-reverie\/icons\/offline$/,
+          replacement: resolvePath('../../packages/icons/src/offline/index.ts'),
+        },
+        {
+          find: /^@sunset-reverie\/icons\/lucide-full$/,
+          replacement: resolvePath('../../packages/icons/src/lucide-full.ts'),
+        },
+        {
+          find: /^@sunset-reverie\/icons$/,
+          replacement: resolvePath('../../packages/icons/src/index.ts'),
+        },
       ],
     },
     css: {
