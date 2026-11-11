@@ -164,6 +164,7 @@ W10 完成后按业务需要提前交付了一批 P2 组件，并对已有的交
 | 演示覆盖守卫 | `check-demo-coverage` 挂进 `pnpm lint`，对齐组件目录 / 注册表 / `props.json` / 孤儿文件；Row 与 Col 的 Props 表在同一页分两组展示 |
 | 文档站守卫 | `pnpm check:docs` 按区块解析 Props / 事件 / 插槽表并与 `props.json` 精确比对，另查侧边栏覆盖、站内链接与锚点、门面数字、未转义插值；旧版只查「字符串有没有出现」 |
 | 主题指南 | `docs/guide/theming.md` 讲清三层 Token、明暗/质感/主色/动效四维切换、SSR 首帧不闪白与三档玻璃强度 |
+| 版本升级 | `docs/guide/upgrading.md` 面向使用方：换 tag、跑检查、看 CHANGELOG 的 BREAKING、四包同版本与回滚；README 上方 `CHANGELOG.md` 维护每个版本的真实条目 |
 | 演示站体检 | `pnpm check:demo` 遍历注册表全部演示页，断言标题渲染、源码入口存在、无控制台错误，失败即非零退出 |
 | 视觉基线 | `pnpm check:visual` 比对开场面板 / pill 标签 / 右键菜单 / 吸附播放器 5 张基线（`visual/__screenshots__`），`pnpm check:visual:update` 重建；固定亮色 + 扁平 + 无动效 |
 | 演示站类型检查 | `pnpm typecheck` 现在也跑 `playground-vue3` 的 `vue-tsc`；模板里不写 TS 断言与反引号模板字符串，复杂表达式收进脚本函数 |

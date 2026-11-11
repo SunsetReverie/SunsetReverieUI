@@ -181,6 +181,7 @@ export default defineConfig({
 ## 下一步
 
 - [组件概览](/components/) —— 69 个组件按分组索引，先看全貌再挑
+- [版本升级](/guide/upgrading) —— 从旧 tag 换到新版本，BREAKING 怎么看、怎么回滚
 - [主题与 Token](/guide/theming) —— 明暗 / 质感 / 品牌色 / 动效怎么切、怎么扩展
 - [拖拽排序](/guide/drag-sort) —— 表格、树、看板共用的拖拽能力
 - [Markdown 渲染样式定制](/guide/markdown-theming) —— 阅读区排版与代码高亮

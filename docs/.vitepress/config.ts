@@ -71,7 +71,9 @@ export default defineConfig({
     nav: [
       { text: '指南', link: '/guide/getting-started', activeMatch: '/guide/' },
       { text: '组件', link: '/components/button', activeMatch: '/components/' },
-      { text: 'Token 验证页', link: '/token-gallery.html' },
+      // 目标是一个独立的静态 HTML，不是 VitePress 路由；必须新开标签页，
+      // 否则 cleanUrls 会把 /token-gallery.html 改写成 /token-gallery 并落到 404 页
+      { text: 'Token 验证页', link: '/token-gallery.html', target: '_blank', rel: 'noreferrer' },
     ],
 
     sidebar: {
@@ -80,6 +82,7 @@ export default defineConfig({
           text: '指南',
           items: [
             { text: '快速开始', link: '/guide/getting-started' },
+            { text: '版本升级', link: '/guide/upgrading' },
             { text: '主题与 Token', link: '/guide/theming' },
             { text: '拖拽排序', link: '/guide/drag-sort' },
             { text: 'Markdown 渲染样式定制', link: '/guide/markdown-theming' },

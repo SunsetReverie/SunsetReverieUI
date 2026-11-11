@@ -5,6 +5,30 @@
 
 ---
 
+## [Unreleased]
+
+下一个发布版的变更汇总。发布时用 `pnpm version-packages` 把它落成正式版本号；破坏性项必须在标题里标 **BREAKING**。
+
+### 新增 · 组件（累计 69 个）
+
+- 在 0.1.0 的 34 个组件之上补齐：`SrTextarea`、`SrComment`、`SrMusicPlayer`、`SrDescriptions`、`SrSteps`、`SrCollapse`、`SrSegmented`、`SrTimeline`、`SrSlider`、`SrResult`、`SrVirtualList`、`SrCascader`、`SrTransfer`、`SrAnchor`、`SrColorPicker`、`SrQrcode`、`SrDivider`、`SrSpace`、`SrImage`、`SrStatistic`、`SrLoading`、`SrCodeBlock`、`SrEmojiPicker`、`SrMarkdown`、`SrMarkdownEditor`、`SrTree`
+- `SrEmojiPicker` 新增 `tipMode`：`meta` / `tooltip` / `none`
+- `SrNav` 新增 `filterActive`：外部过滤时临时忽略分组折叠
+
+### 修复
+
+- `SrDatePicker` 的 `valueFormat` 输出字符串时按同一模板回显，不再依赖业务侧类型断言
+- `SrContextMenu` 补上浮层强模糊档（`--sr-glass-filter-strong`），修掉面板过透
+- `SrMusicPlayer` 吸附态支持整卡点击展开，控件区域仍保持原行为
+
+### 类型
+
+- `SrSelectOption` 允许自定义字段
+- `SrCarouselItem` 增加索引签名，插槽可直接读自定义字段
+- `SrDatePickerValue` 纳入字符串输出
+
+---
+
 ## [0.1.0] - 2026-11-07
 
 首个开发预览版。34 个组件、双风格主题系统、SSR 与水合保障链路。
