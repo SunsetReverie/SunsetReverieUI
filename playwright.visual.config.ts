@@ -18,6 +18,9 @@ export default defineConfig({
   // 首个用例的首屏导航会被这次冷启动吃掉十几秒，留足余量避免误红
   timeout: 60_000,
   fullyParallel: false,
+  // 只有一个 spec，但默认 worker 数会按 CPU 核数分摊：冷启动时多个 worker
+  // 同时首访，谁先撞上依赖预构建的 full reload 谁就卡到超时。串行最稳
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   reporter: [['list']],

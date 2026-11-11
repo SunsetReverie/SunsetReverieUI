@@ -29,7 +29,14 @@ async function openDemo(page: Page, hash: string): Promise<void> {
     localStorage.removeItem('sr-primary-preset')
   })
 
-  await page.goto(`${BASE}/?motion=none${hash}`, { waitUntil: 'networkidle' })
+  try {
+    await page.goto(`${BASE}/?motion=none${hash}`, { waitUntil: 'networkidle', timeout: 20_000 })
+  } catch {
+    // 冷启动时 Vite 要预构建依赖并 full reload，networkidle 可能永远等不到。
+    // 退回 load 不影响截图：各用例自己还会等目标元素可见
+    await page.goto(`${BASE}/?motion=none${hash}`, { waitUntil: 'load', timeout: 15_000 })
+  }
+
   await page.evaluate(() => {
     const root = document.documentElement
     root.setAttribute('data-sr-theme', 'light')
@@ -54,8 +61,14 @@ async function openDemo(page: Page, hash: string): Promise<void> {
  */
 test.beforeAll(async ({ browser }) => {
   const warmup = await browser.newPage()
-  await warmup.goto(BASE, { waitUntil: 'load', timeout: 60_000 })
+
+  // 不能用 networkidle 预热：冷启动时 Vite 有持续的模块请求，压根到不了 idle，
+  // 60s 的 hook 超时就是这么撞满的。用 load 打开两次——第一次把预构建跑完
+  // （它会 full reload 一次），第二次拿到的就是稳定页面
+  await warmup.goto(BASE, { waitUntil: 'load', timeout: 30_000 })
   await warmup.waitForFunction(() => document.querySelector('#app')?.childElementCount)
+  await warmup.waitForTimeout(3000)
+  await warmup.goto(BASE, { waitUntil: 'load', timeout: 30_000 })
   await warmup.waitForTimeout(500)
   await warmup.close()
 })
