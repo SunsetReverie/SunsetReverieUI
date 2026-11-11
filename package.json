@@ -22,6 +22,7 @@
     "lint:naming": "node scripts/check-naming.mjs",
     "lint:icons": "node scripts/check-icons.mjs",
     "gen:icons": "node packages/icons/scripts/gen-offline-icons.mjs",
+    "gen:icons:full": "node packages/icons/scripts/gen-icons-full.mjs",
     "gen:components": "node scripts/sync-components.mjs",
     "gen:china-map": "node scripts/gen-china-map.mjs",
     "docs:dev": "pnpm --filter @sunset-reverie/docs dev",

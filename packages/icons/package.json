@@ -16,6 +16,10 @@
       "types": "./dist/offline/index.d.ts",
       "import": "./dist/offline/index.js"
     },
+    "./lucide-full": {
+      "types": "./dist/lucide-full.d.ts",
+      "import": "./dist/lucide-full.js"
+    },
     "./package.json": "./package.json"
   },
   "dependencies": {
