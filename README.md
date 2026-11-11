@@ -242,7 +242,7 @@ pnpm build
 | `pnpm --filter @sunset-reverie/docs build` | 构建 VitePress 站（不依赖 Token 验证页；干净检出可直接构建） |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
 | `pnpm gen:components` | 同步 resolver 的组件清单（新增组件后必跑） |
-| `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站 |
+| `pnpm --filter playground-nuxt4 dev` | 启动 Nuxt 4 调试站；它消费的是 `dist` 产物，改完组件先 `pnpm build`，否则组件清单还是旧的（`/smoke` 会直接 500） |
 | `pnpm --filter @sunset-reverie/docs dev` | 启动 VitePress 文档站（Token 验证页不再挂进站点） |
 | `pnpm test:e2e` | 构建 Nuxt 演示站并跑 Playwright 水合测试 |
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
@@ -253,7 +253,7 @@ pnpm build
 | `pnpm lint:icons` | 图标离线集合校验 |
 | `pnpm lint:tokens` | CSS 变量引用校验（引用与定义是否对齐，防拼错后静默失效） |
 | `pnpm lint:smoke` | 水合冒烟覆盖校验（新组件是否已进入 Nuxt smoke 页） |
-| `pnpm check:hydration` | 构建 Nuxt 站并跑水合校验，断言告警数为 0 |
+| `pnpm check:hydration` | 先 `pnpm build`，再构建 Nuxt 站并跑水合校验，断言告警数为 0 |
 | `pnpm typecheck` | 类型检查（会先生成 Token） |
 | `pnpm test` | 单元测试（Vitest） |
 | `pnpm verify:dist` | 产物校验（exports 指向的文件是否都存在） |

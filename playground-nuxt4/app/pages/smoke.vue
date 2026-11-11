@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
+import type { SrCommentData } from '@sunset-reverie/ui'
+
 /**
  * 组件水合冒烟页
  *
@@ -151,6 +153,25 @@ const menuItems = [
   { key: 'y', label: '删除', icon: 'lucide:trash', danger: true, divided: true },
 ]
 
+/** 多行文本内容 */
+const textareaValue = ref('第一行\n第二行')
+
+/**
+ * 评论数据
+ *
+ * @remarks 时间用固定 ISO 字符串而不是 `new Date()`：服务端与客户端各算一次
+ * 「几小时前」，取当前时间必然两边不一致，水合就会报 mismatch。
+ */
+const commentList: SrCommentData[] = [
+  {
+    id: 1,
+    author: { id: 'u1', name: '林深' },
+    content: 'SSR 出来的评论列表',
+    createdAt: '2026-11-09T10:24:00+08:00',
+    likes: 3,
+  },
+]
+
 /** 告警条数，供 e2e 读取 */
 const warningCount = computed(() => hydrationWarnings.length)
 </script>
@@ -275,10 +296,11 @@ const warningCount = computed(() => hydrationWarnings.length)
       </div>
 
       <div class="cell">
-        <span class="cell__label">Input / InputNumber</span>
+        <span class="cell__label">Input / InputNumber / Textarea</span>
         <div class="cell__body cell__body--column">
           <sr-input v-model="inputValue" placeholder="请输入" />
           <sr-input-number v-model="numberValue" />
+          <sr-textarea v-model="textareaValue" placeholder="多行文本" :rows="2" />
         </div>
       </div>
 
@@ -543,6 +565,21 @@ const warningCount = computed(() => hydrationWarnings.length)
         <div class="cell__body cell__body--column">
           <sr-nav :items="navItems" :model-value="'home'" size="sm" />
           <sr-nav :items="navItems" :model-value="'list'" mode="vertical" size="sm" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">Comment</span>
+        <div class="cell__body cell__body--column">
+          <sr-comment :comments="commentList" :show-sort="false" :max-length="200" />
+        </div>
+      </div>
+
+      <div class="cell">
+        <span class="cell__label">MusicPlayer</span>
+        <div class="cell__body cell__body--column">
+          <!-- id 留空：冒烟页不请求 Meting API，避免 e2e 依赖外网，只验证 SSR → 水合结构 -->
+          <sr-music-player :id="''" error-text="冒烟页不发起请求" />
         </div>
       </div>
 

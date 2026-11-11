@@ -2,14 +2,19 @@
 /**
  * 产物校验
  *
- * 三层检查：
+ * 四层检查：
  * 1. exports 入口：package.json 里声明的每个非通配路径都必须指向真实文件
  * 2. 组件三件套：每个组件目录必须同时有 index.js / index.d.ts / style.css
- * 3. 清单一致性：resolver 的组件清单必须与 ui 的组件目录完全对应
+ * 3. 清单一致性：resolver / nuxt 的组件清单必须与 ui 的组件目录完全对应
+ * 4. 产物新鲜度：nuxt / resolver 的 dist 必须已经包含清单里的全部组件
  *
  * 第 2、3 层是 W6 新增 —— 通配符 exports 无法静态校验，
  * 只能反过来从产物目录与清单去比对，否则「少了一个组件的 CSS」这类问题
  * 要等下游按需引入时才会暴露。
+ *
+ * 第 4 层是修 Nuxt 站事故时补的：源码清单齐全、dist 停在旧版本时，
+ * 构建与类型检查都发现不了，只会在 Nuxt 运行时解析不到组件
+ * （带作用域插槽的标签直接在 SSR 抛 Cannot destructure property）。
  */
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
@@ -145,9 +150,42 @@ if (generatedFiles.some((file) => existsSync(file)) && existsSync(uiSrc)) {
     }
   }
 
+  // ---------- 4. 模块产物新鲜度 ----------
+  // 源码清单已经齐全、dist 还是旧的，是最隐蔽的一种「不同步」：
+  // Nuxt 站运行时会解析不到这些组件，<sr-virtual-list> 退化成未知标签，
+  // 带作用域插槽的子组件还会在 SSR 里直接抛「Cannot destructure property」。
+  const artifactChecks = [
+    { pkg: '@sunset-reverie/nuxt', file: join(PACKAGES_DIR, 'nuxt/dist/module.mjs') },
+    { pkg: '@sunset-reverie/resolver', file: join(PACKAGES_DIR, 'resolver/dist/index.js') },
+  ]
+
+  for (const artifact of artifactChecks) {
+    if (!existsSync(artifact.file)) continue
+
+    const source = readFileSync(artifact.file, 'utf-8')
+    const block = source.match(/SR_COMPONENT_NAMES\s*=\s*(\[[\s\S]*?\])/)?.[1] ?? ''
+    const builtNames = block
+      ? [...block.matchAll(/['"]([A-Za-z0-9]+)['"]/g)].map((matched) => matched[1])
+      : []
+
+    // nuxt 模块产物里名称只以字符串形式出现一次，没有数组时退回全文匹配
+    const names = builtNames.length > 0 ? builtNames : expected.filter((name) => source.includes(name))
+    const stale = expected.filter((name) => !names.includes(name))
+
+    if (stale.length > 0) {
+      missing.push(
+        `${artifact.pkg} 的构建产物缺少 ${stale.length} 个组件（${stale.slice(0, 5).join('、')}${stale.length > 5 ? '…' : ''}），请执行 pnpm build`,
+      )
+    } else {
+      checkedCount += 1
+    }
+  }
+
   const allConsistent = missing.length === 0
   if (allConsistent) {
-    console.log(`[产物校验] 组件清单与 ${expected.length} 个组件目录一致（resolver + nuxt）`)
+    console.log(
+      `[产物校验] 组件清单与 ${expected.length} 个组件目录一致（resolver + nuxt，含构建产物新鲜度）`,
+    )
   }
 }
 
