@@ -32,7 +32,8 @@
     inset: 0;
     // 遮罩只做轻度压暗 + 轻微模糊：糊太狠会把背景揉成一片，看不出层次
     background: color-mix(in srgb, var(--sr-color-mask) 55%, transparent);
-    backdrop-filter: blur(6px);
+    // 走 mask 档变量：flat 风格下遮罩不该有任何模糊，硬编码 blur 会破掉这个承诺
+    .sr-glass-layer(var(--sr-glass-filter-mask));
   }
 
   &__panel {

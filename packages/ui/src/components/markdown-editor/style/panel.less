@@ -20,8 +20,7 @@
   padding: 16px;
   background: var(--sr-color-bg-mask, rgb(0 0 0 / 38%));
   // 与 SrModal 的遮罩一致：只糊一层薄雾，背景还看得出层次
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  .sr-glass-layer(var(--sr-glass-filter-mask));
 }
 
 .sr-mde-insert {

@@ -14,6 +14,8 @@
  *     的祖先容器（那种是「本来就该滚」的表格 / 走马灯）→ 记一条
  *   - 控制台：error 一律算问题；warning 里带 hydration 字样的也算
  *     （`/components/image` 故意用一个不存在的图片演示兜底，404 已放行）
+ *   - 毛玻璃：首屏 `backdrop-filter` 层数 ≤ 5（规划 R-02 的硬约束）；
+ *     演示站额外切一次 flat 风格，此时全页 `backdrop-filter` 必须为 none
  *
  * 用法：
  *   node scripts/check-layout.mjs            # 文档站 + 演示站
@@ -39,6 +41,23 @@ const REGISTRY = 'playground-vue3/src/demos/registry.ts'
 
 /** 控制台里属于「演示本身就要的失败」的消息，不算回归 */
 const CONSOLE_ALLOW = [/favicon/i, /not-exist/i]
+
+/**
+ * 首屏毛玻璃层：设计目标与回归闸门
+ *
+ * TARGET 来自规划的风险条款 R-02：单个视口叠加超过 5 层 `backdrop-filter`
+ * 就有掉帧风险。这是设计目标，只提示、不判红。
+ *
+ * BUDGET 是回归闸门：W14 审计实测全演示站最高 31 层（table 页，每个表头单元格
+ * 各自一层），当前设计确实到不了 5。要压到目标值得改控件策略——小控件
+ * （input / tag / button / 表头单元格）本来就不需要糊背景。这一步是视觉改动，
+ * 需要单独决策，不该混在守卫里偷偷做。
+ */
+const GLASS_LAYER_TARGET = 5
+const GLASS_LAYER_BUDGET = 32
+
+/** 首屏层数介于「目标」与「闸门」之间的页面，最后只做提示 */
+const glassOverTarget = []
 
 const args = process.argv.slice(2)
 const onlyDocs = args.includes('--docs')
@@ -94,6 +113,8 @@ function buildTargets() {
       name: '演示站',
       url: `http://localhost:${demoPort}`,
       routes: readDemoKeys().map((key) => `/?page=${key}#/c/${key}`),
+      // 演示站有 flat / glass 两套风格切换，才谈得上「flat 下不该有毛玻璃」
+      supportsFlat: true,
       command: ['pnpm', ['--filter', 'playground-vue3', 'exec', 'vite', '--port', String(demoPort)]],
     })
   }
@@ -279,13 +300,105 @@ function measureOverflowInPage() {
 }
 
 /**
+ * 统计首屏（当前视口）内的毛玻璃层
+ *
+ * 只统计「同时在视口里出现」的层：滚动到别处看不见的层不该算叠加重叠。
+ * 判定用计算样式里的 `backdrop-filter`，值为 none 的不算——flat 风格下
+ * 变量就是 none，所以这条检查天然只对 glass 风格有意义。
+ *
+ * @returns {{ count: number, labels: string[] }} 首屏层数与对应元素标签
+ */
+function measureGlassInPage() {
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+
+  /**
+   * 给元素拼一个短标签，方便定位
+   * @param {Element} element 元素
+   * @returns {string} 形如 `div.sr-modal__panel`
+   */
+  function label(element) {
+    const tag = element.tagName.toLowerCase()
+    const raw = element.getAttribute('class') || ''
+    const cls = raw.split(/\s+/).filter(Boolean)[0]
+    return cls ? `${tag}.${cls}` : tag
+  }
+
+  /**
+   * 元素是否真的在首屏露出
+   * @param {Element} element 元素
+   * @returns {boolean} 在视口内且可见为 true
+   */
+  function inViewport(element) {
+    const rect = element.getBoundingClientRect()
+    if (rect.width <= 0 || rect.height <= 0) return false
+    if (rect.bottom <= 0 || rect.top >= viewportHeight) return false
+    if (rect.right <= 0 || rect.left >= viewportWidth) return false
+    const style = getComputedStyle(element)
+    return style.visibility !== 'hidden' && style.display !== 'none' && Number(style.opacity) > 0
+  }
+
+  const layers = []
+  for (const element of document.querySelectorAll('*')) {
+    if (!inViewport(element)) continue
+    const style = getComputedStyle(element)
+    const filter = style.backdropFilter || style.webkitBackdropFilter || 'none'
+    if (filter === 'none') continue
+    layers.push(label(element))
+  }
+
+  return { count: layers.length, labels: layers }
+}
+
+/**
+ * 切到 flat 风格后，找出仍然带 `backdrop-filter` 的元素
+ *
+ * flat 的语义就是「不要毛玻璃」，所以期望值是 0。残留只可能有一个原因：
+ * 样式里绕开了 `--sr-glass-filter*` 变量，直接写死了 `blur()`。
+ * 直接改 `data-sr-style` 触发变量切换，不用刷新页面，也不用碰 localStorage。
+ *
+ * @returns {string[]} 残留元素的短标签，空数组表示 flat 干净
+ */
+function measureFlatGlassInPage() {
+  const root = document.documentElement
+  const previous = root.getAttribute('data-sr-style')
+  root.setAttribute('data-sr-style', 'flat')
+
+  /**
+   * 给元素拼一个短标签，方便定位
+   * @param {Element} element 元素
+   * @returns {string} 形如 `div.sr-loading__mask`
+   */
+  function label(element) {
+    const tag = element.tagName.toLowerCase()
+    const raw = element.getAttribute('class') || ''
+    const cls = raw.split(/\s+/).filter(Boolean)[0]
+    return cls ? `${tag}.${cls}` : tag
+  }
+
+  const offenders = []
+  for (const element of document.querySelectorAll('*')) {
+    const style = getComputedStyle(element)
+    const filter = style.backdropFilter || style.webkitBackdropFilter || 'none'
+    if (filter === 'none') continue
+    offenders.push(label(element))
+  }
+
+  if (previous === null) root.removeAttribute('data-sr-style')
+  else root.setAttribute('data-sr-style', previous)
+
+  return [...new Set(offenders)]
+}
+
+/**
  * 体检单个页面
  *
  * @param {import('@playwright/test').Page} page Playwright 页面
  * @param {string} url 完整地址
+ * @param {{ supportsFlat?: boolean }} options 站点能力开关
  * @returns {Promise<string[]>} 问题列表，空数组表示通过
  */
-async function checkPage(page, url) {
+async function checkPage(page, url, options = {}) {
   const messages = []
   const pending = []
 
@@ -320,6 +433,24 @@ async function checkPage(page, url) {
 
     const overflow = await page.evaluate(measureOverflowInPage)
     messages.push(...overflow)
+
+    const glass = await page.evaluate(measureGlassInPage)
+    if (glass.count > GLASS_LAYER_BUDGET) {
+      messages.push(
+        `首屏毛玻璃层 ${glass.count} 个，超过回归闸门 ${GLASS_LAYER_BUDGET}：${glass.labels.slice(0, 8).join('、')}`,
+      )
+    } else if (glass.count > GLASS_LAYER_TARGET) {
+      glassOverTarget.push({ url, count: glass.count })
+    }
+
+    if (options.supportsFlat) {
+      const flatOffenders = await page.evaluate(measureFlatGlassInPage)
+      if (flatOffenders.length > 0) {
+        messages.push(
+          `flat 风格下仍有 ${flatOffenders.length} 个毛玻璃层（应走 --sr-glass-filter* 变量）：${flatOffenders.slice(0, 6).join('、')}`,
+        )
+      }
+    }
   } catch (error) {
     messages.push(`打开失败：${error.message.slice(0, 160)}`)
   }
@@ -336,7 +467,7 @@ async function checkPage(page, url) {
 /**
  * 跑完一个目标站
  * @param {import('@playwright/test').Browser} browser 浏览器实例
- * @param {{ name: string, url: string, routes: string[] }} target 目标站
+ * @param {{ name: string, url: string, routes: string[], supportsFlat?: boolean }} target 目标站
  * @returns {Promise<Array<{ page: string, issues: string[] }>>} 失败列表
  */
 async function checkTarget(browser, target) {
@@ -349,7 +480,7 @@ async function checkTarget(browser, target) {
   }
 
   for (const route of routes) {
-    const issues = await checkPage(page, target.url + route)
+    const issues = await checkPage(page, target.url + route, { supportsFlat: Boolean(target.supportsFlat) })
     if (issues.length) failures.push({ page: route, issues })
   }
 
@@ -384,7 +515,27 @@ if (totalFailures.length) {
     for (const issue of failure.issues) console.error(`    - ${issue}`)
   }
   console.error('\n溢出多半是缺了可滚动容器；水合告警看服务端与客户端首次渲染是否一致。\n')
+  reportGlassOverTarget()
   process.exit(1)
 }
 
+reportGlassOverTarget()
 console.log(`[布局守卫] 通过（${targets.length} 个站，无横向溢出 / 控制台错误 / 水合告警）`)
+
+/**
+ * 打印「超过设计目标、但还没触及回归闸门」的页面
+ *
+ * 只提示不判红：这些页面的层数来自当前控件策略（小控件各自磨砂），
+ * 属于已知设计取舍，压到目标值需要改视觉，得单独决策。
+ *
+ * @returns {void}
+ */
+function reportGlassOverTarget() {
+  if (glassOverTarget.length === 0) return
+
+  const heaviest = glassOverTarget.reduce((prev, item) => (item.count > prev.count ? item : prev))
+  console.log(
+    `[布局守卫] 提示：${glassOverTarget.length} 页首屏毛玻璃层超过设计目标 ${GLASS_LAYER_TARGET}，` +
+      `最高 ${heaviest.count} 层（${heaviest.url}）。属已知取舍，未按回归处理。`,
+  )
+}

@@ -4938,6 +4938,24 @@ P2 中除 `SrDatePicker`、`SrTree`、`SrCarousel`、`SrUpload` 外均已提前�
 | W13 | P2 批次二 | `SrDatePicker`、`SrUpload`、`SrDropdown`、`SrBreadcrumb` 完成；另交付 `SrCarousel`、`SrTree` |
 | W14 | 缓冲与复盘 | 演示站重构（一组件一页）、拖拽抽成 `useSrDragSort`、校验链扩到 6 条、浮层材质统一 |
 
+#### W14 性能审计（补做，69 个组件时）
+
+计划的四项里，文档补全与 bug 修复在 W14 当期已经完成，性能审计被演示站重构挤掉了。补齐后的结论：
+
+| 项 | 实测 | 判定 |
+| --- | --- | --- |
+| 全量体积 | JS 254.2KB + CSS 49.3KB gzip = 303.5KB | 34 个组件时期估算的是 120~160KB，现在翻倍。这是组件数的真实代价，不是回归 |
+| 按需体积 | 最轻 button 17.9KB，最重 comment 67.4KB（自带 textarea + emoji + 播放器） | 按需收益成立，重的留给真用得上的页面 |
+| 毛玻璃层数 | 演示站最高 31 层（table 页），文档站最高 16 层（tag 页） | 与 R-02 的「单屏 ≤5」直接冲突，是真问题 |
+| flat 一致性 | 修掉 6 处硬编码 `blur()`（Modal / Drawer / Confirm / Loading / Markdown 面板 / Anchor） | flat 下现在是 0 残留 |
+
+两条守卫已落地，防止这两组数字再悄悄变化：
+
+- `pnpm size`：全量 / 按需实测 + 预算（268 / 51 / 320 / 72 KB），超了非零退出
+- `pnpm check:layout`：首屏层数超 32 判红、超 5 只提示；演示站切 flat 后全页 `backdrop-filter` 必须为 `none`
+
+**未完成、需要单独决策**：把 31 层压到 5 只能改控件策略——小控件（input / tag / button / 表头单元格）不做模糊。这会改变玻璃质感的细节，属视觉决策，本次审计只把事实摆出来，没有擅自动手。
+
 两项原计划里标为「待决策」的技术选型，最终都选择了**自研**：
 
 | 组件 | 原计划 | 实际 |
@@ -4982,7 +5000,7 @@ W1 基建 → W2 Token → W3 主题/响应式 → W4 SrIcon/SrButton/SrTransiti
 | 编号 | 风险 | 可能性 | 影响 | 缓解措施 |
 | --- | --- | --- | --- | --- |
 | R-01 | SSR 水合不匹配（主题/断点/媒体查询） | 高 | 高（线上告警、UI 闪动） | 三条铁律（5.3）+ 内联脚本 + `ssr-check` 页面 + W9 Playwright |
-| R-02 | 毛玻璃性能问题（大量 `backdrop-filter`） | 中 | 中（滚动掉帧） | 单屏 ≤5 个毛玻璃层；flat 模式 `none`；动画只动 transform；W14 性能审计 |
+| R-02 | 毛玻璃性能问题（大量 `backdrop-filter`） | 中 | 中（滚动掉帧） | 单屏 ≤5 个毛玻璃层；flat 模式 `none`；动画只动 transform。**W14 审计实测最高 31 层，目标未达成**，`check:layout` 已加层数与 flat 残留守卫，压到 5 需改小控件模糊策略（待决策） |
 | R-03 | `backdrop-filter` 兼容性与降级 | 中 | 低 | `@supports` 检测，不支持时降级为不透明背景 + 边框 |
 | R-04 | Git 依赖安装慢/失败（prepare 构建） | 高 | 中（下游装不上） | `-dist` 兜底分支；README 写明故障处理；W6 专项验证 |
 | R-05 | `workspace:*` 在 git 安装时不被替换 | 高 | 高（安装直接报错） | D-04 内联方案；W6 用真实下游项目验证 |

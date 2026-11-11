@@ -703,7 +703,7 @@ function onGuestSubmit(payload: SrCommentSubmitPayload): void {
 
 .foot {
   margin: 6px 0 0;
-  color: var(--sr-color-text-quaternary);
+  color: var(--sr-color-text-tertiary);
   font-size: 12px;
 }
 </style>

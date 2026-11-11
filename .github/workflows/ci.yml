@@ -31,6 +31,9 @@ jobs:
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
+      - name: 生成 Token CSS（变量校验要读它，干净检出时不存在）
+        run: pnpm build:tokens
+
       - name: 代码风格（ESLint + Stylelint）
         run: pnpm lint
 

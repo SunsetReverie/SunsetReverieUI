@@ -24,7 +24,7 @@
   inset: 0;
   // 与弹窗、抽屉遮罩保持同一档：轻度压暗 + 轻微模糊
   background: color-mix(in srgb, var(--sr-color-mask) 55%, transparent);
-  backdrop-filter: blur(6px);
+  .sr-glass-layer(var(--sr-glass-filter-mask));
 }
 
 .sr-confirm-panel {

@@ -82,12 +82,16 @@ export default defineNuxtConfig({
 | `--sr-glass-filter` | `none` | `blur(16px) saturate(180%)` |
 | `--sr-glass-filter-strong` | `none` | `blur(28px) saturate(200%)` |
 | `--sr-glass-filter-hero` | `none` | `blur(40px) saturate(220%)` |
+| `--sr-glass-filter-mask` | `none` | `blur(6px)` |
+| `--sr-glass-filter-soft` | `none` | `blur(1px)` |
 | `--sr-color-bg-container` | 实色 | 半透明 |
 | `--sr-glass-highlight` | 零尺寸透明阴影占位 | 顶部 1px 内高光 |
 
-组件不判断当前风格，只调用 `.sr-surface()` / `.sr-glass-surface()`，里面统一带一层 `.sr-glass-layer()`。三档模糊按位置分工：容器内表面用常规档，悬浮小面板用 `strong`，内容密集的大面板（如日期面板）用 `hero`。
+组件不判断当前风格，只调用 `.sr-surface()` / `.sr-glass-surface()`，里面统一带一层 `.sr-glass-layer()`。五档模糊按位置分工：容器内表面用常规档，悬浮小面板用 `strong`，内容密集的大面板（如日期面板）用 `hero`，浮层遮罩用 `mask`，Loading 这类轻遮罩用 `soft`。
 
-三个让毛玻璃生效的必要条件：表面背景必须半透明、必须声明 `backdrop-filter`、背后必须有可模糊的内容。纯色背景上看不出玻璃，演示站因此在 `body` 上铺了渐变光晕。`backdrop-filter` 较贵，单屏别超过 5 层，也别在滚动容器里嵌套多层。
+**任何组件里都不要写死 `blur()`**。写死之后 `flat` 风格就关不掉它，`pnpm check:layout` 会直接报「flat 风格下仍有毛玻璃层」。`anchor` 这类需要自定义强度的位置，把整条 filter 存成变量（`--sr-anchor-affix-filter: var(--sr-glass-filter)`）再交给 `.sr-glass-layer()`，风格切换才会跟着走。
+
+三个让毛玻璃生效的必要条件：表面背景必须半透明、必须声明 `backdrop-filter`、背后必须有可模糊的内容。纯色背景上看不出玻璃，演示站因此在 `body` 上铺了渐变光晕。`backdrop-filter` 较贵，单屏别超过 5 层，也别在滚动容器里嵌套多层——这条目标目前还没达到：W14 审计实测演示站最高 31 层（表格每个表头单元格各自一层），`pnpm check:layout` 会把超过 5 层但未超过 32 层的页面列为提示，超过 32 层才判失败。
 
 ## 动效三档
 

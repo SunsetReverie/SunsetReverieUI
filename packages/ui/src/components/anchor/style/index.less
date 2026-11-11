@@ -64,8 +64,11 @@
 
   // ---------- 吸顶 ----------
   --sr-anchor-affix-bg: color-mix(in srgb, var(--sr-color-bg-container) 55%, transparent);
-  --sr-anchor-affix-blur: 14px;
-  --sr-anchor-affix-saturate: 150%;
+  // 存整条 filter 而不是 blur 半径：flat 下要能直接变 none，
+  // 若拆成 blur(var(--affix-blur))，flat 只能得到 blur(0px)，照样创建合成层。
+  // 取浮层基础档（16px/180%）而非原来的 14px/150%，差异肉眼看不出来，
+  // 但保证它会随风格一起切换
+  --sr-anchor-affix-filter: var(--sr-glass-filter);
   --sr-anchor-affix-shadow: 0 1px 0 var(--sr-color-border-subtle), 0 8px 24px -12px rgb(0 0 0 / 18%);
   --sr-anchor-affix-radius: var(--sr-radius-base);
   --sr-anchor-affix-pad-y: 6px;
@@ -308,8 +311,7 @@
     // 透明度压到 55% 才能看出背后的内容在动；
     // 太不透明就成了实心块，模糊完全看不出来
     background: var(--sr-anchor-affix-bg);
-    backdrop-filter: blur(var(--sr-anchor-affix-blur)) saturate(var(--sr-anchor-affix-saturate));
-    -webkit-backdrop-filter: blur(var(--sr-anchor-affix-blur)) saturate(var(--sr-anchor-affix-saturate));
+    .sr-glass-layer(var(--sr-anchor-affix-filter));
     // 边框和阴影补足「这是一层浮层」的边界感
     box-shadow: var(--sr-anchor-affix-shadow);
   }

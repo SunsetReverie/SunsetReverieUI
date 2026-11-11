@@ -62,7 +62,7 @@
     z-index: var(--sr-drawer-z, 2100);
     // 遮罩只做轻度压暗 + 轻微模糊，糊太狠会把背景信息全吃掉
     background: color-mix(in srgb, var(--sr-color-mask) 55%, transparent);
-    backdrop-filter: blur(6px);
+    .sr-glass-layer(var(--sr-glass-filter-mask));
   }
 
   &__header {

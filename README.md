@@ -166,7 +166,8 @@ W10 完成后按业务需要提前交付了一批 P2 组件，并对已有的交
 | 主题指南 | `docs/guide/theming.md` 讲清三层 Token、明暗/质感/主色/动效四维切换、SSR 首帧不闪白与三档玻璃强度 |
 | 版本升级 | `docs/guide/upgrading.md` 面向使用方：换 tag、跑检查、看 CHANGELOG 的 BREAKING、四包同版本与回滚；README 上方 `CHANGELOG.md` 维护每个版本的真实条目 |
 | 演示站体检 | `pnpm check:demo` 遍历注册表全部演示页，断言标题渲染、源码入口存在、无控制台错误，失败即非零退出 |
-| 布局守卫 | `pnpm check:layout` 在浏览器里跑文档站 + 演示站全页，抓「演示块横向溢出」「控制台错误」「水合告警」；探到已有 dev server 就复用，没有就自己起（文档站 5190 / 演示站 5174） |
+| 布局守卫 | `pnpm check:layout` 在浏览器里跑文档站 + 演示站全页，抓「演示块横向溢出」「控制台错误」「水合告警」，外加毛玻璃两项：首屏层数超 32 判失败、超 5 只提示，演示站切 flat 风格后全页不得残留 `backdrop-filter`；探到已有 dev server 就复用，没有就自己起（文档站 5190 / 演示站 5174） |
+| 体积预算 | `pnpm size` 实测全量与按需产物的 gzip 体积并与预算比对，超了非零退出；实测全量 303.5KB、按需最重 67.4KB（comment） |
 | 视觉基线 | `pnpm check:visual` 比对开场面板 / pill 标签 / 右键菜单 / 吸附播放器，外加表格（普通 / 固定列）、树、穿梭框、下拉菜单、Markdown 编辑器，共 11 张基线（`visual/__screenshots__`）；`pnpm check:visual:update` 重建，固定亮色 + 扁平 + 无动效 |
 | 演示站类型检查 | `pnpm typecheck` 现在也跑 `playground-vue3` 的 `vue-tsc`；模板里不写 TS 断言与反引号模板字符串，复杂表达式收进脚本函数 |
 | API 提取器 | `extract-api.mjs` 用括号配平解析 `defineEmits` / `defineSlots`，插槽只看 `.vue` 模板；补齐 21 个组件原先为空的插槽表与嵌套事件参数 |
@@ -237,7 +238,8 @@ pnpm build
 | `pnpm dev` | 启动 playground-vue3（直连源码，HMR，端口 5173） |
 | `pnpm check:demo` | 先起 `pnpm dev`，再遍历全部演示页做渲染 / 控制台冒烟；端口不同用 `DEMO_PORT=xxxx` |
 | `pnpm check:visual` | 比对演示站视觉基线（自带 webServer，无需先 `pnpm dev`）；改动 UI 后用 `pnpm check:visual:update` 重建基线 |
-| `pnpm check:layout` | 浏览器级布局守卫：文档站 + 演示站全页查横向溢出、控制台错误与水合告警；`--docs` / `--demo` 只查一侧，也可以在末尾追加名字只查相关页 |
+| `pnpm check:layout` | 浏览器级布局守卫：文档站 + 演示站全页查横向溢出、控制台错误、水合告警与毛玻璃层数；`--docs` / `--demo` 只查一侧，也可以在末尾追加名字只查相关页 |
+| `pnpm size` | 产物体积报告：全量 / 按需各算一遍 gzip 并与预算比对，超预算非零退出 |
 | `pnpm check:docs` | 单独跑文档站守卫；`pnpm lint` 已内置，加 `--verbose` 看数据结构表的提醒明细 |
 | `pnpm --filter @sunset-reverie/docs build` | 构建 VitePress 站（不依赖 Token 验证页；干净检出可直接构建） |
 | `pnpm gen:icons` | 扫描源码图标名并子集化离线集合 |
@@ -248,7 +250,8 @@ pnpm build
 | `pnpm build:tokens` | 生成 Token 四份产物（改 `tokens.ts` / `semantic.ts` 后必跑） |
 | `pnpm build:gallery` | 可选：生成独立的 Token 验证页到 `docs/public/token-gallery.html`（本地查看，不挂进文档站） |
 | `pnpm build` | 全量构建（严格按 tokens → icons → ui → resolver 顺序） |
-| `pnpm lint` | ESLint + Stylelint |
+| `pnpm lint` | ESLint + Stylelint，再串起模板标签、演示类名、`ref` 解包、演示导入/覆盖、文档与 CSS 变量核对 |
+| `pnpm lint:tokens` | 单独跑 CSS 变量核对：`var(--sr-x)` 引用的名字必须真的有定义（`lint` 已内置） |
 | `pnpm lint:naming` | 命名规范校验（组件目录、组件名、CSS 变量与类名前缀） |
 | `pnpm lint:icons` | 图标离线集合校验 |
 | `pnpm lint:tokens` | CSS 变量引用校验（引用与定义是否对齐，防拼错后静默失效） |

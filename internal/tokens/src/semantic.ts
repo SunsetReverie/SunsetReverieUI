@@ -306,6 +306,10 @@ export const qualityFlat: Record<string, string> = {
   'glass-filter': 'none',
   'glass-filter-strong': 'none',
   'glass-filter-hero': 'none',
+  // 遮罩层（Modal / Drawer / Confirm 背后那层）与轻量遮罩（Loading）单独开档：
+  // 它们只需要「糊一下」，用浮层的 strong 档会把背后内容糊成一整块死白
+  'glass-filter-mask': 'none',
+  'glass-filter-soft': 'none',
   // 注意不能写 none：surface mixin 会拼成 `box-shadow: var(--sr-shadow-sm), var(--sr-glass-highlight)`，
   // 若这里是 none 会导致整条 box-shadow 非法而失效。用零尺寸透明阴影占位。
   'glass-highlight': '0 0 0 0 transparent',
@@ -355,6 +359,11 @@ export const qualityGlass: Record<string, string> = {
   // 面积小但内容密集的面板（日期选择器）再强一档：
   // 28px 不足以把背后的正文糊成色块，文字轮廓会干扰阅读
   'glass-filter-hero': 'blur(40px) saturate(220%)',
+  // 遮罩层只需要「糊一下」：6px 足够让背后的正文失去可读性，
+  // 又不至于像 28px 那样把内容糊成一整块死白
+  'glass-filter-mask': 'blur(6px)',
+  // Loading 的遮罩更轻：只证明「内容还在、只是不可点」，糊太重会让界面像卡死
+  'glass-filter-soft': 'blur(1px)',
   'glass-highlight': 'inset 0 1px 0 rgba(255, 255, 255, 0.55)',
   'glass-border-width': '1px',
   'glass-border-color': 'rgba(255, 255, 255, 0.55)',

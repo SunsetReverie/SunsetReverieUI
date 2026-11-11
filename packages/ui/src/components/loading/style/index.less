@@ -5,6 +5,8 @@
  * 遮罩用半透明底 + 轻模糊，让人能看出「下面还有内容，只是暂时不能点」。
  */
 
+@import '../../../styles/mixins/index.less';
+
 .sr-loading {
   position: relative;
   display: flex;
@@ -72,12 +74,12 @@
   // ---------- 遮罩 ----------
   &__overlay.is-mask {
     background: color-mix(in srgb, var(--sr-color-bg-container) 72%, transparent);
-    backdrop-filter: blur(1px);
+    .sr-glass-layer(var(--sr-glass-filter-soft));
   }
 
   &.is-mask {
     background: color-mix(in srgb, var(--sr-color-bg-container) 72%, transparent);
-    backdrop-filter: blur(1px);
+    .sr-glass-layer(var(--sr-glass-filter-soft));
   }
 
   // 没遮罩时把 body 的白底去掉，避免出现一块突兀的卡片

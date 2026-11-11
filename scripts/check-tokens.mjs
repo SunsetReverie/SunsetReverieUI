@@ -9,10 +9,19 @@
  * 这里把「定义过的变量」和「引用过的变量」对上账，缺一个就报错。
  */
 
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 
 const ROOT = resolve(import.meta.dirname, '..')
+
+// 定义表有一大半来自 tokens 生成的 CSS，它不进仓库：干净检出时先提示，
+// 而不是稀里糊涂报出几百个「变量没定义」
+const SEMANTIC_CSS = join(ROOT, 'packages/ui/src/styles/base/semantic.generated.css')
+if (!existsSync(SEMANTIC_CSS)) {
+  console.error('[变量校验] 缺少 packages/ui/src/styles/base/semantic.generated.css（由 Token 构建生成）')
+  console.error('请先执行 `pnpm build:tokens`，再跑本校验。')
+  process.exit(1)
+}
 
 /** 变量定义来源：tokens 生成的 CSS + 各组件自己声明的局部变量 */
 const DEFINE_GLOBS = [
@@ -50,7 +59,9 @@ const defined = new Map()
 for (const dir of DEFINE_GLOBS) {
   for (const file of walk(dir)) {
     const code = readFileSync(file, 'utf-8')
-    for (const match of code.matchAll(/(--sr-[a-z0-9-]+)\s*:/g)) {
+    // 冒号两边可能带引号：Vue 的 :style 对象写法是 `'--sr-cp-alpha-gradient': value`，
+    // 不认这种写法，内联注入的变量就会被误判成「引用了但没定义」
+    for (const match of code.matchAll(/['"]?(--sr-[a-z0-9-]+)['"]?\s*:/g)) {
       if (!defined.has(match[1])) defined.set(match[1], relative(ROOT, file))
     }
   }
