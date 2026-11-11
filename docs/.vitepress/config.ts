@@ -1,7 +1,26 @@
+import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitepress'
 
+/**
+ * 把相对路径解析成本文件所在目录起算的绝对路径
+ * @param path 相对 `docs/.vitepress/` 的路径
+ * @returns 绝对路径
+ */
 const resolvePath = (path: string): string => fileURLToPath(new URL(path, import.meta.url))
+
+/**
+ * 当前发布版本号，用于导航栏上的版本入口
+ *
+ * 唯一真源是 `packages/ui/package.json`：发版后重启 dev 或重新 build 即自动跟上，
+ * 不要在文档站里另抄一份版本号。
+ * @throws {Error} 文件缺失或内容不是合法 JSON 时抛出
+ */
+const UI_VERSION = (
+  JSON.parse(readFileSync(resolvePath('../../packages/ui/package.json'), 'utf-8')) as {
+    version: string
+  }
+).version
 
 // 组件库的 token 挂在 [data-sr-theme] / [data-sr-style] 上，
 // 这两个属性必须在首帧前写好，否则文档里的演示会先闪一下无样式状态
@@ -71,8 +90,9 @@ export default defineConfig({
     nav: [
       { text: '指南', link: '/guide/getting-started', activeMatch: '/guide/' },
       { text: '组件', link: '/components/button', activeMatch: '/components/' },
-      // 更新日志页在 docs 根目录，不进 guide 与 components 两个侧边栏
-      { text: '更新日志', link: '/changelog', activeMatch: '/changelog' },
+      // 更新日志页在 docs 根目录，不进 guide 与 components 两个侧边栏。
+      // 标题直接用版本号：点进去就是该版本的全部变更，比「更新日志」更快认出版本
+      { text: `v${UI_VERSION}`, link: '/changelog', activeMatch: '/changelog' },
     ],
 
     sidebar: {
