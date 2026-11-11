@@ -39,6 +39,27 @@ async function openDemo(page: Page, hash: string): Promise<void> {
   await page.waitForTimeout(250)
 }
 
+/**
+ * 冷启动预热
+ *
+ * Vite dev server 首次被访问时会做依赖预构建，完成后会强制 full reload 一次。
+ * 若首个用例直接 goto 带 hash 的地址并等 networkidle，这次 reload 会让等待一直
+ * 挂着，直到 30s 超时（CI 每次都是冷启动，必现）。
+ *
+ * 这里先用一个临时页面把「预构建 + 首屏挂载」跑完再关掉，后续用例的
+ * networkidle 就只等真正的首屏资源。
+ *
+ * @param browser Playwright 浏览器实例
+ * @returns 无；完成后关掉临时页面
+ */
+test.beforeAll(async ({ browser }) => {
+  const warmup = await browser.newPage()
+  await warmup.goto(BASE, { waitUntil: 'load', timeout: 60_000 })
+  await warmup.waitForFunction(() => document.querySelector('#app')?.childElementCount)
+  await warmup.waitForTimeout(500)
+  await warmup.close()
+})
+
 test.beforeEach(async ({ page }) => {
   // 视觉基线不关心业务接口是否可用；音乐播放器用本地假数据
   await page.route('**/*', async (route) => {

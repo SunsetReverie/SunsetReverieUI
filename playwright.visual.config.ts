@@ -14,7 +14,9 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: './visual',
-  timeout: 30_000,
+  // 60s 而非 30s：webServer 刚起来时 Vite 还在做依赖预构建，
+  // 首个用例的首屏导航会被这次冷启动吃掉十几秒，留足余量避免误红
+  timeout: 60_000,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
