@@ -4,7 +4,7 @@ pageClass: components-index
 
 # 组件概览
 
-当前共 **69 个组件**，每篇都有独立文档。命名统一用 `Sr` 前缀，全部支持亮色/暗色 × 毛玻璃/扁平四种组合。下表分组与侧边栏一致，点击即可进入对应文档。
+当前共 **70 个组件**，每篇都有独立文档。命名统一用 `Sr` 前缀，全部支持亮色/暗色 × 毛玻璃/扁平四种组合。下表分组与侧边栏一致，点击即可进入对应文档。
 
 ## 组件索引
 
@@ -14,7 +14,7 @@ pageClass: components-index
 | 布局与配置 | [`SrRow`](/components/row)、[`SrCol`](/components/col)、[`SrConfigProvider`](/components/config-provider)、[`SrTransition`](/components/transition) |
 | 浮层 | [`SrTooltip`](/components/tooltip) |
 | 数据录入 | [`SrForm`](/components/form)、[`SrSelect`](/components/select)、[`SrCascader`](/components/cascader)、[`SrTransfer`](/components/transfer)、[`SrColorPicker`](/components/color-picker)、[`SrEmojiPicker`](/components/emoji-picker)、[`SrQRCode`](/components/qrcode)、[`SrCodeBlock`](/components/code-block)、[`SrMarkdown`](/components/markdown)、[`SrMarkdownEditor`](/components/markdown-editor)、[`SrInputNumber`](/components/input-number)、[`SrCheckbox`](/components/checkbox)、[`SrRadio`](/components/radio)、[`SrSwitch`](/components/switch)、[`SrSlider`](/components/slider)、[`SrDatePicker`](/components/date-picker)、[`SrCalendar`](/components/calendar) |
-| 数据展示 | [`SrTable`](/components/table)、[`SrPagination`](/components/pagination)、[`SrLoadMore`](/components/load-more)、[`SrUpload`](/components/upload)、[`SrTree`](/components/tree)、[`SrVirtualList`](/components/virtual-list) |
+| 数据展示 | [`SrChart`](/components/chart)、[`SrTable`](/components/table)、[`SrPagination`](/components/pagination)、[`SrLoadMore`](/components/load-more)、[`SrUpload`](/components/upload)、[`SrTree`](/components/tree)、[`SrVirtualList`](/components/virtual-list) |
 | 展示元素 | [`SrTag`](/components/tag)、[`SrAlert`](/components/alert)、[`SrSteps`](/components/steps)、[`SrDescriptions`](/components/descriptions)、[`SrCollapse`](/components/collapse)、[`SrSegmented`](/components/segmented)、[`SrTimeline`](/components/timeline)、[`SrBadge`](/components/badge)、[`SrAvatar`](/components/avatar)、[`SrImage`](/components/image)、[`SrEmpty`](/components/empty)、[`SrResult`](/components/result)、[`SrSkeleton`](/components/skeleton) |
 | 容器 | [`SrCard`](/components/card)、[`SrDivider`](/components/divider)、[`SrSpace`](/components/space)、[`SrPanel`](/components/panel)、[`SrCarousel`](/components/carousel) |
 | 导航 | [`SrNav`](/components/nav)、[`SrTabs`](/components/tabs)、[`SrDropdown`](/components/dropdown)、[`SrContextMenu`](/components/context-menu)、[`SrBreadcrumb`](/components/breadcrumb)、[`SrAnchor`](/components/anchor) |
@@ -27,10 +27,10 @@ pageClass: components-index
 
 | 状态 | 数量 |
 | --- | --- |
-| 组件目录 | 69 |
-| 组件文档 | 69 篇 |
-| 组件演示 | 68 页（`SrCol` 并入 Row 演示） |
-| API 事实源 | 69 组，由 `pnpm gen:demo-props` 从源码提取 |
+| 组件目录 | 70 |
+| 组件文档 | 70 篇 |
+| 组件演示 | 69 页（`SrCol` 并入 Row 演示） |
+| API 事实源 | 70 组，由 `pnpm gen:demo-props` 从源码提取 |
 
 > 文档按「每篇对照组件源码的 props / emits / slots 声明」来写，不依赖演示站的速查表。`pnpm lint` 里的 `check-docs` 会核对 Props / 事件 / 插槽表、站内链接与侧边栏覆盖，防止文档与代码脱节。
 
