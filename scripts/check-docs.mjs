@@ -21,7 +21,13 @@ const COMPONENTS = 'packages/ui/src/components'
 const DOCS = 'docs/components'
 const GUIDES = 'docs/guide'
 const CONFIG = 'docs/.vitepress/config.ts'
-const PROPS_JSON = 'playground-vue3/src/demos/props.json'
+/**
+ * API 事实源的候选路径
+ *
+ * `docs/api/props.json` 随仓库分发，干净检出（CI、新 clone）也有；
+ * `playground-*` 里的那份只服务本地演示站，不进远程仓库。
+ */
+const PROPS_JSON_CANDIDATES = ['docs/api/props.json', 'playground-vue3/src/demos/props.json']
 const HOME = 'docs/index.md'
 const OVERVIEW = 'docs/components/index.md'
 
@@ -204,8 +210,12 @@ function findUnescapedMustache(md) {
 }
 
 // ---------- 1. 文件与产物 ----------
-if (!existsSync(PROPS_JSON)) {
-  console.error(`[文档校验] 找不到 ${PROPS_JSON}，先跑 pnpm gen:demo-props`)
+const PROPS_JSON = PROPS_JSON_CANDIDATES.find((file) => existsSync(file))
+
+if (!PROPS_JSON) {
+  console.error(
+    `[文档校验] 找不到 API 事实源（${PROPS_JSON_CANDIDATES.join(' 或 ')}），先跑 pnpm gen:demo-props`,
+  )
   process.exit(1)
 }
 

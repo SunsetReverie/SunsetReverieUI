@@ -1,0 +1,6297 @@
+{
+  "alert": {
+    "name": "alert",
+    "options": [
+      {
+        "from": "alertProps",
+        "name": "type",
+        "type": "SrAlertType",
+        "default": "'info'",
+        "description": "类型 @default 'info' 决定图标、底色和强调色。"
+      },
+      {
+        "from": "alertProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题，不传则只显示描述"
+      },
+      {
+        "from": "alertProps",
+        "name": "description",
+        "type": "string",
+        "default": "''",
+        "description": "描述文案，也可以直接用默认插槽"
+      },
+      {
+        "from": "alertProps",
+        "name": "showIcon",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示图标 @default true"
+      },
+      {
+        "from": "alertProps",
+        "name": "closable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示关闭按钮 @default false"
+      },
+      {
+        "from": "alertProps",
+        "name": "banner",
+        "type": "boolean",
+        "default": "false",
+        "description": "通栏样式 @default false 去掉圆角与左右边框，贴住容器边缘，适合页面顶部横贯一条。"
+      },
+      {
+        "from": "alertProps",
+        "name": "center",
+        "type": "boolean",
+        "default": "false",
+        "description": "文字居中 @default false"
+      }
+    ],
+    "sources": ["alert"],
+    "emits": [
+      {
+        "name": "close",
+        "params": []
+      }
+    ],
+    "slots": ["default", "title"]
+  },
+  "anchor": {
+    "name": "anchor",
+    "options": [
+      {
+        "from": "anchorProps",
+        "name": "items",
+        "type": "SrAnchorItem[]",
+        "default": "() => []",
+        "description": "锚点数据"
+      },
+      {
+        "from": "anchorProps",
+        "name": "container",
+        "type": "string | HTMLElement",
+        "default": "undefined",
+        "description": "滚动容器 @default window 传 CSS 选择器或元素本身。默认监听整个页面。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "offsetTop",
+        "type": "number",
+        "default": "0",
+        "description": "顶部偏移 @default 0 页面有固定头栏时，把它设为头栏高度，标题才不会被盖住。 判定当前章节和点击滚动都用这个值。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "bounds",
+        "type": "number",
+        "default": "4",
+        "description": "判定边界 @default 4 标题越过判定线多少像素才算「进入视口」。设小一点更灵敏， 但滚动抖动时容易在两节之间反复跳。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "direction",
+        "type": "'vertical' | 'horizontal'",
+        "default": "'vertical'",
+        "description": "排列方向 @default 'vertical'"
+      },
+      {
+        "from": "anchorProps",
+        "name": "affix",
+        "type": "boolean",
+        "default": "false",
+        "description": "吸顶 @default false 打开后用 `position: sticky`，需要父容器有确定高度才会生效。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "affixOffset",
+        "type": "number",
+        "default": "0",
+        "description": "吸顶时的 top 偏移（px） @default 0"
+      },
+      {
+        "from": "anchorProps",
+        "name": "smooth",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击时平滑滚动 @default true 关掉后用瞬时定位，适合「用户系统开了减少动效」或需要精确控制的场景。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "activeKey",
+        "type": "string",
+        "default": "undefined",
+        "description": "当前激活项，配合 `v-model:activeKey` @default '' 不传时自己维护；传了就以外部为准。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "showMarker",
+        "type": "boolean",
+        "default": "true",
+        "description": "高亮滑块 @default true 跟随当前项移动的指示条，让「现在在哪」更明显。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "syncHash",
+        "type": "boolean",
+        "default": "false",
+        "description": "同步地址栏 hash @default false 打开后点击会写入 `#key`，刷新或分享链接能回到同一位置。 前台文章页通常要开。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "ariaLabel",
+        "type": "string",
+        "default": "'页面导航'",
+        "description": "无障碍标签 @default '页面导航'"
+      },
+      {
+        "from": "anchorProps",
+        "name": "activeVariant",
+        "type": "'line' | 'block' | 'pill' | 'dot' | 'bold'",
+        "default": "'line'",
+        "description": "激活项样式 @default 'line' - `line` 左侧竖线 + 文字加深（默认，最干净） - `block` 底色块 + 主色文字 - `pill` 圆角胶囊 - `dot` 左侧小圆点 - `bold` 只变粗变色，连竖线都不要"
+      },
+      {
+        "from": "anchorProps",
+        "name": "collapsible",
+        "type": "boolean",
+        "default": "false",
+        "description": "父级可折叠 @default false 打开后每一项前面出现箭头，点击箭头折叠子级、点击文字仍跳转。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "showToggle",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示折叠箭头 @default true 关掉后仍然可以折叠，只是没有箭头——用 `v-model:expanded-keys` 控制。 有些设计里目录本身就很窄，箭头会显得多余。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "togglePosition",
+        "type": "'left' | 'right'",
+        "default": "'left'",
+        "description": "箭头位置 @default 'left' `right` 时箭头靠右，标题从左侧对齐，视觉更接近「文档目录」。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "defaultExpandAll",
+        "type": "boolean",
+        "default": "true",
+        "description": "默认全部展开 @default true 只在 `collapsible` 打开、且 `autoExpand` 关闭时有意义： 开了自动跟随的话，展开状态由当前章节决定。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "autoExpand",
+        "type": "boolean",
+        "default": "true",
+        "description": "子项激活时自动展开父级 @default true 滚动到某个子章节时，它所在的父级会自动展开，不用手动点。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "expandedKeys",
+        "type": "string[]",
+        "default": "undefined",
+        "description": "展开的父级 key（受控） 传了就以外部为准；配合 `v-model:expanded-keys`。"
+      },
+      {
+        "from": "anchorProps",
+        "name": "maxDepth",
+        "type": "number",
+        "default": "0",
+        "description": "最多显示的层级 @default 0 0 表示不限。设为 2 时只渲染前两层，更深的子级不出现。"
+      }
+    ],
+    "sources": ["anchor"],
+    "emits": [
+      {
+        "name": "update:activeKey",
+        "params": ["key"]
+      },
+      {
+        "name": "change",
+        "params": ["key", "item"]
+      },
+      {
+        "name": "click",
+        "params": ["key", "item", "event"]
+      },
+      {
+        "name": "update:expandedKeys",
+        "params": ["keys"]
+      },
+      {
+        "name": "toggle",
+        "params": ["key", "expanded"]
+      }
+    ],
+    "slots": ["title", "toggle"]
+  },
+  "avatar": {
+    "name": "avatar",
+    "options": [
+      {
+        "from": "avatarProps",
+        "name": "src",
+        "type": "string",
+        "default": "''",
+        "description": "图片地址，加载失败自动回退到文字"
+      },
+      {
+        "from": "avatarProps",
+        "name": "alt",
+        "type": "string",
+        "default": "''",
+        "description": "图片替代文案，同时用作回退文字的来源"
+      },
+      {
+        "from": "avatarProps",
+        "name": "size",
+        "type": "SrSize | number",
+        "default": "'md'",
+        "description": "尺寸档位；也可直接传像素数字"
+      },
+      {
+        "from": "avatarProps",
+        "name": "shape",
+        "type": "SrAvatarShape",
+        "default": "'circle'",
+        "description": "形状 @default 'circle'"
+      },
+      {
+        "from": "avatarProps",
+        "name": "color",
+        "type": "string",
+        "default": "''",
+        "description": "自定义底色，不传则按 alt 自动取一个稳定色"
+      },
+      {
+        "from": "avatarProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "回退图标，优先于文字"
+      }
+    ],
+    "sources": ["avatar"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "badge": {
+    "name": "badge",
+    "options": [
+      {
+        "from": "badgeProps",
+        "name": "value",
+        "type": "string | number",
+        "default": "''",
+        "description": "显示内容，数字超过 max 会折叠成 max+"
+      },
+      {
+        "from": "badgeProps",
+        "name": "max",
+        "type": "number",
+        "default": "99",
+        "description": "数字上限 @default 99"
+      },
+      {
+        "from": "badgeProps",
+        "name": "dot",
+        "type": "boolean",
+        "default": "false",
+        "description": "只显示圆点，不显示内容"
+      },
+      {
+        "from": "badgeProps",
+        "name": "type",
+        "type": "SrBadgeType",
+        "default": "'danger'",
+        "description": "语义类型 @default 'danger'"
+      },
+      {
+        "from": "badgeProps",
+        "name": "showZero",
+        "type": "boolean",
+        "default": "false",
+        "description": "值为 0 时是否也显示"
+      },
+      {
+        "from": "badgeProps",
+        "name": "status",
+        "type": "'default' | 'success' | 'warning' | 'danger' | 'processing'",
+        "default": "''",
+        "description": "状态点模式：传值后切到「圆点 + 文字」形态，忽略 value 适合表达「运行中 / 已停用」这类状态"
+      },
+      {
+        "from": "badgeProps",
+        "name": "text",
+        "type": "string",
+        "default": "''",
+        "description": "状态点右侧的文字"
+      },
+      {
+        "from": "badgeProps",
+        "name": "hidden",
+        "type": "boolean",
+        "default": "false",
+        "description": "隐藏徽标（保留占位语义时更直观）"
+      }
+    ],
+    "sources": ["badge"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "breadcrumb": {
+    "name": "breadcrumb",
+    "options": [
+      {
+        "from": "breadcrumbProps",
+        "name": "items",
+        "type": "SrBreadcrumbItem[]",
+        "default": "() => []",
+        "description": "条目列表，最后一项自动标记为当前页"
+      },
+      {
+        "from": "breadcrumbProps",
+        "name": "separatorIcon",
+        "type": "string",
+        "default": "''",
+        "description": "图标分隔符，设置后优先于 separator"
+      },
+      {
+        "from": "breadcrumbProps",
+        "name": "separator",
+        "type": "string",
+        "default": "'/'",
+        "description": "分隔符 @default '/'"
+      },
+      {
+        "from": "breadcrumbProps",
+        "name": "maxItems",
+        "type": "number",
+        "default": "0",
+        "description": "最多显示几项，超出时中间折叠成省略号。 0 表示不折叠，始终保留首项与末两项"
+      }
+    ],
+    "sources": ["breadcrumb"],
+    "emits": [],
+    "slots": ["separator"]
+  },
+  "button": {
+    "name": "button",
+    "options": [
+      {
+        "from": "buttonProps",
+        "name": "variant",
+        "type": "SrButtonVariant",
+        "default": "'secondary'",
+        "description": "视觉变体"
+      },
+      {
+        "from": "buttonProps",
+        "name": "size",
+        "type": "SrResponsive<SrSize>",
+        "default": "undefined",
+        "description": "尺寸，支持按断点分档 不传则继承 SrConfigProvider 的 size，最外层未配置时为 md"
+      },
+      {
+        "from": "buttonProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用"
+      },
+      {
+        "from": "buttonProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "加载中：禁用交互但保留 DOM，避免布局跳动"
+      },
+      {
+        "from": "buttonProps",
+        "name": "block",
+        "type": "boolean",
+        "default": "false",
+        "description": "占满父容器宽度"
+      },
+      {
+        "from": "buttonProps",
+        "name": "round",
+        "type": "boolean",
+        "default": "false",
+        "description": "胶囊圆角（快捷方式，等价于 radius=\"9999px\"；同时传时 radius 优先）"
+      },
+      {
+        "from": "buttonProps",
+        "name": "radius",
+        "type": "number | string",
+        "default": "undefined",
+        "description": "自定义圆角：数字按 px，字符串原样透传（'1rem' / '50%' / 'var(--my-radius)'） 不传时跟随质感层：flat 6px、glass 10px"
+      },
+      {
+        "from": "buttonProps",
+        "name": "bg",
+        "type": "string",
+        "default": "''",
+        "description": "自定义背景色（任意 CSS 颜色） hover / active 由 color-mix 自动派生，辉光也会跟随这个颜色"
+      },
+      {
+        "from": "buttonProps",
+        "name": "color",
+        "type": "string",
+        "default": "''",
+        "description": "自定义文字色；不传时自定义背景下默认白色"
+      },
+      {
+        "from": "buttonProps",
+        "name": "htmlType",
+        "type": "SrButtonHtmlType",
+        "default": "'button'",
+        "description": "原生 type"
+      },
+      {
+        "from": "buttonProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "图标名（集合:图标名），也可用 icon 插槽自定义"
+      },
+      {
+        "from": "buttonProps",
+        "name": "iconPosition",
+        "type": "SrButtonIconPosition",
+        "default": "'left'",
+        "description": "图标位置"
+      }
+    ],
+    "sources": ["button"],
+    "emits": [],
+    "slots": ["default", "icon", "loading"]
+  },
+  "calendar": {
+    "name": "calendar",
+    "options": [
+      {
+        "from": "calendarProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "选中日期，配合 v-model 格式 `YYYY-MM-DD`，空字符串表示未选。"
+      },
+      {
+        "from": "calendarProps",
+        "name": "firstDayOfWeek",
+        "type": "number",
+        "default": "1",
+        "description": "每周第一天，0 是周日、1 是周一 @default 1"
+      },
+      {
+        "from": "calendarProps",
+        "name": "min",
+        "type": "string",
+        "default": "''",
+        "description": "最小可选日期 `YYYY-MM-DD`"
+      },
+      {
+        "from": "calendarProps",
+        "name": "max",
+        "type": "string",
+        "default": "''",
+        "description": "最大可选日期 `YYYY-MM-DD`"
+      },
+      {
+        "from": "calendarProps",
+        "name": "marks",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "需要标记的日期 @default [] 有事件的日期在格子下方显示一个小点。"
+      },
+      {
+        "from": "calendarProps",
+        "name": "showToday",
+        "type": "boolean",
+        "default": "true",
+        "description": "顶部显示「回到今天」 @default true"
+      },
+      {
+        "from": "calendarProps",
+        "name": "cellHeight",
+        "type": "number",
+        "default": "44",
+        "description": "格子高度（像素） @default 44"
+      }
+    ],
+    "sources": ["calendar"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "month-change",
+        "params": ["year", "month"]
+      }
+    ],
+    "slots": []
+  },
+  "card": {
+    "name": "card",
+    "options": [
+      {
+        "from": "cardProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题，也可用 header 插槽完全自定义"
+      },
+      {
+        "from": "cardProps",
+        "name": "subtitle",
+        "type": "string",
+        "default": "''",
+        "description": "副标题"
+      },
+      {
+        "from": "cardProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "内边距档位 @default 'md'"
+      },
+      {
+        "from": "cardProps",
+        "name": "padding",
+        "type": "'none' | SrSize",
+        "default": "''",
+        "description": "单独指定内边距，优先于 size。 'none' 时内容紧贴边缘，适合自带内边距的图表或图片"
+      },
+      {
+        "from": "cardProps",
+        "name": "bordered",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示外边框 @default true"
+      },
+      {
+        "from": "cardProps",
+        "name": "hoverable",
+        "type": "boolean",
+        "default": "false",
+        "description": "悬停时轻微上浮"
+      }
+    ],
+    "sources": ["card"],
+    "emits": [],
+    "slots": ["default", "extra", "footer", "header"]
+  },
+  "carousel": {
+    "name": "carousel",
+    "options": [
+      {
+        "from": "carouselProps",
+        "name": "items",
+        "type": "SrCarouselItem[]",
+        "default": "() => []",
+        "description": "数据源，每项原样传给 `#item` 插槽 不直接接收 DOM 子节点：轮播内容异形（图片、卡片、富文本都有）， 用作用域插槽把渲染权交给调用方，组件只管切换与布局。"
+      },
+      {
+        "from": "carouselProps",
+        "name": "modelValue",
+        "type": "number",
+        "default": "0",
+        "description": "当前索引，支持 v-model"
+      },
+      {
+        "from": "carouselProps",
+        "name": "effect",
+        "type": "SrCarouselEffect",
+        "default": "'slide'",
+        "description": "切换效果 @default 'slide'"
+      },
+      {
+        "from": "carouselProps",
+        "name": "direction",
+        "type": "SrCarouselDirection",
+        "default": "'horizontal'",
+        "description": "排列方向 @default 'horizontal' vertical 时滑动方向、拖动轴、指示器位置都会跟着转。"
+      },
+      {
+        "from": "carouselProps",
+        "name": "autoplay",
+        "type": "boolean",
+        "default": "false",
+        "description": "自动播放 @default false"
+      },
+      {
+        "from": "carouselProps",
+        "name": "interval",
+        "type": "number",
+        "default": "4000",
+        "description": "自动播放间隔（ms） @default 4000"
+      },
+      {
+        "from": "carouselProps",
+        "name": "pauseOnHover",
+        "type": "boolean",
+        "default": "true",
+        "description": "鼠标悬停时暂停自动播放 @default true 默认开启：用户停在某一张上说明正在看，此时自动切走会打断阅读。"
+      },
+      {
+        "from": "carouselProps",
+        "name": "loop",
+        "type": "boolean",
+        "default": "true",
+        "description": "循环播放，末张之后回到第一张 @default true"
+      },
+      {
+        "from": "carouselProps",
+        "name": "indicators",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示指示器 @default true"
+      },
+      {
+        "from": "carouselProps",
+        "name": "indicatorPosition",
+        "type": "SrCarouselIndicatorPosition",
+        "default": "'inside'",
+        "description": "指示器位置 @default 'inside'"
+      },
+      {
+        "from": "carouselProps",
+        "name": "arrows",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示左右箭头 @default true"
+      },
+      {
+        "from": "carouselProps",
+        "name": "height",
+        "type": "number | string",
+        "default": "240",
+        "description": "高度，数字按 px @default 240"
+      },
+      {
+        "from": "carouselProps",
+        "name": "draggable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许鼠标拖动切换 @default true"
+      },
+      {
+        "from": "carouselProps",
+        "name": "touchable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许触摸滑动切换 @default true"
+      },
+      {
+        "from": "carouselProps",
+        "name": "dragThreshold",
+        "type": "number",
+        "default": "0.15",
+        "description": "拖动多少比例后算翻页 @default 0.15 太小容易误触，太大会让用户觉得「拖了没反应」。"
+      },
+      {
+        "from": "carouselProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用全部交互 @default false"
+      }
+    ],
+    "sources": ["carousel"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["index"]
+      },
+      {
+        "name": "change",
+        "params": ["index", "prevIndex"]
+      }
+    ],
+    "slots": ["item", "overlay"]
+  },
+  "cascader": {
+    "name": "cascader",
+    "options": [
+      {
+        "from": "cascaderProps",
+        "name": "modelValue",
+        "type": "SrCascaderModel",
+        "default": "() => []",
+        "description": "选中值，配合 v-model 单选时是**路径数组**（从根到叶子），多选时是路径数组的数组。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "options",
+        "type": "SrCascaderOption[]",
+        "default": "() => []",
+        "description": "级联数据"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "false",
+        "description": "多选 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "filterable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可搜索 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可清空 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'请选择'",
+        "description": "占位文案 @default '请选择'"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "separator",
+        "type": "string",
+        "default": "' / '",
+        "description": "层级分隔符 @default ' / ' 显示选中路径时用它连接各级标签。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "showAllLevels",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示完整路径 @default true 关掉后只显示最后一级，触发器更省空间但看不出层级。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "expandTrigger",
+        "type": "'click' | 'hover'",
+        "default": "'click'",
+        "description": "展开方式 @default 'click' `hover` 在鼠标移入时就展开下一级，适合层级浅的数据。"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "maxHeight",
+        "type": "number",
+        "default": "280",
+        "description": "面板最大高度 @default 280"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空状态文案 @default '暂无数据'"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "status",
+        "type": "'error' | 'warning'",
+        "default": "undefined",
+        "description": "校验态"
+      },
+      {
+        "from": "cascaderProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["cascader"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value", "labels"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": []
+  },
+  "chart": {
+    "name": "chart",
+    "options": [
+      {
+        "from": "chartProps",
+        "name": "type",
+        "type": "SrChartType",
+        "default": "'line'",
+        "description": "图表类型 @default 'line' `pie` 只读取 `series[0]`，分类取 `categories`。"
+      },
+      {
+        "from": "chartProps",
+        "name": "categories",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "x 轴分类标签；饼图里作为扇区名称"
+      },
+      {
+        "from": "chartProps",
+        "name": "series",
+        "type": "SrChartSeries[]",
+        "default": "() => []",
+        "description": "数据系列；折线/柱状/面积可传多个，饼图只用第一个"
+      },
+      {
+        "from": "chartProps",
+        "name": "height",
+        "type": "number",
+        "default": "280",
+        "description": "图表高度（px） @default 280"
+      },
+      {
+        "from": "chartProps",
+        "name": "colors",
+        "type": "string[]",
+        "default": "undefined",
+        "description": "自定义调色板（CSS 颜色或变量） @default undefined 不传时使用主题色：primary / success / warning / danger / info。"
+      },
+      {
+        "from": "chartProps",
+        "name": "showLegend",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示图例 @default true"
+      },
+      {
+        "from": "chartProps",
+        "name": "showGrid",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示水平网格线与 y 轴刻度 @default true"
+      },
+      {
+        "from": "chartProps",
+        "name": "smooth",
+        "type": "boolean",
+        "default": "true",
+        "description": "折线 / 面积是否平滑 @default true"
+      },
+      {
+        "from": "chartProps",
+        "name": "stacked",
+        "type": "boolean",
+        "default": "false",
+        "description": "柱状 / 面积是否堆叠 @default false 开启后同一分类的多系列相加，y 轴按总和取刻度。"
+      },
+      {
+        "from": "chartProps",
+        "name": "innerRadius",
+        "type": "number",
+        "default": "0",
+        "description": "环形内半径占比（0-0.9，仅 `pie` 生效） @default 0 传 0.6 左右即可得到环形图。"
+      },
+      {
+        "from": "chartProps",
+        "name": "showTooltip",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示悬停提示 @default true"
+      },
+      {
+        "from": "chartProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "无数据时的占位文案 @default '暂无数据'"
+      }
+    ],
+    "sources": ["chart"],
+    "emits": [],
+    "slots": []
+  },
+  "checkbox": {
+    "name": "checkbox",
+    "options": [
+      {
+        "from": "checkboxProps",
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "description": "单独使用时的值，支持 v-model"
+      },
+      {
+        "from": "checkboxProps",
+        "name": "value",
+        "type": "SrCheckboxValue",
+        "default": "undefined",
+        "description": "组内使用时的标识"
+      },
+      {
+        "from": "checkboxProps",
+        "name": "indeterminate",
+        "type": "boolean",
+        "default": "false",
+        "description": "半选状态（只影响视觉，不改变 modelValue）"
+      },
+      {
+        "from": "checkboxProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": ""
+      },
+      {
+        "from": "checkboxProps",
+        "name": "label",
+        "type": "string",
+        "default": "''",
+        "description": "文字，也可用默认插槽"
+      },
+      {
+        "from": "checkboxProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "checkboxProps",
+        "name": "name",
+        "type": "string",
+        "default": "''",
+        "description": "原生 name"
+      },
+      {
+        "from": "checkboxGroupProps",
+        "name": "modelValue",
+        "type": "SrCheckboxValue[]",
+        "default": "() => []",
+        "description": "选中的值集合"
+      },
+      {
+        "from": "checkboxGroupProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": ""
+      },
+      {
+        "from": "checkboxGroupProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "组级尺寸，子项可覆盖"
+      }
+    ],
+    "sources": ["checkbox", "checkboxGroup"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": ["default"]
+  },
+  "china-map": {
+    "name": "china-map",
+    "options": [
+      {
+        "from": "chinaMapProps",
+        "name": "data",
+        "type": "ChinaMapDatum[]",
+        "default": "() => []",
+        "description": "各省数值；名称写「北京」或「北京市」都能对上"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "mode",
+        "type": "SrChinaMapMode",
+        "default": "'choropleth'",
+        "description": "展示模式 @default 'choropleth' `choropleth` 按数值深浅填色，适合看分布； `bubble` 在省会位置打点，半径表示量级，适合看排名。"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "height",
+        "type": "number",
+        "default": "420",
+        "description": "图表高度（px） @default 420"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "showLabel",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示省份名称 @default true"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "showLegend",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示色阶 / 气泡图例 @default true"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "showTooltip",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示悬停提示 @default true"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "无数据时的占位文案 @default '暂无数据'"
+      },
+      {
+        "from": "chinaMapProps",
+        "name": "maxRadius",
+        "type": "number",
+        "default": "26",
+        "description": "气泡模式下的最大半径（px） @default 26"
+      }
+    ],
+    "sources": ["chinaMap"],
+    "emits": [
+      {
+        "name": "select",
+        "params": ["payload"]
+      }
+    ],
+    "slots": []
+  },
+  "code-block": {
+    "name": "code-block",
+    "options": [
+      {
+        "from": "codeBlockProps",
+        "name": "code",
+        "type": "string",
+        "default": "''",
+        "description": "代码内容（原始文本，不要预先转义）"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "lang",
+        "type": "string",
+        "default": "'text'",
+        "description": "语言标识 @default 'text' 支持别名（`js` / `ts` / `yml` / `sh`），由 `highlight` 决定怎么解析。 不认识的语言应当原样返回，不要抛错。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "highlight",
+        "type": "SrCodeHighlight",
+        "default": "undefined",
+        "description": "高亮函数 不传则按纯文本展示（内部会做 HTML 转义）。 **返回值会被直接插入 DOM**，所以函数里必须自己处理转义—— highlight.js 的 `highlight()` 和 shiki 的 `codeToHtml()` 返回的 都是已转义的 HTML，可以直接用。自己写高亮器时要记得这一点。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "lineNumbers",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否显示行号 @default false"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "copyable",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示复制按钮 @default true 与 `lineNumbers` 相互独立：行号是阅读辅助，复制是操作辅助， 两者的取舍理由不同。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "顶栏左侧的文件名，如 `main.ts`；不传则显示语言名"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "wrap",
+        "type": "boolean",
+        "default": "false",
+        "description": "长行折行 @default false 默认不折行，超出时横向滚动——代码的换行位置有语义， 自动折行会让缩进层级看不清。"
+      },
+      {
+        "from": "codeBlockProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      }
+    ],
+    "sources": ["codeBlock"],
+    "emits": [],
+    "slots": []
+  },
+  "col": {
+    "name": "col",
+    "options": [
+      {
+        "from": "colProps",
+        "name": "span",
+        "type": "SrResponsive<number>",
+        "default": "SR_GRID_COLUMNS",
+        "description": "占据列数（满 24），支持按断点分档"
+      },
+      {
+        "from": "colProps",
+        "name": "offset",
+        "type": "SrResponsive<number>",
+        "default": "0",
+        "description": "左侧偏移列数（用 margin 实现）"
+      },
+      {
+        "from": "colProps",
+        "name": "push",
+        "type": "SrResponsive<number>",
+        "default": "0",
+        "description": "向右推（相对位移，不改变文档流占位）"
+      },
+      {
+        "from": "colProps",
+        "name": "pull",
+        "type": "SrResponsive<number>",
+        "default": "0",
+        "description": "向左拉（相对位移，与 push 相互抵消）"
+      },
+      {
+        "from": "colProps",
+        "name": "flex",
+        "type": "string | number",
+        "default": "''",
+        "description": "弹性布局取值，传值后覆盖 span 的固定宽度（如 'auto' 或 1）"
+      },
+      {
+        "from": "colProps",
+        "name": "tag",
+        "type": "string",
+        "default": "'div'",
+        "description": "自定义标签名"
+      }
+    ],
+    "sources": ["col"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "collapse": {
+    "name": "collapse",
+    "options": [
+      {
+        "from": "collapseProps",
+        "name": "modelValue",
+        "type": "SrCollapseKey[]",
+        "default": "() => []",
+        "description": "展开的面板 key 配合 `v-model`。手风琴模式下内部只会保留一个。"
+      },
+      {
+        "from": "collapseProps",
+        "name": "items",
+        "type": "SrCollapseItem[]",
+        "default": "() => []",
+        "description": "面板数据"
+      },
+      {
+        "from": "collapseProps",
+        "name": "accordion",
+        "type": "boolean",
+        "default": "false",
+        "description": "手风琴模式 @default false 同一时刻只允许展开一个，展开新的会自动收起之前的。"
+      },
+      {
+        "from": "collapseProps",
+        "name": "ghost",
+        "type": "boolean",
+        "default": "false",
+        "description": "无边框、无背景 @default false 适合嵌在卡片内部，避免出现「框中框」。"
+      }
+    ],
+    "sources": ["collapse"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["keys"]
+      },
+      {
+        "name": "change",
+        "params": ["keys", "key"]
+      }
+    ],
+    "slots": ["item", "title"]
+  },
+  "color-picker": {
+    "name": "color-picker",
+    "options": [
+      {
+        "from": "colorPickerProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "颜色值，配合 v-model 接受 hex / rgb() / hsl() 三种输入，输出格式由 `format` 决定。"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "format",
+        "type": "SrColorFormat",
+        "default": "'hex'",
+        "description": "输出格式 @default 'hex'"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "showAlpha",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示透明度 @default false 打开后会多一条透明度滑条，输出值带 alpha（hex 为 8 位）。"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "presets",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "预设色板，点一下直接选中"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可清空 @default false"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'请选择颜色'",
+        "description": "占位文案 @default '请选择颜色'"
+      },
+      {
+        "from": "colorPickerProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["colorPicker"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": []
+  },
+  "comment": {
+    "name": "comment",
+    "options": [
+      {
+        "from": "commentProps",
+        "name": "comments",
+        "type": "SrCommentData[]",
+        "default": "() => []",
+        "description": "顶层评论列表 @remarks 组件不排序、不改数组，排序在内部复制后做。"
+      },
+      {
+        "from": "commentProps",
+        "name": "user",
+        "type": "SrCommentAuthor | null",
+        "default": "null",
+        "description": "当前登录用户 @remarks 有值是登录态，`null` 是游客态（表单多出昵称/邮箱/网址）。 组件不猜身份，是否显示「删除」看每条评论的 `author.isSelf`。"
+      },
+      {
+        "from": "commentProps",
+        "name": "allowGuest",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否允许游客评论 @default true 关掉且未登录时，表单位置换成登录引导插槽——而不是让人写完再提示登录。"
+      },
+      {
+        "from": "commentProps",
+        "name": "requireGuestName",
+        "type": "boolean",
+        "default": "true",
+        "description": "游客昵称必填 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "requireGuestEmail",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客邮箱必填 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "requireGuestWebsite",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客网址必填 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "showGuestWebsite",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示游客网址输入框 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "maxLength",
+        "type": "number",
+        "default": "500",
+        "description": "正文字数上限 @default 500"
+      },
+      {
+        "from": "commentProps",
+        "name": "sort",
+        "type": "SrCommentSort",
+        "default": "'latest'",
+        "description": "初始排序 @default 'latest'"
+      },
+      {
+        "from": "commentProps",
+        "name": "showSort",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示排序切换 @default true（列表只有一条时不显示）"
+      },
+      {
+        "from": "commentProps",
+        "name": "pagination",
+        "type": "SrCommentPagination",
+        "default": "'none'",
+        "description": "分页方式 @default 'none' `pager` 前端切片 + 页码；`more` 只抛 `load-more`，由宿主追加数据。"
+      },
+      {
+        "from": "commentProps",
+        "name": "pageSize",
+        "type": "number",
+        "default": "0",
+        "description": "每页条数 @default 0（按 10 处理）"
+      },
+      {
+        "from": "commentProps",
+        "name": "hasMore",
+        "type": "boolean",
+        "default": "true",
+        "description": "`more` 模式是否还有更多 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "loadingMore",
+        "type": "boolean",
+        "default": "false",
+        "description": "`more` 模式加载中 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "autoLoadMore",
+        "type": "boolean",
+        "default": "false",
+        "description": "滚到底自动触发 `load-more` @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "noMoreText",
+        "type": "string",
+        "default": "'没有更多了'",
+        "description": "到底文案 @default '没有更多了'"
+      },
+      {
+        "from": "commentProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "列表加载中 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "submitting",
+        "type": "boolean",
+        "default": "false",
+        "description": "提交中，会禁用表单与按钮 @default false"
+      },
+      {
+        "from": "commentProps",
+        "name": "title",
+        "type": "string",
+        "default": "'评论'",
+        "description": "标题 @default '评论'"
+      },
+      {
+        "from": "commentProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "true",
+        "description": "标题旁显示总数 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "likeable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许点赞 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "replyable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许回复 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "deletable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许删除（还需 `author.isSelf`） @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "emojiable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许插入表情 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 @default [] @remarks 面板选择与正文反查必须是同一份数据， 否则会出现「能选到、发出来却显示成方括号」的割裂。"
+      },
+      {
+        "from": "commentProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'还没有评论，来说两句吧'",
+        "description": "空态文案 @default '还没有评论，来说两句吧'"
+      },
+      {
+        "from": "commentProps",
+        "name": "showEditor",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示评论框 @default true"
+      },
+      {
+        "from": "commentProps",
+        "name": "rows",
+        "type": "number",
+        "default": "0",
+        "description": "正文框初始行数 @default 0 0 表示按 `compact` 取默认值（回复框 2 行、顶层 3 行）。"
+      },
+      {
+        "from": "commentProps",
+        "name": "maxRows",
+        "type": "number",
+        "default": "0",
+        "description": "自动增高的上限行数 @default 0 0 表示按 `compact` 取默认值（回复框 6 行、顶层 10 行）。"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundImage",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景图 @remarks 透传给内部 `SrTextarea`：`url()`、渐变函数或裸地址都行， 裸地址会先校验协议再包成 `url()`。"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundText",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景文字（水印） @remarks 常见用法是「友善发言」这类提示，或品牌名。"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundPosition",
+        "type": "SrTextareaBackgroundPosition",
+        "default": "'center'",
+        "description": "背景落点 @default 'center'"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundTextSize",
+        "type": "number",
+        "default": "0",
+        "description": "水印字号（px） @default 0，0 表示跟随组件字号"
+      },
+      {
+        "from": "commentProps",
+        "name": "backgroundTextOpacity",
+        "type": "number",
+        "default": "0.06",
+        "description": "水印不透明度 @default 0.06"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "comment",
+        "type": "SrCommentData",
+        "default": "",
+        "description": "评论数据"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "depth",
+        "type": "number",
+        "default": "0",
+        "description": "深度，0 为顶层 @default 0"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "likeable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许点赞 @default true"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "replyable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许回复 @default true"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "deletable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许删除 @default true"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "replyCollapseLimit",
+        "type": "number",
+        "default": "2",
+        "description": "折叠时展示的回复条数 @default 2"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "replyingId",
+        "type": "string | number | null",
+        "default": "null",
+        "description": "正在回复的目标 id，命中的条目会高亮并挂载回复表单 @default null"
+      },
+      {
+        "from": "commentItemProps",
+        "name": "emojiMap",
+        "type": "Map<string, SrEmojiItem>",
+        "default": "() => new Map<string, SrEmojiItem>()",
+        "description": "表情查找表，由容器算好逐层传下来 @default new Map()"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "user",
+        "type": "SrCommentAuthor | null",
+        "default": "null",
+        "description": "当前用户，`null` 为游客态"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "allowGuest",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许游客评论 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "requireGuestName",
+        "type": "boolean",
+        "default": "true",
+        "description": "游客昵称必填 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "requireGuestEmail",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客邮箱必填 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "requireGuestWebsite",
+        "type": "boolean",
+        "default": "false",
+        "description": "游客网址必填 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "showGuestWebsite",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示游客网址输入框 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "maxLength",
+        "type": "number",
+        "default": "500",
+        "description": "正文字数上限 @default 500"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "submitting",
+        "type": "boolean",
+        "default": "false",
+        "description": "提交中 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "emojiable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许插入表情 @default true"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 @default []"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "replyTo",
+        "type": "SrCommentData | null",
+        "default": "null",
+        "description": "回复目标，不为空时表单进入精简态 @default null"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "精简态：回复场景更小更轻 @default false"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "rows",
+        "type": "number",
+        "default": "0",
+        "description": "正文框初始行数 @default 0 0 表示按 `compact` 取默认值（回复框 2 行、顶层 3 行）。"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "maxRows",
+        "type": "number",
+        "default": "0",
+        "description": "自动增高的上限行数 @default 0 0 表示按 `compact` 取默认值（回复框 6 行、顶层 10 行）。"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundImage",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景图，透传给 `SrTextarea`"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundText",
+        "type": "string",
+        "default": "''",
+        "description": "正文框背景文字（水印）"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundPosition",
+        "type": "SrTextareaBackgroundPosition",
+        "default": "'center'",
+        "description": "背景落点 @default 'center'"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundTextSize",
+        "type": "number",
+        "default": "0",
+        "description": "水印字号（px） @default 0"
+      },
+      {
+        "from": "commentEditorProps",
+        "name": "backgroundTextOpacity",
+        "type": "number",
+        "default": "0.06",
+        "description": "水印不透明度 @default 0.06"
+      }
+    ],
+    "sources": ["comment", "commentItem", "commentEditor"],
+    "emits": [
+      {
+        "name": "submit",
+        "params": ["payload"]
+      },
+      {
+        "name": "like",
+        "params": ["comment"]
+      },
+      {
+        "name": "delete",
+        "params": ["comment"]
+      },
+      {
+        "name": "sort-change",
+        "params": ["sort"]
+      },
+      {
+        "name": "page-change",
+        "params": ["page"]
+      },
+      {
+        "name": "load-more",
+        "params": []
+      }
+    ],
+    "slots": [
+      "comment-actions",
+      "comment-avatar",
+      "comment-browser",
+      "comment-footer",
+      "comment-level",
+      "comment-meta",
+      "comment-os",
+      "comment-region",
+      "editor-toolbar",
+      "empty",
+      "login"
+    ]
+  },
+  "config-provider": {
+    "name": "config-provider",
+    "options": [
+      {
+        "from": "configProviderProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "子组件的默认尺寸 不传则沿用上层配置，最外层未配置时用 md"
+      },
+      {
+        "from": "configProviderProps",
+        "name": "zIndex",
+        "type": "number",
+        "default": "undefined",
+        "description": "弹层层级基数 Modal / Dropdown 等在其之上叠加"
+      }
+    ],
+    "sources": ["configProvider"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "confirm": {
+    "name": "confirm",
+    "options": [
+      {
+        "from": "confirmProps",
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否显示，支持 v-model"
+      },
+      {
+        "from": "confirmProps",
+        "name": "type",
+        "type": "SrConfirmType",
+        "default": "'primary'",
+        "description": "类型 @default 'primary'"
+      },
+      {
+        "from": "confirmProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "confirmProps",
+        "name": "content",
+        "type": "string",
+        "default": "''",
+        "description": "说明内容"
+      },
+      {
+        "from": "confirmProps",
+        "name": "confirmText",
+        "type": "string",
+        "default": "'确认'",
+        "description": "确认按钮文字"
+      },
+      {
+        "from": "confirmProps",
+        "name": "cancelText",
+        "type": "string",
+        "default": "'取消'",
+        "description": "取消按钮文字"
+      },
+      {
+        "from": "confirmProps",
+        "name": "showCancel",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示取消按钮"
+      },
+      {
+        "from": "confirmProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "确认按钮加载态，期间禁止关闭"
+      },
+      {
+        "from": "confirmProps",
+        "name": "maskClosable",
+        "type": "boolean",
+        "default": "false",
+        "description": "点击遮罩是否取消 @default false"
+      },
+      {
+        "from": "confirmProps",
+        "name": "width",
+        "type": "number | string",
+        "default": "420",
+        "description": "面板宽度"
+      }
+    ],
+    "sources": ["confirm"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "confirm",
+        "params": []
+      },
+      {
+        "name": "cancel",
+        "params": []
+      },
+      {
+        "name": "close",
+        "params": []
+      }
+    ],
+    "slots": ["default"]
+  },
+  "context-menu": {
+    "name": "context-menu",
+    "options": [
+      {
+        "from": "contextMenuProps",
+        "name": "items",
+        "type": "SrContextMenuItem[]",
+        "default": "() => []",
+        "description": "菜单项"
+      },
+      {
+        "from": "contextMenuProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整个菜单 @default false 禁用后右键仍会阻止默认菜单，只是不弹出自己的。"
+      }
+    ],
+    "sources": ["contextMenu"],
+    "emits": [
+      {
+        "name": "select",
+        "params": ["key", "item"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": ["default"]
+  },
+  "date-picker": {
+    "name": "date-picker",
+    "options": [
+      {
+        "from": "datePickerProps",
+        "name": "modelValue",
+        "type": "SrDatePickerValue",
+        "default": "null",
+        "description": "选中值，支持 v-model"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "type",
+        "type": "SrDatePickerType",
+        "default": "'date'",
+        "description": "选择模式 @default 'date'"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "min",
+        "type": "Date | string | number",
+        "default": "undefined",
+        "description": "最小可选日期"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "max",
+        "type": "Date | string | number",
+        "default": "undefined",
+        "description": "最大可选日期"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "disabledDate",
+        "type": "(date: Date) =",
+        "default": "undefined",
+        "description": "自定义禁用规则，返回 true 表示不可选"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "format",
+        "type": "string",
+        "default": "''",
+        "description": "输入框显示格式 不传时按 type 取默认：date 为 YYYY-MM-DD，datetime 为 YYYY-MM-DD HH:mm:ss。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "valueFormat",
+        "type": "string",
+        "default": "''",
+        "description": "输出格式 传了就按该模板输出字符串，否则输出 Date / [Date, Date]。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "placeholder",
+        "type": "string | string[]",
+        "default": "''",
+        "description": "占位文案，区间模式可传两个"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "true",
+        "description": "可清空 @default true"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读：可聚焦复制，不能改值 @default false"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "status",
+        "type": "SrDatePickerStatus",
+        "default": "'default'",
+        "description": "校验态 @default 'default'"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "shortcuts",
+        "type": "SrDatePickerShortcut[]",
+        "default": "undefined",
+        "description": "快捷选项 默认不显示快捷区。传了数组才渲染，这是可选变体而不是默认形态 —— 大多数场景用户只需要一个日历，多一列按钮反而占地方。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "showShortcuts",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示快捷区，需要同时传 shortcuts 才有内容 @default true"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "showSeconds",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示秒 @default true 关掉后时间只有时:分，值里的秒会被清零。只对 datetime / datetimerange 有效。"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "firstDayOfWeek",
+        "type": "number",
+        "default": "1",
+        "description": "一周从周几开始，0 为周日 @default 1"
+      },
+      {
+        "from": "datePickerProps",
+        "name": "editable",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否可编辑输入（允许打字），默认只能通过面板选 @default false"
+      }
+    ],
+    "sources": ["datePicker"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": []
+  },
+  "descriptions": {
+    "name": "descriptions",
+    "options": [
+      {
+        "from": "descriptionsProps",
+        "name": "items",
+        "type": "SrDescriptionItem[]",
+        "default": "() => []",
+        "description": "字段列表"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "column",
+        "type": "number",
+        "default": "3",
+        "description": "每行列数 @default 3"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "border",
+        "type": "boolean",
+        "default": "false",
+        "description": "带边框 @default false 打开后是表格样式，字段名有独立底色，适合信息密度高的详情页。"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "字段名与值的方向 @default 'horizontal' `horizontal` 是左右排（省高度），`vertical` 是上下排（省宽度）。"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "labelWidth",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "字段名宽度，仅 horizontal 有效 @default 'auto'"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "descriptionsProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["descriptions"],
+    "emits": [],
+    "slots": ["extra", "label", "title", "value"]
+  },
+  "divider": {
+    "name": "divider",
+    "options": [
+      {
+        "from": "dividerProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "方向 @default 'horizontal' 水平分割线占满整行，垂直分割线需要父容器有确定高度。"
+      },
+      {
+        "from": "dividerProps",
+        "name": "dashed",
+        "type": "boolean",
+        "default": "false",
+        "description": "虚线 @default false"
+      },
+      {
+        "from": "dividerProps",
+        "name": "contentPosition",
+        "type": "'left' | 'center' | 'right'",
+        "default": "'center'",
+        "description": "文字位置 @default 'center' 只有在水平方向且带内容时生效。"
+      }
+    ],
+    "sources": ["divider"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "drawer": {
+    "name": "drawer",
+    "options": [
+      {
+        "from": "drawerProps",
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否打开，支持 v-model"
+      },
+      {
+        "from": "drawerProps",
+        "name": "placement",
+        "type": "SrDrawerPlacement",
+        "default": "'right'",
+        "description": "滑出方向 @default 'right'"
+      },
+      {
+        "from": "drawerProps",
+        "name": "size",
+        "type": "SrDrawerSize",
+        "default": "''",
+        "description": "尺寸：左右方向为宽度、上下方向为高度。 可传 sm / md / lg 预设，也可传任意 CSS 值或数字（按 px）"
+      },
+      {
+        "from": "drawerProps",
+        "name": "zIndex",
+        "type": "number",
+        "default": "undefined",
+        "description": "层级，需要盖在其它浮层之上时调大"
+      },
+      {
+        "from": "drawerProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题，留空则不渲染头部"
+      },
+      {
+        "from": "drawerProps",
+        "name": "closable",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示右上角关闭按钮"
+      },
+      {
+        "from": "drawerProps",
+        "name": "maskClosable",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击遮罩关闭"
+      },
+      {
+        "from": "drawerProps",
+        "name": "escToClose",
+        "type": "boolean",
+        "default": "true",
+        "description": "按 Esc 关闭"
+      },
+      {
+        "from": "drawerProps",
+        "name": "inset",
+        "type": "boolean",
+        "default": "false",
+        "description": "圆角形态：仍然贴视口边缘，只把四个角做成圆角。 玻璃质感在这种形态下更明显（面板不再是一条通栏色块）"
+      },
+      {
+        "from": "drawerProps",
+        "name": "mask",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示遮罩"
+      },
+      {
+        "from": "drawerProps",
+        "name": "lockScroll",
+        "type": "boolean",
+        "default": "true",
+        "description": "打开时锁定页面滚动"
+      }
+    ],
+    "sources": ["drawer"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["open"]
+      },
+      {
+        "name": "close",
+        "params": ["reason"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["open"]
+      },
+      {
+        "name": "opened",
+        "params": []
+      }
+    ],
+    "slots": ["default", "footer", "header"]
+  },
+  "dropdown": {
+    "name": "dropdown",
+    "options": [
+      {
+        "from": "dropdownProps",
+        "name": "items",
+        "type": "SrDropdownItem[]",
+        "default": "() => []",
+        "description": "菜单项"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "trigger",
+        "type": "'click' | 'hover'",
+        "default": "'click'",
+        "description": "触发方式 @default 'click'"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "placement",
+        "type": "SrPlacement",
+        "default": "'bottom-start'",
+        "description": "弹出位置 @default 'bottom-start'"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "flush",
+        "type": "boolean",
+        "default": "false",
+        "description": "去掉面板内边距，内容自己控制留白。 用 #menu 插槽塞表单或设置面板时打开它"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "role",
+        "type": "string",
+        "default": "'menu'",
+        "description": "面板的 ARIA role：菜单用 menu，自定义面板建议 dialog"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整个下拉"
+      },
+      {
+        "from": "dropdownProps",
+        "name": "minWidth",
+        "type": "string | number",
+        "default": "160",
+        "description": "菜单最小宽度；数字按 px"
+      }
+    ],
+    "sources": ["dropdown"],
+    "emits": [
+      {
+        "name": "select",
+        "params": ["key", "item"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      }
+    ],
+    "slots": ["default", "menu"]
+  },
+  "emoji-picker": {
+    "name": "emoji-picker",
+    "options": [
+      {
+        "from": "emojiPickerProps",
+        "name": "packages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包列表 不传则使用内置的字符表情包。 **必须与渲染端用同一份数据**——否则编辑器里插的表情在正文里查不到， 会显示成一串 `[表情名]` 纯文本。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "columns",
+        "type": "number",
+        "default": "8",
+        "description": "每行几个 @default 8"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "tabPosition",
+        "type": "'top' | 'bottom'",
+        "default": "'bottom'",
+        "description": "分类 tab 的位置 @default 'bottom' - `bottom`：tab 贴在面板底部 - `top`：tab 在顶部"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "width",
+        "type": "number | string",
+        "default": "undefined",
+        "description": "面板宽度 数字按像素，字符串原样输出（`'100%'` / `'20rem'` 都行）。 不传时占满父容器。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "height",
+        "type": "number | string",
+        "default": "undefined",
+        "description": "面板高度 传了就是固定高度，内容区自动填充剩余空间并内部滚动。 不传时由 `minHeight` 与内容共同决定。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "minHeight",
+        "type": "number",
+        "default": "240",
+        "description": "最小高度（px） @default 240 表情少的包不会把面板塌成一条——切换分类时高度不跳。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "maxHeight",
+        "type": "number",
+        "default": "260",
+        "description": "内容区最大高度（px） @default 260，仅在未传 `height` 时生效"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "searchable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示搜索框 @default false 搜索跨所有分类按名称过滤，命中结果显示在一个临时「搜索」视图里。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "searchPlaceholder",
+        "type": "string",
+        "default": "'搜索表情'",
+        "description": "搜索框占位文案"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "tipMode",
+        "type": "'meta' | 'tooltip' | 'none'",
+        "default": "'meta'",
+        "description": "表情名称的提示方式 @default 'meta' - `meta`：顶部信息行随悬停更新，不显示气泡 - `tooltip`：悬停/聚焦时在表情旁弹出气泡，信息行只显示当前分类 - `none`：只保留 `aria-label`，不显示名称 三种模式互斥，避免「信息行 + 原生 title」同时出现。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "showRecent",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示「最近使用」 @default true 会话级，不持久化——组件不该替宿主决定存哪。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "closeOnSelect",
+        "type": "boolean",
+        "default": "false",
+        "description": "选中后请求关闭 @default false 默认连选（选完面板不关，方便连着插几个表情）。 打开后 `select` 之外再派发 `close`，由外层浮层决定收起。"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      },
+      {
+        "from": "emojiPickerProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      }
+    ],
+    "sources": ["emojiPicker"],
+    "emits": [
+      {
+        "name": "select",
+        "params": ["item", "mark"]
+      },
+      {
+        "name": "close",
+        "params": []
+      },
+      {
+        "name": "search-change",
+        "params": ["keyword"]
+      }
+    ],
+    "slots": []
+  },
+  "empty": {
+    "name": "empty",
+    "options": [
+      {
+        "from": "emptyProps",
+        "name": "type",
+        "type": "SrEmptyType",
+        "default": "'default'",
+        "description": "场景类型，决定默认图标、文案与色调 @default 'default'"
+      },
+      {
+        "from": "emptyProps",
+        "name": "description",
+        "type": "string",
+        "default": "''",
+        "description": "描述文案，不传则用场景预设文案"
+      },
+      {
+        "from": "emptyProps",
+        "name": "icon",
+        "type": "string",
+        "default": "undefined",
+        "description": "图标名，不传则用场景预设图标；显式传空字符串则不显示图标"
+      },
+      {
+        "from": "emptyProps",
+        "name": "image",
+        "type": "string",
+        "default": "''",
+        "description": "图片地址，传了就用图片替代图标"
+      },
+      {
+        "from": "emptyProps",
+        "name": "bordered",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否套一层虚线框，用于表格或画布内的空占位"
+      },
+      {
+        "from": "emptyProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      }
+    ],
+    "sources": ["empty"],
+    "emits": [],
+    "slots": ["action", "default"]
+  },
+  "form": {
+    "name": "form",
+    "options": [
+      {
+        "from": "formProps",
+        "name": "model",
+        "type": "Record<string, unknown>",
+        "default": "() => ({})",
+        "description": "表单数据对象"
+      },
+      {
+        "from": "formProps",
+        "name": "rules",
+        "type": "Record<string, SrFormRule | SrFormRule[]>",
+        "default": "() => ({})",
+        "description": "全局校验规则，按字段名索引"
+      },
+      {
+        "from": "formProps",
+        "name": "labelWidth",
+        "type": "string | number",
+        "default": "'88px'",
+        "description": "标签宽度"
+      },
+      {
+        "from": "formProps",
+        "name": "labelPosition",
+        "type": "'top' | 'left' | 'right'",
+        "default": "'top'",
+        "description": "标签位置"
+      },
+      {
+        "from": "formProps",
+        "name": "hideRequiredMark",
+        "type": "boolean",
+        "default": "false",
+        "description": "隐藏必填项标签后的星号 @default false 有些设计规范不在标签上打星，改为在占位文案或校验提示里说明。"
+      },
+      {
+        "from": "formProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "表单级尺寸，下发给子组件"
+      },
+      {
+        "from": "formProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "整表禁用"
+      },
+      {
+        "from": "formProps",
+        "name": "showMessage",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示错误文案（关闭后只保留边框变色）"
+      },
+      {
+        "from": "formItemProps",
+        "name": "prop",
+        "type": "string",
+        "default": "''",
+        "description": "对应 model 中的字段名"
+      },
+      {
+        "from": "formItemProps",
+        "name": "label",
+        "type": "string",
+        "default": "''",
+        "description": "标签文案"
+      },
+      {
+        "from": "formItemProps",
+        "name": "rules",
+        "type": "SrFormRule | SrFormRule[]",
+        "default": "undefined",
+        "description": "字段级规则，优先于表单级"
+      },
+      {
+        "from": "formItemProps",
+        "name": "required",
+        "type": "boolean",
+        "default": "false",
+        "description": "强制显示必填星号（未给 rules 时也用）"
+      },
+      {
+        "from": "formItemProps",
+        "name": "error",
+        "type": "string",
+        "default": "''",
+        "description": "手动指定错误文案，优先于校验结果"
+      },
+      {
+        "from": "formItemProps",
+        "name": "labelWidth",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "单独覆盖标签宽度"
+      },
+      {
+        "from": "formItemProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "单独禁用这一项，与表单级 disabled 取或"
+      }
+    ],
+    "sources": ["form", "formItem"],
+    "emits": [
+      {
+        "name": "submit",
+        "params": ["model"]
+      },
+      {
+        "name": "validate-fail",
+        "params": ["errors"]
+      }
+    ],
+    "slots": ["default"]
+  },
+  "icon": {
+    "name": "icon",
+    "options": [
+      {
+        "from": "iconProps",
+        "name": "name",
+        "type": "string",
+        "default": "''",
+        "description": "图标名，格式「集合:图标名」，如 'lucide:house' 使用 default 插槽自定义渲染时可省略"
+      },
+      {
+        "from": "iconProps",
+        "name": "size",
+        "type": "number | string | SrSize",
+        "default": "'1em'",
+        "description": "尺寸，三种形态： 1. 档位关键字 `xs | sm | md | lg` —— 与 SrButton 等组件的 size 语义一致 2. 数字 —— 按 px 处理 3. 带单位字符串 —— 原样透传（'1em' / '1.5rem' / '24px'） @default '1em'"
+      },
+      {
+        "from": "iconProps",
+        "name": "color",
+        "type": "string | undefined",
+        "default": "undefined",
+        "description": "颜色，默认不输出内联样式、直接继承父级 currentColor。 不能默认写 'currentColor'：内联样式的优先级会压掉外部类设置的颜色 （例如 toast 按类型染的状态色），导致所有图标都变成正文黑。"
+      },
+      {
+        "from": "iconProps",
+        "name": "flip",
+        "type": "SrIconFlip",
+        "default": "false",
+        "description": "翻转：true 等价于 horizontal"
+      },
+      {
+        "from": "iconProps",
+        "name": "rotate",
+        "type": "number | string",
+        "default": "0",
+        "description": "旋转角度（deg），如 90 / 180"
+      },
+      {
+        "from": "iconProps",
+        "name": "spin",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否匀速旋转（loading 场景）"
+      },
+      {
+        "from": "iconProps",
+        "name": "label",
+        "type": "string",
+        "default": "''",
+        "description": "无障碍标签 不传视为装饰性图标，自动加 aria-hidden"
+      }
+    ],
+    "sources": ["icon"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "image": {
+    "name": "image",
+    "options": [
+      {
+        "from": "imageProps",
+        "name": "src",
+        "type": "string",
+        "default": "''",
+        "description": "图片地址"
+      },
+      {
+        "from": "imageProps",
+        "name": "alt",
+        "type": "string",
+        "default": "''",
+        "description": "替代文本，同时作为无障碍描述"
+      },
+      {
+        "from": "imageProps",
+        "name": "width",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "宽度，数字按像素处理"
+      },
+      {
+        "from": "imageProps",
+        "name": "height",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "高度，数字按像素处理"
+      },
+      {
+        "from": "imageProps",
+        "name": "fit",
+        "type": "SrImageFit",
+        "default": "'cover'",
+        "description": "填充方式 @default 'cover'"
+      },
+      {
+        "from": "imageProps",
+        "name": "radius",
+        "type": "string | number",
+        "default": "0",
+        "description": "圆角，数字按像素处理 @default 0"
+      },
+      {
+        "from": "imageProps",
+        "name": "lazy",
+        "type": "boolean",
+        "default": "false",
+        "description": "懒加载 @default false 用 IntersectionObserver，进入视口才真正请求图片。"
+      },
+      {
+        "from": "imageProps",
+        "name": "preview",
+        "type": "boolean",
+        "default": "false",
+        "description": "点击放大 @default false"
+      },
+      {
+        "from": "imageProps",
+        "name": "fallback",
+        "type": "string",
+        "default": "''",
+        "description": "加载失败的兜底图 @default '' 不传时显示一个占位图标 + 替代文本。"
+      },
+      {
+        "from": "imageProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "''",
+        "description": "加载中的占位图 @default ''"
+      }
+    ],
+    "sources": ["image"],
+    "emits": [
+      {
+        "name": "load",
+        "params": ["event"]
+      },
+      {
+        "name": "error",
+        "params": ["event"]
+      },
+      {
+        "name": "preview-change",
+        "params": ["open"]
+      }
+    ],
+    "slots": []
+  },
+  "input": {
+    "name": "input",
+    "options": [
+      {
+        "from": "inputProps",
+        "name": "modelValue",
+        "type": "string | number",
+        "default": "''",
+        "description": "值，支持 v-model"
+      },
+      {
+        "from": "inputProps",
+        "name": "type",
+        "type": "string",
+        "default": "'text'",
+        "description": "原生 input type textarea 是独立分支，不看这个字段"
+      },
+      {
+        "from": "inputProps",
+        "name": "size",
+        "type": "SrResponsive<SrSize>",
+        "default": "undefined",
+        "description": "尺寸，支持按断点分档；不传则继承 SrConfigProvider"
+      },
+      {
+        "from": "inputProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "''",
+        "description": "占位文案"
+      },
+      {
+        "from": "inputProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用"
+      },
+      {
+        "from": "inputProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读"
+      },
+      {
+        "from": "inputProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "false",
+        "description": "有值时显示清空按钮"
+      },
+      {
+        "from": "inputProps",
+        "name": "showPassword",
+        "type": "boolean",
+        "default": "false",
+        "description": "type=\"password\" 时显示「显示/隐藏」切换"
+      },
+      {
+        "from": "inputProps",
+        "name": "maxlength",
+        "type": "number",
+        "default": "undefined",
+        "description": "最大长度，同时用于字数统计"
+      },
+      {
+        "from": "inputProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示字数统计（需同时给 maxlength 才有「/n」）"
+      },
+      {
+        "from": "inputProps",
+        "name": "status",
+        "type": "SrInputStatus",
+        "default": "'default'",
+        "description": "校验态，仅影响边框与图标颜色"
+      },
+      {
+        "from": "inputProps",
+        "name": "rows",
+        "type": "number",
+        "default": "3",
+        "description": "textarea 行数"
+      },
+      {
+        "from": "inputProps",
+        "name": "autosize",
+        "type": "boolean",
+        "default": "false",
+        "description": "textarea 高度自适应内容"
+      }
+    ],
+    "sources": ["input"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "focus",
+        "params": ["event"]
+      },
+      {
+        "name": "blur",
+        "params": ["event"]
+      },
+      {
+        "name": "clear",
+        "params": []
+      },
+      {
+        "name": "enter",
+        "params": ["event"]
+      }
+    ],
+    "slots": ["prefix", "suffix"]
+  },
+  "input-number": {
+    "name": "input-number",
+    "options": [
+      {
+        "from": "inputNumberProps",
+        "name": "modelValue",
+        "type": "number | null",
+        "default": "null",
+        "description": "值，支持 v-model；空值为 null"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "min",
+        "type": "number",
+        "default": "-Infinity",
+        "description": "最小值"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "max",
+        "type": "number",
+        "default": "Infinity",
+        "description": "最大值"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "step",
+        "type": "number",
+        "default": "1",
+        "description": "每次步进的增量，必须大于 0"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "precision",
+        "type": "number | undefined",
+        "default": "undefined",
+        "description": "小数位精度 不传时由 step 推导，例如 step=0.1 得到 1 位小数。 显式传值时以它为准，并用它抹平 0.1 + 0.2 这类浮点误差。"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "size",
+        "type": "SrResponsive<SrSize>",
+        "default": "undefined",
+        "description": "尺寸，支持按断点分档；不传则继承 SrConfigProvider"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "''",
+        "description": "占位文案"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读：仍可聚焦复制，但不能改值"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "controls",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示步进按钮"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "controlsPosition",
+        "type": "SrInputNumberControlsPosition",
+        "default": "'right'",
+        "description": "步进按钮位置"
+      },
+      {
+        "from": "inputNumberProps",
+        "name": "status",
+        "type": "SrInputNumberStatus",
+        "default": "'default'",
+        "description": "校验态，仅影响边框与图标颜色"
+      }
+    ],
+    "sources": ["inputNumber"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "focus",
+        "params": ["event"]
+      },
+      {
+        "name": "blur",
+        "params": ["event"]
+      },
+      {
+        "name": "step",
+        "params": ["value", "type"]
+      }
+    ],
+    "slots": []
+  },
+  "load-more": {
+    "name": "load-more",
+    "options": [
+      {
+        "from": "loadMoreProps",
+        "name": "status",
+        "type": "SrLoadMoreStatus",
+        "default": "'idle'",
+        "description": "当前状态 - idle：还能加载，显示按钮 - loading：加载中 - done：没有更多了"
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "loadText",
+        "type": "string",
+        "default": "'加载更多'",
+        "description": "可加载时的按钮文案"
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "loadingText",
+        "type": "string",
+        "default": "'加载中'",
+        "description": "加载中文案"
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "doneText",
+        "type": "string",
+        "default": "'没有更多了'",
+        "description": "到底文案"
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "auto",
+        "type": "boolean",
+        "default": "false",
+        "description": "自动模式：元素进入可视区就派发 load，不需要点击 配合 maxHeight 之类的滚动容器使用，效果等同于\"滚动到底自动加载\""
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "rootMargin",
+        "type": "string",
+        "default": "'0px 0px 120px 0px'",
+        "description": "自动模式的触发提前量，语法同 IntersectionObserver 的 rootMargin"
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "loadMoreProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用点击"
+      }
+    ],
+    "sources": ["loadMore"],
+    "emits": [
+      {
+        "name": "load",
+        "params": []
+      }
+    ],
+    "slots": []
+  },
+  "loading": {
+    "name": "loading",
+    "options": [
+      {
+        "from": "loadingProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示 @default true 包裹内容时通常绑一个变量；单独用时不用传。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "text",
+        "type": "string",
+        "default": "''",
+        "description": "提示文案"
+      },
+      {
+        "from": "loadingProps",
+        "name": "fullscreen",
+        "type": "boolean",
+        "default": "false",
+        "description": "全屏模式 @default false 打开后固定定位覆盖整个视口，同时锁定页面滚动。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "mask",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示遮罩 @default true 关掉后只有转圈，背景内容可以继续操作。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "delay",
+        "type": "number",
+        "default": "0",
+        "description": "延迟显示（毫秒） @default 0 接口很快返回时不必闪一下 loading；设成 200 可以让快请求完全不闪。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "loadingProps",
+        "name": "variant",
+        "type": "'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'",
+        "default": "'ring'",
+        "description": "动画样式 @default 'ring' 与 `SrSpinner` 的 `variant` 一致：ring / dots / pulse / bars / orbit / gradient。"
+      },
+      {
+        "from": "loadingProps",
+        "name": "colors",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "多色，按顺序分配给子元素 @default [] 只在 `dots` / `bars` / `pulse` 下生效，其余变体是单色。"
+      }
+    ],
+    "sources": ["loading"],
+    "emits": [],
+    "slots": ["default", "text"]
+  },
+  "markdown": {
+    "name": "markdown",
+    "options": [
+      {
+        "from": "markdownProps",
+        "name": "source",
+        "type": "string",
+        "default": "''",
+        "description": "Markdown 源码"
+      },
+      {
+        "from": "markdownProps",
+        "name": "engine",
+        "type": "SrMarkdownEngine | typeof SR_MARKDOWN_BUILTIN",
+        "default": "undefined",
+        "description": "渲染引擎 传 `'builtin'` 用内置的精简解析器（只覆盖常用语法，见文档）； 传对象则调用它的 `render`。**不传会原样显示源码**—— 静默降级比报错更安全，但控制台会给出提示。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "extensions",
+        "type": "SrMarkdownExtension[]",
+        "default": "() => []",
+        "description": "短代码扩展 在 Markdown 解析**之前**执行，把自定义语法替换成 HTML。 支持内联（`{{名字 参数}}`）与块级（`:::名字 ... :::`）两种形态。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "sanitize",
+        "type": "(html: string) =",
+        "default": "undefined",
+        "description": "HTML 后处理钩子 引擎渲染完成后、插入 DOM 之前调用一次。 接了 DOMPurify 之类的清洗库时用它： ```ts :sanitize=\"(html) => DOMPurify.sanitize(html)\" ```"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeHighlight",
+        "type": "boolean",
+        "default": "true",
+        "description": "代码块是否做语法着色 @default true 内置一套零依赖的高亮器，覆盖 JS / TS / JSON / HTML / Vue / CSS / Shell / Python / Markdown 的高频语法。要更精确的高亮可以关掉它，换成 `sanitize` 里接 Prism / shiki 的输出。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeLineNumbers",
+        "type": "boolean",
+        "default": "true",
+        "description": "代码块是否显示行号 @default true 行号由 CSS 计数器绘制，不打进复制内容里；数字不参与选中， 手动划选代码时也不会把行号带走。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeCopy",
+        "type": "boolean",
+        "default": "true",
+        "description": "代码块是否显示复制按钮 @default true 按钮只在浏览器端生效：`navigator.clipboard` 不可用（非安全上下文）时 退回 `document.execCommand('copy')`。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "codeCopyNotify",
+        "type": "boolean",
+        "default": "false",
+        "description": "复制成功后是否弹一条 `srMessage` 提示 @default false 按钮本身已经会把文案切成「已复制」，这里额外走全局消息， 适合把复制当成一次正式操作的场景。 想换成 toast / notification，用 `copy` 事件自己接管即可。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => DEFAULT_EMOJI_PACKAGES",
+        "description": "表情包 @remarks 正文里的 `[名称]` 按这张表渲染：有 `char` 直接输出字符（不落 `img`）， 有 `url` 才输出图片。必须与插入端（`SrEmojiPicker` / `SrMarkdownEditor`） 使用同一份数据，否则会显示成 `[名称]` 纯文本。 默认使用内置字符表情包；传 `[]` 可以彻底关掉表情解析。"
+      },
+      {
+        "from": "markdownProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "渲染尺寸 @default 'md'"
+      },
+      {
+        "from": "markdownProps",
+        "name": "theme",
+        "type": "'plain' | 'vivid' | 'editorial' | 'glass'",
+        "default": "'vivid'",
+        "description": "渲染模板 @default 'vivid' - `plain`：极简中性，几乎没有装饰 - `vivid`：主色装饰丰富，标题/引用/表格/代码块都有层次 - `editorial`：阅读型排版，衬线标题、细线、克制留白 - `glass`：玻璃拟态，半透明表面与柔光 模板本质是一组 `--sr-md-*` CSS 变量，可以直接覆盖做二次定制。"
+      }
+    ],
+    "sources": ["markdown"],
+    "emits": [
+      {
+        "name": "copy",
+        "params": ["text"]
+      }
+    ],
+    "slots": []
+  },
+  "markdown-editor": {
+    "name": "markdown-editor",
+    "options": [
+      {
+        "from": "markdownEditorProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "文本内容（`v-model`）"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "engine",
+        "type": "SrMarkdownEngine | 'builtin'",
+        "default": "'builtin'",
+        "description": "渲染引擎，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "extensions",
+        "type": "SrMarkdownExtension[]",
+        "default": "() => []",
+        "description": "短代码扩展，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "theme",
+        "type": "'plain' | 'vivid' | 'editorial' | 'glass'",
+        "default": "'vivid'",
+        "description": "渲染模板，透传给内部 `SrMarkdown` 编辑时的预览必须与前台展示用同一套模板，否则写作者看到的 和最终发布的不一样。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "sanitize",
+        "type": "(html: string) =",
+        "default": "undefined",
+        "description": "HTML 后处理钩子，透传给内部 `SrMarkdown`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeHighlight",
+        "type": "boolean",
+        "default": "true",
+        "description": "预览里的代码块是否做语法着色 @default true 透传给 `SrMarkdown`，内置零依赖高亮器。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeLineNumbers",
+        "type": "boolean",
+        "default": "true",
+        "description": "预览里的代码块是否显示行号 @default true 行号由 CSS 计数器画，复制时不会带上数字。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeCopy",
+        "type": "boolean",
+        "default": "true",
+        "description": "预览里的代码块是否显示复制按钮 @default true"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "codeCopyNotify",
+        "type": "boolean",
+        "default": "false",
+        "description": "复制成功后是否弹一条 `srMessage` 提示 @default false 关闭时按钮仍会把文案切成「已复制」，只是不走全局消息。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "mode",
+        "type": "SrMarkdownEditorMode",
+        "default": "'split'",
+        "description": "视图模式 @default 'split'"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "toolbar",
+        "type": "SrMarkdownToolbarItem[] | false",
+        "default": "undefined",
+        "description": "工具栏 @default 默认 15 项 传 `false` 关闭；传数组则完全按数组渲染（预设名 + 自定义对象混用）。 扩展里配了 `insert` 的会自动追加到末尾。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "tooltips",
+        "type": "boolean",
+        "default": "true",
+        "description": "工具栏按钮的功能提示 @default true 鼠标移入或键盘 focus 时显示气泡。关掉后退回原生 `title`—— 不会让按钮完全失去说明。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "tooltipVariant",
+        "type": "'auto' | 'light' | 'dark'",
+        "default": "'auto'",
+        "description": "提示配色 @default 'auto' - `auto`：跟随明暗主题——浅色主题用白玻璃，深色主题用黑玻璃 - `light` / `dark`：显式指定，不受主题切换影响 用 `auto` 时组件会观察 `data-sr-theme` 属性变化， 无论是 `useSrTheme`、首帧主题脚本还是手动改属性都能跟上。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "tooltipPlacement",
+        "type": "SrPlacement",
+        "default": "'top'",
+        "description": "提示方位 @default 'top'"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'开始写作…'",
+        "description": "占位提示"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "height",
+        "type": "number | string",
+        "default": "360",
+        "description": "编辑区高度 @default 360"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读 @default false"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "maxLength",
+        "type": "number",
+        "default": "0",
+        "description": "最大字数，0 表示不限"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示字数统计 @default true"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "modeToggle",
+        "type": "'text' | 'both' | 'icon'",
+        "default": "'both'",
+        "description": "视图切换控件的显示形式 @default 'both' - `text`：只有文字（旧版观感） - `both`：图标 + 文字，最好认 - `icon`：只有图标，最省空间；文案转为 `title` 与 `aria-label`"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 传了才显示表情按钮。**必须与渲染端用同一份数据**， 否则插进去的标记在正文里查不到。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "shortcodeMenu",
+        "type": "'inline' | 'group'",
+        "default": "'inline'",
+        "description": "短代码插入按钮的摆放方式 @default 'inline' - `inline`：每个短代码一个按钮，平铺在工具栏末尾（默认，兼容旧写法） - `group`：只放一个「短代码」按钮，点开下拉列出全部 短代码是扩展能力，跟加粗、列表这类基础格式不是一回事；数量一多， 平铺会撑满工具栏、也容易和内置按钮混淆，因此推荐 `group`。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "upload",
+        "type": "(file: File) =",
+        "default": "undefined",
+        "description": "图片上传 提供后工具栏的图片按钮改为「选文件 → 调用它 → 插入返回的地址」。 不提供则插入 `![](url)` 模板让用户自己贴地址。"
+      },
+      {
+        "from": "markdownEditorProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      }
+    ],
+    "sources": ["markdownEditor"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "save",
+        "params": ["value"]
+      },
+      {
+        "name": "upload-error",
+        "params": ["error"]
+      },
+      {
+        "name": "mode-change",
+        "params": ["mode"]
+      },
+      {
+        "name": "copy",
+        "params": ["text"]
+      }
+    ],
+    "slots": ["insertPanel.slotName", "preview", "toolbar"]
+  },
+  "message": {
+    "name": "message",
+    "options": [
+      {
+        "from": "options",
+        "name": "type",
+        "type": "SrMessageType",
+        "default": "",
+        "description": "类型 @default 'info'"
+      },
+      {
+        "from": "options",
+        "name": "duration",
+        "type": "number",
+        "default": "",
+        "description": "停留毫秒，0 表示不自动关闭 @default 2000"
+      },
+      {
+        "from": "options",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底 换成深色时**必须同时传 `color`**，否则文字仍是默认深色、会看不见。"
+      },
+      {
+        "from": "options",
+        "name": "color",
+        "type": "string",
+        "default": "",
+        "description": "自定义文字颜色 深色背景下需要改成浅色；浅色背景下通常不用动。"
+      },
+      {
+        "from": "options",
+        "name": "iconColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义图标颜色 不传时图标跟随消息类型的主色（info 蓝、success 绿等）。"
+      }
+    ],
+    "sources": ["options"],
+    "emits": [],
+    "slots": []
+  },
+  "modal": {
+    "name": "modal",
+    "options": [
+      {
+        "from": "modalProps",
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否显示，支持 v-model"
+      },
+      {
+        "from": "modalProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题，同时作为 aria-labelledby 的文本来源"
+      },
+      {
+        "from": "modalProps",
+        "name": "width",
+        "type": "number | string",
+        "default": "480",
+        "description": "宽度：数字按 px，字符串原样透传"
+      },
+      {
+        "from": "modalProps",
+        "name": "maskClosable",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击遮罩是否关闭"
+      },
+      {
+        "from": "modalProps",
+        "name": "closable",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示右上角关闭按钮"
+      },
+      {
+        "from": "modalProps",
+        "name": "escToClose",
+        "type": "boolean",
+        "default": "true",
+        "description": "Esc 是否关闭"
+      },
+      {
+        "from": "modalProps",
+        "name": "lockScroll",
+        "type": "boolean",
+        "default": "true",
+        "description": "打开时锁定页面滚动"
+      },
+      {
+        "from": "modalProps",
+        "name": "centered",
+        "type": "boolean",
+        "default": "false",
+        "description": "垂直居中，否则距顶 10vh"
+      },
+      {
+        "from": "modalProps",
+        "name": "showMask",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否渲染遮罩（用于嵌套在别的弹层里时关闭遮罩）"
+      },
+      {
+        "from": "modalProps",
+        "name": "teleportTo",
+        "type": "string | HTMLElement",
+        "default": "'body'",
+        "description": "挂载目标"
+      },
+      {
+        "from": "modalProps",
+        "name": "zIndex",
+        "type": "number",
+        "default": "undefined",
+        "description": "自定义层级，不传则用配置里的 zIndex"
+      }
+    ],
+    "sources": ["modal"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "open",
+        "params": []
+      },
+      {
+        "name": "close",
+        "params": ["reason"]
+      },
+      {
+        "name": "afterClose",
+        "params": []
+      }
+    ],
+    "slots": ["default", "footer", "header"]
+  },
+  "music-player": {
+    "name": "music-player",
+    "options": [
+      {
+        "from": "musicPlayerProps",
+        "name": "api",
+        "type": "string",
+        "default": "'https://meting-api.shurans.cn/'",
+        "description": "Meting API 地址 @default 'https://meting-api.shurans.cn/' @remarks 只填到域名，`?server=&type=&id=` 由组件拼。 生产环境建议自建，公共实例随时可能限流。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "server",
+        "type": "SrMusicServer",
+        "default": "'netease'",
+        "description": "音源 @default 'netease' @remarks 换音源必须同时换 `id`：同一个歌单 id 在两家平台之间不通用。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "type",
+        "type": "SrMusicListType",
+        "default": "'playlist'",
+        "description": "查询类型 @default 'playlist'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "id",
+        "type": "string | number",
+        "default": "''",
+        "description": "歌单 / 单曲 id @remarks 从分享链接里取：`music.163.com/playlist?id=2585465480` 里的那一串。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "mode",
+        "type": "SrMusicMode",
+        "default": "'full'",
+        "description": "展示形态 @default 'full'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "placement",
+        "type": "SrMusicPlacement",
+        "default": "'bottomRight'",
+        "description": "贴边位置，仅 `attach` / `mini` 生效 @default 'bottomRight'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "offset",
+        "type": "number | string",
+        "default": "16",
+        "description": "距屏幕边缘的距离，数字按 px @default 16"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "showLyrics",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示歌词面板 @default true"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "globalLyrics",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示底部全局歌词条 @default false"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "autoplay",
+        "type": "boolean",
+        "default": "false",
+        "description": "自动播放 @default false"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "volume",
+        "type": "number",
+        "default": "0.7",
+        "description": "初始音量 0~1 @default 0.7"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "loop",
+        "type": "SrMusicLoop",
+        "default": "'list'",
+        "description": "初始循环模式 @default 'list'"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "showPlaylist",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示播放列表 @default true"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "lyricOffset",
+        "type": "number",
+        "default": "0",
+        "description": "歌词偏移秒数 @default 0 正数表示歌词延后显示，用于校正某些音源的几十毫秒偏差。"
+      },
+      {
+        "from": "musicPlayerProps",
+        "name": "errorText",
+        "type": "string",
+        "default": "'音乐加载失败，请检查 Meting API 配置'",
+        "description": "加载失败时的兜底文案"
+      }
+    ],
+    "sources": ["musicPlayer"],
+    "emits": [
+      {
+        "name": "change",
+        "params": ["track", "index"]
+      },
+      {
+        "name": "play",
+        "params": ["playing"]
+      },
+      {
+        "name": "error",
+        "params": ["error"]
+      }
+    ],
+    "slots": []
+  },
+  "nav": {
+    "name": "nav",
+    "options": [
+      {
+        "from": "navProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "当前选中项，支持 v-model"
+      },
+      {
+        "from": "navProps",
+        "name": "logo",
+        "type": "string",
+        "default": "''",
+        "description": "品牌图标（图标名），与 title 一起构成顶部的品牌区"
+      },
+      {
+        "from": "navProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "品牌名称；收起态只留图标"
+      },
+      {
+        "from": "navProps",
+        "name": "items",
+        "type": "SrNavItem[]",
+        "default": "() => []",
+        "description": "导航项列表"
+      },
+      {
+        "from": "navProps",
+        "name": "mode",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "排列方向；侧边导航用 vertical @default 'horizontal'"
+      },
+      {
+        "from": "navProps",
+        "name": "activeStyle",
+        "type": "SrNavActiveStyle",
+        "default": "'pill'",
+        "description": "激活态样式 - pill：实色胶囊 + 柔光 - bar：淡底 + 左侧主色竖条（侧边栏常用，色弱也能分辨） @default 'pill'"
+      },
+      {
+        "from": "navProps",
+        "name": "bare",
+        "type": "boolean",
+        "default": "false",
+        "description": "去壳模式：去掉自身的圆角、边框、阴影与背景， 交给父容器当通栏侧边栏用（后台布局的标准形态）"
+      },
+      {
+        "from": "navProps",
+        "name": "collapsed",
+        "type": "boolean",
+        "default": "false",
+        "description": "整体收起，只显示图标（需有图标才有意义）"
+      },
+      {
+        "from": "navProps",
+        "name": "width",
+        "type": "string | number",
+        "default": "220",
+        "description": "展开宽度"
+      },
+      {
+        "from": "navProps",
+        "name": "collapsedWidth",
+        "type": "string | number",
+        "default": "56",
+        "description": "收起宽度"
+      },
+      {
+        "from": "navProps",
+        "name": "maxHeight",
+        "type": "string | number",
+        "default": "undefined",
+        "description": "内容最大高度，超出时纵向滚动且不显示滚动条"
+      },
+      {
+        "from": "navProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "navProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整个导航"
+      },
+      {
+        "from": "navProps",
+        "name": "filterActive",
+        "type": "boolean",
+        "default": "false",
+        "description": "外部正在过滤 items（如侧栏搜索）@default false 为真时暂时忽略分组折叠状态、并禁用折叠按钮，保证命中的项都看得见； 关掉后恢复用户原来的折叠状态，不会因为一次搜索把分组永久展开。"
+      }
+    ],
+    "sources": ["nav"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["key"]
+      },
+      {
+        "name": "select",
+        "params": ["key", "item"]
+      },
+      {
+        "name": "update:openedKeys",
+        "params": ["keys"]
+      },
+      {
+        "name": "update:collapsed",
+        "params": ["collapsed"]
+      }
+    ],
+    "slots": ["footer", "header"]
+  },
+  "notification": {
+    "name": "notification",
+    "options": [
+      {
+        "from": "options",
+        "name": "type",
+        "type": "SrNotificationType",
+        "default": "",
+        "description": "类型 @default 'info'"
+      },
+      {
+        "from": "options",
+        "name": "title",
+        "type": "string",
+        "default": "",
+        "description": "标题"
+      },
+      {
+        "from": "options",
+        "name": "message",
+        "type": "string",
+        "default": "",
+        "description": "描述内容"
+      },
+      {
+        "from": "options",
+        "name": "duration",
+        "type": "number",
+        "default": "",
+        "description": "停留毫秒，0 表示不自动关闭 @default 4500"
+      },
+      {
+        "from": "options",
+        "name": "position",
+        "type": "SrNotificationPosition",
+        "default": "",
+        "description": "出现位置 @default 'top-right'"
+      },
+      {
+        "from": "options",
+        "name": "closable",
+        "type": "boolean",
+        "default": "",
+        "description": "是否显示关闭按钮 @default true"
+      },
+      {
+        "from": "options",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底"
+      }
+    ],
+    "sources": ["options"],
+    "emits": [],
+    "slots": []
+  },
+  "pagination": {
+    "name": "pagination",
+    "options": [
+      {
+        "from": "paginationProps",
+        "name": "modelValue",
+        "type": "number",
+        "default": "1",
+        "description": "当前页，支持 v-model"
+      },
+      {
+        "from": "paginationProps",
+        "name": "total",
+        "type": "number",
+        "default": "0",
+        "description": "总条数"
+      },
+      {
+        "from": "paginationProps",
+        "name": "pageSize",
+        "type": "number",
+        "default": "10",
+        "description": "每页条数，支持 v-model:page-size"
+      },
+      {
+        "from": "paginationProps",
+        "name": "pageSizeOptions",
+        "type": "number[]",
+        "default": "() => [10, 20, 50]",
+        "description": "每页条数可选项；传空数组则隐藏切换器"
+      },
+      {
+        "from": "paginationProps",
+        "name": "showTotal",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示「共 N 条」"
+      },
+      {
+        "from": "paginationProps",
+        "name": "showSizer",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示每页条数切换器"
+      },
+      {
+        "from": "paginationProps",
+        "name": "showJumper",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示跳页输入框"
+      },
+      {
+        "from": "paginationProps",
+        "name": "simple",
+        "type": "boolean",
+        "default": "false",
+        "description": "简洁模式：只保留上一页 / 下一页"
+      },
+      {
+        "from": "paginationProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位，不传则继承 SrConfigProvider"
+      },
+      {
+        "from": "paginationProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整个分页"
+      }
+    ],
+    "sources": ["pagination"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["page"]
+      },
+      {
+        "name": "update:pageSize",
+        "params": ["pageSize"]
+      },
+      {
+        "name": "change",
+        "params": ["page", "pageSize"]
+      },
+      {
+        "name": "size-change",
+        "params": ["pageSize"]
+      }
+    ],
+    "slots": []
+  },
+  "panel": {
+    "name": "panel",
+    "options": [
+      {
+        "from": "panelProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "panelProps",
+        "name": "description",
+        "type": "string",
+        "default": "''",
+        "description": "标题下方的说明"
+      },
+      {
+        "from": "panelProps",
+        "name": "collapsible",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否可折叠"
+      },
+      {
+        "from": "panelProps",
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "true",
+        "description": "展开状态，支持 v-model"
+      },
+      {
+        "from": "panelProps",
+        "name": "flush",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否去掉内边距，交给内容自己控制"
+      }
+    ],
+    "sources": ["panel"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["open"]
+      }
+    ],
+    "slots": ["default", "extra", "header"]
+  },
+  "progress": {
+    "name": "progress",
+    "options": [
+      {
+        "from": "progressProps",
+        "name": "type",
+        "type": "'line' | 'circle'",
+        "default": "'line'",
+        "description": "形态 @default 'line' `line` 横向轨道，适合页面顶部的整体进度； `circle` 环形，适合卡片里单独占一块，文字居中放在圆心里。"
+      },
+      {
+        "from": "progressProps",
+        "name": "percent",
+        "type": "number",
+        "default": "0",
+        "description": "百分比 0-100，超出会被夹到边界 @default 0"
+      },
+      {
+        "from": "progressProps",
+        "name": "status",
+        "type": "SrProgressStatus",
+        "default": "'normal'",
+        "description": "状态 @default 'normal'"
+      },
+      {
+        "from": "progressProps",
+        "name": "strokeWidth",
+        "type": "number",
+        "default": "6",
+        "description": "轨道高度（px）@default 6"
+      },
+      {
+        "from": "progressProps",
+        "name": "showText",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示百分比文字 @default true"
+      },
+      {
+        "from": "progressProps",
+        "name": "textInside",
+        "type": "boolean",
+        "default": "false",
+        "description": "文字放在轨道内部 @default false 只有轨道足够高（strokeWidth >= 16）时才好看，否则会溢出。"
+      },
+      {
+        "from": "progressProps",
+        "name": "format",
+        "type": "(percent: number) =",
+        "default": "undefined",
+        "description": "自定义文字，覆盖默认的百分比"
+      },
+      {
+        "from": "progressProps",
+        "name": "striped",
+        "type": "boolean",
+        "default": "false",
+        "description": "条纹背景 @default false"
+      },
+      {
+        "from": "progressProps",
+        "name": "animated",
+        "type": "boolean",
+        "default": "false",
+        "description": "条纹流动动画 @default false"
+      },
+      {
+        "from": "progressProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位，同时影响高度与字号；传了以对应档位为准"
+      },
+      {
+        "from": "progressProps",
+        "name": "width",
+        "type": "number",
+        "default": "120",
+        "description": "环形直径（px） @default 120 只对 `type=\"circle\"` 生效；轨道粗细仍由 `strokeWidth` 控制。"
+      }
+    ],
+    "sources": ["progress"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "qrcode": {
+    "name": "qrcode",
+    "options": [
+      {
+        "from": "qrcodeProps",
+        "name": "value",
+        "type": "string",
+        "default": "''",
+        "description": "要编码的内容（URL、文本、Wi-Fi 配置等）"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "size",
+        "type": "number",
+        "default": "160",
+        "description": "渲染尺寸（像素） @default 160 这是容器边长，内部用 SVG 绘制，放大不会模糊。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "level",
+        "type": "SrQrLevel",
+        "default": "'M'",
+        "description": "纠错等级 @default 'M' L 约 7%、M 约 15%、Q 约 25%、H 约 30% 的码字可被修复。 等级越高越抗污损，但同样内容需要的版本更大。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "margin",
+        "type": "number",
+        "default": "2",
+        "description": "静区宽度（模块数） @default 2 规范建议 4，但小尺寸下会显得四周很空；2 在多数扫码器上够用。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "color",
+        "type": "string",
+        "default": "'#000000'",
+        "description": "前景色 @default '#000000'"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "'#ffffff'",
+        "description": "背景色 @default '#ffffff'"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "中心图标名 @default '' 会盖住中间一块区域，建议同时把 `level` 提到 `H`。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "iconSize",
+        "type": "number",
+        "default": "28",
+        "description": "图标尺寸（像素） @default 28"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "status",
+        "type": "'active' | 'loading' | 'expired'",
+        "default": "'active'",
+        "description": "状态 @default 'active' `expired` 会盖一层「已失效」遮罩并停止渲染码点，`loading` 显示占位。"
+      },
+      {
+        "from": "qrcodeProps",
+        "name": "expiredText",
+        "type": "string",
+        "default": "'二维码已失效'",
+        "description": "失效状态的提示文案 @default '二维码已失效'"
+      }
+    ],
+    "sources": ["qrcode"],
+    "emits": [
+      {
+        "name": "error",
+        "params": ["reason"]
+      }
+    ],
+    "slots": []
+  },
+  "radio": {
+    "name": "radio",
+    "options": [
+      {
+        "from": "radioProps",
+        "name": "modelValue",
+        "type": "SrRadioValue",
+        "default": "undefined",
+        "description": "单独使用时的值"
+      },
+      {
+        "from": "radioProps",
+        "name": "value",
+        "type": "SrRadioValue",
+        "default": "undefined",
+        "description": "组内使用时的标识，必填"
+      },
+      {
+        "from": "radioProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": ""
+      },
+      {
+        "from": "radioProps",
+        "name": "label",
+        "type": "string",
+        "default": "''",
+        "description": "文字，也可用默认插槽"
+      },
+      {
+        "from": "radioProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": ""
+      },
+      {
+        "from": "radioProps",
+        "name": "name",
+        "type": "string",
+        "default": "''",
+        "description": ""
+      },
+      {
+        "from": "radioGroupProps",
+        "name": "modelValue",
+        "type": "SrRadioValue",
+        "default": "undefined",
+        "description": ""
+      },
+      {
+        "from": "radioGroupProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": ""
+      },
+      {
+        "from": "radioGroupProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": ""
+      },
+      {
+        "from": "radioGroupProps",
+        "name": "name",
+        "type": "string",
+        "default": "''",
+        "description": "原生 name，同组内共享"
+      }
+    ],
+    "sources": ["radio", "radioGroup"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": ["default"]
+  },
+  "result": {
+    "name": "result",
+    "options": [
+      {
+        "from": "resultProps",
+        "name": "status",
+        "type": "SrResultStatus",
+        "default": "'info'",
+        "description": "结果类型 @default 'info' 决定图标与主色。业务上「404 / 403」这类场景用 `warning` 或 `error`， 文案自己写，不需要额外的枚举值。"
+      },
+      {
+        "from": "resultProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "主标题"
+      },
+      {
+        "from": "resultProps",
+        "name": "subTitle",
+        "type": "string",
+        "default": "''",
+        "description": "副标题 / 说明"
+      },
+      {
+        "from": "resultProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "自定义图标 @default undefined 传了就不再显示状态图标，适合「提交成功用插画」这类需求。"
+      },
+      {
+        "from": "resultProps",
+        "name": "compact",
+        "type": "boolean",
+        "default": "false",
+        "description": "紧凑模式 @default false 缩小图标与间距，适合嵌在卡片或弹窗里，而不是占满整页。"
+      }
+    ],
+    "sources": ["result"],
+    "emits": [],
+    "slots": ["default", "extra", "icon", "subTitle", "title"]
+  },
+  "row": {
+    "name": "row",
+    "options": [
+      {
+        "from": "rowProps",
+        "name": "gutter",
+        "type": "SrResponsive<SrGutter>",
+        "default": "0",
+        "description": "栅格间隔（px） 支持单值、[水平, 垂直]、以及按断点分档的对象"
+      },
+      {
+        "from": "rowProps",
+        "name": "justify",
+        "type": "SrRowJustify",
+        "default": "'start'",
+        "description": "主轴对齐"
+      },
+      {
+        "from": "rowProps",
+        "name": "align",
+        "type": "SrRowAlign",
+        "default": "'top'",
+        "description": "交叉轴对齐"
+      },
+      {
+        "from": "rowProps",
+        "name": "wrap",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否允许换行"
+      },
+      {
+        "from": "rowProps",
+        "name": "tag",
+        "type": "string",
+        "default": "'div'",
+        "description": "自定义标签名，便于语义化（如 section）"
+      }
+    ],
+    "sources": ["row"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "segmented": {
+    "name": "segmented",
+    "options": [
+      {
+        "from": "segmentedProps",
+        "name": "modelValue",
+        "type": "SrSegmentedValue | undefined",
+        "default": "undefined",
+        "description": "当前选中值，配合 v-model"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "options",
+        "type": "SrSegmentedOption[]",
+        "default": "() => []",
+        "description": "选项列表"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "block",
+        "type": "boolean",
+        "default": "false",
+        "description": "占满容器宽度 @default false 打开后每项等分宽度；关闭时宽度随内容。"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "整体禁用"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "iconOnly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只显示图标 @default false 仅对带 `icon` 的选项生效；文案会转入视觉隐藏层（屏幕阅读器仍可读）， 并自动补上 `title` 与 `aria-label`。没有图标的选项仍显示文字， 避免出现空白按钮。"
+      },
+      {
+        "from": "segmentedProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["segmented"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": []
+  },
+  "select": {
+    "name": "select",
+    "options": [
+      {
+        "from": "selectProps",
+        "name": "modelValue",
+        "type": "SrSelectValue | SrSelectValue[] | undefined",
+        "default": "undefined",
+        "description": "选中值；multiple 时为数组 选中值，配合 v-model 不传就是非受控：组件自己维护选中状态，点击依然有效。"
+      },
+      {
+        "from": "selectProps",
+        "name": "defaultValue",
+        "type": "SrSelectValue | SrSelectValue[] | undefined",
+        "default": "undefined",
+        "description": "非受控时的初始值"
+      },
+      {
+        "from": "selectProps",
+        "name": "options",
+        "type": "SrSelectOption[]",
+        "default": "() => []",
+        "description": "选项列表"
+      },
+      {
+        "from": "selectProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "false",
+        "description": "多选"
+      },
+      {
+        "from": "selectProps",
+        "name": "filterable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可搜索：面板顶部出现输入框"
+      },
+      {
+        "from": "selectProps",
+        "name": "clearable",
+        "type": "boolean",
+        "default": "false",
+        "description": "可清空"
+      },
+      {
+        "from": "selectProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": ""
+      },
+      {
+        "from": "selectProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "selectProps",
+        "name": "status",
+        "type": "SrSelectStatus",
+        "default": "'default'",
+        "description": "校验态"
+      },
+      {
+        "from": "selectProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "'请选择'",
+        "description": "占位文案"
+      },
+      {
+        "from": "selectProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'无匹配项'",
+        "description": "无匹配项时的文案"
+      },
+      {
+        "from": "selectProps",
+        "name": "maxHeight",
+        "type": "number",
+        "default": "260",
+        "description": "面板最大高度（px），超出滚动"
+      }
+    ],
+    "sources": ["select"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "visible-change",
+        "params": ["visible"]
+      },
+      {
+        "name": "search",
+        "params": ["keyword"]
+      }
+    ],
+    "slots": ["option"]
+  },
+  "skeleton": {
+    "name": "skeleton",
+    "options": [
+      {
+        "from": "skeletonProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否处于加载中 @default true 为 true 渲染骨架占位，为 false 渲染默认插槽内容。 不传插槽时可以当成纯占位块用。"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "rows",
+        "type": "number",
+        "default": "3",
+        "description": "段落行数，0 表示不显示段落 @default 3"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "title",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示标题占位 @default true"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "avatar",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示头像占位 @default false"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "round",
+        "type": "boolean",
+        "default": "false",
+        "description": "头像是否为圆形 @default false"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "animated",
+        "type": "boolean",
+        "default": "true",
+        "description": "闪光动画 @default true 关掉后是静态灰块。`prefers-reduced-motion` 下会自动关掉，不依赖这个开关。"
+      },
+      {
+        "from": "skeletonProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位，影响行高与间距"
+      }
+    ],
+    "sources": ["skeleton"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "slider": {
+    "name": "slider",
+    "options": [
+      {
+        "from": "sliderProps",
+        "name": "modelValue",
+        "type": "SrSliderValue",
+        "default": "0",
+        "description": "当前值，配合 v-model"
+      },
+      {
+        "from": "sliderProps",
+        "name": "min",
+        "type": "number",
+        "default": "0",
+        "description": "最小值 @default 0"
+      },
+      {
+        "from": "sliderProps",
+        "name": "max",
+        "type": "number",
+        "default": "100",
+        "description": "最大值 @default 100"
+      },
+      {
+        "from": "sliderProps",
+        "name": "step",
+        "type": "number",
+        "default": "1",
+        "description": "步长 @default 1 传 `null` 表示不吸附——拖动时取连续值，适合精度要求高的场景。"
+      },
+      {
+        "from": "sliderProps",
+        "name": "range",
+        "type": "boolean",
+        "default": "false",
+        "description": "双滑块区间模式 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "vertical",
+        "type": "boolean",
+        "default": "false",
+        "description": "纵向排列 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "showStops",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示间断点 @default false"
+      },
+      {
+        "from": "sliderProps",
+        "name": "showTooltip",
+        "type": "boolean",
+        "default": "true",
+        "description": "拖动时显示数值提示 @default true 关掉后不渲染浮层，适合放在窄容器里。"
+      },
+      {
+        "from": "sliderProps",
+        "name": "formatTooltip",
+        "type": "(value: number) =",
+        "default": "undefined",
+        "description": "数值格式化 用于给数值加单位，比如 `(v) => \\`${v}°C\\``。"
+      },
+      {
+        "from": "sliderProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["slider"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": []
+  },
+  "space": {
+    "name": "space",
+    "options": [
+      {
+        "from": "spaceProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "排列方向 @default 'horizontal'"
+      },
+      {
+        "from": "spaceProps",
+        "name": "size",
+        "type": "SrSize | number",
+        "default": "'sm'",
+        "description": "间距 @default 'sm' 传档位用设计令牌，传数字直接当像素。"
+      },
+      {
+        "from": "spaceProps",
+        "name": "align",
+        "type": "'start' | 'end' | 'center' | 'baseline'",
+        "default": "'center'",
+        "description": "交叉轴对齐 @default 'center'"
+      },
+      {
+        "from": "spaceProps",
+        "name": "wrap",
+        "type": "boolean",
+        "default": "false",
+        "description": "空间不足时换行 @default false"
+      },
+      {
+        "from": "spaceProps",
+        "name": "inline",
+        "type": "boolean",
+        "default": "false",
+        "description": "行内模式 @default false 打开后用 inline-flex，适合夹在文字中间的小按钮组。"
+      }
+    ],
+    "sources": ["space"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "spinner": {
+    "name": "spinner",
+    "options": [
+      {
+        "from": "spinnerProps",
+        "name": "size",
+        "type": "SrSize | number",
+        "default": "'md'",
+        "description": "尺寸档位，或直接给像素值"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "color",
+        "type": "string",
+        "default": "''",
+        "description": "单色，默认跟随主色"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "colors",
+        "type": "string[]",
+        "default": "() => []",
+        "description": "多色，按顺序分配给子元素 @default [] 只对由多个元素组成的变体有意义： `dots` 用前 3 个、`bars` 用前 4 个、`pulse` 用前 2 个。 数量不足时循环取用；`ring` / `gradient` / `orbit` 仍是单色，会忽略它。"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "label",
+        "type": "string",
+        "default": "''",
+        "description": "无障碍名称；不传则视为装饰性"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "strokeWidth",
+        "type": "number",
+        "default": "2",
+        "description": "线条粗细（px），只对 `ring` 与 `gradient` 生效"
+      },
+      {
+        "from": "spinnerProps",
+        "name": "variant",
+        "type": "'ring' | 'dots' | 'pulse' | 'bars' | 'orbit' | 'gradient'",
+        "default": "'ring'",
+        "description": "动画样式 @default 'ring' - `ring` 圆环旋转（默认） - `dots` 三点跳动 - `pulse` 同心圆扩散 - `bars` 竖条起伏 - `orbit` 小球绕轨 - `gradient` 渐变环旋转"
+      }
+    ],
+    "sources": ["spinner"],
+    "emits": [],
+    "slots": []
+  },
+  "statistic": {
+    "name": "statistic",
+    "options": [
+      {
+        "from": "statisticProps",
+        "name": "value",
+        "type": "number",
+        "default": "0",
+        "description": "数值"
+      },
+      {
+        "from": "statisticProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "statisticProps",
+        "name": "precision",
+        "type": "number",
+        "default": "0",
+        "description": "小数位数 @default 0 不足补零，超出四舍五入。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "prefix",
+        "type": "string",
+        "default": "''",
+        "description": "前缀（货币符号等）"
+      },
+      {
+        "from": "statisticProps",
+        "name": "suffix",
+        "type": "string",
+        "default": "''",
+        "description": "后缀（单位）"
+      },
+      {
+        "from": "statisticProps",
+        "name": "separator",
+        "type": "string",
+        "default": "','",
+        "description": "千分位分隔符 @default ',' 传空字符串关闭分组。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "formatter",
+        "type": "(value: number) =",
+        "default": "undefined",
+        "description": "自定义格式化 @default undefined 传了就完全接管显示，`precision` / `separator` 不再生效。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "加载中 @default false"
+      },
+      {
+        "from": "statisticProps",
+        "name": "countUp",
+        "type": "boolean",
+        "default": "false",
+        "description": "数字滚动动画 @default false 挂载时从 0 滚到目标值；之后 `value` 变化则从当前显示值滚到新值。 尊重系统的「减少动态效果」偏好，开启时也会直接显示最终值。"
+      },
+      {
+        "from": "statisticProps",
+        "name": "duration",
+        "type": "number",
+        "default": "1200",
+        "description": "滚动时长（毫秒） @default 1200"
+      },
+      {
+        "from": "statisticProps",
+        "name": "valueColor",
+        "type": "string",
+        "default": "''",
+        "description": "数值颜色，接受任意 CSS 颜色"
+      }
+    ],
+    "sources": ["statistic"],
+    "emits": [],
+    "slots": ["prefix", "suffix", "title"]
+  },
+  "steps": {
+    "name": "steps",
+    "options": [
+      {
+        "from": "stepsProps",
+        "name": "items",
+        "type": "SrStepItem[]",
+        "default": "() => []",
+        "description": "步骤数据"
+      },
+      {
+        "from": "stepsProps",
+        "name": "current",
+        "type": "number",
+        "default": "0",
+        "description": "当前进行到第几步 @default 0 从 0 开始。小于它的都是「已完成」，大于它的都是「未开始」。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "status",
+        "type": "Exclude<SrStepStatus, 'wait' | 'finish'>",
+        "default": "'process'",
+        "description": "当前步骤的状态 @default 'process' 只影响 `current` 那一步；其余按位置推导。 设成 `error` 表示这一步出了问题，后面的步骤全部停在「未开始」。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "方向 @default 'horizontal'"
+      },
+      {
+        "from": "stepsProps",
+        "name": "labelPlacement",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "标题与描述的位置 @default 'horizontal' 横向步骤条里，`vertical` 会让标题和描述上下排列，适合文案较长的情况。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "simple",
+        "type": "boolean",
+        "default": "false",
+        "description": "简洁模式：只显示标题和连接线 @default false"
+      },
+      {
+        "from": "stepsProps",
+        "name": "clickable",
+        "type": "boolean",
+        "default": "false",
+        "description": "允许点击切换 @default false"
+      },
+      {
+        "from": "stepsProps",
+        "name": "lineStyle",
+        "type": "'solid' | 'dashed'",
+        "default": "'solid'",
+        "description": "连接线样式 @default 'solid' `dashed` 让未完成的连接线变成虚线，进度感更明显。"
+      },
+      {
+        "from": "stepsProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["steps"],
+    "emits": [
+      {
+        "name": "change",
+        "params": ["index"]
+      }
+    ],
+    "slots": ["description", "title"]
+  },
+  "switch": {
+    "name": "switch",
+    "options": [
+      {
+        "from": "switchProps",
+        "name": "modelValue",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否开启，支持 v-model"
+      },
+      {
+        "from": "switchProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": ""
+      },
+      {
+        "from": "switchProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "加载中：禁止交互并显示指示器"
+      },
+      {
+        "from": "switchProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "switchProps",
+        "name": "checkedText",
+        "type": "string",
+        "default": "''",
+        "description": "开启时文字"
+      },
+      {
+        "from": "switchProps",
+        "name": "uncheckedText",
+        "type": "string",
+        "default": "''",
+        "description": "关闭时文字"
+      },
+      {
+        "from": "switchProps",
+        "name": "label",
+        "type": "string",
+        "default": "''",
+        "description": "无障碍名称（无文字时建议提供）"
+      }
+    ],
+    "sources": ["switch"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      }
+    ],
+    "slots": ["default"]
+  },
+  "table": {
+    "name": "table",
+    "options": [
+      {
+        "from": "tableProps",
+        "name": "data",
+        "type": "SrTableRow[]",
+        "default": "() => []",
+        "description": "行数据"
+      },
+      {
+        "from": "tableProps",
+        "name": "columns",
+        "type": "SrTableColumn[]",
+        "default": "() => []",
+        "description": "列配置"
+      },
+      {
+        "from": "tableProps",
+        "name": "rowKey",
+        "type": "string | ((row: SrTableRow, index: number) =",
+        "default": "'id'",
+        "description": "行键字段名，或自定义取值函数 用于 v-model:selected-keys 与展开态的行标识"
+      },
+      {
+        "from": "tableProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "tableProps",
+        "name": "bordered",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示竖线与外框"
+      },
+      {
+        "from": "tableProps",
+        "name": "stripe",
+        "type": "boolean",
+        "default": "false",
+        "description": "斑马纹"
+      },
+      {
+        "from": "tableProps",
+        "name": "hoverable",
+        "type": "boolean",
+        "default": "true",
+        "description": "悬停高亮 @default true"
+      },
+      {
+        "from": "tableProps",
+        "name": "maxHeight",
+        "type": "number | string",
+        "default": "undefined",
+        "description": "滚动区域最大高度 设置后表头自动吸顶"
+      },
+      {
+        "from": "tableProps",
+        "name": "loading",
+        "type": "boolean",
+        "default": "false",
+        "description": "加载中"
+      },
+      {
+        "from": "tableProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空数据文案"
+      },
+      {
+        "from": "tableProps",
+        "name": "selectable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示多选列"
+      },
+      {
+        "from": "tableProps",
+        "name": "selectedKeys",
+        "type": "SrTableRowKey[]",
+        "default": "() => []",
+        "description": "已选行的 key 集合，支持 v-model:selected-keys"
+      },
+      {
+        "from": "tableProps",
+        "name": "expandable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示展开列"
+      },
+      {
+        "from": "tableProps",
+        "name": "expandedKeys",
+        "type": "SrTableRowKey[]",
+        "default": "() => []",
+        "description": "展开行的 key 集合"
+      },
+      {
+        "from": "tableProps",
+        "name": "responsive",
+        "type": "boolean",
+        "default": "false",
+        "description": "窄屏（xs）自动切换为卡片视图 注意：切换发生在客户端挂载之后 —— 断点内核在客户端 setup 阶段就会读到真实宽度， 若直接用它决定结构，SSR（固定 md）与客户端首帧会不一致，触发水合告警。"
+      },
+      {
+        "from": "tableProps",
+        "name": "sortMode",
+        "type": "'client' | 'server'",
+        "default": "'client'",
+        "description": "排序模式 - client：本地对 data 排序 - server：只派发 sort-change，由调用方换数据"
+      },
+      {
+        "from": "tableProps",
+        "name": "defaultSort",
+        "type": "SrTableSortPayload | undefined",
+        "default": "undefined",
+        "description": "默认排序"
+      },
+      {
+        "from": "tableProps",
+        "name": "tableLayout",
+        "type": "'auto' | 'fixed'",
+        "default": "'auto'",
+        "description": "表格布局"
+      },
+      {
+        "from": "tableProps",
+        "name": "emptyIcon",
+        "type": "string",
+        "default": "'lucide:inbox'",
+        "description": "空数据图标，传空字符串则不显示"
+      },
+      {
+        "from": "tableProps",
+        "name": "pagination",
+        "type": "boolean | SrTablePagination",
+        "default": "false",
+        "description": "开启分页：传 true 或 { pageSize }"
+      },
+      {
+        "from": "tableProps",
+        "name": "page",
+        "type": "number",
+        "default": "1",
+        "description": "当前页，支持 v-model:page"
+      },
+      {
+        "from": "tableProps",
+        "name": "pageSize",
+        "type": "number",
+        "default": "10",
+        "description": "每页条数"
+      },
+      {
+        "from": "tableProps",
+        "name": "lazy",
+        "type": "boolean",
+        "default": "false",
+        "description": "懒加载：滚动到底部时派发 load-more。 需要配合 maxHeight 形成滚动容器"
+      },
+      {
+        "from": "tableProps",
+        "name": "hasMore",
+        "type": "boolean",
+        "default": "true",
+        "description": "懒加载是否还有更多数据"
+      },
+      {
+        "from": "tableProps",
+        "name": "loadingMore",
+        "type": "boolean",
+        "default": "false",
+        "description": "正在加载更多（底部显示加载态）"
+      }
+    ],
+    "sources": ["table"],
+    "emits": [
+      {
+        "name": "update:selectedKeys",
+        "params": ["keys"]
+      },
+      {
+        "name": "update:expandedKeys",
+        "params": ["keys"]
+      },
+      {
+        "name": "selection-change",
+        "params": ["keys", "rows"]
+      },
+      {
+        "name": "sort-change",
+        "params": ["payload"]
+      },
+      {
+        "name": "row-click",
+        "params": ["row", "index"]
+      },
+      {
+        "name": "expand-change",
+        "params": ["keys", "rows"]
+      },
+      {
+        "name": "update:page",
+        "params": ["page"]
+      },
+      {
+        "name": "page-change",
+        "params": ["page"]
+      },
+      {
+        "name": "load-more",
+        "params": []
+      }
+    ],
+    "slots": ["empty", "expand", "slotNameOf(column)"]
+  },
+  "tabs": {
+    "name": "tabs",
+    "options": [
+      {
+        "from": "tabsProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "当前激活的 key，支持 v-model"
+      },
+      {
+        "from": "tabsProps",
+        "name": "items",
+        "type": "SrTabsItem[]",
+        "default": "() => []",
+        "description": "标签页列表"
+      },
+      {
+        "from": "tabsProps",
+        "name": "type",
+        "type": "SrTabsType",
+        "default": "'line'",
+        "description": "外观 - line：下划线指示 - card：连接式卡片，选中项与内容区连成一片 - segment：背板内浮起，类似分段控件 - pill：胶囊标签 @default 'line'"
+      },
+      {
+        "from": "tabsProps",
+        "name": "bordered",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示背板与边框。 传 false 时 card / segment / pill 只剩文字与选中态，适合嵌在已有容器里 @default true"
+      },
+      {
+        "from": "tabsProps",
+        "name": "direction",
+        "type": "'horizontal' | 'vertical'",
+        "default": "'horizontal'",
+        "description": "排列方向 @default 'horizontal'"
+      },
+      {
+        "from": "tabsProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "tabsProps",
+        "name": "closable",
+        "type": "boolean",
+        "default": "false",
+        "description": "全部标签可关闭"
+      },
+      {
+        "from": "tabsProps",
+        "name": "lazy",
+        "type": "boolean",
+        "default": "false",
+        "description": "懒加载：未激活过的面板不渲染"
+      }
+    ],
+    "sources": ["tabs"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["key"]
+      },
+      {
+        "name": "change",
+        "params": ["key"]
+      },
+      {
+        "name": "tab-click",
+        "params": ["key"]
+      },
+      {
+        "name": "close",
+        "params": ["key"]
+      }
+    ],
+    "slots": ["`panel-${item.key}`", "panel"]
+  },
+  "tag": {
+    "name": "tag",
+    "options": [
+      {
+        "from": "tagProps",
+        "name": "type",
+        "type": "SrTagType",
+        "default": "'default'",
+        "description": "语义类型，决定基色 @default 'default'"
+      },
+      {
+        "from": "tagProps",
+        "name": "variant",
+        "type": "SrTagVariant",
+        "default": "'light'",
+        "description": "配色深浅 @default 'light'"
+      },
+      {
+        "from": "tagProps",
+        "name": "color",
+        "type": "string",
+        "default": "''",
+        "description": "自定义基色（任意 CSS 颜色），设置后覆盖 type 的基色； 浅色/深色档仍由 variant 从它派生"
+      },
+      {
+        "from": "tagProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位，与按钮一致 @default 'md'"
+      },
+      {
+        "from": "tagProps",
+        "name": "closable",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否可关闭（显示关闭按钮）"
+      },
+      {
+        "from": "tagProps",
+        "name": "round",
+        "type": "boolean",
+        "default": "false",
+        "description": "是否使用胶囊圆角"
+      }
+    ],
+    "sources": ["tag"],
+    "emits": [
+      {
+        "name": "close",
+        "params": ["event"]
+      }
+    ],
+    "slots": ["default"]
+  },
+  "textarea": {
+    "name": "textarea",
+    "options": [
+      {
+        "from": "textareaProps",
+        "name": "modelValue",
+        "type": "string",
+        "default": "''",
+        "description": "内容，`v-model` @remarks 富文本模式下收发的是**标记文本**（`你好[微笑]`）， 不是渲染后的 HTML。这样存库、传输、反渲染都简单。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "placeholder",
+        "type": "string",
+        "default": "''",
+        "description": "占位文案"
+      },
+      {
+        "from": "textareaProps",
+        "name": "rows",
+        "type": "number",
+        "default": "3",
+        "description": "初始行数 @default 3"
+      },
+      {
+        "from": "textareaProps",
+        "name": "autosize",
+        "type": "boolean",
+        "default": "true",
+        "description": "高度跟随内容 @default true 达到 `maxRows` 后停止长高，改为内部滚动。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "maxRows",
+        "type": "number",
+        "default": "0",
+        "description": "自动增高的上限行数 @default 0 0 表示不限制。只对 `autosize` 生效。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "maxlength",
+        "type": "number",
+        "default": "undefined",
+        "description": "最大长度，同时用于字数统计"
+      },
+      {
+        "from": "textareaProps",
+        "name": "showCount",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示字数统计（给了 `maxlength` 才有「/n」）"
+      },
+      {
+        "from": "textareaProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      },
+      {
+        "from": "textareaProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用"
+      },
+      {
+        "from": "textareaProps",
+        "name": "readonly",
+        "type": "boolean",
+        "default": "false",
+        "description": "只读"
+      },
+      {
+        "from": "textareaProps",
+        "name": "status",
+        "type": "SrTextareaStatus",
+        "default": "'default'",
+        "description": "校验态，只影响边框颜色 @default 'default'"
+      },
+      {
+        "from": "textareaProps",
+        "name": "resize",
+        "type": "'none' | 'vertical'",
+        "default": "'none'",
+        "description": "允许用户纵向拖拽调整高度 @default 'none' `maxRows` 生效时不建议再开，两种高度来源会打架。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundImage",
+        "type": "string",
+        "default": "''",
+        "description": "背景图 支持三种写法：`url(...)` 片段、`linear-gradient(...)` 这类渐变函数、 以及裸地址（内部会包成 `url()`）。只放行 http(s)、data:image 与相对路径。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundPosition",
+        "type": "SrTextareaBackgroundPosition",
+        "default": "'center'",
+        "description": "背景内容的落点 @default 'center' 同时作用于背景图与背景文字：九宫格任选其一。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundSize",
+        "type": "string",
+        "default": "'cover'",
+        "description": "背景图尺寸 @default 'cover' 也接受任意 CSS 值（如 `'120px 80px'`、`'contain'`）。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundText",
+        "type": "string",
+        "default": "''",
+        "description": "背景文字（水印） 绝对定位在内容下层，`pointer-events: none`，不参与编辑与选中。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundTextSize",
+        "type": "number",
+        "default": "0",
+        "description": "背景文字字号（px） @default 0 表示跟随组件字号（2.8em）"
+      },
+      {
+        "from": "textareaProps",
+        "name": "backgroundTextOpacity",
+        "type": "number",
+        "default": "0.06",
+        "description": "背景文字不透明度 @default 0.06"
+      },
+      {
+        "from": "textareaProps",
+        "name": "emojiPackages",
+        "type": "SrEmojiPackage[]",
+        "default": "() => []",
+        "description": "表情包 传了才启用富文本模式：输入区变成 `contenteditable`， 表情按 `char` / `url` 内联渲染，`v-model` 仍然是标记文本。 不传则走原生 `textarea`，行为与普通输入框一致。"
+      },
+      {
+        "from": "textareaProps",
+        "name": "submitOnEnter",
+        "type": "boolean",
+        "default": "false",
+        "description": "`Enter` 直接提交 @default false 开启后 `Enter` 触发 `submit` 事件，`Shift + Enter` 换行； 关闭时 `Enter` 就是换行。输入法组合中的回车不会误触发。"
+      }
+    ],
+    "sources": ["textarea"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value"]
+      },
+      {
+        "name": "focus",
+        "params": ["event"]
+      },
+      {
+        "name": "blur",
+        "params": ["event"]
+      },
+      {
+        "name": "submit",
+        "params": ["value"]
+      }
+    ],
+    "slots": ["footer"]
+  },
+  "tile": {
+    "name": "tile",
+    "options": [
+      {
+        "from": "tileProps",
+        "name": "icon",
+        "type": "string",
+        "default": "''",
+        "description": "图标名"
+      },
+      {
+        "from": "tileProps",
+        "name": "title",
+        "type": "string",
+        "default": "''",
+        "description": "标题"
+      },
+      {
+        "from": "tileProps",
+        "name": "description",
+        "type": "string",
+        "default": "''",
+        "description": "描述，标题下方的一行小字"
+      },
+      {
+        "from": "tileProps",
+        "name": "active",
+        "type": "boolean",
+        "default": "false",
+        "description": "选中态 @default false 用于「图标选择器」「功能开关」这类可选的宫格。"
+      },
+      {
+        "from": "tileProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "tileProps",
+        "name": "type",
+        "type": "'default' | 'primary' | 'success' | 'warning' | 'error'",
+        "default": "'default'",
+        "description": "图标区域的配色 @default 'default' 传语义色时图标底色会跟着变，用于区分功能分组。"
+      },
+      {
+        "from": "tileProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "'md'",
+        "description": "尺寸档位 @default 'md'"
+      },
+      {
+        "from": "tileProps",
+        "name": "horizontal",
+        "type": "boolean",
+        "default": "false",
+        "description": "横向排布 @default false 打开后图标在左、文字在右，适合列表式的快捷入口。"
+      }
+    ],
+    "sources": ["tile"],
+    "emits": [
+      {
+        "name": "click",
+        "params": ["event"]
+      }
+    ],
+    "slots": ["description", "icon", "title"]
+  },
+  "timeline": {
+    "name": "timeline",
+    "options": [
+      {
+        "from": "timelineProps",
+        "name": "items",
+        "type": "SrTimelineItem[]",
+        "default": "() => []",
+        "description": "节点列表"
+      },
+      {
+        "from": "timelineProps",
+        "name": "mode",
+        "type": "'left' | 'right' | 'top'",
+        "default": "'right'",
+        "description": "时间戳位置 @default 'right' - `right` 内容在左、时间在右 - `left` 反过来 - `top` 时间在上、内容在下（仍保留圆点与连接线）"
+      },
+      {
+        "from": "timelineProps",
+        "name": "plain",
+        "type": "boolean",
+        "default": "false",
+        "description": "无节点模式 @default false 隐藏圆点与连接线，时间自动移到内容上方——适合「活动日志」这类 只关心时间与文字、不需要图形引导的场景。"
+      },
+      {
+        "from": "timelineProps",
+        "name": "reverse",
+        "type": "boolean",
+        "default": "false",
+        "description": "倒序排列 @default false"
+      }
+    ],
+    "sources": ["timeline"],
+    "emits": [],
+    "slots": ["content"]
+  },
+  "toast": {
+    "name": "toast",
+    "options": [
+      {
+        "from": "options",
+        "name": "type",
+        "type": "SrToastType",
+        "default": "",
+        "description": "类型 @default 'info'"
+      },
+      {
+        "from": "options",
+        "name": "duration",
+        "type": "number",
+        "default": "",
+        "description": "停留毫秒，0 表示不自动关闭 @default 3000"
+      },
+      {
+        "from": "options",
+        "name": "position",
+        "type": "SrToastPosition",
+        "default": "",
+        "description": "出现位置 @default 'top'"
+      },
+      {
+        "from": "options",
+        "name": "closable",
+        "type": "boolean",
+        "default": "",
+        "description": "是否显示关闭按钮 @default false"
+      },
+      {
+        "from": "options",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖预设玻璃底"
+      }
+    ],
+    "sources": ["options"],
+    "emits": [],
+    "slots": []
+  },
+  "tooltip": {
+    "name": "tooltip",
+    "options": [
+      {
+        "from": "tooltipProps",
+        "name": "content",
+        "type": "string",
+        "default": "''",
+        "description": "文本内容，也可用 content 插槽"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "variant",
+        "type": "SrTooltipVariant",
+        "default": "'dark'",
+        "description": "配色预设：dark 黑玻璃（默认）/ light 白玻璃"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "backgroundColor",
+        "type": "string",
+        "default": "''",
+        "description": "自定义背景色（任意 CSS 颜色），设置后覆盖 variant 的底色"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "placement",
+        "type": "SrPlacement",
+        "default": "'top'",
+        "description": "期望方位（空间不足时自动翻转）"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "showDelay",
+        "type": "number",
+        "default": "120",
+        "description": "显示延迟（ms）"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "hideDelay",
+        "type": "number",
+        "default": "80",
+        "description": "隐藏延迟（ms），留一点缓冲避免鼠标划过缝隙时闪烁"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "offset",
+        "type": "number",
+        "default": "8",
+        "description": "与触发元素的间距（px）"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "arrow",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否显示小三角"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "maxWidth",
+        "type": "number",
+        "default": "280",
+        "description": "最大宽度（px）"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用后不响应任何交互"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "closeOnClick",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击触发元素时是否关闭（配合 click 场景）"
+      },
+      {
+        "from": "tooltipProps",
+        "name": "teleportTo",
+        "type": "string | HTMLElement",
+        "default": "'body'",
+        "description": "挂载目标"
+      }
+    ],
+    "sources": ["tooltip"],
+    "emits": [],
+    "slots": ["content", "default"]
+  },
+  "transfer": {
+    "name": "transfer",
+    "options": [
+      {
+        "from": "transferProps",
+        "name": "modelValue",
+        "type": "SrTransferValue[]",
+        "default": "() => []",
+        "description": "右侧（已选）的值，配合 v-model 只存「在哪一边」，不存顺序——顺序始终跟 `data` 一致。"
+      },
+      {
+        "from": "transferProps",
+        "name": "data",
+        "type": "SrTransferItem[]",
+        "default": "() => []",
+        "description": "全部数据"
+      },
+      {
+        "from": "transferProps",
+        "name": "titles",
+        "type": "[string, string]",
+        "default": "() => ['待选', '已选']",
+        "description": "两侧标题 @default ['待选', '已选']"
+      },
+      {
+        "from": "transferProps",
+        "name": "filterable",
+        "type": "boolean",
+        "default": "false",
+        "description": "两侧可搜索 @default false"
+      },
+      {
+        "from": "transferProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "transferProps",
+        "name": "height",
+        "type": "number",
+        "default": "260",
+        "description": "列表高度 @default 260"
+      },
+      {
+        "from": "transferProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空状态文案 @default '暂无数据'"
+      },
+      {
+        "from": "transferProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["transfer"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["value"]
+      },
+      {
+        "name": "change",
+        "params": ["value", "direction"]
+      }
+    ],
+    "slots": []
+  },
+  "transition": {
+    "name": "transition",
+    "options": [
+      {
+        "from": "transitionProps",
+        "name": "name",
+        "type": "SrTransitionName",
+        "default": "'fade'",
+        "description": "过渡名"
+      },
+      {
+        "from": "transitionProps",
+        "name": "enabled",
+        "type": "boolean",
+        "default": "true",
+        "description": "是否启用动画 false 时直接切换（仍走 Vue 的 Transition 流程，不产生过渡帧）"
+      },
+      {
+        "from": "transitionProps",
+        "name": "appear",
+        "type": "boolean",
+        "default": "false",
+        "description": "首次渲染是否也播放"
+      },
+      {
+        "from": "transitionProps",
+        "name": "mode",
+        "type": "'in-out' | 'out-in'",
+        "default": "undefined",
+        "description": "进出场模式 默认（不传）表示进出同时进行"
+      }
+    ],
+    "sources": ["transition"],
+    "emits": [],
+    "slots": ["default"]
+  },
+  "tree": {
+    "name": "tree",
+    "options": [
+      {
+        "from": "treeProps",
+        "name": "data",
+        "type": "SrTreeNode[]",
+        "default": "() => []",
+        "description": "树数据"
+      },
+      {
+        "from": "treeProps",
+        "name": "modelValue",
+        "type": "SrTreeKey[]",
+        "default": "undefined",
+        "description": "选中的 key，配合 v-model 不传就是非受控：组件自己维护勾选状态，点击依然有效。 只支持受控的话，「checkable 但忘了绑 v-model」会变成点了没反应。"
+      },
+      {
+        "from": "treeProps",
+        "name": "defaultCheckedKeys",
+        "type": "SrTreeKey[]",
+        "default": "() => []",
+        "description": "非受控时的初始勾选"
+      },
+      {
+        "from": "treeProps",
+        "name": "expandedKeys",
+        "type": "SrTreeKey[]",
+        "default": "undefined",
+        "description": "展开的 key，配合 v-model:expanded-keys"
+      },
+      {
+        "from": "treeProps",
+        "name": "defaultExpandedKeys",
+        "type": "SrTreeKey[]",
+        "default": "() => []",
+        "description": "默认展开的 key（非受控时生效）"
+      },
+      {
+        "from": "treeProps",
+        "name": "defaultExpandAll",
+        "type": "boolean",
+        "default": "false",
+        "description": "默认展开全部 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "checkable",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示复选框 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "checkStrictly",
+        "type": "boolean",
+        "default": "false",
+        "description": "父子勾选不联动 @default false 默认联动：勾父带子、子全选则父自动选中。 开启后每个节点独立，只影响自己。"
+      },
+      {
+        "from": "treeProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许多选 @default true"
+      },
+      {
+        "from": "treeProps",
+        "name": "selectable",
+        "type": "boolean",
+        "default": "true",
+        "description": "点击节点文字即可选中 @default true"
+      },
+      {
+        "from": "treeProps",
+        "name": "expandOnClickNode",
+        "type": "boolean",
+        "default": "false",
+        "description": "点击整行都能切换展开 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用整棵树 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "showLine",
+        "type": "boolean",
+        "default": "false",
+        "description": "显示层级连接线 @default false"
+      },
+      {
+        "from": "treeProps",
+        "name": "indent",
+        "type": "number",
+        "default": "18",
+        "description": "每层缩进（px）@default 18"
+      },
+      {
+        "from": "treeProps",
+        "name": "emptyText",
+        "type": "string",
+        "default": "'暂无数据'",
+        "description": "空数据文案 @default '暂无数据'"
+      },
+      {
+        "from": "treeProps",
+        "name": "virtual",
+        "type": "boolean",
+        "default": "false",
+        "description": "开启虚拟滚动 @default false 数据量大（几千行以上）时必开，否则一次性渲染全部行会明显卡顿。"
+      },
+      {
+        "from": "treeProps",
+        "name": "height",
+        "type": "number",
+        "default": "320",
+        "description": "虚拟滚动容器高度（px）@default 320"
+      },
+      {
+        "from": "treeProps",
+        "name": "itemHeight",
+        "type": "number",
+        "default": "32",
+        "description": "行高（px），虚拟滚动按它算可视区 @default 32"
+      },
+      {
+        "from": "treeProps",
+        "name": "keyboard",
+        "type": "boolean",
+        "default": "true",
+        "description": "开启键盘导航 @default true"
+      },
+      {
+        "from": "treeProps",
+        "name": "draggable",
+        "type": "boolean",
+        "default": "false",
+        "description": "允许拖拽节点调整位置 @default false 用 Pointer Events 实现，不依赖 sortablejs。"
+      },
+      {
+        "from": "treeProps",
+        "name": "allowDrop",
+        "type": "(dragNode: SrTreeNode, dropNode: SrTreeNode, type: SrTreeDropType) =",
+        "default": "undefined",
+        "description": "判断某个节点能否拖放，返回 false 会拒绝"
+      },
+      {
+        "from": "treeProps",
+        "name": "loadData",
+        "type": "(node: SrTreeNode) =",
+        "default": "undefined",
+        "description": "异步加载子节点 节点没有 children 且未加载过时，展开会先调用它。 返回的数组会作为该节点的 children。"
+      },
+      {
+        "from": "treeProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      }
+    ],
+    "sources": ["tree"],
+    "emits": [
+      {
+        "name": "update:modelValue",
+        "params": ["keys"]
+      },
+      {
+        "name": "update:expandedKeys",
+        "params": ["keys"]
+      },
+      {
+        "name": "check",
+        "params": ["keys", "detail"]
+      },
+      {
+        "name": "expand",
+        "params": ["keys", "detail"]
+      },
+      {
+        "name": "node-click",
+        "params": ["node"]
+      },
+      {
+        "name": "load",
+        "params": ["node", "children"]
+      },
+      {
+        "name": "node-drop",
+        "params": ["detail", "data"]
+      }
+    ],
+    "slots": []
+  },
+  "upload": {
+    "name": "upload",
+    "options": [
+      {
+        "from": "uploadProps",
+        "name": "files",
+        "type": "SrUploadFile[]",
+        "default": "() => []",
+        "description": "已有文件列表，支持 v-model:files 回显场景：服务端只返回 url/name/size，没有 raw，组件不会为它们发上传请求。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "accept",
+        "type": "string",
+        "default": "''",
+        "description": "接受的文件类型，写法同原生 input 的 accept"
+      },
+      {
+        "from": "uploadProps",
+        "name": "multiple",
+        "type": "boolean",
+        "default": "false",
+        "description": "允许选择多个文件 @default false"
+      },
+      {
+        "from": "uploadProps",
+        "name": "maxCount",
+        "type": "number",
+        "default": "0",
+        "description": "最多保留几个文件，0 表示不限 @default 0"
+      },
+      {
+        "from": "uploadProps",
+        "name": "maxSize",
+        "type": "number",
+        "default": "0",
+        "description": "单文件大小上限（MB），0 表示不限 @default 0"
+      },
+      {
+        "from": "uploadProps",
+        "name": "listType",
+        "type": "SrUploadListType",
+        "default": "'list'",
+        "description": "列表形态 @default 'list'"
+      },
+      {
+        "from": "uploadProps",
+        "name": "triggerType",
+        "type": "SrUploadTriggerType",
+        "default": "'area'",
+        "description": "触发区形态 @default 'area' button 是一个紧凑的按钮，适合放在表单里；area 是大块拖拽区。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "icon",
+        "type": "string",
+        "default": "'lucide:box'",
+        "description": "拖拽区图标，传空字符串可去掉 @default 'lucide:box' 拖拽悬停时会换成下载图标；想固定不变就自己用 #icon 插槽。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "buttonText",
+        "type": "string",
+        "default": "'选择文件'",
+        "description": "按钮形态下的文案 @default '选择文件'"
+      },
+      {
+        "from": "uploadProps",
+        "name": "draggable",
+        "type": "boolean",
+        "default": "true",
+        "description": "允许拖拽到区域上传 @default true"
+      },
+      {
+        "from": "uploadProps",
+        "name": "disabled",
+        "type": "boolean",
+        "default": "false",
+        "description": "禁用 @default false"
+      },
+      {
+        "from": "uploadProps",
+        "name": "autoUpload",
+        "type": "boolean",
+        "default": "true",
+        "description": "选择后立即调用 httpRequest @default true 关掉后组件只收集文件，由调用方在合适的时机批量提交。"
+      },
+      {
+        "from": "uploadProps",
+        "name": "showFileList",
+        "type": "boolean",
+        "default": "true",
+        "description": "显示文件列表 @default true"
+      },
+      {
+        "from": "uploadProps",
+        "name": "size",
+        "type": "SrSize",
+        "default": "undefined",
+        "description": "尺寸档位"
+      },
+      {
+        "from": "uploadProps",
+        "name": "dragText",
+        "type": "string",
+        "default": "'点击或拖拽文件到这里'",
+        "description": "拖拽区主文案 @default '点击或拖拽文件到这里'"
+      },
+      {
+        "from": "uploadProps",
+        "name": "tip",
+        "type": "string",
+        "default": "''",
+        "description": "拖拽区下方的提示文案"
+      },
+      {
+        "from": "uploadProps",
+        "name": "httpRequest",
+        "type": "SrUploadRequest",
+        "default": "undefined",
+        "description": "自定义上传函数；不传则只收集文件"
+      }
+    ],
+    "sources": ["upload"],
+    "emits": [
+      {
+        "name": "update:files",
+        "params": ["files"]
+      },
+      {
+        "name": "change",
+        "params": ["files", "file?"]
+      },
+      {
+        "name": "success",
+        "params": ["file", "url?"]
+      },
+      {
+        "name": "error",
+        "params": ["file", "reason"]
+      },
+      {
+        "name": "exceed",
+        "params": ["maxCount"]
+      }
+    ],
+    "slots": ["icon", "trigger"]
+  },
+  "virtual-list": {
+    "name": "virtual-list",
+    "options": [
+      {
+        "from": "virtualListProps",
+        "name": "items",
+        "type": "unknown[]",
+        "default": "() => []",
+        "description": "数据源"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "itemHeight",
+        "type": "number",
+        "default": "",
+        "description": "每项固定高度（像素） 必须是固定值。不定高需要边渲染边测量，会带来位置回跳， 属于另一套实现（动态虚拟滚动）。"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "height",
+        "type": "number",
+        "default": "",
+        "description": "可视区高度（像素）"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "buffer",
+        "type": "number",
+        "default": "3",
+        "description": "上下额外渲染的项数 @default 3 留一点缓冲，快速滚动时不会露出空白。"
+      },
+      {
+        "from": "virtualListProps",
+        "name": "itemKey",
+        "type": "(item: unknown, index: number) =",
+        "default": "undefined",
+        "description": "取每一项的 key 不传就用下标。**列表会增删时建议传**，否则复用逻辑会错位。"
+      }
+    ],
+    "sources": ["virtualList"],
+    "emits": [
+      {
+        "name": "scroll",
+        "params": ["scrollTop"]
+      }
+    ],
+    "slots": ["default"]
+  }
+}
