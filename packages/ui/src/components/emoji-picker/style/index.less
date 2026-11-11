@@ -97,7 +97,8 @@
   &__panel {
     flex: 1 1 auto;
     min-height: 0;
-    padding: 4px var(--sr-emoji-pad-x) 12px;
+    // 顶部留白由信息行负责，这里只留左右与底部
+    padding: 0 var(--sr-emoji-pad-x) 8px;
     overflow-y: auto;
     // 面板内滚到底不要带动外层页面
     overscroll-behavior: contain;
@@ -110,15 +111,14 @@
     }
   }
 
-  // 双类选择器：宿主页面的 .vp-doc p 会加 16px 上下边距与 28px 行高，
-  // 单类挡不住，信息行会被撑成一条高白条、文字贴在最左上
+  // 信息行放在滚动区外：不吸顶、不铺底色，因此不会出现「文字下面一条白条」，
+  // 滚动时也不会有表情从文字背后穿过。双类选择器同时挡住宿主页面的 .vp-doc p。
   & &__meta {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    margin: 0 0 6px;
-    padding: 2px 0 6px;
-    background: var(--sr-color-bg-popover);
+    flex: 0 0 auto;
+    order: 0;
+    margin: 0;
+    padding: 8px var(--sr-emoji-pad-x) 4px;
+    background: transparent;
     color: var(--sr-color-text-tertiary);
     font-size: 11.5px;
     line-height: 1.4;
@@ -237,7 +237,6 @@
 
   &.is-tab-bottom &__panel {
     order: 1;
-    padding: 10px var(--sr-emoji-pad-x) 6px;
   }
 
   &.is-tab-top &__tabs {
@@ -246,8 +245,14 @@
     border-bottom: 1px solid var(--sr-color-border-subtle);
   }
 
-  &.is-tab-top &__panel {
+  // tab 在上时，顺序是 搜索 → tab → 信息行 → 内容
+  &.is-tab-top &__meta {
     order: 2;
+    padding-top: 6px;
+  }
+
+  &.is-tab-top &__panel {
+    order: 3;
   }
 
   // ---------- 变体：尺寸 ----------

@@ -350,10 +350,11 @@ watch(isSearching, (on, off) => {
       </button>
     </div>
 
+    <!-- 信息行：放在滚动区外，避免滚动内容从文字后面穿过 -->
+    <p class="sr-emoji-picker__meta" aria-live="polite">{{ metaText }}</p>
+
     <!-- 内容区 -->
     <div class="sr-emoji-picker__panel" :style="panelStyle" role="tabpanel">
-      <p class="sr-emoji-picker__meta" aria-live="polite">{{ metaText }}</p>
-
       <div v-if="displayEmojis.length" class="sr-emoji-picker__grid" :style="gridStyle">
         <button
           v-for="item in displayEmojis"
