@@ -15,14 +15,14 @@
 和核心库一样，**用 Release 的 tarball 地址安装**，不要用 `git+https://...#tag`：
 
 ```bash
-# GitHub（把 <版本> 换成实际版本号，当前 1.0.0-beta.3）
+# GitHub（把 <版本> 换成实际版本号，当前 1.0.0-beta.4）
 npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v<版本>/sunset-reverie-icons-<版本>.tgz
 
 # Gitee 镜像，文件名相同
 npm i https://gitee.com/SunsetReverie/sunset-reverie-ui/releases/download/v<版本>/sunset-reverie-icons-<版本>.tgz
 ```
 
-也可以直接去 Release 页面把 `sunset-reverie-icons-1.0.0-beta.3.tgz` 下载到本地，再 `npm i ./sunset-reverie-icons-1.0.0-beta.3.tgz`。
+也可以直接去 Release 页面把 `sunset-reverie-icons-1.0.0-beta.4.tgz` 下载到本地，再 `npm i ./sunset-reverie-icons-1.0.0-beta.4.tgz`。
 
 > 版本必须与 `@sunset-reverie/ui` **一致**。四个包在 changesets 的 `fixed` 组里，永远同版本发布；混用会在类型与运行时行为上出现难以排查的差异。
 
@@ -31,8 +31,8 @@ npm i https://gitee.com/SunsetReverie/sunset-reverie-ui/releases/download/v<版�
 ```json
 {
   "dependencies": {
-    "@sunset-reverie/ui": "https://.../sunset-reverie-ui-1.0.0-beta.3.tgz",
-    "@sunset-reverie/icons": "https://.../sunset-reverie-icons-1.0.0-beta.3.tgz"
+    "@sunset-reverie/ui": "https://.../sunset-reverie-ui-1.0.0-beta.4.tgz",
+    "@sunset-reverie/icons": "https://.../sunset-reverie-icons-1.0.0-beta.4.tgz"
   }
 }
 ```
