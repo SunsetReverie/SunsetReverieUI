@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, useSlots, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, useSlots, watch } from 'vue'
 
+import { SR_FORM_ITEM_KEY } from '../../form/src/form'
 import type { SrEmojiItem } from '../../emoji-picker/src/emoji-picker'
 import {
   BG_POSITION_MAP,
@@ -17,6 +18,9 @@ import {
 defineOptions({ name: 'SrTextarea', inheritAttrs: false })
 
 const props = defineProps(textareaProps)
+
+/** 表单项上下文：表单级 disabled 与校验通知都从这里走 */
+const formItem = inject(SR_FORM_ITEM_KEY, null)
 
 const slots = useSlots()
 
@@ -63,7 +67,10 @@ const count = computed(() => srCountTextareaText(props.modelValue, emojiMap.valu
 const overLimit = computed(() => !!props.maxlength && count.value > props.maxlength)
 
 /** 是否可编辑 */
-const editable = computed(() => !props.disabled && !props.readonly)
+const isDisabled = computed(() => props.disabled || (formItem?.disabled?.value ?? false))
+
+/** 是否可编辑 */
+const editable = computed(() => !isDisabled.value && !props.readonly)
 
 /** 尺寸相关的 CSS 变量 */
 const sizeVars = computed(() => {
@@ -119,7 +126,7 @@ const classes = computed(() => [
   `sr-textarea--${props.status}`,
   {
     'is-focused': focused.value,
-    'is-disabled': props.disabled,
+    'is-disabled': isDisabled.value,
     'is-readonly': props.readonly,
     'is-rich': rich.value,
     'is-over': overLimit.value,
@@ -202,6 +209,7 @@ function onInnerInput(event: Event): void {
   const value = (event.target as HTMLTextAreaElement).value
   emit('update:modelValue', value)
   emit('change', value)
+  formItem?.notify('change')
   nextTick(syncHeight)
 }
 
@@ -221,6 +229,7 @@ function onRichInput(): void {
   const value = srSerializeRich(el)
   emit('update:modelValue', value)
   emit('change', value)
+  formItem?.notify('change')
   nextTick(syncHeight)
 }
 
@@ -367,6 +376,7 @@ function insertText(text: string): void {
 
   emit('update:modelValue', next)
   emit('change', next)
+  formItem?.notify('change')
 
   nextTick(() => {
     el.focus()
@@ -380,6 +390,7 @@ function clear(): void {
   if (rich.value && richRef.value) richRef.value.textContent = ''
   emit('update:modelValue', '')
   emit('change', '')
+  formItem?.notify('change')
   nextTick(syncHeight)
 }
 
@@ -489,7 +500,7 @@ onMounted(() => {
         :value="modelValue"
         :rows="rows"
         :placeholder="placeholder"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :readonly="readonly"
         v-bind="$attrs"
         @input="onInnerInput"

@@ -42,6 +42,8 @@ function onToggle(): void {
   const next = !props.modelValue
   emit('update:modelValue', next)
   emit('change', next)
+  // 通知表单：值变了，可以跑 change 类规则
+  formItem?.notify('change')
 }
 </script>
 

@@ -92,6 +92,8 @@ const on = ref(true)
 
 ## 注意事项
 
+- **放进 `SrFormItem` 后会自动参与校验：切换时通知表单，触发 `change` 类型规则。表单级 `disabled` 同样会下发。**
+
 - **SrSwitch 是受控组件，必须绑 `v-model`；不绑的话点击不会改变开关状态。**
 
 - **`loading` 和 `disabled` 都会阻止交互**，区别在于 `loading` 会显示指示器、用于「正在提交」的瞬时状态，`disabled` 是长期的不可用。

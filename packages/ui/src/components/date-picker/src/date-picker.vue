@@ -278,6 +278,8 @@ function commit(value: SrDatePickerInnerValue): void {
   const output = formatOutput(normalizeSeconds(value))
   emit('update:modelValue', output)
   emit('change', output)
+  // 通知表单：选完日期就校验，不用等失焦
+  formItem?.notify('change')
 }
 
 /**

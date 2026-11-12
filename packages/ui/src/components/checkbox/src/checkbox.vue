@@ -64,6 +64,8 @@ function onChange(event: Event): void {
   }
 
   emit('change', next)
+  // 通知表单：值变了，可以跑 change 类规则
+  formItem?.notify('change')
 }
 
 // indeterminate 是 DOM 属性而非 attribute，只能通过 ref 写。

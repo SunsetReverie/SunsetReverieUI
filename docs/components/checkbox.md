@@ -109,6 +109,8 @@ const checked = ref(true)
 
 ## 注意事项
 
+- **放进 `SrFormItem` 后会自动参与校验：勾选变化时通知表单，触发 `change` 类型规则。表单级 `disabled` 也会通过上下文下发，不需要逐个传。**
+
 - **单个使用时绑 `v-model`（布尔），组内使用时绑 `value`**。两种模式互斥：组内给 `modelValue` 会被组忽略。
 - 组内子项的选中状态由组统一管理，子项自己不需要 `v-model`。
 - `indeterminate` 是纯视觉标记，要自己根据「已选数量」算出来。

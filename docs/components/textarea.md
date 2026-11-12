@@ -268,6 +268,8 @@ import '@sunset-reverie/ui/components/textarea/style.css'
 
 ## 注意事项
 
+- **放进 `SrFormItem` 后会自动参与校验**：内容变化时通知表单，触发 `change` 类型规则；表单级 `disabled` 也会通过上下文下发。
+
 - **两种模式的分界是 `emojiPackages`**。不传走原生 `textarea`，行为与普通输入框完全一致；传了才切 `contenteditable`。判断依据是「有没有表情要渲染」，不是「要不要富文本」。
 - **富文本模式只收纯文本粘贴**。评论框里粘进带样式的网页内容会带一堆颜色和字体，这里统一转成纯文本。
 - **不要在 `resize: vertical` 和 `autosize` 同时开启时追求精确高度**：一个由用户拖拽、一个由内容测量，两者会互相覆盖，`maxRows` 生效时尤其明显。

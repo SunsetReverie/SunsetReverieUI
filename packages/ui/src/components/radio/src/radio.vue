@@ -52,6 +52,8 @@ function onChange(event: Event): void {
   }
 
   emit('change', props.value)
+  // 通知表单：选中就校验
+  formItem?.notify('change')
 }
 </script>
 

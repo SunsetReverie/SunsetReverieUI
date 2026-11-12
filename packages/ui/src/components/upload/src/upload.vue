@@ -167,6 +167,7 @@ function addFiles(list: FileList | File[]): void {
   files.value = [...files.value, ...accepted]
   sync()
   emit('change', [...files.value], accepted[0])
+  formItem?.notify('change')
 
   if (props.autoUpload && props.httpRequest) {
     accepted.forEach((item) => void startUpload(item))
@@ -245,6 +246,7 @@ function remove(file: SrUploadFile): void {
   files.value = files.value.filter((item) => item !== file)
   sync()
   emit('change', [...files.value], file)
+  formItem?.notify('change')
 }
 
 /** 选择完成 */
@@ -298,6 +300,7 @@ function clear(): void {
   files.value = []
   sync()
   emit('change', [])
+  formItem?.notify('change')
 }
 
 defineExpose({ submit, clear, files })

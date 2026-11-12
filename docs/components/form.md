@@ -130,6 +130,91 @@ const rules = {
 }
 ```
 
+## 与控件的集成
+
+把控件放进 `SrFormItem` 就能自动参与校验，**不需要手动绑定任何东西**：
+
+```vue
+<SrForm :model="model" :rules="rules">
+  <SrFormItem label="用户名" prop="username">
+    <SrInput v-model="model.username" />
+  </SrFormItem>
+</SrForm>
+```
+
+控件会自动做三件事：
+
+| 行为 | 说明 |
+| --- | --- |
+| 上报值变化 | 内部变化时通知 `SrFormItem`，触发 `change` 类型的规则 |
+| 上报失焦 | 失焦时触发 `blur` 类型的规则 |
+| 接收错误态 | 校验失败时自动变红边框，`status` 不需要自己传 |
+
+**已内置接入的控件**：
+
+`SrInput`、`SrTextarea`、`SrInputNumber`、`SrSelect`、`SrSwitch`、`SrCheckbox`、`SrRadio`、`SrDatePicker`、`SrUpload`
+
+这些控件放进 `SrFormItem` 就生效，放外面也不会报错（只是不参与校验）。
+
+### 自定义控件怎么接入
+
+自己封装的控件也能接入。`SrFormItem` 通过 provide 暴露了一个上下文，用 `SR_FORM_ITEM_KEY` 取出来：
+
+```ts
+import { inject } from 'vue'
+import { SR_FORM_ITEM_KEY } from '@sunset-reverie/ui'
+
+const formItem = inject(SR_FORM_ITEM_KEY, null)
+
+// 值变了 —— 触发 change 规则
+formItem?.notify('change')
+
+// 失焦了 —— 触发 blur 规则
+formItem?.notify('blur')
+
+// 读取错误态，用来画自己的红框
+const hasError = computed(() => formItem?.status.value === 'error')
+const disabled = computed(() => formItem?.disabled?.value ?? false)
+```
+
+完整示例：
+
+```vue
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import { SR_FORM_ITEM_KEY } from '@sunset-reverie/ui'
+
+const props = defineProps<{ modelValue: string }>()
+const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+
+const formItem = inject(SR_FORM_ITEM_KEY, null)
+
+const hasError = computed(() => formItem?.status.value === 'error')
+const isDisabled = computed(() => formItem?.disabled?.value ?? false)
+
+function onInput(event: Event): void {
+  emit('update:modelValue', (event.target as HTMLInputElement).value)
+  formItem?.notify('change')     // 告诉表单：值变了，可以校验了
+}
+</script>
+
+<template>
+  <input
+    :value="modelValue"
+    :class="{ 'is-error': hasError }"
+    :disabled="isDisabled"
+    @input="onInput"
+    @blur="formItem?.notify('blur')"
+  />
+</template>
+```
+
+关键点：
+
+- **`prop` 必须对上**：`SrFormItem` 的 `prop` 要等于 `rules` 里的字段名，否则拿不到规则
+- **`notify` 要给对 trigger**：`change` 用于输入类，`blur` 用于失焦；给错会导致规则不触发或触发太频繁
+- **上下文里没有错误文案**：只有 `status`（`'default' | 'error' | 'warning' | 'success'`）和 `messageId`（供 `aria-describedby` 引用的元素 id）。文案由 `SrFormItem` 自己渲染，自定义控件只需要根据 `status` 画红框
+
 ## 标签布局
 
 `labelPosition` 三选一：
@@ -265,7 +350,7 @@ const rules = {
 </SrForm>
 ```
 
-覆盖的控件：`SrInput`、`SrInputNumber`、`SrSelect`、`SrSwitch`、`SrCheckbox`、`SrRadio`、`SrDatePicker`、`SrUpload`。
+覆盖的控件：`SrInput`、`SrTextarea`、`SrInputNumber`、`SrSelect`、`SrSwitch`、`SrCheckbox`、`SrRadio`、`SrDatePicker`、`SrUpload`。
 
 **按钮不受影响**。禁用状态下仍然需要能点「取消」「关闭」，全禁会导致表单卡死。
 
