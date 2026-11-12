@@ -188,6 +188,23 @@ describe('SrNav', () => {
     expect(wrapper.findAll('.sr-nav__item')).toHaveLength(2)
     wrapper.unmount()
   })
+  it('收起态带 badge 时图标与圆点同时存在', () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        collapsed: true,
+        items: [{ group: '业务', key: 'orders', label: '订单管理', icon: 'lucide:inbox', badge: 24 }],
+      },
+    })
+
+    const item = wrapper.find('.sr-nav__item')
+    // 图标是识别入口，圆点只是附加装饰，两者不能互斥
+    expect(item.find('.sr-nav__icon').exists()).toBe(true)
+    expect(item.find('.sr-nav__dot').exists()).toBe(true)
+    expect(item.find('.sr-nav__badge').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('品牌区渲染图标与标题', () => {
     const wrapper = mount(SrNav, {
       props: { items, logo: 'lucide:moon-star', title: '夕梦 UI' },

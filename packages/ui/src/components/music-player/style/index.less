@@ -485,7 +485,7 @@
    */
   &__mini {
     position: fixed;
-    z-index: var(--sr-z-popover);
+    z-index: var(--sr-z-popover, 4000);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -556,7 +556,7 @@
 
   &__pill {
     position: fixed;
-    z-index: var(--sr-z-popover);
+    z-index: var(--sr-z-popover, 4000);
     display: flex;
     align-items: center;
     gap: var(--sr-space-3);
@@ -708,7 +708,7 @@
 /* ---------- 紧凑形态的展开面板：固定定位到同一个角 ---------- */
 .sr-music--mini-panel {
   position: fixed;
-  z-index: var(--sr-z-popover);
+  z-index: var(--sr-z-popover, 4000);
   width: 320px;
 }
 
@@ -733,7 +733,7 @@
   position: fixed;
   bottom: var(--sr-space-6);
   left: 50%;
-  z-index: var(--sr-z-popover);
+  z-index: var(--sr-z-popover, 4000);
   display: flex;
   align-items: center;
   gap: var(--sr-space-2);

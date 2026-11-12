@@ -6,9 +6,6 @@
  * 变成「每个实例一个数组」，栈就永远只有自己一个元素，嵌套弹窗的 Esc 会一起关闭。
  */
 const openStack: symbol[] = []
-
-/** 层级种子，保证同时打开的多个弹层依次叠高 */
-let zIndexSeed = 0
 </script>
 
 <script setup lang="ts">
@@ -18,6 +15,7 @@ import { useSrConfig } from '../../../composables/use-sr-config'
 import { srOmit } from '../../../utils/attrs'
 import { srFocusFirst, srTrapTab } from '../../../utils/focus-trap'
 import { srLockScroll, srUnlockScroll } from '../../../utils/scroll-lock'
+import { srAllocZIndex, srFreeZIndex } from '../../../utils/z-stack'
 import SrIcon from '../../icon/src/icon.vue'
 import { modalProps, type SrModalCloseReason } from './modal'
 
@@ -82,8 +80,10 @@ async function handleOpen(): Promise<void> {
   triggerElement = document.activeElement as HTMLElement | null
   openStack.push(instanceId)
 
-  zIndexSeed += 1
-  currentZIndex.value = (props.zIndex ?? (config.value.zIndex || 1000) + 1001) + zIndexSeed
+  // 从浮层栈申请层级：同族依次 +10、关闭时归还，不再「每开一次涨一格」。
+  // 上限压到 3900：无论全局配置怎么调，都不该盖过 popover(4000) 与全局提示(5000+)
+  const base = props.zIndex ?? Math.min(3900, config.value.zIndex + 2000)
+  currentZIndex.value = srAllocZIndex('modal', base)
 
   if (props.lockScroll) srLockScroll()
 
@@ -100,6 +100,9 @@ async function handleOpen(): Promise<void> {
 function handleClose(): void {
   const index = openStack.indexOf(instanceId)
   if (index >= 0) openStack.splice(index, 1)
+
+  // 归还层级，避免多次开关后越叠越高
+  srFreeZIndex(currentZIndex.value)
 
   if (props.lockScroll) srUnlockScroll()
 

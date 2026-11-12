@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onScopeDispose, provide, ref, useAttrs, useId } from 'vue'
 
+import { srRunAfterPointerRelease } from '../../../utils/pointer'
 import {
   SR_FORM_ITEM_KEY,
   SR_FORM_KEY,
@@ -129,10 +130,16 @@ async function validate(trigger: SrFormTrigger | 'manual' = 'manual'): Promise<S
 
 /**
  * 收到子组件的交互通知
+ *
+ * 指针按下期间不立即校验：blur 通常发生在 mousedown 之后、mouseup 之前，
+ * 此时插入错误文案会把居中弹窗顶高，按钮位移导致这次点击丢失。
+ * 推迟到指针抬起（click 已派发）后再更新。
  * @param trigger 触发时机
  */
 function notify(trigger: SrFormTrigger): void {
-  void validate(trigger)
+  srRunAfterPointerRelease(() => {
+    void validate(trigger)
+  })
 }
 
 /** 清空错误 */

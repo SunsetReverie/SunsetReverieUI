@@ -25,14 +25,16 @@ export const structural: Record<string, string> = {
   'border-width-thick': '2px',
 
   // 层级：只增不减，新增层需插入到合适位置并同步文档 4.9
+  // 浮层层级：相对顺序固定，宿主调 SrConfigProvider.zIndex 也不会打乱
+  // 基础内容 < 遮罩(2000) < 抽屉(2100) < 弹窗(3000) < 浮层(4000) < 全局提示(5000)
   'z-base': '0',
   'z-sticky': '100',
-  'z-dropdown': '1000',
+  'z-dropdown': '4010',
   'z-mask': '2000',
-  'z-modal': '2001',
-  'z-popover': '2100',
-  'z-toast': '3000',
-  'z-tooltip': '3100',
+  'z-modal': '3000',
+  'z-popover': '4000',
+  'z-toast': '5000',
+  'z-tooltip': '4100',
 }
 
 /** 状态色（success / warning / danger / info）的语义映射，亮暗两套共用结构 */
@@ -75,7 +77,9 @@ export const semanticLight: Record<string, string> = {
   // ---------- 文本 ----------
   'color-text': 'var(--sr-night-900)',
   'color-text-secondary': 'var(--sr-night-600)',
-  'color-text-tertiary': 'var(--sr-night-400)',
+  // 三级文字承载 11-13px 的说明文字，必须满足 WCAG AA（对白底 ≥ 4.5:1），
+  // night-500 (#6E7787) 实测 4.51:1；night-400 只有 2.57:1，只配做禁用态
+  'color-text-tertiary': 'var(--sr-night-500)',
   'color-text-disabled': 'var(--sr-night-300)',
   'color-text-inverse': '#ffffff',
   // 反色表面：Tooltip 气泡这类「浮在内容之上、需要与页面反衬」的场景
@@ -172,7 +176,8 @@ export const semanticDark: Record<string, string> = {
   // ---------- 文本 ----------
   'color-text': 'var(--sr-night-50)',
   'color-text-secondary': 'var(--sr-night-300)',
-  'color-text-tertiary': 'var(--sr-night-500)',
+  // 暗色主题同理：night-400 (#9AA2B1) 对 #1C2027 实测 6.36:1
+  'color-text-tertiary': 'var(--sr-night-400)',
   'color-text-disabled': 'var(--sr-night-600)',
   'color-text-inverse': 'var(--sr-night-950)',
   'color-bg-inverse': 'var(--sr-night-100)',

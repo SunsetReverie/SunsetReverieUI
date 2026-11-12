@@ -199,8 +199,9 @@ function pick(item: SrNavItem): void {
             :disabled="item.disabled || disabled"
             @click="pick(item)"
           >
+            <!-- 图标与角标是两件独立的事：折叠态图标必须保留，圆点只是附加装饰 -->
+            <sr-icon v-if="item.icon" class="sr-nav__icon" :name="item.icon" :size="16" />
             <span v-if="collapsed && hasBadge(item)" class="sr-nav__dot" />
-            <sr-icon v-else-if="item.icon" class="sr-nav__icon" :name="item.icon" :size="16" />
             <span v-if="!collapsed" class="sr-nav__label">{{ item.label }}</span>
             <span v-if="!collapsed && hasBadge(item)" class="sr-nav__badge">{{ item.badge }}</span>
             <sr-icon

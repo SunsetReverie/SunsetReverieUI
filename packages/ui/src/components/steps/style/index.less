@@ -168,7 +168,11 @@
   }
 
   &--horizontal.sr-steps--label-horizontal &__head {
+    // 标题并排时，「圆点 + 连接线」这一头必须吃掉剩余空间，
+    // 否则 head 按内容宽度收缩，tail 的 flex: 1 1 auto 无处可伸，宽度塌成 0
+    flex: 1 1 auto;
     width: auto;
+    min-width: 0;
   }
 
   &--horizontal.sr-steps--label-horizontal &__tail {
@@ -176,6 +180,8 @@
   }
 
   &--horizontal.sr-steps--label-horizontal &__body {
+    // 内容按自身宽度，不与连接线抢空间
+    flex: 0 0 auto;
     padding-top: 1px;
     padding-left: 8px;
   }
