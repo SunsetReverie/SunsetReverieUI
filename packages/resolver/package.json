@@ -1,6 +1,6 @@
 {
   "name": "@sunset-reverie/resolver",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "夕梦 UI 按需引入解析器（unplugin-vue-components）",
   "type": "module",
   "sideEffects": false,

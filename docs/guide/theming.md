@@ -55,6 +55,115 @@ resetPrimaryColor()         // 回到预设
 
 预设色在 `SR_THEME_PRESETS` 里：落日橙（默认）、霞紫、暮蓝等，换预设等于换一组 `--sr-color-primary*` 派生值，不需要重写组件背景。
 
+## 自定义主色
+
+预设只是默认值，不是封闭选项。主色有三档做法，按「谁来决定」选：
+
+| 场景 | 做法 | 持久化 | 影响范围 |
+| --- | --- | --- | --- |
+| 产品固定品牌色 | CSS 覆盖主色派生变量 | — | 全局 |
+| 用户在设置里自选 | `setPrimaryColor(color)` | 是 | 全局 |
+| 同一页多品牌 / 白标 | `setPrimaryColor(color, el)` | 否 | 仅该子树 |
+
+### 内置的 5 套预设
+
+`SR_THEME_PRESETS` 从包入口直接导出，可以直接拿来渲染选择器，不用手抄色值：
+
+| 代号 | 名称 | 主色 | 定位 |
+| --- | --- | --- | --- |
+| `sunset` | 落日橙（默认） | `#FF7A45` | 暖而不刺 |
+| `dusk` | 霞紫 | `#7A64B5` | 沉静，适合工具型 |
+| `ember` | 余烬红 | `#F5456B` | 张扬，强调行动 |
+| `night` | 暮蓝 | `#2578F5` | 克制，偏企业风格 |
+| `jade` | 翡翠绿 | `#10B981` | 清新，偏内容型 |
+
+```ts
+import { SR_THEME_PRESETS } from '@sunset-reverie/ui'
+
+// [{ key: 'sunset', label: '落日橙', primary: '#FF7A45', mood: '...' }, ...]
+```
+
+### 用户自选颜色（带取色器）
+
+配一个原生取色器就能让用户现场换色：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { SrButton, useSrTheme } from '@sunset-reverie/ui'
+
+const theme = useSrTheme()
+const color = ref('#22aa66')
+
+/**
+ * 应用自定义主色
+ * @param value 任意合法 CSS 颜色，不限于十六进制
+ */
+function apply(value: string): void {
+  theme.setPrimaryColor(value)
+}
+</script>
+
+<template>
+  <input v-model="color" type="color" @input="apply(color)" />
+  <SrButton size="sm" @click="theme.resetPrimaryColor()">恢复默认</SrButton>
+</template>
+```
+
+几点行为要知道：
+
+- **与预设互斥**：调用后 `preset` 变成空字符串，`data-sr-primary` 属性被移除，避免两套规则互相覆盖；
+- **会持久化**：写进 `localStorage` 的 `sr-primary`，刷新后仍是用户选的颜色，`resetPrimaryColor()` 才会清掉；
+- **首帧不闪**：内联主题脚本会先读 `sr-primary` 并把主色写进行内变量（派生色用 `color-mix()` 计算），所以不会先闪一下默认橙再变过来。不支持 `color-mix` 的旧浏览器只应用主色本身，hover / active 暂用默认值；
+- 输入非十六进制（`rgb()`、`oklch()`、带透明度的颜色）同样可用，派生逻辑按 HSL 换算。
+
+### 只作用于某一块（多品牌 / 白标）
+
+`setPrimaryColor` 的第二个参数是作用域元素，适合同一页面里不同租户、不同品牌卡片各用各的主色：
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useSrTheme } from '@sunset-reverie/ui'
+
+const theme = useSrTheme()
+const tenantRef = ref<HTMLElement | null>(null)
+
+/**
+ * 只给某个容器换主色
+ * @param color 该租户的品牌色
+ */
+function applyTenantColor(color: string): void {
+  if (tenantRef.value) theme.setPrimaryColor(color, tenantRef.value)
+}
+</script>
+
+<template>
+  <div ref="tenantRef" class="tenant-panel">
+    <!-- 这块区域里的按钮、图表、选中态都会跟着变 -->
+  </div>
+</template>
+```
+
+- 它写的是该元素的**行内变量**，只影响子树，外层与全局都不动；
+- 不进入 `primary` 状态、不持久化，元素卸载即消失，不需要手动清理；
+- 行内变量优先级高于 `[data-sr-primary]` 规则，所以「全局用预设 + 局部用品牌色」可以共存；
+- 预设只能全局切（`setPreset` 写的是 `<html>` 上的属性），局部场景只能用 `setPrimaryColor`。
+
+### 为什么不能只改一个变量
+
+`setPrimaryColor` 内部会派生出 7 个变量，纯 CSS 固定品牌色时也要一起写：
+
+| 变量 | 用途 |
+| --- | --- |
+| `--sr-color-primary` | 主色本身：按钮底、选中态、图表默认色 |
+| `--sr-color-primary-hover` | 悬停态（比主色亮一档） |
+| `--sr-color-primary-active` | 按下态（比主色暗一档） |
+| `--sr-color-primary-text` | 主色文字（保证在浅底上可读） |
+| `--sr-color-primary-alpha-25` / `-12` / `-08` | 三档透明主色：选中底、hover 底、极淡高亮 |
+
+只改第一个，会出现「按钮按下去没反馈」「选中行底色还是旧色」「图表色与新品牌色不一致」。这条也写在下面的[常见坑](#常见坑)里。
+
 ## 首帧不闪白
 
 暗色用户打开页面时若等 JS 挂载再写 `data-sr-theme`，会先看到一帧亮色。库提供 `srThemeInitScript()`，把偏好读取提前到**所有 CSS 之前的内联脚本**：
