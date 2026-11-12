@@ -31,6 +31,8 @@
 
   &__marker {
     display: inline-flex;
+    // 圆点不能被 flex 压缩：head 参与剩余空间分配后，没有这条会被挤成椭圆
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
     width: 22px;
@@ -172,7 +174,9 @@
     // 否则 head 按内容宽度收缩，tail 的 flex: 1 1 auto 无处可伸，宽度塌成 0
     flex: 1 1 auto;
     width: auto;
-    min-width: 0;
+    // 保底：圆点 22 + 左右 margin 16 + 至少 18 的连线。
+    // 只写 min-width: 0 挡不住长描述——body 会把 head 挤到只剩圆点
+    min-width: 56px;
   }
 
   &--horizontal.sr-steps--label-horizontal &__tail {
@@ -180,8 +184,9 @@
   }
 
   &--horizontal.sr-steps--label-horizontal &__body {
-    // 内容按自身宽度，不与连接线抢空间
-    flex: 0 0 auto;
+    // 允许收缩：描述过长时自己换行，而不是把连接线挤成 0
+    flex: 0 1 auto;
+    min-width: 0;
     padding-top: 1px;
     padding-left: 8px;
   }

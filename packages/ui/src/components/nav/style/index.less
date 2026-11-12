@@ -254,6 +254,13 @@
     background: var(--sr-color-primary);
   }
 
+  // 收起态条目只有 36px 宽，展开态的 6px/12px 是按 212px 条目定的，
+  // 套过来会飘到图标上方中部；收紧到图标右上角
+  &.is-collapsed &__dot {
+    top: 6px;
+    right: 6px;
+  }
+
   // ---------- 底部固定区 ----------
   &__footer {
     display: flex;

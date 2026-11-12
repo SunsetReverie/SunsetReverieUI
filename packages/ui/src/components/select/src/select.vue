@@ -393,7 +393,9 @@ const panelStyle = computed(() => ({
   left: `${position.value.left}px`,
   width: `${position.value.width}px`,
   maxHeight: `${props.maxHeight + (props.filterable ? 44 : 0)}px`,
-  '--sr-select-z': String((config.value.zIndex || 1000) + 1003),
+  // 面板必须盖住所在弹窗（弹窗上限 3900），所以直接抬到 popover 档 4000；
+  // 宿主把 zIndex 配得更高时跟随配置
+  '--sr-select-z': String(Math.max(4000, (config.value.zIndex || 1000) + 1003)),
 }))
 </script>
 

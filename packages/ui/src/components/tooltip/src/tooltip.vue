@@ -153,7 +153,8 @@ const floatingStyle = computed(() => ({
   top: `${position.value.top}px`,
   left: `${position.value.left}px`,
   maxWidth: `${props.maxWidth}px`,
-  '--sr-tooltip-z': String((config.value.zIndex || 1000) + 1002),
+  // 与下拉同理：气泡要能浮在弹窗/抽屉之上
+  '--sr-tooltip-z': String(Math.max(4000, (config.value.zIndex || 1000) + 1002)),
   // 内联变量优先级高于样式表里的 preset，因此能直接覆盖底色
   ...(props.backgroundColor ? { '--sr-tooltip-bg': props.backgroundColor } : {}),
 }))
