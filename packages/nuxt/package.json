@@ -1,6 +1,7 @@
 {
   "name": "@sunset-reverie/nuxt",
   "version": "1.0.0-beta.4",
+  "license": "MIT",
   "description": "夕梦 UI 的 Nuxt Module",
   "type": "module",
   "files": [

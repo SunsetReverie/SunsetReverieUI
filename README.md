@@ -6,10 +6,11 @@
 
 [![Vue](https://img.shields.io/badge/Vue-3.4%2B-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxtdotjs&logoColor=white)](https://nuxt.com/)
-[![Version](https://img.shields.io/badge/version-1.0.0--beta.2-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0--beta.4-blue)](CHANGELOG.md)
 [![Components](https://img.shields.io/badge/组件-71-4F7CFF)](docs/components/index.md)
-[![Bundle](https://img.shields.io/badge/全量-311KB%20gzip-informational)](scripts/check-size.mjs)
-[![Tests](https://img.shields.io/badge/tests-1271%20passing-brightgreen)](packages/ui/src)
+[![Bundle](https://img.shields.io/badge/全量-312KB%20gzip-informational)](scripts/check-size.mjs)
+[![Tests](https://img.shields.io/badge/tests-1280%20passing-brightgreen)](packages/ui/src)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![Docs](https://img.shields.io/badge/文档-在线站点-3e3edc)](https://sunsetreverie.github.io/SunsetReverieUI/)
 
 三层 Token · 明暗 × 玻璃/扁平 × 品牌色 · SSR 首帧不闪白 · 图表与地图不装第三方引擎
