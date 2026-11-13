@@ -65,6 +65,13 @@
     }
   }
 
+  // 屏蔽 Edge / IE 在 password 输入框里注入的原生「眼睛」和「清除」
+  // 只在组件自己提供了显隐按钮时才禁，否则保留浏览器原生能力
+  &.is-password-toggle &__inner::-ms-reveal,
+  &.is-password-toggle &__inner::-ms-clear {
+    display: none;
+  }
+
   &__inner--textarea {
     display: block;
     height: auto;

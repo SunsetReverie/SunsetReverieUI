@@ -10,7 +10,7 @@
  * 同时这也满足 icons 包的 sideEffects: false —— 注册不是模块顶层副作用。
  */
 
-import { addCollection } from '@iconify/vue'
+import { addCollection, iconExists } from '@iconify/vue'
 
 import { SR_OFFLINE_COLLECTIONS } from '@sunset-reverie/icons/offline'
 
@@ -65,4 +65,54 @@ export function srRegisterIcons(collections: Record<string, unknown> | unknown[]
     // 与 srEnsureOfflineIcons 同样的理由：不传第二个参数，让集合数据自带的 prefix 生效
     addCollection(item as Parameters<typeof addCollection>[0])
   }
+}
+
+/**
+ * 取内置图标的完整名字列表
+ *
+ * `SrIcon` 只内联了 86 个常用图标；写了个不在其中的名字时，
+ * `@iconify/vue` 会**静默去线上 API 拉取**，内网环境表现为空白。
+ * 用这个函数可以在开发期核对，或渲染出自己的「可选图标」面板。
+ *
+ * ```ts
+ * import { srBuiltinIconNames } from '@sunset-reverie/ui'
+ *
+ * srBuiltinIconNames()   // ['lucide:check', 'lucide:circle-x', ...]
+ * ```
+ * @returns 形如 `lucide:check` 的名字数组，已排序
+ */
+export function srBuiltinIconNames(): string[] {
+  const names: string[] = []
+
+  for (const [, data] of Object.entries(SR_OFFLINE_COLLECTIONS)) {
+    if (!data || typeof data !== 'object') continue
+
+    const collection = data as { prefix?: string; icons?: Record<string, unknown> }
+    if (!collection.prefix || !collection.icons) continue
+
+    for (const name of Object.keys(collection.icons)) {
+      names.push(`${collection.prefix}:${name}`)
+    }
+  }
+
+  return names.sort()
+}
+
+/**
+ * 图标是否已在本地可用
+ *
+ * 返回 `false` 说明这个名字没被内联、也没通过 `srRegisterIcons` 注册，
+ * 渲染时 `@iconify/vue` 会尝试走网络。开发期用它做断言，比上线后才发现更划算。
+ *
+ * ```ts
+ * if (import.meta.env.DEV && !srHasIcon('lucide:zap')) {
+ *   console.warn('lucide:zap 未注册，会走在线 API')
+ * }
+ * ```
+ * @param name 图标名，如 `lucide:check`
+ * @returns 是否本地可用
+ */
+export function srHasIcon(name: string): boolean {
+  srEnsureOfflineIcons()
+  return iconExists(name)
 }

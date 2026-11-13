@@ -1,7 +1,8 @@
 /**
  * SunsetReverie-UI 核心包入口
  *
- * 导出 Token、组合式函数、命令式 API 与全部 69 个组件。
+ * 导出 Token、组合式函数、命令式 API 与全部组件。
+ * 数量以 packages/ui/src/components 下的目录为准，不在此处写死（避免与文档口径漂移）。
  * 组件清单由 scripts/build-styles.mjs 与 resolver 同步校验，新增组件别漏了这里。
  */
 

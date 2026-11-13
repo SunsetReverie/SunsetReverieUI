@@ -23,6 +23,26 @@ export const SR_PRESET_STORAGE_KEY = 'sr-primary-preset'
 /** 系统暗色媒体查询 */
 const DARK_QUERY = '(prefers-color-scheme: dark)'
 
+/**
+ * `init()` 的初始化选项
+ *
+ * 只影响「localStorage 里还没有用户偏好」的情况。用户手动切过主题之后，
+ * 存储里的值优先，这里的默认值不再生效。
+ */
+export interface SrThemeInitOptions {
+  /** 默认明暗模式 @default 'auto' */
+  defaultTheme?: SrThemeMode
+  /**
+   * 默认质感 @default 'flat'
+   *
+   * 想默认毛玻璃就在这里传 `'glass'`，同时把 `srThemeInitScript()` 的
+   * `defaultStyle` 也设成一样的值，否则首帧仍是 flat → glass 闪一下。
+   */
+  defaultStyle?: SrStyleMode
+  /** 默认预设主题色代号 */
+  defaultPreset?: string
+}
+
 /** 用户意图：light / dark / auto */
 const mode = ref<SrThemeMode>('auto')
 /** 质感风格 */
@@ -180,19 +200,29 @@ export function useSrTheme() {
    * 幂等，重复调用不会重复绑定
    * @returns {void}
    */
-  function init(): void {
+  function init(options: SrThemeInitOptions = {}): void {
     if (!isClient() || initialized) return
     initialized = true
 
     const preference = readPreference()
+
+    // 优先级：localStorage 里用户选过的 > 调用方给的默认值 > 模块初始值
     if (preference?.theme === 'light' || preference?.theme === 'dark' || preference?.theme === 'auto') {
       mode.value = preference.theme
+    } else if (options.defaultTheme) {
+      mode.value = options.defaultTheme
     }
+
     if (preference?.style === 'glass' || preference?.style === 'flat') {
       style.value = preference.style
+    } else if (options.defaultStyle) {
+      style.value = options.defaultStyle
     }
+
     if (preference?.preset) {
       preset.value = preference.preset
+    } else if (options.defaultPreset) {
+      preset.value = options.defaultPreset
     } else if (preference?.primary) {
       primary.value = preference.primary
     }

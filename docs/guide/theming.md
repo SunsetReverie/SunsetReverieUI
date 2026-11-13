@@ -27,6 +27,19 @@ L1/L2 的生成物是 `packages/ui/src/styles/base/primitives.generated.css` 与
 
 > 完整的变量与色值以 `internal/tokens/src/tokens.ts`、`semantic.ts` 为准；改完跑 `pnpm build:tokens` 重新生成三份产物。
 
+## 术语
+
+三组容易混的名字，先对齐一下：
+
+| 概念 | 字段 / 方法 | 取值 |
+| --- | --- | --- |
+| 明暗模式 | `mode` / `setTheme()` | `light` \| `dark` \| `auto` |
+| 实际生效的明暗 | `resolved`（只读） | `light` \| `dark` |
+| 质感 | `style` / `setStyle()` | `glass` \| `flat` |
+| 主色 | `preset` / `setPreset()` / `setPrimaryColor()` | 预设代号或任意色值 |
+
+注意「明暗模式」的字段叫 `mode`，但切换方法是 `setTheme()` —— 没有 `setMode()`，也没有 `theme` 这个字段。
+
 ## 运行时切换
 
 ```ts
@@ -37,6 +50,7 @@ const {
   resolved,    // 实际生效：跟随系统时会与 mode 不同
   style,       // 'glass' | 'flat'
   preset,      // 当前预设主题色代号
+  init,        // 从 localStorage 恢复偏好，应用启动时调一次
   setTheme,
   setStyle,
   setPreset,
@@ -44,14 +58,45 @@ const {
   resetPrimaryColor,
 } = useSrTheme()
 
-setTheme('dark')
-setStyle('glass')
-setPreset('dusk')
+init()                      // 客户端启动时调用一次
+setTheme('dark')            // 明暗模式
+setStyle('glass')           // 质感
+setPreset('dusk')           // 预设主色
 setPrimaryColor('#22aa66')  // 任意色值，自动派生 hover / active / 文字色
 resetPrimaryColor()         // 回到预设
 ```
 
+### init() 与默认值
+
+`init()` 从 `localStorage` 读回用户上次的选择，**没有记录时保持模块默认值**（`auto` + `flat`）。想让项目默认就是毛玻璃，通过参数传：
+
+```ts
+init({ defaultTheme: 'auto', defaultStyle: 'glass' })
+```
+
+优先级是「存储里的值 > `init` 的默认值 > 模块默认值」。用户手动切过之后，参数里的默认值就不再生效了。
+
+> **`init` 的默认值要和首帧脚本对齐**，否则会闪一下：`srThemeInitScript({ defaultStyle: 'glass' })` 把首帧画成 glass，而 `init()` 不传参数就会退回 `flat`，中间那一帧仍会跳变。两处写同一个值即可。
+
 偏好会写进 `localStorage`（键带 `sr-` 前缀）；隐私模式下写入失败只影响持久化，当前会话照常工作。
+
+四个键都有导出的常量，不要手写字符串：
+
+| 常量 | 实际键名 | 存什么 | 无记录时 |
+| --- | --- | --- | --- |
+| `SR_THEME_STORAGE_KEY` | `sr-theme` | `light` \| `dark` \| `auto` | `auto` |
+| `SR_STYLE_STORAGE_KEY` | `sr-style` | `glass` \| `flat` | `flat` |
+| `SR_PRESET_STORAGE_KEY` | `sr-primary-preset` | 预设色代号 | 落日橙 |
+| `SR_PRIMARY_STORAGE_KEY` | `sr-primary` | 自定义主色色值 | 空（用预设） |
+
+```ts
+import {
+  SR_THEME_STORAGE_KEY,
+  SR_STYLE_STORAGE_KEY,
+  SR_PRESET_STORAGE_KEY,
+  SR_PRIMARY_STORAGE_KEY,
+} from '@sunset-reverie/ui'
+```
 
 预设色在 `SR_THEME_PRESETS` 里：落日橙（默认）、霞紫、暮蓝等，换预设等于换一组 `--sr-color-primary*` 派生值，不需要重写组件背景。
 

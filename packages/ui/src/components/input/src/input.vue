@@ -128,6 +128,8 @@ const rootClass = computed(() => [
     'is-textarea': isTextarea.value,
     // 高度自适应的文本域永远不需要滚动条，直接禁掉避免系统占位条常驻
     'is-autosize': props.autosize && isTextarea.value,
+    // 开启密码显隐时用：配合样式屏蔽 Edge 原生的「眼睛」
+    'is-password-toggle': showPasswordToggle.value,
     'has-prefix': Boolean(slots.prefix),
     'has-suffix': Boolean(slots.suffix),
     'has-count': props.showCount,

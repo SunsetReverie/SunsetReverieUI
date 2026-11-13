@@ -46,7 +46,7 @@ hero:
 <div class="sr-feature">
 <span class="doc-icon" style="--icon: url(/icons/circle-check.svg)"></span>
 <h3>水合可验证</h3>
-<p>63 个组件进 SSR 冒烟页，另 6 个命令式 / 无 DOM 组件由白名单跳过；Nuxt 水合 e2e 断言告警数为 0，漏测会被 lint:smoke 拦下。</p>
+<p>65 个组件进 SSR 冒烟页，另 6 个命令式 / 无 DOM 组件由白名单跳过；Nuxt 水合 e2e 断言告警数为 0，漏测会被 lint:smoke 拦下。</p>
 </div>
 
 <div class="sr-feature">

@@ -1,12 +1,46 @@
 # 扩展图标
 
-核心库 `@sunset-reverie/ui` 已经内联了 **86 个常用图标**（离线子集），装完就能用，不需要额外依赖。但如果业务里要用到别的图标（Lucide 共 2100 个），装配套的图标包、在入口注册一次即可，**运行时不发网络请求**。
+核心库 `@sunset-reverie/ui` 已经内联了 **86 个常用图标**（离线子集），装完就能用，不需要额外依赖。要用别的图标（Lucide 共 2100 个），装配套的图标包、在入口注册一次即可，注册过之后**运行时不发网络请求**。
 
-| 场景 | 需要装图标包吗 |
-| --- | --- |
-| 只用核心库自带的 86 个（搜索、关闭、勾选、加载等） | 不需要 |
-| 要用任意 Lucide 图标（如 `lucide:zap`、`lucide:database`） | 需要，见下文 |
-| 想用其它图标集（Tabler、MDI…） | 需要，但当前包只预置了 Lucide 全量 |
+> **不装图标包、又用了 86 个之外的名字会怎样？**
+>
+> `SrIcon` 底层是 `@iconify/vue` 的 `<Icon>`，本地找不到时会**静默去 `api.iconify.design` 拉取**。
+> 表现是：能联网时图标正常显示（慢一拍），内网环境渲染为空白，且**控制台不报错**。
+> 用 `srHasIcon()` 可以在开发期把它变成显式断言，见下面的「自查」。
+
+| 场景 | 需要装图标包吗 | 运行时会发网络请求吗 |
+| --- | --- | --- |
+| 只用核心库自带的 86 个（搜索、关闭、勾选、加载等） | 不需要 | 不会 |
+| 用了 86 个之外的，且注册了图标包 | 需要，见下文 | 不会 |
+| 用了 86 个之外的，**没**注册 | — | **会**，且内网下静默失败 |
+| 想用其它图标集（Tabler、MDI…） | 需要，但当前包只预置了 Lucide 全量 | 不会（注册过） |
+
+## 内置清单与自查
+
+两个工具函数，用来在开发期把「图标会走网络」这件事提前暴露：
+
+```ts
+import { srBuiltinIconNames, srHasIcon } from '@sunset-reverie/ui'
+
+// 内置的 86 个名字（形如 'lucide:check'），可用于做图标选择器
+srBuiltinIconNames()
+
+// 某个名字是否本地可用
+srHasIcon('lucide:check')   // true
+srHasIcon('lucide:zap')     // false —— 没内联也没注册，会走在线 API
+```
+
+推荐在入口加一句开发期断言：
+
+```ts
+if (import.meta.env.DEV) {
+  const used = ['lucide:check', 'lucide:zap']   // 或从你自己的图标清单一并传入
+  const missing = used.filter((name) => !srHasIcon(name))
+  if (missing.length) {
+    console.warn('[icons] 以下图标未本地注册，会走在线 API：', missing)
+  }
+}
+```
 
 ## 一、下载与安装图标包
 

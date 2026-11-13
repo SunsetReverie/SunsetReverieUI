@@ -8,7 +8,7 @@ export {
   SR_THEME_INIT_SNIPPET,
   type SrThemeScriptOptions,
 } from './theme-script'
-export { srEnsureOfflineIcons, srRegisterIcons } from './icon-registry'
+export { srBuiltinIconNames, srEnsureOfflineIcons, srHasIcon, srRegisterIcons } from './icon-registry'
 export { srGetFocusable, srFocusFirst, srTrapTab } from './focus-trap'
 export { srLockScroll, srUnlockScroll, srResetScrollLock } from './scroll-lock'
 export {

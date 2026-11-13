@@ -127,4 +127,40 @@ describe('useSrTheme', () => {
     expect(theme.resolved.value).toBe('dark')
     expect(theme.style.value).toBe('glass')
   })
+
+  it('init 接受默认风格（无持久化时生效）', async () => {
+    const { useSrTheme } = await loadModule()
+    const theme = useSrTheme()
+
+    theme.init({ defaultStyle: 'glass', defaultTheme: 'dark' })
+    await nextTick()
+
+    // 之前在别处只能 init() 后再 setStyle()，会闪一帧
+    expect(theme.style.value).toBe('glass')
+    expect(theme.resolved.value).toBe('dark')
+  })
+
+  it('持久化偏好优先于 init 的默认值', async () => {
+    localStorage.setItem('sr-style', 'flat')
+    localStorage.setItem('sr-theme', 'light')
+
+    const { useSrTheme } = await loadModule()
+    const theme = useSrTheme()
+    theme.init({ defaultStyle: 'glass', defaultTheme: 'dark' })
+    await nextTick()
+
+    // 用户选过的不能被默认值盖掉
+    expect(theme.style.value).toBe('flat')
+    expect(theme.resolved.value).toBe('light')
+  })
+
+  it('init 的 defaultPreset 在无持久化时生效', async () => {
+    const { useSrTheme } = await loadModule()
+    const theme = useSrTheme()
+
+    theme.init({ defaultPreset: 'dusk' })
+    await nextTick()
+
+    expect(theme.preset.value).toBe('dusk')
+  })
 })

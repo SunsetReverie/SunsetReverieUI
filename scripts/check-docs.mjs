@@ -33,8 +33,8 @@ const OVERVIEW = 'docs/components/index.md'
 
 /** 正文里不该再出现的旧事实 */
 const STALE_PATTERNS = [
-  { pattern: /34 个组件|全部 34 个|共 34 个/, hint: '组件数已是 69' },
-  { pattern: /30 个组件的 SSR|30 个组件冒烟/, hint: '冒烟覆盖 63 / 69' },
+  { pattern: /34 个组件|全部 34 个|共 34 个/, hint: '组件数量以 components 目录为准' },
+  { pattern: /30 个组件的 SSR|30 个组件冒烟/, hint: '冒烟覆盖数以 lint:smoke 输出为准' },
   { pattern: /大部分 P2|尚未实现/, hint: 'P0–P2 已全量落地，组件均已实现' },
 ]
 
@@ -310,6 +310,24 @@ fail(
   '死链（指南）',
   [...guideLinks].filter((name) => !existsSync(join(GUIDES, `${name}.md`))),
 )
+
+// ---------- 3.9 首页的组件数量口径 ----------
+// 首页那个「N 个组件」是纯手写的数字，最容易随新增组件漂移。
+// 这里直接和目录数对比，避免像 71 / 69 那样两处不一致。
+if (existsSync(HOME)) {
+  const homeText = readFileSync(HOME, 'utf-8')
+  // 排除「N 个组件进 SSR 冒烟页」这类描述覆盖数的句子，只认「N 个组件」独立成句
+  const declared = [...homeText.matchAll(/(\d+)\s*个组件(?!\s*进)/g)].map((m) => Number(m[1]))
+
+  const mismatched = declared.filter((count) => count !== componentNames.length)
+  if (mismatched.length) {
+    problems.push({
+      name: 'index.md',
+      kind: '组件数量与实际不符',
+      items: [`写的是 ${mismatched.join(', ')}，实际 ${componentNames.length} 个`],
+    })
+  }
+}
 
 // ---------- 4. 站内链接与锚点 ----------
 const docFiles = [
