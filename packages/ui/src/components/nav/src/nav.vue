@@ -118,13 +118,21 @@ function hasBadge(item: SrNavItem): boolean {
 function pick(item: SrNavItem): void {
   if (props.disabled || item.disabled || !item.key) return
 
-  // 有子项时先管展开，不改变选中
+  // 有子项时先管展开
   if (item.children?.length) {
     const next = new Set(openKeys.value)
     if (next.has(item.key)) next.delete(item.key)
     else next.add(item.key)
     openKeys.value = next
     emit('update:openedKeys', [...next])
+
+    // 打开 selectableParent 时，父项自己也能成为选中项
+    // （默认关闭：多数后台的选中项是叶子节点）
+    if (props.selectableParent && item.key !== props.modelValue) {
+      emit('update:modelValue', item.key)
+      emit('select', item.key, item)
+    }
+
     return
   }
 

@@ -76,6 +76,17 @@ export const navProps = {
     type: Boolean,
     default: false,
   },
+  /**
+   * 允许「带子菜单的父项」被选中 @default false
+   *
+   * 默认情况下点父项只切换展开、不改变选中 —— 因为多数后台的选中项是叶子节点。
+   * 但有些设计里父项本身就代表一个页面（如「文章管理」），此时打开本选项，
+   * 点父项会同时**展开**它并把 `modelValue` 设成父项自己的 key。
+   */
+  selectableParent: {
+    type: Boolean,
+    default: false,
+  },
   /** 整体收起，只显示图标（需有图标才有意义） */
   collapsed: {
     type: Boolean,

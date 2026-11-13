@@ -111,6 +111,68 @@ describe('SrNav', () => {
     wrapper.unmount()
   })
 
+  it('selectableParent 开启时父项也能被选中', async () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        modelValue: 'home',
+        selectableParent: true,
+        items: [
+          { key: 'home', label: '首页' },
+          { key: 'res', label: '资源', children: [{ key: 'file', label: '文件' }] },
+        ],
+      },
+    })
+
+    await wrapper.findAll('.sr-nav__item')[1]?.trigger('click')
+    await nextTick()
+
+    // 既展开，又把自己设成选中
+    expect(wrapper.find('.sr-nav__children').exists()).toBe(true)
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['res'])
+    expect(wrapper.emitted('select')?.[0]?.[0]).toBe('res')
+    wrapper.unmount()
+  })
+
+  it('selectableParent 下重复点已选中的父项只切换展开', async () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        modelValue: 'res',
+        selectableParent: true,
+        items: [{ key: 'res', label: '资源', children: [{ key: 'file', label: '文件' }] }],
+      },
+    })
+
+    await wrapper.find('.sr-nav__item').trigger('click')
+    await nextTick()
+
+    // 值没变，不该重复派发
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.find('.sr-nav__children').exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('父项与普通项的 DOM 层级一致（同为 __item）', () => {
+    const wrapper = mount(SrNav, {
+      props: {
+        mode: 'vertical',
+        modelValue: 'home',
+        items: [
+          { key: 'home', label: '首页' },
+          { key: 'res', label: '资源', icon: 'lucide:box', children: [{ key: 'file', label: '文件' }] },
+        ],
+      },
+    })
+
+    const all = wrapper.findAll('.sr-nav__item')
+    // 父项只是多了 is-parent 类，标签、类名前缀与普通项相同
+    expect(all[0]?.element.tagName).toBe(all[1]?.element.tagName)
+    expect(all[1]?.classes()).toContain('is-parent')
+    expect(wrapper.findAll('.sr-nav__item--child')).toHaveLength(0)
+    wrapper.unmount()
+  })
+
   it('收起态只留图标，徽标退化成圆点', () => {
     const wrapper = mount(SrNav, {
       props: { items, modelValue: 'home', collapsed: true },

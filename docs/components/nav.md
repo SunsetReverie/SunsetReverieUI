@@ -135,6 +135,31 @@ const items: SrNavItem[] = [
 ]
 ```
 
+### 父项与普通项同级
+
+父项和普通项共用同一个 `.sr-nav__item`，**高度、字号、图标尺寸完全相同**，唯一区别是多一个右侧箭头：
+
+| | 高度 | 字号 | 图标 |
+| --- | --- | --- | --- |
+| 普通项 | 36px | 13px | 16px |
+| 可折叠父项 | 36px | 13px | 16px |
+
+整个「可折叠」这件事只体现在箭头上（`chevron-right`，展开时旋转 90° 变成向下）。子项才缩一级（32px / 12px），用来表达层级。
+
+### 父项也能被选中
+
+默认行为是**父项只负责展开，选中项只能是叶子节点**——因为多数后台的选中态代表"当前页面"，而父项通常不是页面。
+
+但有些设计里父项本身就代表一个页面（比如「文章管理」有自己的概览页），此时打开 `selectableParent`：
+
+```vue
+<SrNav v-model="active" :items="items" mode="vertical" selectable-parent />
+```
+
+点父项会**同时**做两件事：展开子菜单、把 `modelValue` 设成父项自己的 key。这样父项能吃到 `is-active` 的激活样式，和普通项长得一样。
+
+重复点已选中的父项只切换展开，不会重复派发 `update:modelValue`。
+
 ## 整体收起
 
 `collapsed` 为真时只显示图标，宽度收窄到 `collapsedWidth`。此时：
@@ -188,6 +213,7 @@ const items: SrNavItem[] = [
 | `mode` | `'horizontal' \| 'vertical'` | `'horizontal'` | 排列方向 |
 | `activeStyle` | `'pill' \| 'bar'` | `'pill'` | 激活态视觉语言 |
 | `bare` | `boolean` | `false` | 去壳：去掉圆角、边框、阴影与背景，用于通栏侧边栏 |
+| `selectableParent` | `boolean` | `false` | 允许带子菜单的父项被选中 |
 | `collapsed` | `boolean` | `false` | 整体收起，只显示图标 |
 | `width` | `string \| number` | `220` | 展开宽度，数字按 px |
 | `collapsedWidth` | `string \| number` | `56` | 收起宽度 |
@@ -230,6 +256,8 @@ const items: SrNavItem[] = [
 | `footer` | 底部固定区，自动推到底部 |
 
 ## 注意事项
+
+- **默认父项不可选中**。`modelValue` 只接受叶子节点的 key；要让父项也能高亮，开 `selectableParent`。
 
 - **SrNav 是受控组件，必须绑 `v-model`；它是「反映当前路由」的展示型组件，不自己记状态。**
 
