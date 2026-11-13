@@ -19,7 +19,7 @@
 
 ```bash
 # 装核心库：走 Release 附件的 tarball，不是 npm 包
-npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.0.0-beta.4/sunset-reverie-ui-1.0.0-beta.4.tgz
+npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.0.0-beta.5/sunset-reverie-ui-1.0.0-beta.5.tgz
 ```
 
 ```vue
@@ -88,7 +88,7 @@ const keyword = ref('')
 
 ```bash
 # 核心库（把版本号换成需要的版本）
-npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.0.0-beta.4/sunset-reverie-ui-1.0.0-beta.4.tgz
+npm i https://github.com/SunsetReverie/SunsetReverieUI/releases/download/v1.0.0-beta.5/sunset-reverie-ui-1.0.0-beta.5.tgz
 
 # 想要模板里直接写标签（自动导入）时再加这两个
 npm i -D @sunset-reverie/resolver unplugin-vue-components
