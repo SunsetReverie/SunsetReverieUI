@@ -28,6 +28,14 @@ const resolvedSize = computed<SrSize>(() => props.size ?? config.value.size)
 /** 展开中的父项 key */
 const openKeys = ref<Set<string>>(new Set())
 
+/**
+ * 折叠态浮层的视口坐标，按 item.key 记录
+ *
+ * 折叠态菜单需要能滚动，而滚动容器的 overflow 会把 absolute 浮层裁掉，
+ * 所以浮层改用 position: fixed，坐标在悬停时从图标的位置读出来。
+ */
+const flyoutPos = ref<Record<string, { top: number; left: number }>>({})
+
 /** 用户收起的分组名（含 `collapsed: true` 的默认值） */
 const closedGroups = ref<Set<string>>(new Set())
 
@@ -115,6 +123,53 @@ function hasBadge(item: SrNavItem): boolean {
  * 点击导航项
  * @param item 导航项
  */
+/**
+ * 折叠态悬停父项时记录图标位置，供 fixed 定位的浮层使用
+ * @param item 导航项
+ * @param event 鼠标进入事件
+ */
+function onEntryEnter(item: SrNavItem, event: MouseEvent): void {
+  if (!props.collapsed || !item.children?.length || !item.key) return
+
+  const el = event.currentTarget as HTMLElement | null
+  if (!el) return
+
+  const navEl = el.closest('.sr-nav') as HTMLElement | null
+  const rect = el.getBoundingClientRect()
+  const navRect = navEl?.getBoundingClientRect()
+
+  /**
+   * .sr-nav 的 backdrop-filter 会让它成为 fixed 元素的包含块
+   * （bare 模式没有这层滤镜，包含块退回视口）。
+   * 两种情况下坐标的参照系不同，这里按实际生效的样式切换。
+   */
+  const navStyle = navEl ? getComputedStyle(navEl) : null
+  const boxedByNav = Boolean(
+    navStyle &&
+    (navStyle.backdropFilter !== 'none' || navStyle.filter !== 'none' || navStyle.transform !== 'none'),
+  )
+
+  // left 贴侧栏右边缘：entry 是 fit-content，折叠态下只比图标宽一点
+  const left = boxedByNav ? (navRect?.width ?? 0) + 8 : (navRect?.right ?? rect.right) + 8
+  const top = boxedByNav ? rect.top - (navRect?.top ?? 0) : rect.top
+
+  flyoutPos.value = {
+    ...flyoutPos.value,
+    [item.key]: { top, left },
+  }
+}
+
+/**
+ * 浮层的内联定位
+ * @param item 导航项
+ * @returns 首次悬停前返回 undefined，交给 CSS 的默认值
+ */
+function flyoutStyle(item: SrNavItem): Record<string, string> | undefined {
+  const pos = item.key ? flyoutPos.value[item.key] : undefined
+  if (!pos) return undefined
+  return { top: `${pos.top}px`, left: `${pos.left}px` }
+}
+
 function pick(item: SrNavItem): void {
   if (props.disabled || item.disabled || !item.key) return
 
@@ -193,7 +248,7 @@ function pick(item: SrNavItem): void {
           />
         </button>
 
-        <div v-if="!isGroupHidden(item)" class="sr-nav__entry">
+        <div v-if="!isGroupHidden(item)" class="sr-nav__entry" @mouseenter="onEntryEnter(item, $event)">
           <button
             class="sr-nav__item"
             :class="{
@@ -248,7 +303,7 @@ function pick(item: SrNavItem): void {
             收起态浮层：常驻 DOM，显示与否完全交给 CSS 的 :hover。
             用 JS 的 enter/leave 控制会在穿越图标与浮层的间隙时误关，纯 CSS 没有时序问题。
           -->
-          <div v-if="collapsed && item.children?.length" class="sr-nav__flyout">
+          <div v-if="collapsed && item.children?.length" class="sr-nav__flyout" :style="flyoutStyle(item)">
             <span class="sr-nav__flyout-title">{{ item.label }}</span>
             <button
               v-for="child in item.children"

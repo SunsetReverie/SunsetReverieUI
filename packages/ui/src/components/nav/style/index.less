@@ -86,9 +86,11 @@
     align-items: stretch;
   }
 
-  // 浮层是绝对定位的，滚动容器不能把它裁掉
+  // 折叠态菜单仍需可滚动：项多时溢出会盖住底部的用户信息区。
+  // 浮层已改用 position: fixed（坐标由 JS 写入），不再依赖 overflow: visible。
   &.is-collapsed &__menu {
-    overflow: visible;
+    // 横向不留滚动，纵向用 auto：项多时可滚、不越界压住底部区
+    overflow: hidden auto;
   }
 
   &.is-disabled {
@@ -330,10 +332,11 @@
   // 用 visibility + 延迟而不是 display：鼠标穿过图标与浮层之间的一瞬间仍可交互，
   // 否则那个瞬间浮层消失、鼠标又落回父项，反复闪断就点不到子项。
   &__flyout {
-    position: absolute;
+    // fixed 而非 absolute：折叠态菜单是滚动容器，absolute 会被 overflow 裁掉。
+    // top / left 由 useNav 的 onEntryEnter 在悬停时按图标实际位置写入
+    position: fixed;
     top: 0;
-    // 完整落在侧栏之外：entry 的 100% 是内容宽，还要加上侧栏自身的右侧内边距
-    left: calc(100% + var(--sr-nav-padding) + 8px);
+    left: 0;
     z-index: 20;
     flex-direction: column;
     gap: 2px;
