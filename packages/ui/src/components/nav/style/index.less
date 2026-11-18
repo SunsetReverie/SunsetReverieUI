@@ -275,6 +275,14 @@
     border-top: 1px solid var(--sr-color-border-subtle);
   }
 
+  // 折叠态：内容区只有 34px（56 宽 - 10*2 内边距 - 2 边框），
+  // footer 的 8px 水平内边距会把 30px 的头像挤出边界，看起来靠右。
+  // 去掉水平内边距并居中，头像才真正落在中线上
+  &.is-collapsed &__footer {
+    justify-content: center;
+    padding: 10px 0 2px;
+  }
+
   &__divider {
     flex: 0 0 auto;
     height: 1px;
