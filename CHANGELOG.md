@@ -14,6 +14,34 @@
 
 ---
 
+## [1.0.0-beta.6] - 2026-11-18
+
+中国地图补上真正能控制缩放的参数，下拉与折叠侧栏的几处几何问题一并修掉。无破坏性变更。
+
+### 新增
+
+- `SrChinaMap` 新增 `fit`：`'contain'`（默认，原行为）/ `'width'` / `'height'`。原先投影用 `Math.min` 做等比包含，**地图大小完全由 `height` 决定**，面板变宽只会让左右留白变多；`fit="width"` 改为按容器宽度撑满、高度由地图宽高比反推。实测容器宽 843px 时，地图实际占用从 424px 提升到 835px
+- `SrChinaMap` 的 `height` 支持 `'auto'`，与 `fit="width"` 配合实现根元素高度自适应，业务不必再在 `height` 与面板高度之间反复试数字
+- `SrChinaMap` 新增 `zoom`：在原有比例上做中心缩放，溢出部分由容器裁掉，适合「面板高度不变、地图想大一点」的场景
+- `SrChinaMap` 新增 `padding`：原先四周留白写死 12px，宽屏下无法压缩；现在支持 0（贴边）
+- `SrChinaMap` 新增 `labelMinArea` 与 `labelSize`：标签按面积降序放置、重叠即跳过，窄图里小省会互相压住，看起来像「名字显示不全」。`labelMinArea` 让低于阈值的省直接不画，比交给重叠检测随机丢弃更可预期；`labelSize` 不传时按画布高度相对 420 等比缩放并夹在 9–15
+
+### 修复
+
+- `SrSelect` 下拉选项之间没有间距，相邻两项同时高亮时两个背景连成一片：列表改为纵向 flex 并留 2px 缝
+- `SrSelect` 选项圆角原先用 `--sr-radius-sm`（仅 2px），高亮背景看着是直角矩形：改取 `--sr-radius-sm` 与 `--sr-radius-base` 的中点（flat 4px / glass 7px），既不像直角也不会太圆
+- `SrSelect` 的列表样式用了 `.sr-select .sr-select__list` 双类选择器，但下拉被 `Teleport` 到 `body` 下、祖先里没有 `.sr-select`，**这条规则从未命中**——包括它原本想防的宿主全局 `ul` 样式。改为 `.sr-select__panel .sr-select__list`
+- `SrNav` 折叠态菜单无法滚动：为了让绝对定位的浮层不被裁，`__menu` 的 `overflow` 被设成 `visible`，项多时溢出内容会**盖住底部的用户信息区**（头像与菜单图标重叠）。改为 `overflow: hidden auto`，浮层改用 `position: fixed` 并读取图标实际位置
+- `SrNav` 折叠态浮层定位：`.sr-nav` 的 `backdrop-filter` 会让它成为 `fixed` 元素的包含块（`bare` 模式没有该滤镜），两种参照系统一在悬停时处理，浮层与图标顶部对齐
+- `SrNav` 折叠态底部头像靠右：折叠后内容区仅 34px（56 宽 − 10×2 内边距 − 2 边框），`footer` 的 8px 水平内边距让 30px 的头像溢出右边界 4px。折叠态去掉水平内边距并居中，实测左右各 2px
+
+### 文档
+
+- 地图指南新增「缩放与留白」：`fit` 三种策略的对照、实测数据（contain 424px vs width 835px）、`zoom` 的裁切行为、标签密度的两种手段
+- 地图指南补上 `padding` / `labelMinArea` / `labelSize` / `height: 'auto'` 的 Props 说明
+
+---
+
 ## [1.0.0-beta.5] - 2026-11-13
 
 补齐导航的父项选中能力，修掉 Edge 下的密码框重影，并把主题与图标的几处边界写清楚。无破坏性变更。
