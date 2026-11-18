@@ -175,8 +175,14 @@
   }
 }
 
-// 双类选择器：防宿主页面的全局 ul 样式（VitePress 的 .vp-doc ul 特异性更高）
-.sr-select .sr-select__list {
+// 双类选择器：防宿主页面的全局 ul 样式（VitePress 的 .vp-doc ul 特异性更高）。
+// 注意父级必须是 __panel 而不是 .sr-select —— 下拉被 Teleport 到 body 下，
+// 祖先里根本没有 .sr-select，写成 .sr-select .sr-select__list 会永不命中。
+.sr-select__panel .sr-select__list {
+  display: flex;
+  flex-direction: column;
+  // 2px 缝：相邻两项同时高亮时，两个圆角背景才不会糊成一条
+  gap: 2px;
   flex: 1 1 auto;
   min-height: 0;
   margin: 0;
@@ -191,7 +197,9 @@
   align-items: center;
   gap: var(--sr-space-2);
   padding: 6px 8px;
-  border-radius: var(--sr-radius-sm);
+  // 与面板、触发框的圆角对齐：原先的 --sr-radius-sm 只有 2px，
+  // 高亮背景看起来是直角矩形
+  border-radius: var(--sr-radius-base);
   color: var(--sr-color-text);
   font-size: 14px;
   cursor: pointer;
