@@ -10,6 +10,7 @@ import {
   mercatorY,
   normalizeName,
   regionPath,
+  resolveProjectionBox,
   SOUTH_SEA_ADCODE,
   type ChinaMapGeo,
 } from '../src/china-map-utils'
@@ -61,6 +62,62 @@ describe('china-map-utils', () => {
     expect(x).toBeLessThanOrEqual(600)
     expect(y).toBeGreaterThanOrEqual(0)
     expect(y).toBeLessThanOrEqual(400)
+  })
+
+  it('resolveProjectionBox：contain 时宽高都装得下', () => {
+    const bounds = { minX: 0, maxX: 100, minY: 0, maxY: 100 }
+    const box = resolveProjectionBox(bounds, { width: 640, height: 420, padding: 12 })
+
+    expect(box.width).toBe(640)
+    expect(box.height).toBe(420)
+    // 高度是瓶颈，scale = (420 - 24) / 100
+    expect(box.scale).toBeCloseTo(3.96, 2)
+  })
+
+  it('resolveProjectionBox：fit=width 时高度按宽高比反推', () => {
+    // 宽高比 2:1 的包围盒
+    const bounds = { minX: 0, maxX: 200, minY: 0, maxY: 100 }
+    const box = resolveProjectionBox(bounds, {
+      width: 640,
+      height: 420,
+      padding: 0,
+      fit: 'width',
+    })
+
+    expect(box.scale).toBeCloseTo(640 / 200, 2)
+    // 高度不再听 height 的，而是 640 / 2
+    expect(box.height).toBeCloseTo(320, 1)
+  })
+
+  it('resolveProjectionBox：fit=height 时宽度按宽高比反推', () => {
+    const bounds = { minX: 0, maxX: 200, minY: 0, maxY: 100 }
+    const box = resolveProjectionBox(bounds, {
+      width: 640,
+      height: 400,
+      padding: 0,
+      fit: 'height',
+    })
+
+    expect(box.scale).toBeCloseTo(400 / 100, 2)
+    expect(box.width).toBeCloseTo(800, 1)
+  })
+
+  it('resolveProjectionBox：zoom 只在原比例上放大，不改画布尺寸', () => {
+    const bounds = { minX: 0, maxX: 100, minY: 0, maxY: 100 }
+    const base = resolveProjectionBox(bounds, { width: 640, height: 420, padding: 12 })
+    const zoomed = resolveProjectionBox(bounds, { width: 640, height: 420, padding: 12, zoom: 1.5 })
+
+    expect(zoomed.scale).toBeCloseTo(base.scale * 1.5, 4)
+    expect(zoomed.width).toBe(640)
+    expect(zoomed.height).toBe(420)
+  })
+
+  it('padding 参与可用空间：调大 padding 会缩小 scale', () => {
+    const bounds = { minX: 0, maxX: 100, minY: 0, maxY: 100 }
+    const small = resolveProjectionBox(bounds, { width: 640, height: 420, padding: 0 })
+    const large = resolveProjectionBox(bounds, { width: 640, height: 420, padding: 60 })
+
+    expect(large.scale).toBeLessThan(small.scale)
   })
 
   it('区域路径以 M 开头、以 Z 闭合', () => {

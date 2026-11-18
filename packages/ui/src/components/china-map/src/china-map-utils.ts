@@ -111,30 +111,142 @@ export function boundsOf(
   return hasPoint ? { minX, maxX, minY, maxY } : null
 }
 
+/** 缩放策略 */
+export type ChinaMapFit = 'contain' | 'width' | 'height'
+
+/** 包围盒 */
+export interface ChinaMapBounds {
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
+}
+
+/** 投影参数 */
+export interface ChinaMapProjectionOptions {
+  /** 目标绘制宽度（px） */
+  width: number
+  /** 目标绘制高度（px） */
+  height: number
+  /**
+   * 四周留白（px），默认 12
+   *
+   * 注意它同时参与「可用空间」计算：padding 越大，地图可用区域越小、整体越缩小。
+   */
+  padding?: number
+  /**
+   * 缩放策略，默认 `contain`
+   *
+   * - `contain`：等比缩放到「宽高都能装下」，面板变宽只会让左右留白变多
+   * - `width`：按宽度撑满，实际高度由地图宽高比反推（可能超出传入的 height）
+   * - `height`：按高度撑满，实际宽度由宽高比反推
+   */
+  fit?: ChinaMapFit
+  /** 额外的中心缩放倍数，默认 1。放大后溢出部分由容器裁掉 */
+  zoom?: number
+}
+
+/** 解析后的投影参数 */
+export interface ChinaMapProjectionBox {
+  /** 实际画布宽（`fit: 'height'` 时由宽高比反推，可能小于传入值） */
+  width: number
+  /** 实际画布高（`fit: 'width'` 时由宽高比反推，可能大于传入值） */
+  height: number
+  /** 经纬度跨度 → 像素的缩放比例（已含 zoom） */
+  scale: number
+  /** 画布内的横向起始偏移 */
+  offsetX: number
+  /** 画布内的纵向起始偏移 */
+  offsetY: number
+}
+
 /**
- * 构造投影函数：把经纬度映射到画布上的像素坐标，等比缩放并居中
+ * 按缩放策略算出实际画布尺寸与偏移
+ *
+ * 与 `createProjection` 分离，是为了让组件能拿到「`fit: 'width'` 时地图到底多高」，
+ * 进而把 SVG 的 viewBox 与根元素高度一起改成自适应。
  * @param bounds 包围盒
- * @param box 目标绘制区域（宽高与上下左右边距）
- * @returns 投影函数
+ * @param options 投影参数
+ * @returns 实际画布尺寸、缩放比例与偏移
  */
-export function createProjection(
-  bounds: { minX: number; maxX: number; minY: number; maxY: number },
-  box: { width: number; height: number; padding: number },
-): (lng: number, lat: number) => [number, number] {
+export function resolveProjectionBox(
+  bounds: ChinaMapBounds,
+  options: ChinaMapProjectionOptions,
+): ChinaMapProjectionBox {
+  const padding = Math.max(0, options.padding ?? 12)
+  const fit = options.fit ?? 'contain'
+  const zoom = options.zoom && options.zoom > 0 ? options.zoom : 1
+
   const spanX = Math.max(1e-6, bounds.maxX - bounds.minX)
   const spanY = Math.max(1e-6, bounds.maxY - bounds.minY)
-  const usableW = Math.max(0, box.width - box.padding * 2)
-  const usableH = Math.max(0, box.height - box.padding * 2)
-  const scale = Math.min(usableW / spanX, usableH / spanY)
+  const usableW = Math.max(0, options.width - padding * 2)
+  const usableH = Math.max(0, options.height - padding * 2)
 
-  const offsetX = box.padding + (usableW - spanX * scale) / 2
-  const offsetY = box.padding + (usableH - spanY * scale) / 2
+  let width = options.width
+  let height = options.height
+  let baseScale: number
+
+  if (fit === 'width') {
+    // 宽度撑满，高度跟着宽高比走
+    baseScale = usableW / spanX
+    height = spanY * baseScale + padding * 2
+  } else if (fit === 'height') {
+    // 高度撑满，宽度跟着宽高比走
+    baseScale = usableH / spanY
+    width = spanX * baseScale + padding * 2
+  } else {
+    baseScale = Math.min(usableW / spanX, usableH / spanY)
+  }
+
+  const scale = baseScale * zoom
+
+  // 用「实际画布」而不是「传入画布」算可用区，fit 反推的尺寸才对得上
+  const boxW = Math.max(0, width - padding * 2)
+  const boxH = Math.max(0, height - padding * 2)
+
+  return {
+    width,
+    height,
+    scale,
+    // 放大后这里会变成负数，正好把内容居中并让四角溢出被裁掉
+    offsetX: padding + (boxW - spanX * scale) / 2,
+    offsetY: padding + (boxH - spanY * scale) / 2,
+  }
+}
+
+/**
+ * 用已解析的投影参数构造投影函数
+ *
+ * 组件需要先拿到 `resolveProjectionBox` 的结果去设 viewBox，
+ * 再拿投影函数画路径；拆开后只解析一次。
+ * @param bounds 包围盒
+ * @param box 已解析的投影参数
+ * @returns 投影函数
+ */
+export function projectFromBox(
+  bounds: ChinaMapBounds,
+  box: ChinaMapProjectionBox,
+): (lng: number, lat: number) => [number, number] {
+  const { scale, offsetX, offsetY } = box
 
   return (lng, lat) => [
     offsetX + (lng - bounds.minX) * scale,
     // 纬度越大 y 越小，屏幕坐标要翻转
     offsetY + (bounds.maxY - mercatorY(lat)) * scale,
   ]
+}
+
+/**
+ * 构造投影函数：把经纬度映射到画布上的像素坐标
+ * @param bounds 包围盒
+ * @param box 目标绘制区域（宽高、边距与缩放策略）
+ * @returns 投影函数
+ */
+export function createProjection(
+  bounds: ChinaMapBounds,
+  box: ChinaMapProjectionOptions,
+): (lng: number, lat: number) => [number, number] {
+  return projectFromBox(bounds, resolveProjectionBox(bounds, box))
 }
 
 /**

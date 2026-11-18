@@ -3,6 +3,8 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import { chinaMapProps } from './china-map'
 import {
+  projectFromBox,
+  resolveProjectionBox,
   boundsOf,
   bubbleRadius,
   createProjection,
@@ -25,7 +27,6 @@ const emit = defineEmits<{
 }>()
 
 /** 画布内边距 */
-const PADDING = 12
 
 /** 分级填色的透明度档位（5 档） */
 const FILL_STEPS = [0.16, 0.32, 0.48, 0.64, 0.82]
@@ -83,15 +84,43 @@ const valueRange = computed(() => {
   return { min: Math.min(...values), max: Math.max(...values) }
 })
 
+/** 数值高度：`height: 'auto'` 时交给投影按宽高比反推 */
+const baseHeight = computed(() => (props.height === 'auto' ? 420 : Number(props.height)))
+
+/**
+ * 画布与投影参数
+ *
+ * `fit: 'width'` 下真实高度由容器宽度反推，`height` 不再参与缩放 ——
+ * 这就是宽面板里地图一直长不大的根因。
+ */
+const projectionBox = computed(() => {
+  const bounds = boundsOf(mainRegions.value)
+  if (!bounds) return null
+
+  // 'auto' 只在 fit: 'width' 下有意义，其余组合退回默认高度
+  const height = props.height === 'auto' ? (props.fit === 'width' ? 0 : 420) : Number(props.height)
+
+  return resolveProjectionBox(bounds, {
+    width: width.value,
+    height,
+    padding: props.padding,
+    fit: props.fit,
+    zoom: props.zoom,
+  })
+})
+
+/** 实际画布宽（`fit: 'height'` 时可能小于容器宽） */
+const canvasWidth = computed(() => projectionBox.value?.width ?? width.value)
+
+/** 实际画布高（`fit: 'width'` 时由宽度反推，会大于传入的 height） */
+const canvasHeight = computed(() => projectionBox.value?.height ?? baseHeight.value)
+
 /** 主图投影 */
 const projection = computed(() => {
   const bounds = boundsOf(mainRegions.value)
-  if (!bounds) return null
-  return createProjection(bounds, {
-    width: width.value,
-    height: props.height,
-    padding: PADDING,
-  })
+  const box = projectionBox.value
+  if (!bounds || !box) return null
+  return projectFromBox(bounds, box)
 })
 
 /**
@@ -138,10 +167,10 @@ const southSea = computed(() => {
   const bounds = boundsOf([feature])
   if (!bounds) return null
 
-  const insetW = Math.max(70, Math.min(140, width.value * 0.18))
-  const insetH = Math.max(90, Math.min(180, props.height * 0.26))
-  const x = width.value - insetW - 8
-  const y = props.height - insetH - 8
+  const insetW = Math.max(70, Math.min(140, canvasWidth.value * 0.18))
+  const insetH = Math.max(90, Math.min(180, canvasHeight.value * 0.26))
+  const x = canvasWidth.value - insetW - 8
+  const y = canvasHeight.value - insetH - 8
 
   const project = createProjection(bounds, { width: insetW, height: insetH, padding: 6 })
   const d = regionPath(feature, (lng, lat) => {
@@ -172,12 +201,26 @@ const bubbles = computed(() => {
     .filter((item): item is { name: string; value: number; x: number; y: number; r: number } => item !== null)
 })
 
+/**
+ * 标签字号
+ *
+ * 不传 `labelSize` 时按画布高度相对 420 等比缩放并夹在 9–15：
+ * 大屏不至于小得看不清，窄图也不至于挤成一团。
+ */
+const labelFontSize = computed(() => {
+  if (props.labelSize > 0) return props.labelSize
+  const ratio = canvasHeight.value / 420
+  return Math.round(Math.min(15, Math.max(9, 11 * ratio)))
+})
+
 /** 省份标签：按面积从大到小放置，重叠的跳过 */
 const labels = computed(() => {
   if (!props.showLabel) return []
 
   const items = mainRegions.value
     .map((region) => ({ name: region.name, area: areaOf(region) }))
+    // 面积小于阈值的省直接不画，避免交给重叠检测随机丢几个
+    .filter((item) => item.area >= props.labelMinArea)
     .sort((left, right) => right.area - left.area)
 
   const centerMap = new Map(regions.value.map((region) => [region.name, region.center]))
@@ -188,9 +231,9 @@ const labels = computed(() => {
     const center = centerMap.get(item.name)
     if (!center) continue
 
-    // 标签宽度按字数估算，中文按 11px 一个字
-    const halfW = (item.name.length * 11) / 2 + 2
-    const halfH = 7
+    // 标签宽度按字数估算，中文按当前字号一个字
+    const halfW = (item.name.length * labelFontSize.value) / 2 + 2
+    const halfH = labelFontSize.value * 0.64
     const rect = {
       x1: center[0] - halfW,
       y1: center[1] - halfH,
@@ -301,13 +344,13 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="rootRef" class="sr-china-map">
-    <div class="sr-china-map__canvas" :style="{ height: `${props.height}px` }">
+    <div class="sr-china-map__canvas" :style="{ height: `${canvasHeight}px` }">
       <svg
         ref="svgRef"
         class="sr-china-map__svg"
-        :width="width"
-        :height="props.height"
-        :viewBox="`0 0 ${width} ${props.height}`"
+        :width="canvasWidth"
+        :height="canvasHeight"
+        :viewBox="`0 0 ${canvasWidth} ${canvasHeight}`"
         role="img"
         :aria-label="ariaLabel"
         @mouseleave="clearTooltip"
@@ -357,6 +400,7 @@ onBeforeUnmount(() => {
             v-for="label in labels"
             :key="`label-${label.name}`"
             class="sr-china-map__label"
+            :style="{ fontSize: `${labelFontSize}px` }"
             :x="label.x"
             :y="label.y + 3.5"
             text-anchor="middle"

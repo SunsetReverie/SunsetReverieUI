@@ -13,6 +13,8 @@
   &__canvas {
     position: relative;
     width: 100%;
+    // zoom > 1 时地图会溢出画布，这里裁掉，避免盖住图例或父级内容
+    overflow: hidden;
   }
 
   &__svg {

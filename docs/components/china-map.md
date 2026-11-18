@@ -101,13 +101,62 @@ const data = [
 
 > 只有 34 个省级行政区 + 南海诸岛是地图区域，城市名不会自动聚合到省，需要业务侧先归并。
 
+## 缩放与留白
+
+默认的 `fit="contain"` 是「等比缩放到宽高都装得下」，所以**地图大小完全由 `height` 决定**：容器变宽不会让地图变大，只会让左右留白变多。
+
+宽面板里想让地图真正铺满，用 `fit="width"`：
+
+```vue
+<SrChinaMap :data="visitors" fit="width" height="auto" :padding="4" />
+```
+
+| `fit` | 缩放依据 | 画布尺寸 |
+| --- | --- | --- |
+| `contain`（默认） | `min(可用宽, 可用高)` | 与容器一致，地图居中 |
+| `width` | 可用宽 | 高度由地图宽高比反推，可能超出传入的 `height` |
+| `height` | 可用高 | 宽度由宽高比反推 |
+
+实测对比（容器宽 843px）：
+
+| 配置 | viewBox | 地图实际宽度 | 标签字号 |
+| --- | --- | --- | --- |
+| `contain` + `height=420` | `0 0 843 420` | 424px（一半是空白） | 11px |
+| `fit="width"` + `height="auto"` | `0 0 843 819` | 835px（铺满） | 15px |
+
+### zoom
+
+`zoom` 在原有比例上做**中心放大**，画布尺寸不变，溢出部分由容器裁掉：
+
+```vue
+<SrChinaMap :data="visitors" :height="360" :zoom="1.2" :padding="2" />
+```
+
+适合「面板高度不变、只想让地图大一点」。代价是四角可能被裁，建议同时调小 `padding`。
+
+### 标签密度
+
+标签按面积从大到小放置，重叠的跳过；窄图里几个小省会互相压住，看起来像「名字显示不全」。两个手段控制：
+
+```vue
+<SrChinaMap :data="visitors" :label-min-area="6" :label-size="13" />
+```
+
+- `labelMinArea`：面积小于阈值的省**直接不画**，比让重叠检测随机丢几个更可预期
+- `labelSize`：不传时按画布高度相对 420 等比缩放（夹在 9–15），大屏不至于小得看不清
+
 ## Props
 
 | 名称 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `data` | `ChinaMapDatum[]` | `[]` | 各省数值；名称写「北京」或「北京市」都能对上 |
 | `mode` | `'choropleth' \| 'bubble'` | `'choropleth'` | 展示模式 |
-| `height` | `number` | `420` | 地图高度（px） |
+| `height` | `number \| 'auto'` | `420` | 地图高度。`'auto'` 时按容器宽度与地图宽高比反推（仅 `fit: 'width'` 有效） |
+| `fit` | `'contain' \| 'width' \| 'height'` | `'contain'` | 缩放策略，见下方「缩放与留白」 |
+| `zoom` | `number` | `1` | 额外的中心缩放倍数，溢出部分被裁掉 |
+| `padding` | `number` | `12` | 地图四周留白（px），`0` 表示贴边 |
+| `labelMinArea` | `number` | `0` | 省份标签的最小面积阈值（平方度），小于它的省不画标签 |
+| `labelSize` | `number` | `0` | 标签字号（px），`0` 表示按画布高度自动缩放（夹在 9–15） |
 | `showLabel` | `boolean` | `true` | 是否显示省份名称 |
 | `showLegend` | `boolean` | `true` | 是否显示色阶 / 气泡图例 |
 | `showTooltip` | `boolean` | `true` | 是否显示悬停提示 |

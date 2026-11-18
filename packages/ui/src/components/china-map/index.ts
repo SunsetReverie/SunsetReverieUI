@@ -12,4 +12,5 @@ import ChinaMap from './src/china-map.vue'
 export const SrChinaMap = srWithInstall(ChinaMap)
 
 export * from './src/china-map'
+export type { ChinaMapFit } from './src/china-map-utils'
 export default SrChinaMap
